@@ -36,15 +36,10 @@ public class CommonProxy {
 	
 	
 	public void registerBlocks() {
-		blockTradeStation = new BlockTradeStation();//.setBlockName("blockTradeStation");
-		blockVendor = new BlockVendor(Vending.supports);//.setBlockName("blockVendor");
-		blockCardStation = new BlockCardStation();//.setBlockName("blockCardStation");
-		blockBase = new BlockBase();//.setBlockName("blockBase");
-		
-		GameRegistry.registerBlock(blockTradeStation, "blockTradeStation").getUnlocalizedName();
-		GameRegistry.registerBlock(blockVendor, "blockVendor").getUnlocalizedName();
-		GameRegistry.registerBlock(blockCardStation, "blockCardStation").getUnlocalizedName();
-		GameRegistry.registerBlock(blockBase, "blockBase").getUnlocalizedName();
+		blockTradeStation = new BlockTradeStation().setUnlocalizedName("blockTradeStation");
+		blockVendor = new BlockVendor(Vending.supports).setUnlocalizedName("blockVendor");
+		blockCardStation = new BlockCardStation().setUnlocalizedName("blockCardStation");
+		blockBase = new BlockBase().setUnlocalizedName("blockBase");
 	}
 	
 	public void registerItems() {
@@ -57,17 +52,6 @@ public class CommonProxy {
 		itemEnderCard = new ItemEnderCard().setUnlocalizedName("itemEnderCard");
 		itemSeller = new ItemSeller().setUnlocalizedName("itemSeller");
 		itemVendorWrench = new ItemVendorWrench().setUnlocalizedName("itemVendorWrench");
-		
-		
-		GameRegistry.registerItem(itemCoin, itemCoin.getUnlocalizedName());
-		GameRegistry.registerItem(itemSmallCoinStack, itemSmallCoinStack.getUnlocalizedName());
-		GameRegistry.registerItem(itemLargeCoinStack, itemLargeCoinStack.getUnlocalizedName());
-		GameRegistry.registerItem(itemSmallCoinBag, itemSmallCoinBag.getUnlocalizedName());
-		GameRegistry.registerItem(itemLargeCoinBag, itemLargeCoinBag.getUnlocalizedName());
-		GameRegistry.registerItem(itemUCCard, itemUCCard.getUnlocalizedName());
-		GameRegistry.registerItem(itemEnderCard, itemEnderCard.getUnlocalizedName());
-		GameRegistry.registerItem(itemSeller, itemSeller.getUnlocalizedName());
-		GameRegistry.registerItem(itemVendorWrench, itemVendorWrench.getUnlocalizedName());
 	}
 
 	public void registerRenderers() {

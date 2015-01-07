@@ -12,6 +12,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.UniversalCoins;
@@ -19,12 +20,20 @@ import universalcoins.util.UCWorldData;
 
 public class ItemEnderCard extends Item {
 	
+	private final String name = "itemEnderCard";
+	
 	private static final int[] multiplier = new int[] {1, 9, 81, 729, 6561};
 	
 	public ItemEnderCard() {
 		super();
 		this.maxStackSize = 1;
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
+		GameRegistry.registerItem(this, name);
+		setUnlocalizedName(UniversalCoins.MODID + "_" + name);
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	@Override

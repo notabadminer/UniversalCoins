@@ -3,6 +3,7 @@ package universalcoins.blocks;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,30 +11,44 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import universalcoins.UniversalCoins;
 import universalcoins.tile.TileTradeStation;
 
 public class BlockTradeStation extends BlockContainer {
+	
+	private final String name = "blockTradeStation";
 	
 	public BlockTradeStation() {
 		super(new Material(MapColor.stoneColor));
 		setHardness(3.0f);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(6000000.0F);
+		GameRegistry.registerBlock(this, name);
+		setUnlocalizedName(UniversalCoins.MODID + "_" + name);
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z,
-			EntityPlayer player, int par6, float par7, float par8, float par9) {
-		player.openGui(UniversalCoins.instance, 0, world, x, y, z);
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ) {
+		int xCoord = pos.getX();
+		int yCoord = pos.getY();
+		int zCoord = pos.getZ();
+		playerIn.openGui(UniversalCoins.instance, 0, worldIn, xCoord, yCoord, zCoord);
 		return true;
 	}
 	
 	public ItemStack getItemStackWithData(World world, int x, int y, int z) {
-		ItemStack stack = new ItemStack(world.getBlock(x, y, z), 1);
-		TileEntity tentity = world.getTileEntity(x, y, z);
+		BlockPos pos = new BlockPos(x, y, z);
+		ItemStack stack = new ItemStack(UniversalCoins.proxy.blockTradeStation, 1);
+		TileEntity tentity = world.getTileEntity(pos);
 		if (tentity instanceof TileTradeStation) {
 			TileTradeStation te = (TileTradeStation) tentity;
 			NBTTagList itemList = new NBTTagList();
@@ -60,10 +75,10 @@ public class BlockTradeStation extends BlockContainer {
 	}
 		
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack stack) {
-		if (world.isRemote) return;
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+		if (worldIn.isRemote) return;
 		if (stack.hasTagCompound()) {
-			TileEntity te = world.getTileEntity(x, y, z);
+			TileEntity te = worldIn.getTileEntity(pos);
 			if (te instanceof TileTradeStation) {
 				TileTradeStation tentity = (TileTradeStation) te;
 				NBTTagCompound tagCompound = stack.getTagCompound();
@@ -84,24 +99,24 @@ public class BlockTradeStation extends BlockContainer {
 				tentity.itemPrice = tagCompound.getInteger("ItemPrice");
 				tentity.customName = tagCompound.getString("CustomName");
 			}
-			world.markBlockForUpdate(x, y, z);
+			worldIn.markBlockForUpdate(pos);
 		} else if (stack.hasDisplayName()) {
-            ((TileTradeStation)world.getTileEntity(x, y, z)).setInventoryName(stack.getDisplayName());
+            ((TileTradeStation)worldIn.getTileEntity(pos)).setInventoryName(stack.getDisplayName());
         }
 	}
 	
 	@Override
-	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z) {
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
-		if (!world.isRemote) {
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te) {
+		int xCoord = pos.getX();
+		int yCoord = pos.getY();
+		int zCoord = pos.getZ();
+		if (!worldIn.isRemote) {
 			if (!player.capabilities.isCreativeMode) {
-				ItemStack stack = getItemStackWithData(world, x, y, z);
-				EntityItem entityItem = new EntityItem(world, x, y, z, stack);
-				world.spawnEntityInWorld(entityItem);
+				ItemStack stack = getItemStackWithData(worldIn, xCoord, yCoord, zCoord);
+				EntityItem entityItem = new EntityItem(worldIn, xCoord, yCoord, zCoord, stack);
+				worldIn.spawnEntityInWorld(entityItem);
 			}
-			super.removedByPlayer(world, player, x, y, z);
 		}
-		return false;
 	}
 
 	@Override

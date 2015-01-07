@@ -1,0 +1,10 @@
+{
+	"parent": "block/cube_all",
+	"textures": {
+	"particle": "universalcoins:blocks/blockTradeStation",
+	"bottom": "universalcoins:blocks/blockTradeStation",
+	"top": "universalcoins:blocks/blockTradeStation",
+	"side": "universalcoins:blocks/blockTradeStationSide",
+	"overlay": "universalcoins:blocks/blockTradeStation"
+	}
+}

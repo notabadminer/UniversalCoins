@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -15,16 +16,20 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.UniversalCoins;
-import universalcoins.render.BlockVendorRenderer;
 import universalcoins.tile.TileVendor;
 
 public class BlockVendor extends BlockContainer {
+	
+	private final String name = "blockVendor";
+
 	Block[] supportBlocks;
 
 	public BlockVendor(Block[] supports) {
@@ -32,15 +37,17 @@ public class BlockVendor extends BlockContainer {
 
 		supportBlocks = supports;
 
-		setStepSound(soundTypeGlass);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
-		
 		setHardness(0.3F);
 		setResistance(6000000.0F);
-		
 		setStepSound(Block.soundTypeGlass);
-
 		setBlockBounds(0.0625f, 0.125f, 0.0625f, 0.9375f, 0.9375f, 0.9375f);
+		GameRegistry.registerBlock(this, name);
+		setUnlocalizedName(UniversalCoins.MODID + "_" + name);
+	}
+	
+	public String getName() {
+		return name;
 	}
 
 	/*@Override
@@ -49,15 +56,18 @@ public class BlockVendor extends BlockContainer {
 	}*/
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z,
-			EntityPlayer player, int par6, float par7, float par8, float par9) {
-		player.openGui(UniversalCoins.instance, 0, world, x, y, z);
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
+		int xCoord = pos.getX();
+		int yCoord = pos.getY();
+		int zCoord = pos.getZ();
+		player.openGui(UniversalCoins.instance, 0, world, xCoord, yCoord, zCoord);
 		return true;
 	}
 	
 	public ItemStack getItemStackWithData(World world, int x, int y, int z) {
-		ItemStack stack = new ItemStack(world.getBlock(x, y, z), 1, 0);
-		TileEntity tentity = world.getTileEntity(x, y, z);
+		BlockPos pos = new BlockPos(x, y, z);
+		ItemStack stack = new ItemStack(UniversalCoins.proxy.blockVendor, 1, 0);
+		TileEntity tentity = world.getTileEntity(pos);
 		if (tentity instanceof TileVendor) {
 			TileVendor te = (TileVendor) tentity;
 			NBTTagList itemList = new NBTTagList();
@@ -83,10 +93,10 @@ public class BlockVendor extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack stack) {
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
 		if (world.isRemote) return;
 		if (stack.hasTagCompound()) {
-			TileEntity te = world.getTileEntity(x, y, z);
+			TileEntity te = world.getTileEntity(pos);
 			if (te instanceof TileVendor) {
 				TileVendor tentity = (TileVendor) te;
 				NBTTagCompound tagCompound = stack.getTagCompound();
@@ -107,30 +117,32 @@ public class BlockVendor extends BlockContainer {
 				tentity.blockOwner = tagCompound.getString("BlockOwner");
 				tentity.infiniteSell = tagCompound.getBoolean("Infinite");
 			}
-			world.markBlockForUpdate(x, y, z);
+			world.markBlockForUpdate(pos);
 			
 		} else {
 			//item has no owner so we'll set one and get out of here
-			((TileVendor)world.getTileEntity(x, y, z)).blockOwner = entity.getCommandSenderName();
+			((TileVendor)world.getTileEntity(pos)).blockOwner = placer.getName();
 		}
 		int meta = stack.getItemDamage();
-		world.setBlockMetadataWithNotify(x, y, z, meta, 2);		
+		//world.setBlockMetadataWithNotify(x, y, z, meta, 2);		
 	}
 	
 	@Override
-	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z) {
-		String ownerName = ((TileVendor)world.getTileEntity(x, y, z)).blockOwner;
+    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te) {
+		int xCoord = pos.getX();
+		int yCoord = pos.getY();
+		int zCoord = pos.getZ();
+		TileVendor tentity = (TileVendor) world.getTileEntity(pos);
+		String ownerName = tentity.blockOwner;
 		if (player.capabilities.isCreativeMode) {
-			super.removedByPlayer(world, player, x, y, z);
-			return false;
+			super.harvestBlock(world, player, pos, state, te);
 		}
-		if (player.getDisplayName().equals(ownerName) && !world.isRemote) {
-			ItemStack stack = getItemStackWithData(world, x, y, z);
-			EntityItem entityItem = new EntityItem(world, x, y, z, stack);
+		if (player.getDisplayName().toString().equals(ownerName) && !world.isRemote) {
+			ItemStack stack = getItemStackWithData(world, xCoord, yCoord, zCoord);
+			EntityItem entityItem = new EntityItem(world, xCoord, yCoord, zCoord, stack);
 			world.spawnEntityInWorld(entityItem);
-			super.removedByPlayer(world, player, x, y, z);
+			super.harvestBlock(world, player, pos, state, te);
 		}
-		return false;
 	}
 
 	@Override
@@ -143,20 +155,16 @@ public class BlockVendor extends BlockContainer {
 		return false;
 	}
 
-	@Override
-	public int damageDropped(int meta) {
-		return meta;
-	}
+	//@Override
+	 public int damageDropped(IBlockState state) {
+		 return this.getMetaFromState(state);
+	 }
 
 	@Override
 	public int getRenderType() {
-		return BlockVendorRenderer.id;
+		return 0;
+		//return BlockVendorRenderer.id;
 	}
-	
-	@Override
-	public boolean shouldSideBeRendered(IBlockAccess par1IBlockAccess, int par2, int par3, int par4, int par5) {
-        return true;
-    }
 	
 	@Override
 	@SideOnly(Side.CLIENT)

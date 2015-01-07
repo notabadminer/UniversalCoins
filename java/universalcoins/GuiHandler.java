@@ -2,6 +2,7 @@ package universalcoins;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import universalcoins.gui.CardStationGUI;
@@ -24,7 +25,8 @@ class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		BlockPos pos = new BlockPos(x, y, z);
+		TileEntity tileEntity = world.getTileEntity(pos);
         if(tileEntity instanceof TileTradeStation){
                 return new ContainerTradeStation(player.inventory, (TileTradeStation) tileEntity);
         }
@@ -33,7 +35,7 @@ class GuiHandler implements IGuiHandler {
         		return new ContainerVendorWrench(player.inventory, (TileVendor) tileEntity);
         	}
         	if(((TileVendor) tileEntity).blockOwner == null || 
-        			((TileVendor) tileEntity).blockOwner.contentEquals(player.getDisplayName())) {
+        			((TileVendor) tileEntity).blockOwner.contentEquals(player.getDisplayName().toString())) {
         		return new ContainerVendor(player.inventory, (TileVendor) tileEntity);
         	} else if (((TileVendor) tileEntity).sellMode) {
         		return new ContainerVendorSell(player.inventory, (TileVendor) tileEntity);
@@ -46,9 +48,9 @@ class GuiHandler implements IGuiHandler {
 	}
 
 	@Override
-	public Object getClientGuiElement(int ID, EntityPlayer player, World world,
-			int x, int y, int z) {
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+		BlockPos pos = new BlockPos(x, y, z);
+		TileEntity tileEntity = world.getTileEntity(pos);
         if(tileEntity instanceof TileTradeStation){
                 return new TradeStationGUI(player.inventory, (TileTradeStation) tileEntity);
         }
@@ -57,7 +59,7 @@ class GuiHandler implements IGuiHandler {
         		return new VendorWrenchGUI(player.inventory, (TileVendor) tileEntity);
         	}
         	if(((TileVendor) tileEntity).blockOwner == null || 
-        			((TileVendor) tileEntity).blockOwner.contentEquals(player.getDisplayName())) {
+        			((TileVendor) tileEntity).blockOwner.contentEquals(player.getDisplayName().toString())) {
         		return new VendorGUI(player.inventory, (TileVendor) tileEntity);
         	} else if  (((TileVendor) tileEntity).sellMode) {
         		return new VendorSellGUI(player.inventory, (TileVendor) tileEntity);

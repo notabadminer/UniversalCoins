@@ -12,6 +12,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.UniversalCoins;
@@ -19,9 +20,17 @@ import universalcoins.util.UCWorldData;
 
 public class ItemUCCard extends Item {
 	
+	private final String name = "itemUCCard";
+	
 	public ItemUCCard() {
 		super();
 		this.maxStackSize = 1;
+		GameRegistry.registerItem(this, name);
+		setUnlocalizedName(UniversalCoins.MODID + "_" + name);
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	@Override

@@ -26,7 +26,7 @@ public class UpdateCheck {
 			FMLLog.warning("Universal Coins: IO exception during update check");
 		}
 		
-		String rawString = UniversalCoins.version;
+		String rawString = UniversalCoins.VERSION;
 		String splitString[] = rawString.split("-");
 		int thisVersion = Integer.parseInt(splitString[1].replaceAll("[^\\d]", ""));
 		

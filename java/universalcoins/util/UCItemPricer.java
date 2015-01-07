@@ -89,8 +89,10 @@ public class UCItemPricer {
 
 	public static void buildInitialPricelistHashMap() {
 		ArrayList<ItemStack> itemsDiscovered = new ArrayList<ItemStack>();
-
-		for (String item : (Iterable<String>) Item.itemRegistry.getKeys()) {
+		Object[] itemSet = Item.itemRegistry.getKeys().toArray();
+		FMLLog.info("Set: " + itemSet );
+		for (Object itemObject : itemSet) {
+			String item = itemObject.toString();
 			// pass the itemkey to a temp variable after splitting on
 			// non-alphanumeric values
 			String[] tempModName = item.split("\\W", 3);

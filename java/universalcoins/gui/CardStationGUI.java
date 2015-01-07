@@ -158,7 +158,7 @@ public class CardStationGUI extends GuiContainer{
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(tEntity.getInventoryName(), 6, 5, 4210752);
+		fontRendererObj.drawString(tEntity.getName(), 6, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
 		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 6, ySize - 96 + 2, 4210752);
 		drawMenu(menuState);

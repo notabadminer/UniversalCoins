@@ -51,15 +51,15 @@ import universalcoins.util.UCRecipeHelper;
  * 
  **/
 
-@Mod(modid = UniversalCoins.modid, name = UniversalCoins.name, version = UniversalCoins.version,
+@Mod(modid = UniversalCoins.MODID, name = UniversalCoins.NAME, version = UniversalCoins.VERSION,
 acceptedMinecraftVersions = "[1.8.0]", dependencies = "required-after:Forge@[10.14.0.1281,)")
 
 public class UniversalCoins {
 	@Instance("universalcoins")
 	public static UniversalCoins instance;
-	public static final String modid = "universalcoins";
-	public static final String name = "Universal Coins";
-	public static final String version = "1.8.0-1.5.9";
+	public static final String MODID = "universalcoins";
+	public static final String NAME = "Universal Coins";
+	public static final String VERSION = "1.8.0-1.5.9";
 	
 	public static Boolean autoModeEnabled;
 	public static Boolean updateCheck;
@@ -153,7 +153,7 @@ public class UniversalCoins {
 		MinecraftForge.EVENT_BUS.register(new UCPlayerPickupEventHandler());
 				
 		//network packet handling
-	    snw = NetworkRegistry.INSTANCE.newSimpleChannel(modid); 
+	    snw = NetworkRegistry.INSTANCE.newSimpleChannel(MODID); 
 	    snw.registerMessage(UCButtonMessage.class, UCButtonMessage.class, 0, Side.SERVER);
 	    snw.registerMessage(UCVendorServerMessage.class, UCVendorServerMessage.class, 1, Side.SERVER);
 	    snw.registerMessage(UCTileTradeStationMessage.class, UCTileTradeStationMessage.class, 2, Side.CLIENT);
