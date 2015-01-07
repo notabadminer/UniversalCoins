@@ -1,7 +1,5 @@
 package universalcoins.tile;
 
-import cpw.mods.fml.common.FMLLog;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -13,7 +11,8 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntitySign;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.VendorGUI;
@@ -73,7 +72,7 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	public boolean uLBagButtonActive = false;
 	
 	
-	@Override
+	/*@Override
 	public void updateEntity() {
 		super.updateEntity();
 		if (!worldObj.isRemote) {
@@ -82,7 +81,7 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 			activateBuyButton();
 			activateSellButton();
 		}
-	}
+	}*/
 	
 	private void activateBuyButton() {
 		if ((userCoinSum >= itemPrice && coinSum + itemPrice < Integer.MAX_VALUE 
@@ -524,33 +523,18 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	}
 
 	@Override
-	public String getInventoryName() {
-		return null;
-	}
-
-	@Override
-	public boolean hasCustomInventoryName() {
-		return false;
-	}
-
-	@Override
 	public int getInventoryStackLimit() {
 		return 64;
 	}
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
-		return worldObj.getTileEntity(xCoord, yCoord, zCoord) == this
+		int xCoord = pos.getX();
+		int yCoord = pos.getY();
+		int zCoord = pos.getZ();
+		return worldObj.getTileEntity(pos) == this
 				&& entityplayer.getDistanceSq(xCoord + 0.5, yCoord + 0.5,
 						zCoord + 0.5) < 64;
-	}
-
-	@Override
-	public void openInventory() {	
-	}
-
-	@Override
-	public void closeInventory() {
 	}
 
 	@Override
@@ -565,23 +549,29 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	public Packet getDescriptionPacket() {
 	NBTTagCompound nbt = new NBTTagCompound();
 	writeToNBT(nbt);
-	return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, nbt);
+	return new S35PacketUpdateTileEntity();
 	}
 	
 	@Override
 	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
-	readFromNBT(pkt.func_148857_g());
+	readFromNBT(pkt.getNbtCompound());
 	}
     
 	public void updateTE() {
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		worldObj.markBlockForUpdate(pos);
 	}
 	
 	public void sendButtonMessage(int button, boolean shiftPressed) {
+		int xCoord = pos.getX();
+		int yCoord = pos.getY();
+		int zCoord = pos.getZ();
 		UniversalCoins.snw.sendToServer(new UCButtonMessage(xCoord, yCoord, zCoord, button, shiftPressed));
 	}
 	
 	public void sendServerUpdateMessage() {
+		int xCoord = pos.getX();
+		int yCoord = pos.getY();
+		int zCoord = pos.getZ();
 		UniversalCoins.snw.sendToServer(new UCVendorServerMessage(xCoord, yCoord, zCoord, itemPrice, blockOwner, infiniteSell));
 	}
 	
@@ -741,35 +731,35 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 		tagCompound.setBoolean("UserSmallBagButtonActive", uSBagButtonActive);
 		tagCompound.setBoolean("UserLargeBagButtonActive", uLBagButtonActive);
 	}
-
+	
 	@Override
-	public int[] getAccessibleSlotsFromSide(int var1) {
+	public int[] getSlotsForFace(EnumFacing side) {
 		return new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 11 };
 	}
-
+	
 	@Override
-	public boolean canInsertItem(int var1, ItemStack var2, int var3) {
+	public boolean canInsertItem(int index, ItemStack itemStackIn,EnumFacing direction) {
 		// put everything in the item storage slots
-		if (var1 >= itemStorageSlot1 && var1 <= itemStorageSlot9) {
-			return true;
-		} else {
-			return false;
-		}
+				if (index >= itemStorageSlot1 && index <= itemStorageSlot9) {
+					return true;
+				} else {
+					return false;
+				}
 	}
 
 	@Override
-	public boolean canExtractItem(int var1, ItemStack var2, int var3) {
+	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
 		// allow pulling items from output slot only
-		if (var1 == itemCoinOutputSlot) {
-			return true;
-		} else {
-			return false;
-		}
+				if (index == itemCoinOutputSlot) {
+					return true;
+				} else {
+					return false;
+				}
 	}
 	
 	public int getAccountBalance() {
 		if (inventory[itemUserCardSlot] != null) {
-			String accountNumber = inventory[itemUserCardSlot].stackTagCompound.getString("Account");
+			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
 			if (getWorldString(accountNumber) != "") {
 				return getWorldInt(accountNumber);
 			}
@@ -778,7 +768,7 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	
 	public boolean debitAccount(int amount) {
 		if (inventory[itemUserCardSlot] != null) {
-			String accountNumber = inventory[itemUserCardSlot].stackTagCompound.getString("Account");
+			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
 			if (getWorldString(accountNumber) != "") {
 				int balance = getWorldInt(accountNumber);
 				balance -= amount;
@@ -790,7 +780,7 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	
 	public int getOwnerAccountBalance() {
 		if (inventory[itemCardSlot] != null) {
-			String accountNumber = inventory[itemCardSlot].stackTagCompound.getString("Account");
+			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 			if (getWorldString(accountNumber) != "") {
 				return getWorldInt(accountNumber);
 			}
@@ -799,7 +789,7 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	
 	public boolean debitOwnerAccount(int amount) {
 		if (inventory[itemCardSlot] != null) {
-			String accountNumber = inventory[itemCardSlot].stackTagCompound.getString("Account");
+			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 			if (getWorldString(accountNumber) != "") {
 				int balance = getWorldInt(accountNumber);
 				balance -= amount;
@@ -826,5 +816,59 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 		UCWorldData wData = UCWorldData.get(super.worldObj);
 		NBTTagCompound wdTag = wData.getData();
 		return wdTag.getString(tag);
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasCustomName() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public IChatComponent getDisplayName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void openInventory(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeInventory(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getField(int id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getFieldCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
 	}
 }

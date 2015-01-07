@@ -27,8 +27,6 @@ import universalcoins.tile.TileVendor;
 public class BlockVendor extends BlockContainer {
 	Block[] supportBlocks;
 
-	IIcon iconTop, iconSide;
-
 	public BlockVendor(Block[] supports) {
 		super(Material.glass);	
 
@@ -136,13 +134,6 @@ public class BlockVendor extends BlockContainer {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIcon(int side, int meta){
-
-		return side < 2 ? iconTop : iconSide;
-	}
-
-	@Override
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TileVendor();
 	}
@@ -151,22 +142,10 @@ public class BlockVendor extends BlockContainer {
 	public boolean isOpaqueCube() {
 		return false;
 	}
-	
-	@Override
-	public boolean renderAsNormalBlock() {
-		return false;
-	}
 
 	@Override
 	public int damageDropped(int meta) {
 		return meta;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerBlockIcons(IIconRegister register) {
-		iconTop = register.registerIcon("universalcoins:vendor-top");
-		iconSide = register.registerIcon("universalcoins:vendor-side");
 	}
 
 	@Override

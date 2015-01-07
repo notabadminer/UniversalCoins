@@ -18,11 +18,6 @@ public class ItemLargeCoinStack extends Item {
 		this.setCreativeTab(UniversalCoins.tabUniversalCoins);
 	}
 	
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IconRegister){
-		this.itemIcon = par1IconRegister.registerIcon(UniversalCoins.modid + ":" + this.getUnlocalizedName().substring(5));
-	}
-	
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
 		DecimalFormat formatter = new DecimalFormat("###,###,###");

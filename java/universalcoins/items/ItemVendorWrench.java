@@ -16,14 +16,4 @@ public class ItemVendorWrench extends Item {
 		setMaxStackSize(1);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 	}
-	
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IconRegister){
-		this.itemIcon = par1IconRegister.registerIcon(UniversalCoins.modid + ":" + this.getUnlocalizedName().substring(5));
-	}
-	
-	@Override
-	  public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player) {
-	    return true;
-	  }
 }

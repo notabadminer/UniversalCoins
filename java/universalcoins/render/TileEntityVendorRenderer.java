@@ -23,7 +23,8 @@ public class TileEntityVendorRenderer extends TileEntitySpecialRenderer {
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float f) {
+	public void renderTileEntityAt(TileEntity tileentity, double x,
+			double z, double y, float f, int p_180535_9_) {
 		TileVendor machine = (TileVendor) tileentity;
 
 		if (machine == null || machine.getBlockType() == null) {

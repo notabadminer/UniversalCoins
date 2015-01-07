@@ -3,7 +3,6 @@ package universalcoins.blocks;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,40 +10,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
 import universalcoins.tile.TileTradeStation;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockTradeStation extends BlockContainer {
 	
-	private IIcon[] icons;
-
 	public BlockTradeStation() {
 		super(new Material(MapColor.stoneColor));
 		setHardness(3.0f);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(6000000.0F);
-	}
-
-	@SideOnly(Side.CLIENT)
-	public void registerBlockIcons(IIconRegister register){
-		icons = new IIcon[2];
-		
-		for (int i = 0; i < icons.length; i++){
-			icons[i] = register.registerIcon(UniversalCoins.modid + ":" +
-													  		this.getUnlocalizedName().substring(5) + i);
-		}
-	}
-	
-	public IIcon getIcon(int par1, int par2){
-		if (par1 == 0 || par1 == 1){
-			return icons[1];
-		}
-		return icons[0];
 	}
 	
 	@Override

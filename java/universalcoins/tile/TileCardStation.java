@@ -9,6 +9,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
 import universalcoins.inventory.ContainerCardStation;
@@ -37,14 +39,14 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	public String customAccountName = "none";
 	public String customAccountNumber = "none";
 	
-	@Override
+	/*@Override
 	public void updateEntity() {
 		super.updateEntity();
 		if (withdrawCoins) {
 			withdrawCoins();
 		}
 		updateInUse();
-	}
+	}*/
 	
 	private void updateInUse() {
 		if (worldObj.isRemote) return;
@@ -121,16 +123,16 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 				}
 			}
 			if (slot == itemCardSlot && !worldObj.isRemote) {
-				if (inventory[itemCardSlot].stackTagCompound.getInteger("CoinSum") != 0 && 
-						inventory[itemCardSlot].stackTagCompound.getString("Owner").contentEquals(player)) {
+				if (inventory[itemCardSlot].getTagCompound().getInteger("CoinSum") != 0 && 
+						inventory[itemCardSlot].getTagCompound().getString("Owner").contentEquals(player)) {
 					addPlayerAccount(player);
 					accountNumber = getPlayerAccount(player);
-					creditAccount(accountNumber, inventory[itemCardSlot].stackTagCompound.getInteger("CoinSum"));
-					inventory[itemCardSlot].stackTagCompound.removeTag("CoinSum");
-					inventory[itemCardSlot].stackTagCompound.setString("Account", accountNumber);
+					creditAccount(accountNumber, inventory[itemCardSlot].getTagCompound().getInteger("CoinSum"));
+					inventory[itemCardSlot].getTagCompound().removeTag("CoinSum");
+					inventory[itemCardSlot].getTagCompound().setString("Account", accountNumber);
 				}
-				accountNumber = inventory[itemCardSlot].stackTagCompound.getString("Account");
-				cardOwner = inventory[itemCardSlot].stackTagCompound.getString("Owner");
+				accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
+				cardOwner = inventory[itemCardSlot].getTagCompound().getString("Owner");
 				if (getCustomAccount(player) != "") customAccountName = getCustomAccount(player);
 				accountBalance = getAccountBalance(accountNumber);
 				}
@@ -138,7 +140,7 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	}
 
 	@Override
-	public String getInventoryName() {
+	public String getName() {
 		return UniversalCoins.proxy.blockCardStation.getLocalizedName();
 	}
 
@@ -149,6 +151,9 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	}
 
 	public void sendButtonMessage(int functionID, boolean shiftPressed) {
+		int xCoord = pos.getX();
+		int yCoord = pos.getY();
+		int zCoord = pos.getZ();
 		UniversalCoins.snw.sendToServer(new UCButtonMessage(xCoord, yCoord, zCoord, functionID, shiftPressed));
 	}
 	
@@ -158,10 +163,16 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
     }
 	
 	public void sendServerUpdatePacket(int withdrawalAmount) {
+		int xCoord = pos.getX();
+		int yCoord = pos.getY();
+		int zCoord = pos.getZ();
 		UniversalCoins.snw.sendToServer(new UCCardStationServerWithdrawalMessage(xCoord, yCoord, zCoord, withdrawalAmount));
 	}
 	
 	public void sendServerUpdatePacket(String customName) {
+		int xCoord = pos.getX();
+		int yCoord = pos.getY();
+		int zCoord = pos.getZ();
 		UniversalCoins.snw.sendToServer(new UCCardStationServerCustomNameMessage(xCoord, yCoord, zCoord, customName));
 	}
 	
@@ -227,6 +238,9 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
+		int xCoord = pos.getX();
+		int yCoord = pos.getY();
+		int zCoord = pos.getZ();
 		return worldObj.getTileEntity(pos) == this
 				&& entityplayer.getDistanceSq(xCoord + 0.5, yCoord + 0.5,
 						zCoord + 0.5) < 64;
@@ -263,9 +277,8 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 				addPlayerAccount(player);
 			}
 			inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
-			inventory[itemCardSlot].stackTagCompound = new NBTTagCompound();
-			inventory[itemCardSlot].stackTagCompound.setString("Owner", player);
-			inventory[itemCardSlot].stackTagCompound.setString("Account", accountNumber);
+			inventory[itemCardSlot].getTagCompound().setString("Owner", player);
+			inventory[itemCardSlot].getTagCompound().setString("Account", accountNumber);
 			accountBalance = getAccountBalance(accountNumber);
 		}
 		if (functionId == 2) {
@@ -273,9 +286,8 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			} else {
 				transferPlayerAccount(player);
 				inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
-				inventory[itemCardSlot].stackTagCompound = new NBTTagCompound();
-				inventory[itemCardSlot].stackTagCompound.setString("Owner", player);
-				inventory[itemCardSlot].stackTagCompound.setString("Account", getPlayerAccount(player));
+				inventory[itemCardSlot].getTagCompound().setString("Owner", player);
+				inventory[itemCardSlot].getTagCompound().setString("Account", getPlayerAccount(player));
 				accountBalance = getAccountBalance(accountNumber);
 			}
 		}
@@ -308,15 +320,13 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			customAccountName = getCustomAccount(player);
 			customAccountNumber = getPlayerAccount(customAccountName);
 			inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
-			inventory[itemCardSlot].stackTagCompound = new NBTTagCompound();
-			inventory[itemCardSlot].stackTagCompound.setString("Owner", customAccountName);
-			inventory[itemCardSlot].stackTagCompound.setString("Account", customAccountNumber);
+			inventory[itemCardSlot].getTagCompound().setString("Owner", customAccountName);
+			inventory[itemCardSlot].getTagCompound().setString("Account", customAccountNumber);
 		}
 		if (functionId == 8) {
 			inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
-			inventory[itemCardSlot].stackTagCompound = new NBTTagCompound();
-			inventory[itemCardSlot].stackTagCompound.setString("Owner", customAccountName);
-			inventory[itemCardSlot].stackTagCompound.setString("Account", customAccountNumber);
+			inventory[itemCardSlot].getTagCompound().setString("Owner", customAccountName);
+			inventory[itemCardSlot].getTagCompound().setString("Account", customAccountNumber);
 			accountBalance = getAccountBalance(customAccountNumber);
 		}
 		if (functionId == 9) {
@@ -324,9 +334,8 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			} else {
 				transferCustomAccount();
 				inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
-				inventory[itemCardSlot].stackTagCompound = new NBTTagCompound();
-				inventory[itemCardSlot].stackTagCompound.setString("Owner", customAccountName);
-				inventory[itemCardSlot].stackTagCompound.setString("Account", customAccountNumber);
+				inventory[itemCardSlot].getTagCompound().setString("Owner", customAccountName);
+				inventory[itemCardSlot].getTagCompound().setString("Account", customAccountNumber);
 				accountBalance = getAccountBalance(customAccountNumber);
 			}
 		}
@@ -482,5 +491,67 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		NBTTagCompound wdTag = wData.getData();
 		wdTag.removeTag(tag);
 		wData.markDirty();
+	}
+
+	@Override
+	public boolean hasCustomName() {
+		return false;
+	}
+
+	@Override
+	public IChatComponent getDisplayName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int[] getSlotsForFace(EnumFacing side) {
+		return null;
+	}
+
+	@Override
+	public boolean canInsertItem(int index, ItemStack itemStackIn,
+			EnumFacing direction) {
+		return false;
+	}
+
+	@Override
+	public boolean canExtractItem(int index, ItemStack stack,
+			EnumFacing direction) {
+		return false;
+	}
+
+	@Override
+	public void openInventory(EntityPlayer player) {
+		inUse = true;
+	}
+
+	@Override
+	public void closeInventory(EntityPlayer player) {
+		inUse = false;
+	}
+
+	@Override
+	public int getField(int id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getFieldCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
 	}
 }

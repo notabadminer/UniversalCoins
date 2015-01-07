@@ -9,6 +9,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.TradeStationGUI;
@@ -55,7 +57,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 		super();
 	}
 	
-	@Override
+	/*@Override
 	public void updateEntity() {
 		super.updateEntity();
 		if (!worldObj.isRemote) {
@@ -64,7 +66,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 			runAutoMode();
 			runCoinMode();
 		}
-	}
+	}*/
 	
 	private void activateBuySellButtons() {
 		if (inventory[itemInputSlot] == null) {
@@ -408,7 +410,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 	}
 	
 	public void updateTE() {
-		 worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		 worldObj.markBlockForUpdate(pos);
 	}
 
 	@Override
@@ -417,16 +419,11 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
     }
 
 	public void sendPacket(int button, boolean shiftPressed) {
+		int xCoord = pos.getX();
+		int yCoord = pos.getY();
+		int zCoord = pos.getZ();
 		UniversalCoins.snw.sendToServer(new UCButtonMessage(xCoord, yCoord,
 				zCoord, button, shiftPressed));
-	}
-
-	@Override
-	public void openInventory() {
-	}
-
-	@Override
-	public void closeInventory() {
 	}
 	
 	@Override
@@ -435,7 +432,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 	}
 	
 	public String getInventoryName() {
-		return this.hasCustomInventoryName() ? this.customName : UniversalCoins.proxy.blockTradeStation.getLocalizedName();
+		return this.hasCustomName() ? this.customName : UniversalCoins.proxy.blockTradeStation.getLocalizedName();
 	}
 	
 	public void setInventoryName(String name) {
@@ -447,7 +444,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 	}
 
 	@Override
-	public boolean hasCustomInventoryName() {
+	public boolean hasCustomName() {
 		return this.customName != null && this.customName.length() > 0;
 	}
 
@@ -518,7 +515,10 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
-		return worldObj.getTileEntity(xCoord, yCoord, zCoord) == this
+		int xCoord = pos.getX();
+		int yCoord = pos.getY();
+		int zCoord = pos.getZ();
+		return worldObj.getTileEntity(pos) == this
 				&& entityplayer.getDistanceSq(xCoord + 0.5, yCoord + 0.5,
 						zCoord + 0.5) < 64;
 	}
@@ -542,31 +542,32 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 	}
 	
 	@Override
-	public int[] getAccessibleSlotsFromSide(int var1) {
-		return var1 == 0 ? slots_bottom : (var1 == 1 ? slots_top : slots_sides);
+	public int[] getSlotsForFace(EnumFacing side) {
+		//TODO detect which way block is facing and assign slots accordingly
+		//return side == 0 ? slots_bottom : (side == 1 ? slots_top : slots_sides);
+		return null;
 	}
 
 	@Override
-	public boolean canInsertItem(int var1, ItemStack var2, int var3) {
+	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
 		//first check if items inserted are coins. put them in the coin input slot if they are.
-		if (var1 == itemCoinSlot && (var2.getItem() == (UniversalCoins.proxy.itemCoin)
-						|| var2.getItem() == (UniversalCoins.proxy.itemSmallCoinStack)
-						|| var2.getItem() == (UniversalCoins.proxy.itemLargeCoinStack) 
-						|| var2.getItem() == (UniversalCoins.proxy.itemSmallCoinBag)
-						|| var2.getItem() == (UniversalCoins.proxy.itemLargeCoinBag))) {
+		if (index == itemCoinSlot && (itemStackIn.getItem() == (UniversalCoins.proxy.itemCoin)
+						|| itemStackIn.getItem() == (UniversalCoins.proxy.itemSmallCoinStack)
+						|| itemStackIn.getItem() == (UniversalCoins.proxy.itemLargeCoinStack) 
+						|| itemStackIn.getItem() == (UniversalCoins.proxy.itemSmallCoinBag)
+						|| itemStackIn.getItem() == (UniversalCoins.proxy.itemLargeCoinBag))) {
 			return true;
 			//put everything else in the item input slot
-		} else if (var1 == itemInputSlot) {
+		} else if (index == itemInputSlot) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-
+	
 	@Override
-	public boolean canExtractItem(int var1, ItemStack var2, int var3) {
-		//allow pulling items from output slot only
-		if (var1 == itemOutputSlot) {
+	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
+		if (index == itemOutputSlot) {
 			return true;
 		} else {
 			return false;
@@ -575,7 +576,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 	
 	public int getAccountBalance() {
 		if (inventory[itemCardSlot] != null) {
-			String accountNumber = inventory[itemCardSlot].stackTagCompound.getString("Account");
+			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 			if (getWorldString(accountNumber) != "") {
 				return getWorldInt(accountNumber);
 			}
@@ -584,7 +585,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 	
 	public void debitAccount(int amount) {
 		if (inventory[itemCardSlot] != null) {
-			String accountNumber = inventory[itemCardSlot].stackTagCompound.getString("Account");
+			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 			if (getWorldString(accountNumber) != "") {
 				int balance = getWorldInt(accountNumber);
 				balance -= amount;
@@ -610,5 +611,53 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 		UCWorldData wData = UCWorldData.get(super.worldObj);
 		NBTTagCompound wdTag = wData.getData();
 		return wdTag.getString(tag);
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IChatComponent getDisplayName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void openInventory(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeInventory(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getField(int id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getFieldCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
 	}
 }

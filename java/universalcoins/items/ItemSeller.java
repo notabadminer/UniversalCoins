@@ -12,11 +12,5 @@ public class ItemSeller extends Item {
 		this.setUnlocalizedName("itemSeller");
 		this.setCreativeTab(UniversalCoins.tabUniversalCoins);
 		this.setMaxStackSize(1);
-	}
-	
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IconRegister){
-		this.itemIcon = par1IconRegister.registerIcon(UniversalCoins.modid + ":" + this.getUnlocalizedName().substring(5));
-	}
-	
+	}	
 }

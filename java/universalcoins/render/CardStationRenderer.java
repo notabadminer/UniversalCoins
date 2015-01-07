@@ -22,8 +22,8 @@ public class CardStationRenderer extends TileEntitySpecialRenderer {
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntity te, double posX,
-			double posZ, double p_180535_6_, float p_180535_8_, int p_180535_9_) {
+	public void renderTileEntityAt(TileEntity te, double x,
+			double z, double y, float scale, int p_180535_9_) {
 	//public void renderTileEntityAt(TileEntity te, double x, double y, double z, float scale) {
 		
 	ResourceLocation textures = (new ResourceLocation("universalcoins:textures/blocks/blockCardStation.png"));
@@ -48,12 +48,12 @@ public class CardStationRenderer extends TileEntitySpecialRenderer {
 
 	//Set the lighting stuff, so it changes it's brightness properly.
 	private void adjustLightFixture(World world, int i, int j, int k, Block block) {
-	Tessellator tess = Tessellator.instance;
+	Tessellator tess = Tessellator.getInstance();
 	float brightness = block.getLightValue();
-	//int skyLight = world.getLightBrightnessForSkyBlocks(i, j, k, 0);
-	//int modulousModifier = skyLight % 65536;
-	//int divModifier = skyLight / 65536;
-	tess.setColorOpaque_F(brightness, brightness, brightness);
+	int skyLight = world.getSkylightSubtracted();
+	int modulousModifier = skyLight % 65536;
+	int divModifier = skyLight / 65536;
+	//tess.setColorOpaque_F(brightness, brightness, brightness);
 	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) modulousModifier, divModifier);
 	}
 }
