@@ -1,0 +1,8 @@
+tile.blockTradeStation.name=Универсальная торговая станция
+item.itemCoin.name=Монетка
+item.itemSmallCoinStack.name=Стак монеток
+item.itemLargeCoinStack.name=Большой стак монеток
+item.itemSeller.name=Каталог продажи
+item.itemSmallCoinBag.name=мешочек монет
+item.itemLargeCoinBag.name=большой мешок монет
+item.itemWrench.name=гаечный ключ

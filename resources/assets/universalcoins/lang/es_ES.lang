@@ -1,0 +1,13 @@
+tile.blockTradeStation.name=Estación de Comercio Universal
+tile.blockVendor.name=Máquina Expendedora
+item.itemCoin.name=Moneda
+item.itemSmallCoinStack.name=Taco de Monedas
+item.itemLargeCoinStack.name=Taco Grande de Monedas
+item.itemCoinHeap.name=Montón de Monedas
+item.itemSmallCoinBag.name=Bolsa de Monedas
+item.itemLargeCoinBag.name=Bolsa Grande de Monedas
+item.itemUCCard.name=Tarjeta UC
+item.itemSeller.name=Catálogo de Venta
+item.itemWrench.name=Llave Inglesa
+item.itemVendorWrench.name=Llave Inglesa de Vendedor
+itemGroup.tabUniversalCoins=Universal Coins

@@ -1,0 +1,16 @@
+[
+{
+  "modid": "universalcoins",
+  "name": "Universal Coins",
+  "description": "Adds a basic economy system to MineCraft. Sell blocks and items, setup a shop, find treasure.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2076302-universal-coins",
+  "updateUrl": "",
+  "authors": ["notabadminer,TED_996,AUTOMATIC_MAIDEN"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
