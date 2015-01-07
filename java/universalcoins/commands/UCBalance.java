@@ -3,6 +3,7 @@ package universalcoins.commands;
 import java.text.DecimalFormat;
 
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -23,7 +24,7 @@ public class UCBalance extends CommandBase {
 			UniversalCoins.proxy.itemLargeCoinBag };
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return StatCollector.translateToLocal("command.balance.name");
 	}
 
@@ -33,12 +34,12 @@ public class UCBalance extends CommandBase {
 	}
 	
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender par1ICommandSender) {
+	public boolean canCommandSenderUse(ICommandSender sender) {
         return true;
     }
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] astring) {
+	public void execute(ICommandSender sender, String[] args) {
 		if (sender instanceof EntityPlayerMP) {
 			int playerCoins = getPlayerCoins((EntityPlayerMP) sender);
 			int accountCoins = getAccountBalance((EntityPlayerMP) sender);
@@ -87,8 +88,8 @@ public class UCBalance extends CommandBase {
 	}
 	
 	private int getAccountBalance(EntityPlayerMP player) {
-		if (getWorldString(player, player.getDisplayName()) != "") {
-			String accountNumber = getWorldString(player, player.getDisplayName());
+		if (getWorldString(player, player.getDisplayName().toString()) != "") {
+			String accountNumber = getWorldString(player, player.getDisplayName().toString());
 			if (getWorldString(player, accountNumber) != "") {
 				return getWorldInt(player, accountNumber);
 			}

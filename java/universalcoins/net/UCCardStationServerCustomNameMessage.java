@@ -2,12 +2,13 @@ package universalcoins.net;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import universalcoins.tile.TileCardStation;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 public class UCCardStationServerCustomNameMessage  implements IMessage, IMessageHandler<UCCardStationServerCustomNameMessage, IMessage> {
 	private int x, y, z;
@@ -40,8 +41,9 @@ public class UCCardStationServerCustomNameMessage  implements IMessage, IMessage
 	@Override
 	public IMessage onMessage(UCCardStationServerCustomNameMessage message, MessageContext ctx) {
 		World world = ctx.getServerHandler().playerEntity.worldObj;
+		BlockPos pos = new BlockPos(message.x, message.y, message.z);
 
-		TileEntity tileEntity = world.getTileEntity(message.x, message.y, message.z);
+		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity instanceof TileCardStation) {
 			((TileCardStation) tileEntity).customAccountName = message.groupName;
 			}

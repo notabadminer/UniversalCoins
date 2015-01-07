@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -29,9 +30,9 @@ public class HintGui extends GuiScreen {
 		if ((mc.inGameHasFocus || (mc.currentScreen != null && (mc.currentScreen instanceof GuiChat)))
 				&& !mc.gameSettings.showDebugInfo) {
 			ScaledResolution res = new ScaledResolution(
-					HintGui.mc.gameSettings, HintGui.mc.displayWidth,
+					HintGui.mc, HintGui.mc.displayWidth,
 					HintGui.mc.displayHeight);
-			FontRenderer fontRender = mc.fontRenderer;
+			FontRenderer fontRender = mc.fontRendererObj;
 			boolean warning = false;
 			int width = res.getScaledWidth();
 			int height = res.getScaledHeight();
@@ -44,7 +45,7 @@ public class HintGui extends GuiScreen {
 			World world = mc.theWorld;
 			MovingObjectPosition mop = mc.objectMouseOver;
 			if (mop == null) return; //null pointer error bugfix?
-			TileEntity te = world.getTileEntity(mop.blockX, mop.blockY, mop.blockZ);
+			TileEntity te = world.getTileEntity(mop.getBlockPos());
 			if (te == null || !(te instanceof TileVendor)) {
 				return;
 			}
@@ -65,7 +66,7 @@ public class HintGui extends GuiScreen {
 					for (int i = 0; i < tagList.tagCount(); i++) {
 						NBTTagCompound enchant = ((NBTTagList) tagList)
 								.getCompoundTagAt(i);
-						String eInfo = Enchantment.enchantmentsList[enchant
+						String eInfo = Enchantment.enchantmentsBookList[enchant
 								.getInteger("id")].getTranslatedName(enchant
 								.getInteger("lvl"));
 						

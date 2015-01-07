@@ -3,7 +3,6 @@ package universalcoins.items;
 import java.text.DecimalFormat;
 import java.util.List;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -11,10 +10,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UCWorldData;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemUCCard extends Item {
 	
@@ -30,9 +29,9 @@ public class ItemUCCard extends Item {
 	
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {		
-		if( stack.stackTagCompound != null ) {
-			list.add("Owner: " + stack.stackTagCompound.getString("Owner"));
-			list.add("Account: " + stack.stackTagCompound.getString("Account"));
+		if( stack.getTagCompound() != null ) {
+			list.add("Owner: " + stack.getTagCompound().getString("Owner"));
+			list.add("Account: " + stack.getTagCompound().getString("Account"));
 		}	
 	}
 	

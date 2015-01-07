@@ -24,12 +24,12 @@ public class UCSend extends CommandBase {
 			UniversalCoins.proxy.itemLargeCoinBag };
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return StatCollector.translateToLocal("command.send.name");
 	}
 	
 	@Override
-	public List getCommandAliases() {
+	public List getAliases() {
 		List aliases = new ArrayList();
 		aliases.add("pay");
         return aliases;
@@ -42,20 +42,20 @@ public class UCSend extends CommandBase {
 	}
 	
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender par1ICommandSender) {
+	public boolean canCommandSenderUse(ICommandSender sender) {
         return true;
     }
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] astring) {
+	public void execute(ICommandSender sender, String[] args) {
 		if (sender instanceof EntityPlayerMP) {
-			if (astring.length == 2) {
+			if (args.length == 2) {
 				// check for player
 				EntityPlayerMP recipient = null;
 				WorldServer[] ws = MinecraftServer.getServer().worldServers;
 				for (WorldServer w : ws) {
-					if (w.playerEntities.contains(w.getPlayerEntityByName(astring[0]))) { 
-						recipient = (EntityPlayerMP) w.getPlayerEntityByName(astring[0]);
+					if (w.playerEntities.contains(w.getPlayerEntityByName(args[0]))) { 
+						recipient = (EntityPlayerMP) w.getPlayerEntityByName(args[0]);
 					}
 				}
 				if (recipient == null) {
@@ -64,7 +64,7 @@ public class UCSend extends CommandBase {
 				}
 				int requestedSendAmount = 0;
 				try {
-					requestedSendAmount = Integer.parseInt(astring[1]);
+					requestedSendAmount = Integer.parseInt(args[1]);
 				} catch (NumberFormatException e) {
 					sender.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("command.send.error.badentry")));
 					return;
@@ -91,9 +91,9 @@ public class UCSend extends CommandBase {
 				// send coins to recipient
 				int coinChange = givePlayerCoins(recipient, requestedSendAmount);
 				sender.addChatMessage(new ChatComponentText((requestedSendAmount - coinChange) + " " + 
-						StatCollector.translateToLocal("command.send.result.sender") + " " + astring[0]));
+						StatCollector.translateToLocal("command.send.result.sender") + " " + args[0]));
 				recipient.addChatMessage(new ChatComponentText((requestedSendAmount - coinChange) + " " + 
-						StatCollector.translateToLocal("command.send.result.receiver") + " " + sender.getCommandSenderName()));
+						StatCollector.translateToLocal("command.send.result.receiver") + " " + sender.getCommandSenderEntity().getName()));
 				// add change back to sender coins
 				coinsFromSender += coinChange;
 				// give sender back change

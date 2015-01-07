@@ -1,5 +1,7 @@
 package universalcoins.gui;
 
+import java.io.IOException;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
@@ -45,7 +47,7 @@ public class VendorWrenchGUI extends GuiContainer {
 		buttonList.add(applyButton);
 		buttonList.add(infiniteButton);
 		
-		blockOwnerField = new GuiTextField(this.fontRendererObj, 12, 20, 138, 13);
+		blockOwnerField = new GuiTextField(0, this.fontRendererObj, 12, 20, 138, 13);
 		blockOwnerField.setFocused(false);
 		blockOwnerField.setMaxStringLength(100);
 		blockOwnerField.setText(tileEntity.blockOwner);
@@ -73,12 +75,21 @@ public class VendorWrenchGUI extends GuiContainer {
 	protected void keyTyped(char c, int i) {
 		if (blockOwnerField.isFocused()) {
 			blockOwnerField.textboxKeyTyped(c, i);
-		} else super.keyTyped(c, i);
+		} else
+			try {
+				super.keyTyped(c, i);
+			} catch (IOException e) {
+				// do nothing
+			}
 
 	}
 	
 	protected void mouseClicked(int par1, int par2, int par3) {
-        super.mouseClicked(par1, par2, par3);
+        try {
+			super.mouseClicked(par1, par2, par3);
+		} catch (IOException e) {
+			// do nothing
+		}
     }
 	
 	protected void actionPerformed(GuiButton button) {

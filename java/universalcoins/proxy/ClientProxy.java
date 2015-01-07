@@ -4,6 +4,8 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.HintGuiRenderer;
 import universalcoins.render.BlockVendorRenderer;
@@ -12,8 +14,6 @@ import universalcoins.render.ItemCardStationRenderer;
 import universalcoins.render.TileEntityVendorRenderer;
 import universalcoins.tile.TileCardStation;
 import universalcoins.tile.TileVendor;
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy extends CommonProxy {
 

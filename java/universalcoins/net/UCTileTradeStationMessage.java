@@ -2,12 +2,13 @@ package universalcoins.net;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import universalcoins.tile.TileTradeStation;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 public class UCTileTradeStationMessage implements IMessage, IMessageHandler<UCTileTradeStationMessage, IMessage> {
 public int x, y, z, coinSum, itemPrice;
@@ -21,9 +22,9 @@ isSStackButtonActive, isLStackButtonActive, isSBagButtonActive, isLBagButtonActi
 
     public UCTileTradeStationMessage(TileTradeStation tileEntity)
     {
-        this.x = tileEntity.xCoord;
-        this.y = tileEntity.yCoord;
-        this.z = tileEntity.zCoord;
+    	this.x = tileEntity.getPos().getX();
+        this.y = tileEntity.getPos().getY();
+        this.z = tileEntity.getPos().getZ();
         this.coinSum = tileEntity.coinSum;
         this.itemPrice = tileEntity.itemPrice;
         this.customName = tileEntity.getInventoryName();
@@ -74,8 +75,9 @@ isSStackButtonActive, isLStackButtonActive, isSBagButtonActive, isLBagButtonActi
 
 	@Override
 	public IMessage onMessage(UCTileTradeStationMessage message, MessageContext ctx) {
+		BlockPos pos = new BlockPos(message.x, message.y, message.z);
 		TileEntity tileEntity = FMLClientHandler.instance().getClient().theWorld
-				.getTileEntity(message.x, message.y, message.z);
+				.getTileEntity(pos);
 
 		if (tileEntity instanceof TileTradeStation) {
 			//FMLLog.info("UC: received TE packet");

@@ -20,7 +20,7 @@ public class UCGive extends CommandBase {
 			UniversalCoins.proxy.itemLargeCoinBag };
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return StatCollector.translateToLocal("command.givecoins.name");
 	}
 
@@ -30,13 +30,13 @@ public class UCGive extends CommandBase {
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] astring) {
-		if (astring.length == 2) {
+	public void execute(ICommandSender sender, String[] args) {
+		if (args.length == 2) {
 			EntityPlayer recipient = null;
 			WorldServer[] ws= MinecraftServer.getServer().worldServers;
 			for(WorldServer w : ws) {
-				if(w.playerEntities.contains(w.getPlayerEntityByName(astring[0]))) {
-					recipient = (EntityPlayer) w.getPlayerEntityByName(astring[0]);
+				if(w.playerEntities.contains(w.getPlayerEntityByName(args[0]))) {
+					recipient = (EntityPlayer) w.getPlayerEntityByName(args[0]);
 				}
 			}
 			int coinsToSend = 0;
@@ -45,16 +45,16 @@ public class UCGive extends CommandBase {
 				return;
 			}
 			try {
-				coinsToSend = Integer.parseInt(astring[1]);
+				coinsToSend = Integer.parseInt(args[1]);
 			} catch (NumberFormatException e) {
 				sender.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("command.givecoins.error.badentry")));
 				return;
 			}
 			givePlayerCoins(recipient, coinsToSend);
-			sender.addChatMessage(new ChatComponentText("Gave " + astring[0] + " " + astring[1] + 
+			sender.addChatMessage(new ChatComponentText("Gave " + args[0] + " " + args[1] + 
 					" " + StatCollector.translateToLocal("item.itemCoin.name")));
-			recipient.addChatMessage(new ChatComponentText( sender.getCommandSenderName() + " " +
-					StatCollector.translateToLocal("command.givecoins.result") + " " + astring[1] + 
+			recipient.addChatMessage(new ChatComponentText( sender.getCommandSenderEntity().getName() + " " +
+					StatCollector.translateToLocal("command.givecoins.result") + " " + args[1] + 
 					" " + StatCollector.translateToLocal("item.itemCoin.name")));
 		} else
 			sender.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("command.givecoins.error.noname")));

@@ -2,6 +2,7 @@ package universalcoins.proxy;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import universalcoins.blocks.BlockBase;
 import universalcoins.blocks.BlockCardStation;
 import universalcoins.blocks.BlockTradeStation;
@@ -16,7 +17,6 @@ import universalcoins.items.ItemSmallCoinStack;
 import universalcoins.items.ItemUCCard;
 import universalcoins.items.ItemVendorWrench;
 import universalcoins.util.Vending;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CommonProxy {
 	public static Item itemCoin;
@@ -36,10 +36,10 @@ public class CommonProxy {
 	
 	
 	public void registerBlocks() {
-		blockTradeStation = new BlockTradeStation().setBlockName("blockTradeStation");
-		blockVendor = new BlockVendor(Vending.supports).setBlockName("blockVendor");
-		blockCardStation = new BlockCardStation().setBlockName("blockCardStation");
-		blockBase = new BlockBase().setBlockName("blockBase");
+		blockTradeStation = new BlockTradeStation();//.setBlockName("blockTradeStation");
+		blockVendor = new BlockVendor(Vending.supports);//.setBlockName("blockVendor");
+		blockCardStation = new BlockCardStation();//.setBlockName("blockCardStation");
+		blockBase = new BlockBase();//.setBlockName("blockBase");
 		
 		GameRegistry.registerBlock(blockTradeStation, "blockTradeStation").getUnlocalizedName();
 		GameRegistry.registerBlock(blockVendor, "blockVendor").getUnlocalizedName();

@@ -10,8 +10,8 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import universalcoins.UniversalCoins;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class UCPlayerPickupEventHandler {
 	
@@ -34,7 +34,7 @@ public class UCPlayerPickupEventHandler {
 			for (int i = 0; i < inventory.length; i++) {
 				if (inventory[i] != null && inventory[i].getItem() == UniversalCoins.proxy.itemEnderCard) {
 					if (!inventory[i].hasTagCompound()) return; //card has not been initialized. Nothing we can do here
-					accountNumber = inventory[i].stackTagCompound.getString("Account");
+					accountNumber = inventory[i].getTagCompound().getString("Account");
 					int accountBalance = getAccountBalance(accountNumber);
 					if (accountBalance == -1) return; //get out of here if the card is invalid
 					int coinType = getCoinType(event.item.getEntityItem().getItem());

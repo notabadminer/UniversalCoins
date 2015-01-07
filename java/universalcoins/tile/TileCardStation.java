@@ -142,10 +142,6 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		return UniversalCoins.proxy.blockCardStation.getLocalizedName();
 	}
 
-	@Override
-	public boolean hasCustomInventoryName() {
-		return false;
-	}
 
 	@Override
 	public int getInventoryStackLimit() {
@@ -170,7 +166,7 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	}
 	
 	public void updateTE() {
-		 worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		 worldObj.markBlockForUpdate(pos);
 	}
 	
 	@Override
@@ -231,18 +227,9 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
-		return worldObj.getTileEntity(xCoord, yCoord, zCoord) == this
+		return worldObj.getTileEntity(pos) == this
 				&& entityplayer.getDistanceSq(xCoord + 0.5, yCoord + 0.5,
 						zCoord + 0.5) < 64;
-	}
-
-	@Override
-	public void openInventory() {
-		
-	}
-
-	@Override
-	public void closeInventory() {
 	}
 
 	@Override
@@ -495,20 +482,5 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		NBTTagCompound wdTag = wData.getData();
 		wdTag.removeTag(tag);
 		wData.markDirty();
-	}
-
-	@Override
-	public int[] getAccessibleSlotsFromSide(int var1) {
-		return null;
-	}
-
-	@Override
-	public boolean canInsertItem(int var1, ItemStack var2, int var3) {
-		return false;
-	}
-
-	@Override
-	public boolean canExtractItem(int var1, ItemStack var2, int var3) {
-		return false;
 	}
 }

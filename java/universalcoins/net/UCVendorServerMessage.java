@@ -2,12 +2,13 @@ package universalcoins.net;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import universalcoins.tile.TileVendor;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 public class UCVendorServerMessage  implements IMessage, IMessageHandler<UCVendorServerMessage, IMessage> {
 	private int x, y, z, itemPrice;
@@ -47,9 +48,10 @@ public class UCVendorServerMessage  implements IMessage, IMessageHandler<UCVendo
 
 	@Override
 	public IMessage onMessage(UCVendorServerMessage message, MessageContext ctx) {
+		BlockPos pos = new BlockPos(message.x, message.y, message.z);
 		World world = ctx.getServerHandler().playerEntity.worldObj;
 
-		TileEntity tileEntity = world.getTileEntity(message.x, message.y, message.z);
+		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity instanceof TileVendor) {
 			((TileVendor) tileEntity).itemPrice = message.itemPrice;
 			((TileVendor) tileEntity).blockOwner = message.blockOwner;

@@ -1,5 +1,6 @@
 package universalcoins.gui;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 
 import net.minecraft.client.Minecraft;
@@ -46,7 +47,12 @@ public class CardStationGUI extends GuiContainer{
 			textField.setFocused(true);
 			textField.textboxKeyTyped(c, i);
 			textField.setFocused(false);
-		} else super.keyTyped(c, i);
+		} else
+			try {
+				super.keyTyped(c, i);
+			} catch (IOException e) {
+				// do nothing
+			}
 
 	}
 	
@@ -63,7 +69,7 @@ public class CardStationGUI extends GuiContainer{
 		buttonList.add(buttonThree);
 		buttonList.add(buttonFour);
 		
-		textField = new GuiTextField(this.fontRendererObj, 1, 1, 100, 13);
+		textField = new GuiTextField(0, this.fontRendererObj, 1, 1, 100, 13);
 		textField.setFocused(false);
 		textField.setMaxStringLength(9);
 		textField.setText("0");

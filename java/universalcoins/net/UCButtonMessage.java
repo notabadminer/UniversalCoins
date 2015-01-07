@@ -3,7 +3,11 @@ package universalcoins.net;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import universalcoins.gui.TradeStationGUI;
 import universalcoins.gui.VendorBuyGUI;
 import universalcoins.gui.VendorGUI;
@@ -11,9 +15,6 @@ import universalcoins.gui.VendorSellGUI;
 import universalcoins.tile.TileCardStation;
 import universalcoins.tile.TileTradeStation;
 import universalcoins.tile.TileVendor;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 public class UCButtonMessage implements IMessage, IMessageHandler<UCButtonMessage, IMessage> {
 	private int x, y, z, buttonId;
@@ -50,8 +51,9 @@ public class UCButtonMessage implements IMessage, IMessageHandler<UCButtonMessag
 	@Override
 	public IMessage onMessage(UCButtonMessage message, MessageContext ctx) {
 		World world = ctx.getServerHandler().playerEntity.worldObj;
+		BlockPos pos = new BlockPos(message.x, message.y, message.z);
 
-		TileEntity tileEntity = world.getTileEntity(message.x, message.y, message.z);
+		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity instanceof TileTradeStation) {
 			if (message.buttonId == TradeStationGUI.idBuyButton) {
 				if (message.shiftPressed) {

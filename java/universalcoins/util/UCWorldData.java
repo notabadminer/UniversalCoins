@@ -12,7 +12,7 @@ public class UCWorldData extends WorldSavedData {
 	final static String key = UniversalCoins.modid;
 	   
 	   public static UCWorldData get(World world) {
-	      MapStorage storage = world.mapStorage;
+	      MapStorage storage = world.getMapStorage();
 	      UCWorldData result = (UCWorldData)storage.loadData(UCWorldData.class, key);
 	      if (result == null) {
 	    	  result = new UCWorldData(key);

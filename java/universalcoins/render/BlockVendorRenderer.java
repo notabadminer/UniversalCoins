@@ -1,11 +1,9 @@
 package universalcoins.render;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.IBlockAccess;
 import universalcoins.util.Vending;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 //author AUTOMATIC_MAIDEN
 

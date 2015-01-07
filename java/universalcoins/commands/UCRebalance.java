@@ -18,7 +18,7 @@ public class UCRebalance extends CommandBase {
 			UniversalCoins.proxy.itemLargeCoinBag };
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return StatCollector.translateToLocal("command.rebalance.name");
 	}
 
@@ -28,14 +28,14 @@ public class UCRebalance extends CommandBase {
 	}
 	
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender par1ICommandSender) {
+	public boolean canCommandSenderUse(ICommandSender sender) {
         return true;
     }
-
+	
 	@Override
-	public void processCommand(ICommandSender sender, String[] astring) {
+	public void execute(ICommandSender sender, String[] args) {
 		if (sender instanceof EntityPlayerMP) {
-			if (astring.length == 0) {
+			if (args.length == 0) {
 				// get coins from player inventory
 				int coinTotal = 0;
 				EntityPlayerMP player = (EntityPlayerMP) sender;

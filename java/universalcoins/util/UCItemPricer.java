@@ -20,7 +20,7 @@ import java.util.StringTokenizer;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import cpw.mods.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 
 public class UCItemPricer {
 

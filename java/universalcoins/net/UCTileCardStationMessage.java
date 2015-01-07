@@ -2,12 +2,13 @@ package universalcoins.net;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import universalcoins.tile.TileCardStation;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 public class UCTileCardStationMessage implements IMessage, IMessageHandler<UCTileCardStationMessage, IMessage> {
 private int x, y, z, coinWithdrawalAmount, accountBalance;
@@ -17,9 +18,9 @@ private String player, accountNumber, cardOwner, groupAccountName, groupAccountN
     public UCTileCardStationMessage() { }
 
     public UCTileCardStationMessage(TileCardStation tileEntity) {
-        this.x = tileEntity.xCoord;
-        this.y = tileEntity.yCoord;
-        this.z = tileEntity.zCoord;
+        this.x = tileEntity.getPos().getX();
+        this.y = tileEntity.getPos().getY();
+        this.z = tileEntity.getPos().getZ();
         this.coinWithdrawalAmount = tileEntity.coinWithdrawalAmount;
         this.accountBalance = tileEntity.accountBalance;
         this.inUse = tileEntity.inUse;
@@ -68,8 +69,9 @@ private String player, accountNumber, cardOwner, groupAccountName, groupAccountN
 
 	@Override
 	public IMessage onMessage(UCTileCardStationMessage message, MessageContext ctx) {
+		BlockPos pos = new BlockPos(message.x, message.y, message.z);
 		TileEntity tileEntity = FMLClientHandler.instance().getClient().theWorld
-				.getTileEntity(message.x, message.y, message.z);
+				.getTileEntity(pos);
 
 		if (tileEntity instanceof TileCardStation) {
 			//FMLLog.info("UC: received TE packet");

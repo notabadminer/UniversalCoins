@@ -6,8 +6,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
-import cpw.mods.fml.common.FMLLog;
 
 public class UpdateCheck {
 

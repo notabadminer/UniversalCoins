@@ -7,8 +7,8 @@ import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import universalcoins.UniversalCoins;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class UCMobDropEventHandler {
 	

@@ -1,5 +1,7 @@
 package universalcoins.gui;
 
+import java.io.IOException;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
@@ -61,7 +63,7 @@ public class VendorGUI extends GuiContainer{
 		buttonList.add(retrSBagButton);
 		buttonList.add(retrLBagButton);
 		
-		itemPriceField = new GuiTextField(this.fontRendererObj, 82, 21, 86, 15);
+		itemPriceField = new GuiTextField(0, this.fontRendererObj, 82, 21, 86, 15);
 		itemPriceField.setFocused(false);
 		itemPriceField.setMaxStringLength(10);
 		itemPriceField.setEnableBackgroundDrawing(false);
@@ -72,7 +74,12 @@ public class VendorGUI extends GuiContainer{
 	protected void keyTyped(char c, int i) {
 		if (itemPriceField.isFocused()) {
 			itemPriceField.textboxKeyTyped(c, i);
-		} else super.keyTyped(c, i);
+		} else
+			try {
+				super.keyTyped(c, i);
+			} catch (IOException e) {
+				// do nothing
+			}
 	}
 
 	@Override

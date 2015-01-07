@@ -2,11 +2,12 @@ package universalcoins.net;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import universalcoins.tile.TileCardStation;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 public class UCCardStationServerWithdrawalMessage  implements IMessage, IMessageHandler<UCCardStationServerWithdrawalMessage, IMessage> {
 	private int x, y, z, withdrawalAmount;
@@ -39,8 +40,9 @@ public class UCCardStationServerWithdrawalMessage  implements IMessage, IMessage
 	@Override
 	public IMessage onMessage(UCCardStationServerWithdrawalMessage message, MessageContext ctx) {
 		World world = ctx.getServerHandler().playerEntity.worldObj;
+		BlockPos pos = new BlockPos(message.x, message.y, message.z);
 
-		TileEntity tileEntity = world.getTileEntity(message.x, message.y, message.z);
+		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity instanceof TileCardStation) {
 			((TileCardStation) tileEntity).coinWithdrawalAmount = message.withdrawalAmount;
 			}

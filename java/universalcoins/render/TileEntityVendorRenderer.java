@@ -40,7 +40,7 @@ public class TileEntityVendorRenderer extends TileEntitySpecialRenderer {
 		entity.hoverStart = 0;
 
 		if (Minecraft.getMinecraft() != null && Minecraft.getMinecraft().thePlayer != null) {
-			entity.age = Minecraft.getMinecraft().thePlayer.ticksExisted;
+			entity.ticksExisted = Minecraft.getMinecraft().thePlayer.ticksExisted;
 		}
 
 		int i = (int) x;
