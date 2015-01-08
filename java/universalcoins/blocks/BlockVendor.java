@@ -18,6 +18,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumWorldBlockLayer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -42,8 +43,8 @@ public class BlockVendor extends BlockContainer {
 		setResistance(6000000.0F);
 		setStepSound(Block.soundTypeGlass);
 		setBlockBounds(0.0625f, 0.125f, 0.0625f, 0.9375f, 0.9375f, 0.9375f);
-		GameRegistry.registerBlock(this, name);
-		setUnlocalizedName(UniversalCoins.MODID + "_" + name);
+		//GameRegistry.registerBlock(this, name);
+		setUnlocalizedName(UniversalCoins.MODID + ":" + name);
 	}
 	
 	public String getName() {
@@ -173,4 +174,10 @@ public class BlockVendor extends BlockContainer {
 			list.add(new ItemStack(block, 1, i));
 		}
 	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+    public EnumWorldBlockLayer getBlockLayer() {
+        return EnumWorldBlockLayer.CUTOUT;
+    }
 }

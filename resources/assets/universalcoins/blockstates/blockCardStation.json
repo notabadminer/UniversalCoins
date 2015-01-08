@@ -1,5 +1,9 @@
 {
 	"variants": {
-		"normal": { "model": "universalcoins:blockCardStation" }
+		"normal": { "model": "universalcoins:blockCardStation" },
+		"facing=north": { "model": "universalcoins:blockCardStation" },
+        "facing=east":  { "model": "universalcoins:blockCardStation", "y": 90 },
+        "facing=south": { "model": "universalcoins:blockCardStation", "y": 180 },
+        "facing=west":  { "model": "universalcoins:blockCardStation", "y": 270 }
 	}
 }

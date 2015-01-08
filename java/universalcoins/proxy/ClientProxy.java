@@ -2,12 +2,9 @@ package universalcoins.proxy;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import universalcoins.UniversalCoins;
 import universalcoins.blocks.BlockBase;
 import universalcoins.blocks.BlockCardStation;
@@ -23,9 +20,6 @@ import universalcoins.items.ItemSmallCoinBag;
 import universalcoins.items.ItemSmallCoinStack;
 import universalcoins.items.ItemUCCard;
 import universalcoins.items.ItemVendorWrench;
-import universalcoins.render.CardStationRenderer;
-import universalcoins.render.ItemCardStationRenderer;
-import universalcoins.tile.TileCardStation;
 
 public class ClientProxy extends CommonProxy {
 
@@ -49,15 +43,9 @@ public class ClientProxy extends CommonProxy {
 	     renderItem.getItemModelMesher().register(Item.getItemFromBlock(blockCardStation), 0, new ModelResourceLocation(UniversalCoins.MODID + ":" + ((BlockCardStation) blockCardStation).getName(), "inventory"));
 	     renderItem.getItemModelMesher().register(Item.getItemFromBlock(blockTradeStation), 0, new ModelResourceLocation(UniversalCoins.MODID + ":" + ((BlockTradeStation) blockTradeStation).getName(), "inventory"));
 	     renderItem.getItemModelMesher().register(Item.getItemFromBlock(blockVendor), 0, new ModelResourceLocation(UniversalCoins.MODID + ":" + ((BlockVendor) blockVendor).getName(), "inventory"));
-	    		
-		//ClientRegistry.bindTileEntitySpecialRenderer(TileVendor.class, new TileEntityVendorRenderer());
-		//RenderingRegistry.registerBlockHandler(new BlockVendorRenderer(RenderingRegistry.getNextAvailableRenderId()));
-		
+	    				
 		//register handler for GUI hints for vending blocks
 		MinecraftForge.EVENT_BUS.register(HintGuiRenderer.instance);
 				
-		TileEntitySpecialRenderer render = new CardStationRenderer();
-		ClientRegistry.bindTileEntitySpecialRenderer(TileCardStation.class, render);
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(UniversalCoins.proxy.blockCardStation), new ItemCardStationRenderer(render, new TileCardStation()));
 	}
 }

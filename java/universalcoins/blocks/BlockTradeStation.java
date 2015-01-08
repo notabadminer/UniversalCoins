@@ -29,7 +29,7 @@ public class BlockTradeStation extends BlockContainer {
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(6000000.0F);
 		GameRegistry.registerBlock(this, name);
-		setUnlocalizedName(UniversalCoins.MODID + "_" + name);
+		setUnlocalizedName(UniversalCoins.MODID + ":" + name);
 	}
 	
 	public String getName() {
