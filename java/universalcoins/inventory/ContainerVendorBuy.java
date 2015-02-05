@@ -9,20 +9,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.tile.TileVendor;
+import universalcoins.tile.TileVendorFrame;
 
 public class ContainerVendorBuy extends Container {
 	private TileVendor tileEntity;
-	private int lastUserCoinSum;
-	private int lastItemPrice;
-	private boolean lastOoStock;
-	private boolean lastOoCoins;
-	private boolean lastInvFull;	
-	private boolean lastSellButtonActive;
-	private boolean lastUCoinButtonActive;
-	private boolean lastUSStackButtonActive;
-	private boolean lastULStackButtonActive;
-	private boolean lastUSBagButtonActive;
-	private boolean lastULBagButtonActive;
+	private TileVendorFrame tileEntity2;
+	private int lastUserCoinSum, lastItemPrice;
+	private boolean lastOoStock, lastOoCoins, lastInvFull,	
+	 lastSellButtonActive, lastUCoinButtonActive, lastUSStackButtonActive,
+	 lastULStackButtonActive, lastUSBagButtonActive, lastULBagButtonActive,
+	 lastInUse;
+	
 	
 	public ContainerVendorBuy(InventoryPlayer inventoryPlayer, TileVendor tEntity) {
 		tileEntity = tEntity;
@@ -31,6 +28,18 @@ public class ContainerVendorBuy extends Container {
 		addSlotToContainer(new UCSlotTradeItem(tileEntity, TileVendor.itemTradeSlot, 8, 24));
 		addSlotToContainer(new Slot(tileEntity, TileVendor.itemSellSlot, 26, 24));
 		addSlotToContainer(new UCSlotOutput(tileEntity, TileVendor.itemCoinOutputSlot, 152, 64));
+		
+		// commonly used vanilla code that adds the player's inventory
+		bindPlayerInventory(inventoryPlayer);
+	}
+
+	public ContainerVendorBuy(InventoryPlayer inventoryPlayer, TileVendorFrame tEntity) {
+		tileEntity2 = tEntity;
+		// the Slot constructor takes the IInventory and the slot number in that
+		// it binds to and the x-y coordinates it resides on-screen
+		addSlotToContainer(new UCSlotTradeItem(tileEntity, TileVendorFrame.itemTradeSlot, 8, 24));
+		addSlotToContainer(new Slot(tileEntity, TileVendorFrame.itemSellSlot, 26, 24));
+		addSlotToContainer(new UCSlotOutput(tileEntity, TileVendorFrame.itemCoinOutputSlot, 152, 64));
 		
 		// commonly used vanilla code that adds the player's inventory
 		bindPlayerInventory(inventoryPlayer);
@@ -120,7 +129,8 @@ public class ContainerVendorBuy extends Container {
             		|| this.lastUSStackButtonActive != this.tileEntity.uSStackButtonActive
             		|| this.lastULStackButtonActive != this.tileEntity.uLStackButtonActive
             		|| this.lastUSBagButtonActive != this.tileEntity.uSBagButtonActive
-            		|| this.lastULBagButtonActive != this.tileEntity.uLBagButtonActive) {
+            		|| this.lastULBagButtonActive != this.tileEntity.uLBagButtonActive
+            		|| this.lastInUse != this.tileEntity.inUse) {
                 //update
             	tileEntity.updateTE();
             	
@@ -135,6 +145,7 @@ public class ContainerVendorBuy extends Container {
                 this.lastULStackButtonActive = this.tileEntity.uLStackButtonActive;
                 this.lastUSBagButtonActive = this.tileEntity.uSBagButtonActive;
                 this.lastULBagButtonActive = this.tileEntity.uLBagButtonActive;
+                this.lastInUse = this.tileEntity.inUse;
             }
         }
 	}

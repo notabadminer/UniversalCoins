@@ -14,11 +14,13 @@ import org.lwjgl.opengl.GL12;
 
 import universalcoins.tile.TileVendor;
 
+//author AUTOMATIC_MAIDEN
+
 public class TileEntityVendorRenderer extends TileEntitySpecialRenderer {
-	ItemRenderer renderer = Minecraft.getMinecraft().getItemRenderer();
+	RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
+	RenderItem renderer = Minecraft.getMinecraft().getRenderItem();
 
 	public TileEntityVendorRenderer() {
-		//renderer.setRenderManager(Minecraft.getMinecraft().getItemRenderer();
 	}
 
 	@Override

@@ -55,7 +55,7 @@ public class UCVendorServerMessage  implements IMessage, IMessageHandler<UCVendo
 		if (tileEntity instanceof TileVendor) {
 			((TileVendor) tileEntity).itemPrice = message.itemPrice;
 			((TileVendor) tileEntity).blockOwner = message.blockOwner;
-			((TileVendor) tileEntity).infiniteSell = message.infinite;
+			((TileVendor) tileEntity).infiniteMode = message.infinite;
 			}
 			return null;
 	}

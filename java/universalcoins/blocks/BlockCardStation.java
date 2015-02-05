@@ -9,6 +9,7 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -17,6 +18,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -54,67 +56,36 @@ public class BlockCardStation extends BlockContainer {
 	}
 
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos,
-			IBlockState state, EntityPlayer playerIn, EnumFacing side,
-			float hitX, float hitY, float hitZ) {
-		// public boolean onBlockActivated(World world, int x, int y, int z,
-		// EntityPlayer player, int par6, float par7, float par8, float par9) {
-		TileEntity tileEntity = worldIn.getTileEntity(pos);
-		int xCoord = pos.getX();
-		int yCoord = pos.getY();
-		int zCoord = pos.getZ();
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
+		TileEntity tileEntity = world.getTileEntity(pos);
 		if (((TileCardStation) tileEntity).inUse) {
-			if (!worldIn.isRemote) {
-				playerIn.addChatMessage(new ChatComponentText(
-						((TileCardStation) tileEntity).player
-								+ " "
-								+ StatCollector
-										.translateToLocal("chat.cardstation.warning.inuse")));
-			}
+			if (!world.isRemote) { player.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("chat.warning.inuse"))); }
 			return true;
 		} else {
-			playerIn.openGui(UniversalCoins.instance, 0, worldIn, xCoord,
-					yCoord, zCoord);
-			((TileCardStation) tileEntity).player = playerIn.getDisplayName()
-					.toString();
-			return true;
-		}
+        	player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
+        	((TileCardStation) tileEntity).playerName = player.getDisplayName().toString();
+        	((TileCardStation) tileEntity).playerUID = player.getUniqueID().toString();
+        	return true;
+        }
+	}
+		
+	@Override
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player, ItemStack stack) {
+		if (world.isRemote) return;
+		int rotation = MathHelper.floor_double((double)((player.rotationYaw * 4.0f) / 360F) + 2.5D) & 3;
+		//world.setBlockMetadataWithNotify(x, y, z, rotation, 2);
 	}
 
 	@Override
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TileCardStation();
 	}
-
-	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
-		this.setDefaultFacing(worldIn, pos, state);
-	}
-
-	private void setDefaultFacing(World worldIn, BlockPos pos, IBlockState state) {
-		if (!worldIn.isRemote) {
-			Block block = worldIn.getBlockState(pos.north()).getBlock();
-			Block block1 = worldIn.getBlockState(pos.south()).getBlock();
-			Block block2 = worldIn.getBlockState(pos.west()).getBlock();
-			Block block3 = worldIn.getBlockState(pos.east()).getBlock();
-			EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
-
-			if (enumfacing == EnumFacing.NORTH && block.isFullBlock()
-					&& !block1.isFullBlock()) {
-				enumfacing = EnumFacing.SOUTH;
-			} else if (enumfacing == EnumFacing.SOUTH && block1.isFullBlock()
-					&& !block.isFullBlock()) {
-				enumfacing = EnumFacing.NORTH;
-			} else if (enumfacing == EnumFacing.WEST && block2.isFullBlock()
-					&& !block3.isFullBlock()) {
-				enumfacing = EnumFacing.EAST;
-			} else if (enumfacing == EnumFacing.EAST && block3.isFullBlock()
-					&& !block2.isFullBlock()) {
-				enumfacing = EnumFacing.WEST;
-			}
-
-			worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing),
-					2);
-		}
-	}
-
+	
+	@Override
+    public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {
+        world.setBlockToAir(pos);
+        onBlockDestroyedByExplosion(world, pos, explosion);
+        EntityItem entityItem = new EntityItem( world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(this, 1));
+		if (!world.isRemote) world.spawnEntityInWorld(entityItem);
+    }
 }

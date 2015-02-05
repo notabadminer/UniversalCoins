@@ -1,6 +1,10 @@
 package universalcoins.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,16 +35,19 @@ public class UCCommand extends CommandBase {
 	public String getCommandUsage(ICommandSender icommandsender) {
 		return StatCollector.translateToLocal("command.uccommand.help");
 	}
+	
+	@Override
+	public List getAliases() {
+		List aliases = new ArrayList();
+		aliases.add("uc");
+        return aliases;
+    }
 
 	// Method called when the command is typed in
 	@Override
-	public void execute(ICommandSender sender, String[] args) {
+	public void execute(ICommandSender sender, String[] args) throws CommandException {
 		if (args.length <= 0) {
-			try {
-				throw new WrongUsageException(this.getCommandUsage(sender));
-			} catch (WrongUsageException e) {
-				// do nothing
-			}
+			throw new WrongUsageException(this.getCommandUsage(sender));
 		} else if (args[0].matches(StatCollector.translateToLocal("command.uccommand.option.help.name"))) {
 			sender.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("command.uccommand.usage")));
 			sender.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("command.uccommand.commandheader")));

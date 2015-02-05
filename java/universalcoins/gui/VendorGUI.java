@@ -105,7 +105,7 @@ public class VendorGUI extends GuiContainer{
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(StatCollector.translateToLocal("tile.blockVendor.name"), 6, 5, 4210752);
+		fontRendererObj.drawString(tileEntity.getInventoryName(), 6, 5, 4210752);
 		String priceInLocal = StatCollector.translateToLocal("vending.gui.price");
 		int stringWidth = fontRendererObj.getStringWidth(priceInLocal);
 		fontRendererObj.drawString(priceInLocal, 78 - stringWidth, 22, 4210752);

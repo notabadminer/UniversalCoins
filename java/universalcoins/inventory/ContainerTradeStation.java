@@ -16,14 +16,15 @@ public class ContainerTradeStation extends Container {
 	private int lastCoinSum, lastItemPrice, lastAutoMode, lastCoinMode;
 	private String lastName;
 	private boolean lastBuyButtonActive, lastSellButtonActive, lastCoinButtonActive, 
-		lastSStackButtonActive, lastLStackButtonActive,lastSBagButtonActive,lastLBagButtonActive;
+		lastSStackButtonActive, lastLStackButtonActive, lastSBagButtonActive, lastLBagButtonActive, 
+		lastInUse;
 	public ContainerTradeStation(InventoryPlayer inventoryPlayer, TileTradeStation tEntity) {
 		tileEntity = tEntity;
 		// the Slot constructor takes the IInventory and the slot number in that
 		// it binds to
 		// and the x-y coordinates it resides on-screen
 		addSlotToContainer(new Slot(tileEntity, TileTradeStation.itemInputSlot, 31, 27));
-		addSlotToContainer(new UCSlotOutput(tileEntity, TileTradeStation.itemOutputSlot, 147, 27));
+		addSlotToContainer(new UCSlotOutput(tileEntity, TileTradeStation.itemOutputSlot, 155, 27));
 		addSlotToContainer(new UCSlotCard(tileEntity, TileTradeStation.itemCardSlot, 12, 27));
 		
 		// commonly used vanilla code that adds the player's inventory
@@ -39,12 +40,12 @@ public class ContainerTradeStation extends Container {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 9; j++) {
 				addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9,
-						8 + j * 18, 119 + i * 18));
+						12 + j * 18, 119 + i * 18));
 			}
 		}
 		
 		for (int i = 0; i < 9; i++) {
-			addSlotToContainer(new Slot(inventoryPlayer, i, 8 + i * 18, 177));
+			addSlotToContainer(new Slot(inventoryPlayer, i, 12 + i * 18, 177));
 		}
 	}
 	
@@ -117,7 +118,8 @@ public class ContainerTradeStation extends Container {
 				|| this.lastCoinButtonActive != this.tileEntity.coinButtonActive
 				|| this.lastSStackButtonActive != this.tileEntity.isSStackButtonActive
 				|| this.lastLStackButtonActive != this.tileEntity.isLStackButtonActive
-				|| this.lastSBagButtonActive != this.tileEntity.isSBagButtonActive) {
+				|| this.lastSBagButtonActive != this.tileEntity.isSBagButtonActive
+				|| this.lastInUse != this.tileEntity.inUse) {
             	tileEntity.updateTE();
             }
 
@@ -133,6 +135,7 @@ public class ContainerTradeStation extends Container {
 		this.lastLStackButtonActive = this.tileEntity.isSStackButtonActive;
 		this.lastSBagButtonActive = this.tileEntity.isSBagButtonActive;
 		this.lastLBagButtonActive = this.tileEntity.isLBagButtonActive;
+		this.lastInUse = this.tileEntity.inUse;
         }
 	}
 	

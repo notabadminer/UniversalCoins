@@ -3,8 +3,10 @@
 #####
 tile.blockTradeStation.name=Universal Trade Station
 tile.blockVendor.name=Vending Block
+tile.blockVendorFrame.name=Vending Frame
 tile.blockCardStation.name=Universal Bank ATM
 tile.blockBase.name=Base Block
+tile.blockSafe.name=Ender Safe
 item.itemCoin.name=Coin
 item.itemSmallCoinStack.name=Coin Stack
 item.itemLargeCoinStack.name=Large Coin Stack
@@ -13,8 +15,8 @@ item.itemLargeCoinBag.name=Large Coin Bag
 item.itemUCCard.name=Universal Card
 item.itemEnderCard.name=Ender Card
 item.itemSeller.name=Selling Catalog
-item.itemWrench.name=Wrench
 item.itemVendorWrench.name=Vendor Wrench
+item.itemVendorFrame.name=Vending Frame
 itemGroup.tabUniversalCoins=Universal Coins
 
 #####
@@ -32,7 +34,7 @@ command.balance.name=balance
 command.balance.help=/balance : Retrieve coin balance.
 command.balance.result.inventory=Inventory Balance: 
 command.balance.result.account=Account Balance: 
-command.balance.result.customaccount=Custom Account Balance: 
+command.balance.result.customaccount=Secondary Account Balance: 
 command.uccommand.name=universalcoins
 command.uccommand.help=/universalcoins help
 command.uccommand.option.help.name=help
@@ -48,8 +50,8 @@ command.uccommand.option.set.help=- set <itemName> <price> : Set price of item.
 command.uccommand.option.set.price.invalid=Please specify a valid price
 command.uccommand.option.set.price=price set to
 command.uccommand.option.set.price.firstuse.one=Changes will not be saved
-command.uccommand.option.set.price.firstuse.two=Run \"universalcoins save\" to save changes
-command.uccommand.option.set.price.firstuse.three=Run \"universalcoins reload\" to undo changes
+command.uccommand.option.set.price.firstuse.two=Run "universalcoins save" to save changes
+command.uccommand.option.set.price.firstuse.three=Run "universalcoins reload" to undo changes
 command.uccommand.option.set.price.fail.one=Failed to set price.
 command.uccommand.option.set.price.error=Please specify item and price
 command.uccommand.option.reload=reload
@@ -60,7 +62,7 @@ command.uccommand.option.reset.help=- reset : Reset all prices to defaults. Will
 command.uccommand.option.save.name=save
 command.uccommand.option.save.confirm=Changes saved
 command.uccommand.option.save.help=- save : Save pricelists.
-command.uccommand.usage.hint=Hint: Use \"this\" in place of <itemName> to get or set item held by player.
+command.uccommand.usage.hint=Hint: Use "this" in place of <itemName> to get or set item held by player.
 command.uccommand.warning.pricenotset=No price has been set for
 command.uccommand.warning.pricefound=The price for
 command.uccommand.warning.noitem=Please specify item
@@ -84,19 +86,24 @@ command.send.result.receiver=coins received from
 #####
 # Chat Warnings
 #####
-chat.cardstation.warning.inuse=is using the ATM. Try again later.
+chat.warning.inuse=Block in use. Try again later.
 
 #####
 # Universal Card Messages
 #####
 item.itemUCCard.balance=Account balance:
+item.itemUCCard.warning=Card not activated. Right click to activate.
 
 #####
 # Ender Card Messages
 #####
 item.itemEnderCard.balance=Account balance:
-item.itemEnderCard.noaccount=Cannot activate. No account found
 item.itemEnderCard.message.deposit=Deposited
+
+#####
+# Safe GUI
+#####
+safe.gui.balance=Balance:
 
 #####
 # TradeStation GUI
@@ -108,6 +115,7 @@ tradestation.gui.label.autobuy=Auto Buy/Sell
 tradestation.gui.autolabel.off=Off
 tradestation.gui.autolabel.buy=Buy
 tradestation.gui.autolabel.sell=Sell
+tradestation.gui.price=Price: 
 
 #####
 # Vending GUI
@@ -115,8 +123,8 @@ tradestation.gui.autolabel.sell=Sell
 vending.wrench.owner=Owner
 vending.wrench.infiniteon=Infinite: On
 vending.wrench.infiniteoff=Infinite: Off
-vending.gui.button.mode.sell=Sell Items
-vending.gui.button.mode.buy=Buy Items
+vending.gui.button.mode.sell=Sell
+vending.gui.button.mode.buy=Buy
 vending.gui.price=Price: 
 
 #####
@@ -131,6 +139,8 @@ hintgui.warning.inventoryfull=Inventory is Full!
 
 #####
 # ATM GUI
+#####
+# NOTE: Gui screens consist on eight possible lines of text with a maximum of seventeen to eighteen characters 
 #####
 cardstation.welcome.one=C:Welcome to
 cardstation.welcome.two=C:Universal Bank
@@ -153,9 +163,9 @@ cardstation.additional.two=<-- New Card
 cardstation.additional.three=
 cardstation.additional.four=<-- Account Transfer
 cardstation.additional.five=
-cardstation.additional.six=<-- Custom Account
+cardstation.additional.six=<-- Secondary Account
 cardstation.additional.seven=
-cardstation.additional.eight=
+cardstation.additional.eight=<-- Previous Menu
 cardstation.auth.one=
 cardstation.auth.two=C:Scanning
 cardstation.auth.three=
@@ -279,3 +289,19 @@ cardstation.unauthorized.five=C:Only the account
 cardstation.unauthorized.six=C:owner can do this
 cardstation.unauthorized.seven=
 cardstation.unauthorized.eight=
+cardstation.duplicateaccount.one=
+cardstation.duplicateaccount.two=
+cardstation.duplicateaccount.three=C:DUPLICATE ACCOUNT
+cardstation.duplicateaccount.four=
+cardstation.duplicateaccount.five=C:Please enter a
+cardstation.duplicateaccount.six=C:unique name
+cardstation.duplicateaccount.seven=
+cardstation.duplicateaccount.eight=
+cardstation.processing.one=
+cardstation.processing.two=
+cardstation.processing.three=
+cardstation.processing.four=C:Processing...
+cardstation.processing.five=
+cardstation.processing.six=
+cardstation.processing.seven=
+cardstation.processing.eight=

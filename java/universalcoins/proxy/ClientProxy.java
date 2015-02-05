@@ -1,25 +1,36 @@
 package universalcoins.proxy;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.item.Item;
-import net.minecraftforge.common.MinecraftForge;
 import universalcoins.UniversalCoins;
 import universalcoins.blocks.BlockBase;
 import universalcoins.blocks.BlockCardStation;
 import universalcoins.blocks.BlockTradeStation;
 import universalcoins.blocks.BlockVendor;
-import universalcoins.gui.HintGuiRenderer;
-import universalcoins.items.ItemCoin;
-import universalcoins.items.ItemEnderCard;
-import universalcoins.items.ItemLargeCoinBag;
-import universalcoins.items.ItemLargeCoinStack;
-import universalcoins.items.ItemSeller;
-import universalcoins.items.ItemSmallCoinBag;
-import universalcoins.items.ItemSmallCoinStack;
-import universalcoins.items.ItemUCCard;
 import universalcoins.items.ItemVendorWrench;
+import universalcoins.items.ItemCoin;
+import universalcoins.items.ItemSmallCoinStack;
+import universalcoins.items.ItemLargeCoinStack;
+import universalcoins.items.ItemSmallCoinBag;
+import universalcoins.items.ItemLargeCoinBag;
+import universalcoins.items.ItemSeller;
+import universalcoins.items.ItemUCCard;
+import universalcoins.items.ItemEnderCard;
+import universalcoins.gui.HintGuiRenderer;
+import universalcoins.items.ItemVendorWrench;
+import universalcoins.render.ItemCardStationRenderer;
+import universalcoins.render.ItemVendorFrameRenderer;
+import universalcoins.render.TileEntityCardStationRenderer;
+import universalcoins.render.VendorFrameRenderer;
+import universalcoins.tile.TileCardStation;
+import universalcoins.tile.TileVendorFrame;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.item.Item;
+import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+
 
 public class ClientProxy extends CommonProxy {
 
@@ -47,5 +58,12 @@ public class ClientProxy extends CommonProxy {
 		//register handler for GUI hints for vending blocks
 		MinecraftForge.EVENT_BUS.register(HintGuiRenderer.instance);
 				
+		TileEntitySpecialRenderer render = new TileEntityCardStationRenderer();
+		ClientRegistry.bindTileEntitySpecialRenderer(TileCardStation.class, render);
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(UniversalCoins.proxy.blockCardStation), new ItemCardStationRenderer(render, new TileCardStation()));
+        
+        TileEntitySpecialRenderer render2 = new VendorFrameRenderer();
+		ClientRegistry.bindTileEntitySpecialRenderer(TileVendorFrame.class, render2);
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(UniversalCoins.proxy.blockVendorFrame), new ItemVendorFrameRenderer(render2, new TileVendorFrame()));
 	}
 }

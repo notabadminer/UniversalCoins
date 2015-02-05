@@ -31,13 +31,18 @@ import universalcoins.commands.UCSend;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCCardStationServerCustomNameMessage;
 import universalcoins.net.UCCardStationServerWithdrawalMessage;
+import universalcoins.net.UCRecipeMessage;
 import universalcoins.net.UCTileCardStationMessage;
 import universalcoins.net.UCTileTradeStationMessage;
 import universalcoins.net.UCVendorServerMessage;
 import universalcoins.proxy.CommonProxy;
 import universalcoins.tile.TileCardStation;
+import universalcoins.tile.TileSafe;
 import universalcoins.tile.TileTradeStation;
 import universalcoins.tile.TileVendor;
+import universalcoins.tile.TileVendorBlock;
+import universalcoins.tile.TileVendorFrame;
+import universalcoins.util.UCCraftingEventHandler;
 import universalcoins.util.UCItemPricer;
 import universalcoins.util.UCMobDropEventHandler;
 import universalcoins.util.UCPlayerLoginEventHandler;
@@ -65,10 +70,10 @@ public class UniversalCoins {
 	public static Boolean updateCheck;
 	public static Boolean recipesEnabled;
 	public static Boolean vendorRecipesEnabled;
+	public static Boolean vendorFrameRecipesEnabled;
 	public static Boolean atmRecipeEnabled;
 	public static Boolean enderCardRecipeEnabled;
 	public static Boolean cardSecurityEnabled;
-	public static Boolean collectCoinsInInfinite;
 	public static Boolean mobsDropCoins;
 	public static Boolean coinsInMineshaft;
 	public static Integer mineshaftCoinChance;
@@ -101,11 +106,14 @@ public class UniversalCoins {
 		Property vendorRecipes = config.get(config.CATEGORY_GENERAL, "Vending Block Recipes", true);
 		vendorRecipes.comment = "Set to false to disable crafting recipes for vending blocks.";
 		vendorRecipesEnabled = vendorRecipes.getBoolean(true);
+		Property vendorFrameRecipe = config.get(config.CATEGORY_GENERAL, "Vending Frame Recipe", true);
+		vendorFrameRecipe.comment = "Set to false to disable crafting recipes for Vending Frame.";
+		vendorFrameRecipesEnabled = vendorFrameRecipe.getBoolean(true);
 		Property atmRecipe = config.get(config.CATEGORY_GENERAL, "ATM Recipe", true);
 		atmRecipe.comment = "Set to false to disable crafting recipes for ATM.";
 		atmRecipeEnabled = atmRecipe.getBoolean(true);
 		Property enderCardRecipe = config.get(config.CATEGORY_GENERAL, "Ender Card Recipe", true);
-		enderCardRecipe.comment = "Set to false to disable crafting recipes for Ender Card.";
+		enderCardRecipe.comment = "Set to false to disable crafting recipes for Ender Card and Safe.";
 		enderCardRecipeEnabled = enderCardRecipe.getBoolean(true);
 		
 		//loot
@@ -135,12 +143,9 @@ public class UniversalCoins {
 		Property autoMode = config.get(config.CATEGORY_GENERAL, "Auto mode enabled", true);
 		autoMode.comment = "Set to false to disable the ability to automatically buy or sell items.";
 		autoModeEnabled = autoMode.getBoolean(true);
-		Property collectInfinite = config.get(config.CATEGORY_GENERAL, "Collect infinite", true);
-		collectInfinite.comment = "Set to false to disable collecting coins when vending blocks are set to infinite mode.";
-		collectCoinsInInfinite = collectInfinite.getBoolean(true);
-		Property sellRatio = config.get(config.CATEGORY_GENERAL, "Sell Ratio", 1.0);
+		Property sellRatio = config.get(config.CATEGORY_GENERAL, "Sell Ratio", 0.8);
 		sellRatio.comment = "Ratio of sell price to buy price. Set to less than 1.0 to give players a percentage of the full buy price when selling an item. (Range: 0.1 - 1.0)";
-		itemSellRatio = Math.max(0.1,Math.min(sellRatio.getDouble(1.0),1.0));	
+		itemSellRatio = Math.max(0.1,Math.min(sellRatio.getDouble(0.8),1.0));	
 		config.save();
 		if (mobsDropCoins) {
 			MinecraftForge.EVENT_BUS.register(new UCMobDropEventHandler());
@@ -151,6 +156,8 @@ public class UniversalCoins {
 		}
 		
 		MinecraftForge.EVENT_BUS.register(new UCPlayerPickupEventHandler());
+		
+		FMLCommonHandler.instance().bus().register(new UCCraftingEventHandler());
 				
 		//network packet handling
 	    snw = NetworkRegistry.INSTANCE.newSimpleChannel(MODID); 
@@ -160,6 +167,7 @@ public class UniversalCoins {
 	    snw.registerMessage(UCTileCardStationMessage.class, UCTileCardStationMessage.class, 3, Side.CLIENT);
 	    snw.registerMessage(UCCardStationServerWithdrawalMessage.class, UCCardStationServerWithdrawalMessage.class, 4, Side.SERVER);
 	    snw.registerMessage(UCCardStationServerCustomNameMessage.class, UCCardStationServerCustomNameMessage.class, 5, Side.SERVER);
+	    snw.registerMessage(UCRecipeMessage.class, UCRecipeMessage.class, 6, Side.CLIENT);
 
 	    //update check using versionchecker
 	    //FMLInterModComms.sendRuntimeMessage(modid, "VersionChecker", "addVersionCheck", "https://raw.githubusercontent.com/notabadminer/UniversalCoinsMod/master/version.json");
@@ -175,19 +183,6 @@ public class UniversalCoins {
 		proxy.registerItems();
 		proxy.registerRenderers();
 		
-		UCRecipeHelper.addCoinRecipes();
-		if (recipesEnabled) {
-			UCRecipeHelper.addTradeStationRecipe();
-		}
-		if (vendorRecipesEnabled){
-			UCRecipeHelper.addVendingBlockRecipes();
-		}
-		if (atmRecipeEnabled){
-			UCRecipeHelper.addCardStationRecipes();
-		}
-		if (enderCardRecipeEnabled){
-			UCRecipeHelper.addEnderCardRecipes();
-		}
 		if (coinsInMineshaft) {
 			ChestGenHooks.getInfo(ChestGenHooks.MINESHAFT_CORRIDOR).addItem(new WeightedRandomChestContent(new ItemStack(proxy.itemLargeCoinBag), 2, 64, mineshaftCoinChance));
 		}
@@ -196,8 +191,10 @@ public class UniversalCoins {
 		}
 		
 		GameRegistry.registerTileEntity(TileTradeStation.class, "TileTradeStation");
-		GameRegistry.registerTileEntity(TileVendor.class, "TileVendor");
+		GameRegistry.registerTileEntity(TileVendorBlock.class, "TileVendorBlock");
+		GameRegistry.registerTileEntity(TileVendorFrame.class, "TileVendorFrame");
 		GameRegistry.registerTileEntity(TileCardStation.class, "TileCardStation");
+		GameRegistry.registerTileEntity(TileSafe.class, "TileSafe");
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 	}
 	
@@ -217,6 +214,25 @@ public class UniversalCoins {
 		manager.registerCommand(new UCRebalance());
 		manager.registerCommand(new UCGive());
 		manager.registerCommand(new UCSend());
+		
+		//load recipes server side. client side are loaded by UCPlayerLoginEventHandler
+		UCRecipeHelper.addCoinRecipes();
+		if (recipesEnabled) {
+			UCRecipeHelper.addTradeStationRecipe();
+		}
+		if (vendorRecipesEnabled){
+			UCRecipeHelper.addVendingBlockRecipes();
+		}
+		if (vendorFrameRecipesEnabled){
+			UCRecipeHelper.addVendingFrameRecipes();
+		}
+		if (atmRecipeEnabled){
+			UCRecipeHelper.addCardStationRecipes();
+		}
+		if (enderCardRecipeEnabled){
+			UCRecipeHelper.addEnderCardRecipes();
+			UCRecipeHelper.addBlockSafeRecipe();
+		}
 	}
 
 }

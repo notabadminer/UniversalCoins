@@ -5,8 +5,11 @@ import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import universalcoins.blocks.BlockBase;
 import universalcoins.blocks.BlockCardStation;
+import universalcoins.blocks.BlockSafe;
 import universalcoins.blocks.BlockTradeStation;
 import universalcoins.blocks.BlockVendor;
+import universalcoins.blocks.BlockVendorFrame;
+import universalcoins.items.ItemBlockVendor;
 import universalcoins.items.ItemCoin;
 import universalcoins.items.ItemEnderCard;
 import universalcoins.items.ItemLargeCoinBag;
@@ -31,27 +34,31 @@ public class CommonProxy {
 	
 	public static Block blockTradeStation;
 	public static Block blockVendor;
+	public static Block blockVendorFrame;
 	public static Block blockCardStation;
 	public static Block blockBase;
+	public static Block blockSafe;
 	
 	
 	public void registerBlocks() {
-		blockTradeStation = new BlockTradeStation().setUnlocalizedName("blockTradeStation");
-		blockVendor = new BlockVendor(Vending.supports).setUnlocalizedName("blockVendor");
-		blockCardStation = new BlockCardStation().setUnlocalizedName("blockCardStation");
-		blockBase = new BlockBase().setUnlocalizedName("blockBase");
+		blockTradeStation = new BlockTradeStation();
+		blockVendor = new BlockVendor(Vending.supports);
+		blockVendorFrame = new BlockVendorFrame();
+		blockCardStation = new BlockCardStation();
+		blockBase = new BlockBase();
+		blockSafe = new BlockSafe();
 	}
 	
 	public void registerItems() {
-		itemCoin = new ItemCoin().setUnlocalizedName("itemCoin");
-		itemSmallCoinStack = new ItemSmallCoinStack().setUnlocalizedName("itemSmallCoinStack");
-		itemLargeCoinStack = new ItemLargeCoinStack().setUnlocalizedName("itemLargeCoinStack");
-		itemSmallCoinBag = new ItemSmallCoinBag().setUnlocalizedName("itemSmallCoinBag");
-		itemLargeCoinBag = new ItemLargeCoinBag().setUnlocalizedName("itemLargeCoinBag");
-		itemUCCard = new ItemUCCard().setUnlocalizedName("itemUCCard");
-		itemEnderCard = new ItemEnderCard().setUnlocalizedName("itemEnderCard");
-		itemSeller = new ItemSeller().setUnlocalizedName("itemSeller");
-		itemVendorWrench = new ItemVendorWrench().setUnlocalizedName("itemVendorWrench");
+		itemCoin = new ItemCoin();
+		itemSmallCoinStack = new ItemSmallCoinStack();
+		itemLargeCoinStack = new ItemLargeCoinStack();
+		itemSmallCoinBag = new ItemSmallCoinBag();
+		itemLargeCoinBag = new ItemLargeCoinBag();
+		itemUCCard = new ItemUCCard();
+		itemEnderCard = new ItemEnderCard();
+		itemSeller = new ItemSeller();
+		itemVendorWrench = new ItemVendorWrench();
 	}
 
 	public void registerRenderers() {

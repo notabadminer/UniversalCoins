@@ -13,7 +13,7 @@ import universalcoins.tile.TileTradeStation;
 public class UCTileTradeStationMessage implements IMessage, IMessageHandler<UCTileTradeStationMessage, IMessage> {
 public int x, y, z, coinSum, itemPrice;
 public String customName;
-private boolean buyButtonActive, sellButtonActive, coinButtonActive, 
+private boolean buyButtonActive, sellButtonActive, coinButtonActive, inUse, 
 isSStackButtonActive, isLStackButtonActive, isSBagButtonActive, isLBagButtonActive;;
 
     public UCTileTradeStationMessage()
@@ -35,6 +35,8 @@ isSStackButtonActive, isLStackButtonActive, isSBagButtonActive, isLBagButtonActi
         this.isLStackButtonActive = tileEntity.isLStackButtonActive;
         this.isSBagButtonActive = tileEntity.isSBagButtonActive;
         this.isLBagButtonActive = tileEntity.isLBagButtonActive;
+        this.inUse = tileEntity.inUse;
+
     }
 
     @Override
@@ -53,6 +55,7 @@ isSStackButtonActive, isLStackButtonActive, isSBagButtonActive, isLBagButtonActi
         this.isLStackButtonActive = buf.readBoolean();
         this.isSBagButtonActive = buf.readBoolean();
         this.isLBagButtonActive = buf.readBoolean();
+        this.inUse = buf.readBoolean();
     }
 
     @Override
@@ -71,6 +74,7 @@ isSStackButtonActive, isLStackButtonActive, isSBagButtonActive, isLBagButtonActi
         buf.writeBoolean(isLStackButtonActive);
         buf.writeBoolean(isSBagButtonActive);
         buf.writeBoolean(isLBagButtonActive);
+        buf.writeBoolean(inUse);
     }
 
 	@Override
@@ -91,6 +95,7 @@ isSStackButtonActive, isLStackButtonActive, isSBagButtonActive, isLBagButtonActi
 			((TileTradeStation) tileEntity).isLStackButtonActive = message.isLStackButtonActive;
 			((TileTradeStation) tileEntity).isSBagButtonActive = message.isSBagButtonActive;
 			((TileTradeStation) tileEntity).isLBagButtonActive = message.isLBagButtonActive;
+			((TileTradeStation) tileEntity).inUse = message.inUse;
 		}
 		return null;
 	}

@@ -1,6 +1,7 @@
 package universalcoins.commands;
 
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -30,7 +31,7 @@ public class UCGive extends CommandBase {
 	}
 
 	@Override
-	public void execute(ICommandSender sender, String[] args) {
+	public void execute(ICommandSender sender, String[] args) throws CommandException {
 		if (args.length == 2) {
 			EntityPlayer recipient = null;
 			WorldServer[] ws= MinecraftServer.getServer().worldServers;
@@ -50,11 +51,11 @@ public class UCGive extends CommandBase {
 				sender.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("command.givecoins.error.badentry")));
 				return;
 			}
-			givePlayerCoins(recipient, coinsToSend);
-			sender.addChatMessage(new ChatComponentText("Gave " + args[0] + " " + args[1] + 
+			int change = givePlayerCoins(recipient, coinsToSend);
+			sender.addChatMessage(new ChatComponentText("Gave " + args[0] + " " + (coinsToSend - change) + 
 					" " + StatCollector.translateToLocal("item.itemCoin.name")));
-			recipient.addChatMessage(new ChatComponentText( sender.getCommandSenderEntity().getName() + " " +
-					StatCollector.translateToLocal("command.givecoins.result") + " " + args[1] + 
+			recipient.addChatMessage(new ChatComponentText( sender.getCommandSenderEntity() + " " +
+					StatCollector.translateToLocal("command.givecoins.result") + " " + (coinsToSend - change) + 
 					" " + StatCollector.translateToLocal("item.itemCoin.name")));
 		} else
 			sender.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("command.givecoins.error.noname")));
@@ -66,10 +67,21 @@ public class UCGive extends CommandBase {
 			int logVal = Math.min((int) (Math.log(coinsLeft) / Math.log(9)), 4);
 			int stackSize = Math.min((int) (coinsLeft / Math.pow(9, logVal)), 64);
 			// add a stack to the recipients inventory
-			Boolean coinsAdded = recipient.inventory.addItemStackToInventory(new ItemStack(coins[logVal], stackSize));
-			if (coinsAdded) {
+			if (recipient.inventory.getFirstEmptyStack() != -1) {
+				recipient.inventory.addItemStackToInventory(new ItemStack(coins[logVal], stackSize));
 				coinsLeft -= (stackSize * Math.pow(9, logVal));
 			} else {
+				for (int i = 0; i < recipient.inventory.getSizeInventory(); i++) {
+					ItemStack stack = recipient.inventory.getStackInSlot(i);
+					for (int j = 0; j < coins.length; j++) {
+						if (stack != null && stack.getItem() == coins[j]) {
+							int amountToAdd = (int) Math.min( coinsLeft / Math.pow(9, j), stack.getMaxStackSize() - stack.stackSize);
+							stack.stackSize += amountToAdd;
+							recipient.inventory.setInventorySlotContents(i, stack);
+							coinsLeft -= (amountToAdd * Math.pow(9, j));
+						}
+					}
+				}
 				return coinsLeft; // return change
 			}
 		}

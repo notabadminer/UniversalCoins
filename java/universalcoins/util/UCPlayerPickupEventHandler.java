@@ -30,13 +30,14 @@ public class UCPlayerPickupEventHandler {
 			world = event.entityPlayer.worldObj;
 			EntityPlayer player = event.entityPlayer;
 			ItemStack[] inventory = player.inventory.mainInventory;
-			DecimalFormat formatter = new DecimalFormat("#,###,###,###");//TODO localization
+			DecimalFormat formatter = new DecimalFormat("#,###,###,###");
 			for (int i = 0; i < inventory.length; i++) {
 				if (inventory[i] != null && inventory[i].getItem() == UniversalCoins.proxy.itemEnderCard) {
 					if (!inventory[i].hasTagCompound()) return; //card has not been initialized. Nothing we can do here
 					accountNumber = inventory[i].getTagCompound().getString("Account");
 					int accountBalance = getAccountBalance(accountNumber);
 					if (accountBalance == -1) return; //get out of here if the card is invalid
+					if (event.item.getEntityItem().stackSize == 0) return; //no need to notify on zero size stack
 					int coinType = getCoinType(event.item.getEntityItem().getItem());
 					if (coinType == -1) return; //something went wrong
 					int coinValue = multiplier[coinType];

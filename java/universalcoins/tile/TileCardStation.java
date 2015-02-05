@@ -28,10 +28,12 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	private static final Item[] coins = new Item[] { UniversalCoins.proxy.itemCoin,
 			UniversalCoins.proxy.itemSmallCoinStack, UniversalCoins.proxy.itemLargeCoinStack, 
 			UniversalCoins.proxy.itemSmallCoinBag, UniversalCoins.proxy.itemLargeCoinBag };
-	public String player = "";
+	public String playerName = "";
+	public String playerUID = "";	
 	public boolean inUse = false;
 	public boolean depositCoins = false;
 	public boolean withdrawCoins = false;
+	public boolean accountError = false;
 	public int coinWithdrawalAmount = 0;
 	public String cardOwner = "";
 	public String accountNumber = "none";
@@ -50,9 +52,9 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	
 	private void updateInUse() {
 		if (worldObj.isRemote) return;
-		EntityPlayer playerTest = this.worldObj.getPlayerEntityByName(player);
+		EntityPlayer playerTest = this.worldObj.getPlayerEntityByName(playerName);
 		if (playerTest != null && playerTest.openContainer != null &&
-				this.worldObj.getPlayerEntityByName(player).openContainer instanceof ContainerCardStation) {
+				this.worldObj.getPlayerEntityByName(playerName).openContainer instanceof ContainerCardStation) {
 			inUse = true;
 		} else {
 			inUse = false;
@@ -124,16 +126,16 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			}
 			if (slot == itemCardSlot && !worldObj.isRemote) {
 				if (inventory[itemCardSlot].getTagCompound().getInteger("CoinSum") != 0 && 
-						inventory[itemCardSlot].getTagCompound().getString("Owner").contentEquals(player)) {
-					addPlayerAccount(player);
-					accountNumber = getPlayerAccount(player);
+						inventory[itemCardSlot].getTagCompound().getString("Owner").contentEquals(playerName)) {
+					addPlayerAccount(playerUID);
+					accountNumber = getPlayerAccount(playerUID);
 					creditAccount(accountNumber, inventory[itemCardSlot].getTagCompound().getInteger("CoinSum"));
 					inventory[itemCardSlot].getTagCompound().removeTag("CoinSum");
 					inventory[itemCardSlot].getTagCompound().setString("Account", accountNumber);
 				}
 				accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 				cardOwner = inventory[itemCardSlot].getTagCompound().getString("Owner");
-				if (getCustomAccount(player) != "") customAccountName = getCustomAccount(player);
+				if (getCustomAccount(playerUID) != "") customAccountName = getCustomAccount(playerUID);
 				accountBalance = getAccountBalance(accountNumber);
 				}
 		}
@@ -143,7 +145,6 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	public String getName() {
 		return UniversalCoins.proxy.blockCardStation.getLocalizedName();
 	}
-
 
 	@Override
 	public int getInventoryStackLimit() {
@@ -262,6 +263,7 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	
 	public void onButtonPressed(int functionId) {
 		if (worldObj.isRemote) return;
+		accountError = false; //reset error state
 		//handle function IDs sent from CardStationGUI
 		//function1 - new card
 		//function2 - transfer account
@@ -271,23 +273,26 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		//function6 - destroy invalid card
 		//function7 - new custom account
 		//function8 - new custom card
-		//function9 - transfer custom account 
+		//function9 - transfer custom account
+		//function10 - account error reset
 		if (functionId == 1) {
-			if (getPlayerAccount(player) == "") {
-				addPlayerAccount(player);
+			if (getPlayerAccount(playerUID) == "") {
+				addPlayerAccount(playerUID);
 			}
 			inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
-			inventory[itemCardSlot].getTagCompound().setString("Owner", player);
+			inventory[itemCardSlot].getTagCompound().setString("Name", playerName);
+			inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
 			inventory[itemCardSlot].getTagCompound().setString("Account", accountNumber);
 			accountBalance = getAccountBalance(accountNumber);
 		}
 		if (functionId == 2) {
-			if (getPlayerAccount(player) == "") {
+			if (getPlayerAccount(playerUID) == "") {
 			} else {
-				transferPlayerAccount(player);
+				transferPlayerAccount(playerUID);
 				inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
-				inventory[itemCardSlot].getTagCompound().setString("Owner", player);
-				inventory[itemCardSlot].getTagCompound().setString("Account", getPlayerAccount(player));
+				inventory[itemCardSlot].getTagCompound().setString("Name", playerName);
+				inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
+				inventory[itemCardSlot].getTagCompound().setString("Account", getPlayerAccount(playerUID));
 				accountBalance = getAccountBalance(accountNumber);
 			}
 		}
@@ -299,13 +304,13 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			withdrawCoins = true;
 		}
 		if (functionId == 5) {
-			String storedAccount = getPlayerAccount(player);
+			String storedAccount = getPlayerAccount(playerUID);
 			if (storedAccount != "") { 
 				accountNumber = storedAccount;
-				cardOwner = player; //needed for new card auth
+				cardOwner = playerUID; //needed for new card auth
 				accountBalance = getAccountBalance(accountNumber);
-				if (getCustomAccount(player) != ""){
-					customAccountName = getCustomAccount(player);
+				if (getCustomAccount(playerUID) != ""){
+					customAccountName = getCustomAccount(playerUID);
 					customAccountNumber = getPlayerAccount(customAccountName);
 				}
 			} else accountNumber = "none";
@@ -314,27 +319,37 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			inventory[itemCardSlot] = null;
 		}
 		if (functionId == 7) {
-			if (getCustomAccount(player) == "") {
+			if (getPlayerAccount(customAccountName) != "" && !getCustomAccount(playerUID).contentEquals(customAccountName)) {
+				accountError = true;
+				//we need to reset this so that that function 7 is called again on next attempt at getting an account
+				customAccountName = "none";
+				return;
+			} else if (getCustomAccount(playerUID) == "") {
 				addCustomAccount(customAccountName);
 			}
-			customAccountName = getCustomAccount(player);
+			customAccountName = getCustomAccount(playerUID);
 			customAccountNumber = getPlayerAccount(customAccountName);
 			inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
-			inventory[itemCardSlot].getTagCompound().setString("Owner", customAccountName);
-			inventory[itemCardSlot].getTagCompound().setString("Account", customAccountNumber);
+			inventory[itemCardSlot].getTagCompound().setString("Name", customAccountName);
+			inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
+			inventory[itemCardSlot].getTagCompound().setString("Account", customAccountNumber);			
 		}
 		if (functionId == 8) {
 			inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
-			inventory[itemCardSlot].getTagCompound().setString("Owner", customAccountName);
+			inventory[itemCardSlot].getTagCompound().setString("Name", customAccountName);
+			inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
 			inventory[itemCardSlot].getTagCompound().setString("Account", customAccountNumber);
 			accountBalance = getAccountBalance(customAccountNumber);
 		}
 		if (functionId == 9) {
-			if (getCustomAccount(player) == "") {
+			if (getCustomAccount(playerUID) == "" || getPlayerAccount(customAccountName) != "") {
+				accountError = true;
 			} else {
+				accountError = false;
 				transferCustomAccount();
 				inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
-				inventory[itemCardSlot].getTagCompound().setString("Owner", customAccountName);
+				inventory[itemCardSlot].getTagCompound().setString("Name", customAccountName);
+				inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
 				inventory[itemCardSlot].getTagCompound().setString("Account", customAccountNumber);
 				accountBalance = getAccountBalance(customAccountNumber);
 			}
@@ -379,55 +394,60 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		}
 	}
 	
-	private String getPlayerAccount(String player) {
+	private String getPlayerAccount(String playerUID) {
 		//returns an empty string if no account found
-		return getWorldString(player);
+		return getWorldString(playerUID);
 	}
 	
-	private void addPlayerAccount(String player) {
-		if (getWorldString(player) == "") {
+	private void addPlayerAccount(String playerUID) {
+		if (getWorldString(playerUID) == "") {
 			while (getWorldString(accountNumber) == "") {
 				accountNumber = String.valueOf(generateAccountNumber());
 				if (getWorldString(accountNumber) == "") {
-					setWorldData(player, accountNumber);
+					setWorldData(playerUID, accountNumber);
 					setWorldData(accountNumber, 0);
 				}
 			}
+		} else {
+			//we have a problem we need to clear stale account data
+			
 		}
 	}
 	
-	private String getCustomAccount(String player){
-		return getWorldString("G:" + player);
+	private String getCustomAccount(String playerUID){
+		return getWorldString("¿" + playerUID);
 	}
 	
-	private void addCustomAccount(String customName) {
+	private boolean addCustomAccount(String customName) {
 		//custom accounts are added as a relation of playername to customname
 		//customnames are then associated with an account number
-		if (getWorldString("G:" + player) == "" && getWorldString(customName) == "") {
+		if (getWorldString("¿" + playerUID) == "" && getWorldString(customName) == "") {
 			while (getWorldString(customAccountNumber) == "") {
 				customAccountNumber = String.valueOf(generateAccountNumber());
 				if (getWorldString(customAccountNumber) == "") {
-					setWorldData("G:" + player, customName);
+					setWorldData("¿" + playerUID, customName);
 					setWorldData(customName, customAccountNumber);
 					setWorldData(customAccountNumber, 0);
+					return true;
 				}
 			}
 		}
+		return false;
 	}
 	
 	private void transferCustomAccount() {
-		String oldName = getWorldString("G:" + player);
+		String oldName = getWorldString("¿" + playerUID);
 		String oldAccount = getWorldString(oldName);
 		int oldBalance = getAccountBalance(oldAccount);
-		delWorldData("G:" + player);
+		delWorldData("¿" + playerUID);
 		delWorldData(oldName);
 		delWorldData(oldAccount);
-		if (getWorldString("G:" + player) == "") {
+		if (getWorldString("¿" + playerUID) == "") {
 			customAccountNumber = "none";
 			while (getWorldString(customAccountNumber) == "") {
 				customAccountNumber = String.valueOf(generateAccountNumber());
 				if (getWorldString(customAccountNumber) == "") {
-					setWorldData("G:" + player, customAccountName);
+					setWorldData("¿" + playerUID, customAccountName);
 					setWorldData(customAccountName, customAccountNumber);
 					setWorldData(customAccountNumber, oldBalance);
 				}
@@ -439,16 +459,16 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		}
 	}
 	
-	private void transferPlayerAccount(String player) {
-		String oldAccount = getWorldString(player);
+	private void transferPlayerAccount(String playerUID) {
+		String oldAccount = getWorldString(playerUID);
 		int oldBalance = getAccountBalance(oldAccount);
-		delWorldData(player);
-		if (getWorldString(player) == "") {
+		delWorldData(playerUID);
+		if (getWorldString(playerUID) == "") {
 			accountNumber = "none";
 			while (getWorldString(accountNumber) == "") {
 				accountNumber = String.valueOf(generateAccountNumber());
 				if (getWorldString(accountNumber) == "") {
-					setWorldData(player, accountNumber);
+					setWorldData(playerUID, accountNumber);
 					setWorldData(accountNumber, oldBalance);
 				}
 			}
@@ -493,8 +513,14 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		wData.markDirty();
 	}
 
+	public String getInventoryName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	@Override
 	public boolean hasCustomName() {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -506,29 +532,34 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 
 	@Override
 	public int[] getSlotsForFace(EnumFacing side) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean canInsertItem(int index, ItemStack itemStackIn,
 			EnumFacing direction) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean canExtractItem(int index, ItemStack stack,
 			EnumFacing direction) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void openInventory(EntityPlayer player) {
-		inUse = true;
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
-		inUse = false;
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

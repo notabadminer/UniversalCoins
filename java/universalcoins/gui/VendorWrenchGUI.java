@@ -34,7 +34,7 @@ public class VendorWrenchGUI extends GuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		infinite = tileEntity.infiniteSell;
+		infinite = tileEntity.infiniteMode;
 		infiniteButton = new GuiSlimButton(idInfiniteButton, 9 + (width - xSize) / 2, 54 + 
 				(height - ySize) / 2, 148, 12, infinite ? StatCollector.translateToLocal("vending.wrench.infiniteon") :
 					StatCollector.translateToLocal("vending.wrench.infiniteoff"));
@@ -110,7 +110,7 @@ public class VendorWrenchGUI extends GuiContainer {
 			infinite = !infinite;
 			infiniteButton.displayString = (infinite ? StatCollector.translateToLocal("vending.wrench.infiniteon") :
 				StatCollector.translateToLocal("vending.wrench.infiniteoff"));
-			tileEntity.infiniteSell = infinite;
+			tileEntity.infiniteMode = infinite;
 			tileEntity.sendServerUpdateMessage();
 		}
 	}

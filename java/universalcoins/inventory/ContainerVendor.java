@@ -12,13 +12,8 @@ import universalcoins.tile.TileVendor;
 
 public class ContainerVendor extends Container {
 	private TileVendor tileEntity;
-	private boolean lastOoStock;
-	private boolean lastOoCoins;
-	private boolean lastInvFull;
-	private int lastCoinSum;
-	private int lastUserCoinSum;
-	private int lastItemPrice;
-	private boolean lastSellMode;
+	private boolean lastOoStock, lastOoCoins, lastInvFull, lastSellMode, lastInUse;
+	private int lastCoinSum, lastUserCoinSum, lastItemPrice;
 	
 	public ContainerVendor(InventoryPlayer inventoryPlayer, TileVendor tEntity) {
 		tileEntity = tEntity;
@@ -118,7 +113,8 @@ public class ContainerVendor extends Container {
                     || this.lastCoinSum != this.tileEntity.coinSum
             		|| this.lastUserCoinSum != this.tileEntity.userCoinSum
             		|| this.lastItemPrice != this.tileEntity.itemPrice
-            		|| this.lastSellMode != this.tileEntity.sellMode) {
+            		|| this.lastSellMode != this.tileEntity.sellMode
+            		|| this.lastInUse != this.tileEntity.inUse) {
                 //update
             	tileEntity.updateTE();
             	
@@ -129,6 +125,7 @@ public class ContainerVendor extends Container {
         		this.lastUserCoinSum = this.tileEntity.userCoinSum;
         		this.lastItemPrice = this.tileEntity.itemPrice;
         		this.lastSellMode = this.tileEntity.sellMode;
+        		this.lastInUse = this.tileEntity.inUse;
             }
         }
 	}

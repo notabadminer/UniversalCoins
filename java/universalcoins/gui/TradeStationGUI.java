@@ -40,23 +40,23 @@ public class TradeStationGUI extends GuiContainer {
 			TileTradeStation parTileEntity) {
 		super(new ContainerTradeStation(inventoryPlayer, parTileEntity));
 		tileEntity = parTileEntity;
-		xSize = 176;
+		xSize = 184;
 		ySize = 200;
 	}
 	
 	@Override
 	public void initGui() {
 		super.initGui();
-		buyButton = new GuiSlimButton(idBuyButton, 52 + (width - xSize) / 2, 21 + (height - ySize) / 2, 25, 12, 
+		buyButton = new GuiSlimButton(idBuyButton, 50 + (width - xSize) / 2, 21 + (height - ySize) / 2, 48, 12, 
 				StatCollector.translateToLocal("general.button.buy"));
-		sellButton = new GuiSlimButton(idSellButton, 52 + (width - xSize) / 2, 38 + (height - ySize) / 2, 25, 12, 
+		sellButton = new GuiSlimButton(idSellButton, 50 + (width - xSize) / 2, 38 + (height - ySize) / 2, 48, 12, 
 				StatCollector.translateToLocal("general.button.sell"));
-		retrCoinButton = new GuiCoinButton(idCoinButton, 80 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18, "", 0);
-		retrSStackButton = new GuiCoinButton(idSStackButton, 98 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18, "", 1);
-		retrLStackButton = new GuiCoinButton(idLStackButton, 116 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18, "", 2);
-		retrSBagButton = new GuiCoinButton(idSBagButton, 134 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18, "", 3);
-		retrLBagButton = new GuiCoinButton(idLBagButton, 152 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18, "", 4);
-		coinModeButton = new GuiSlimButton(idCoinModeButton, 110 + (width - xSize) / 2, 98 + (height - ySize) / 2, 28, 12, 
+		retrCoinButton = new GuiCoinButton(idCoinButton, 88 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18, "", 0);
+		retrSStackButton = new GuiCoinButton(idSStackButton, 106 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18, "", 1);
+		retrLStackButton = new GuiCoinButton(idLStackButton, 124 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18, "", 2);
+		retrSBagButton = new GuiCoinButton(idSBagButton, 142 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18, "", 3);
+		retrLBagButton = new GuiCoinButton(idLBagButton, 160 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18, "", 4);
+		coinModeButton = new GuiSlimButton(idCoinModeButton, 110 + (width - xSize) / 2, 98 + (height - ySize) / 2, 46, 12, 
 				StatCollector.translateToLocal("tradestation.gui.button.coin"));
 		buttonList.clear();
 		buttonList.add(buyButton);
@@ -86,16 +86,20 @@ public class TradeStationGUI extends GuiContainer {
 		fontRendererObj.drawString(
 				StatCollector.translateToLocal("container.inventory"), 6,
 				ySize - 96 + 2, 4210752);
-		fontRendererObj.drawString(String.valueOf(tileEntity.coinSum), 106, 57, 4210752);
-		String priceInLocal = "Price:";
+		fontRendererObj.drawString(String.valueOf(tileEntity.coinSum), 114, 57, 4210752);
+		String priceInLocal = StatCollector.translateToLocal("tradestation.gui.price");
 		int stringWidth = fontRendererObj.getStringWidth(priceInLocal);
-		fontRendererObj.drawString(priceInLocal, 38 - stringWidth, 57, 4210752);
+		fontRendererObj.drawString(priceInLocal, 48 - stringWidth, 57, 4210752);
 		if (tileEntity.itemPrice > 0){
-			fontRendererObj.drawString(String.valueOf(tileEntity.itemPrice), 40, 57,
-					4210752);
+			if (sellButton.isMouseOver()) { //player hovering over sell button
+				int sellPrice = (int) (tileEntity.itemPrice * UniversalCoins.itemSellRatio);
+				fontRendererObj.drawString(String.valueOf(sellPrice), 48, 57, 4210752);
+			} else {
+				fontRendererObj.drawString(String.valueOf(tileEntity.itemPrice), 48, 57, 4210752);
+			}
 		}
 		else{
-			fontRendererObj.drawString(StatCollector.translateToLocal("tradestation.gui.warning.noitem"), 41, 57, 4210752);
+			fontRendererObj.drawString(StatCollector.translateToLocal("tradestation.gui.warning.noitem"), 48, 57, 4210752);
 		}
 		//display only if auto buy/sell enabled
 		if (autoMode) {
@@ -124,13 +128,13 @@ public class TradeStationGUI extends GuiContainer {
 		
 		//draw auto mode box if auto buy/sell enabled
 		if (autoMode) {
-			this.drawTexturedModalRect(x + 35, y + 83, 176, 0, 38, 15);
+			this.drawTexturedModalRect(x + 35, y + 83, 184, 0, 50, 15);
 		}
 		
 		//draw highlight over currently selected coin type (coinMode)
-		int xHighlight[] = {0, 81, 99, 117, 135, 153};
+		int xHighlight[] = {0, 89, 107, 125, 143, 161};
 		if (tileEntity.coinMode > 0) {
-			this.drawTexturedModalRect(x + xHighlight[tileEntity.coinMode], y + 94, 176, 15, 16, 2);
+			this.drawTexturedModalRect(x + xHighlight[tileEntity.coinMode], y + 94, 184, 15, 16, 2);
 		}
 	}
 	

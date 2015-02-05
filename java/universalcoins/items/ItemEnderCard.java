@@ -13,8 +13,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UCWorldData;
 
@@ -39,26 +37,21 @@ public class ItemEnderCard extends Item {
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {		
 		if( stack.getTagCompound() != null ) {
-			list.add("Owner: " + stack.getTagCompound().getString("Owner"));
-			list.add("Account: " + stack.getTagCompound().getString("Account"));
-		}	
+			list.add(stack.getTagCompound().getString("Name"));
+			list.add(stack.getTagCompound().getString("Account"));
+		} else {
+			list.add(StatCollector.translateToLocal("item.itemUCCard.warning"));
+		}
 	}
 	
 	@Override
     public boolean onItemUse(ItemStack itemstack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) return true;
-		if (!itemstack.hasTagCompound()) {
-			if (getPlayerAccount(world, player.getDisplayName().toString()) == "") {
-				player.addChatMessage(new ChatComponentText(StatCollector.translateToLocal(
-						"item.itemEnderCard.noaccount")));
-				return true;
-			}
-			//add player account info
-			itemstack.getTagCompound().setString("Owner", player.getDisplayName().toString());
-			itemstack.getTagCompound().setString("Account", getPlayerAccount(world, player.getDisplayName().toString()));
+		if( itemstack.getTagCompound() == null ) {
+			createNBT(itemstack, world, player);
 		}
 		int accountBalance = getAccountBalance(world, itemstack.getTagCompound().getString("Account"));
-		DecimalFormat formatter = new DecimalFormat("#,###,###,###");//TODO localization
+		DecimalFormat formatter = new DecimalFormat("#,###,###,###");
 		ItemStack[] inventory = player.inventory.mainInventory;
 		String accountNumber = itemstack.getTagCompound().getString("Account");
 		int coinsDeposited = 0;
@@ -92,6 +85,27 @@ public class ItemEnderCard extends Item {
         return true;
     }
 	
+	private void createNBT(ItemStack stack, World world, EntityPlayer entityPlayer) {
+		String accountNumber = getOrCreatePlayerAccount(world, entityPlayer.getPersistentID().toString());
+		stack.getTagCompound().setString("Name", entityPlayer.getName());
+		stack.getTagCompound().setString("Owner", entityPlayer.getPersistentID().toString());
+		stack.getTagCompound().setString("Account", accountNumber);
+	}
+	
+	private String getOrCreatePlayerAccount(World world, String playerUID) {
+		String accountNumber = getWorldString(world, playerUID);
+		if (accountNumber == "") {
+			while (getWorldString(world, accountNumber) == "") {
+				accountNumber = String.valueOf(generateAccountNumber());
+				if (getWorldString(world, accountNumber) == "") {
+					setWorldData(world, playerUID, accountNumber);
+					setWorldData(world, accountNumber, 0);
+				}
+			}
+		}
+		return accountNumber;
+	}
+	
 	private int getCoinType(Item item) {
 		final Item[] coins = new Item[] { UniversalCoins.proxy.itemCoin,
 			UniversalCoins.proxy.itemSmallCoinStack, UniversalCoins.proxy.itemLargeCoinStack, 
@@ -102,6 +116,17 @@ public class ItemEnderCard extends Item {
 			}
 		}
 		return -1;
+	}
+	
+	private int generateAccountNumber() {
+		return (int) (Math.floor(Math.random() * 99999999) + 11111111);
+	}
+	
+	private void setWorldData(World world, String tag, String data) {
+		UCWorldData wData = UCWorldData.get(world);
+		NBTTagCompound wdTag = wData.getData();
+		wdTag.setString(tag, data);
+		wData.markDirty();
 	}
 	
 	private String getPlayerAccount(World world, String player) {

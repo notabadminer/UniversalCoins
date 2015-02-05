@@ -4,6 +4,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 import universalcoins.UniversalCoins;
 
 public class UCRecipeHelper {
@@ -70,6 +71,13 @@ public class UCRecipeHelper {
 		}
 	}
 	
+	public static void addVendingFrameRecipes() {
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(UniversalCoins.proxy.blockVendorFrame),
+			"SGS",
+			"RPR",
+			"SSS",'S', Items.stick, 'P', "plankWood", 'G', Items.gold_ingot, 'R', Items.redstone));
+	}
+	
 	public static void addCardStationRecipes() {
 		GameRegistry.addShapedRecipe(new ItemStack(UniversalCoins.proxy.blockCardStation), new Object[]{
 			"III",
@@ -85,9 +93,21 @@ public class UCRecipeHelper {
 		});
 	}
 	
+	public static void addBlockSafeRecipe() {
+		GameRegistry.addShapedRecipe(new ItemStack(UniversalCoins.proxy.blockSafe), new Object[]{
+			"III",
+			"IEI",
+			"III",
+			'I', Items.iron_ingot,'E', UniversalCoins.proxy.itemEnderCard,
+		});
+	}
+	
 	public static void addEnderCardRecipes() {
-		GameRegistry.addShapelessRecipe(new ItemStack(UniversalCoins.proxy.itemEnderCard), new Object[]{
-				UniversalCoins.proxy.itemUCCard, Items.ender_pearl
+		GameRegistry.addShapedRecipe(new ItemStack(UniversalCoins.proxy.itemEnderCard), new Object[]{
+			"XEX",
+			"ECE",
+			"XEX",
+			'E', Items.ender_pearl,'C', UniversalCoins.proxy.itemUCCard,
 		});
 	}
 }

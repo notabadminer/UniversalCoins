@@ -28,8 +28,10 @@ public class CardStationGUI extends GuiContainer{
 	public int menuState = 0;
 	private static final String[] menuStateName = new String[] { "welcome",	"auth", "main", "additional", 
 		"balance", "deposit", "withdraw", "newcard", "transferaccount", "customaccount", "takecard", 
-		"takecoins", "insufficient", "invalid", "badcard", "unauthorized", "customaccountoptions","newaccount"};
+		"takecoins", "insufficient", "invalid", "badcard", "unauthorized", "customaccountoptions",
+		"newaccount","duplicateaccount", "processing"};
 	int barProgress = 0;
+	int counter = 0;
 	
 	boolean shiftPressed = false;
 
@@ -51,7 +53,7 @@ public class CardStationGUI extends GuiContainer{
 			try {
 				super.keyTyped(c, i);
 			} catch (IOException e) {
-				// do nothing
+				// TODO Auto-generated catch block
 			}
 
 	}
@@ -76,8 +78,7 @@ public class CardStationGUI extends GuiContainer{
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float var1, int var2,
-			int var3) {
+	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/cardStation.png");
 		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
 		int x = (width - xSize) / 2;
@@ -121,14 +122,14 @@ public class CardStationGUI extends GuiContainer{
 			menuState = 14;
 		}
 		
-		DecimalFormat formatter = new DecimalFormat("#,###,###,###");//TODO localization
+		DecimalFormat formatter = new DecimalFormat("#,###,###,###");
 		if (menuState == 4 || menuState == 5) {
 			fontRendererObj.drawString(formatter.format(tEntity.accountBalance), x + 34, y + 52, 4210752);
 		}
 		if (menuState == 6) {
 			//display account balance
 			fontRendererObj.drawString(formatter.format(tEntity.accountBalance), x + 34, y + 32, 4210752);
-			fontRendererObj.drawString(textField.getText(), x + 34, y + 52, 4210752);
+			fontRendererObj.drawString(textField.getText() + drawCursor(), x + 34, y + 52, 4210752);
 		}
 		if (menuState == 9) {
 			//display text field for custom name entry
@@ -136,7 +137,13 @@ public class CardStationGUI extends GuiContainer{
 				textField.setMaxStringLength(20);
 				textField.setText(tEntity.customAccountName);
 			}
-			fontRendererObj.drawString(textField.getText(), x + 34, y + 42, 4210752);
+			fontRendererObj.drawString(textField.getText() + drawCursor(), x + 34, y + 42, 4210752);
+		}
+		if (menuState == 10 && tEntity.accountError) {
+			barProgress++;
+			if (barProgress > 20) {
+				menuState = 18;
+			}
 		}
 		if (menuState == 14) {
 			barProgress++;
@@ -152,13 +159,30 @@ public class CardStationGUI extends GuiContainer{
 				barProgress = 0;
 			}
 		}
+		if (menuState == 18) {
+			barProgress++;
+			if (barProgress > 100) {
+				menuState = 9;
+				barProgress = 0;
+			}
+		}
+		if (menuState == 19) {
+			if (tEntity.accountError) {
+				tEntity.sendButtonMessage(10, false);//send function code 10 (reset accountError)
+				menuState = 18;
+			}
+			if (tEntity.getStackInSlot(tEntity.itemCardSlot) != null) {
+				menuState = 10;
+				barProgress = 0;
+			}
+		}
 	}
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(tEntity.getName(), 6, 5, 4210752);
+		fontRendererObj.drawString(tEntity.getInventoryName(), 6, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
 		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 6, ySize - 96 + 2, 4210752);
 		drawMenu(menuState);
@@ -196,20 +220,20 @@ public class CardStationGUI extends GuiContainer{
 			case 3:
 				//additional menu
 				if (button.id == idButtonOne){
-					if (!tEntity.cardOwner.contentEquals(tEntity.player)) {
+					if (!tEntity.cardOwner.contentEquals(tEntity.playerUID)) {
 					menuState = 15;
 				} else menuState = 7;}
 				if (button.id == idButtonTwo){
-					if (!tEntity.cardOwner.contentEquals(tEntity.player)) {
+					if (!tEntity.cardOwner.contentEquals(tEntity.playerUID)) {
 					menuState = 15;
 				} else menuState = 8;}
-				if (button.id == idButtonThree){
+				if (button.id == idButtonThree){				
 					if (!tEntity.customAccountName.contentEquals("none")) {
 						menuState = 16;
-					} else if (!tEntity.cardOwner.contentEquals(tEntity.player)) {
+					} else if (!tEntity.cardOwner.contentEquals(tEntity.playerUID)) {
 					menuState = 15;
 				} else menuState = 9;}
-				if (button.id == idButtonFour){}
+				if (button.id == idButtonFour){menuState = 2;}
 				break;
 			case 4:
 				//balance
@@ -246,15 +270,20 @@ public class CardStationGUI extends GuiContainer{
 						tEntity.sendServerUpdatePacket(coinWithdrawalAmount);
 						functionID = 4;
 						menuState = 11;} }
-				if (button.id == idButtonFour){menuState = 2;}
+				if (button.id == idButtonFour){textField.setText("0"); menuState = 2;}
 				break;
 			case 7:
 				//new card
 				if (button.id == idButtonOne){}
 				if (button.id == idButtonTwo){}
-				if (button.id == idButtonThree){					
-					functionID = 1;menuState = 10;}
-				if (button.id == idButtonFour){menuState = 0;}
+				if (button.id == idButtonThree 
+					&& tEntity.getStackInSlot(tEntity.itemCardSlot) == null) {
+						if (!tEntity.cardOwner.contentEquals(tEntity.playerUID)) {menuState = 15;
+						} else {
+							functionID = 1;menuState = 10;
+						}
+					}
+				if (button.id == idButtonFour){menuState = 2;}
 				break;
 			case 8:
 				//transfer account
@@ -268,16 +297,17 @@ public class CardStationGUI extends GuiContainer{
 				if (button.id == idButtonOne){}
 				if (button.id == idButtonTwo){}
 				if (button.id == idButtonThree){
-					if (!tEntity.customAccountName.contentEquals("none")) {
+					if (!textField.getText().contentEquals("none")){
 						String customName = textField.getText();
 						tEntity.sendServerUpdatePacket(customName);
-						functionID = 9;menuState = 10;
-					} else {
-						String customName = textField.getText();
-						tEntity.sendServerUpdatePacket(customName);
-						functionID = 7;menuState = 10;}
+						if (tEntity.customAccountName.contentEquals("none")) {
+							functionID = 7;menuState = 19;
+						} else {
+							functionID = 9;menuState = 19;
+						}
 					}
-				if (button.id == idButtonFour){menuState = 3;}
+				}
+				if (button.id == idButtonFour){textField.setText("0");menuState = 3;}
 				break;
 			case 10:
 				//take card
@@ -291,7 +321,7 @@ public class CardStationGUI extends GuiContainer{
 				if (button.id == idButtonOne){}
 				if (button.id == idButtonTwo){}
 				if (button.id == idButtonThree){}
-				if (button.id == idButtonFour){menuState = 0;}
+				if (button.id == idButtonFour){textField.setText("0");menuState = 0;}
 				break;
 			case 12:
 				//Insufficient funds
@@ -324,8 +354,10 @@ public class CardStationGUI extends GuiContainer{
 			case 16:
 				//custom account options
 				if (button.id == idButtonOne){
-					functionID = 7;
-					menuState = 10;
+					if (tEntity.getStackInSlot(tEntity.itemCardSlot) == null) {
+						functionID = 7;
+						menuState = 19;
+					}
 				}
 				if (button.id == idButtonTwo){
 					menuState = 9;
@@ -340,6 +372,20 @@ public class CardStationGUI extends GuiContainer{
 				if (button.id == idButtonThree){					
 					functionID = 1;menuState = 10;}
 				if (button.id == idButtonFour){menuState = 0;}
+				break;
+			case 18:
+				//duplicate account
+				if (button.id == idButtonOne){}
+				if (button.id == idButtonTwo){}
+				if (button.id == idButtonThree){}
+				if (button.id == idButtonFour){}
+				break;
+			case 19:
+				//processing
+				if (button.id == idButtonOne){}
+				if (button.id == idButtonTwo){}
+				if (button.id == idButtonThree){}
+				if (button.id == idButtonFour){}
 				break;
 			default:
 				//we should never get here
@@ -384,5 +430,15 @@ public class CardStationGUI extends GuiContainer{
 				fontRendererObj.drawString(menuString, 34, lineCoords[x], 4210752);
 			}
 		}
+	}
+	
+	private String drawCursor() {
+		while (counter < 20) {
+			counter++;
+			return "_";
+		}
+		counter++;
+		if (counter >= 40) counter = 0;
+		return "";
 	}
 }

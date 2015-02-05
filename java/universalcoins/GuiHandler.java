@@ -6,18 +6,21 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import universalcoins.gui.CardStationGUI;
+import universalcoins.gui.SafeGUI;
 import universalcoins.gui.TradeStationGUI;
 import universalcoins.gui.VendorBuyGUI;
 import universalcoins.gui.VendorGUI;
 import universalcoins.gui.VendorSellGUI;
 import universalcoins.gui.VendorWrenchGUI;
 import universalcoins.inventory.ContainerCardStation;
+import universalcoins.inventory.ContainerSafe;
 import universalcoins.inventory.ContainerTradeStation;
 import universalcoins.inventory.ContainerVendor;
 import universalcoins.inventory.ContainerVendorBuy;
 import universalcoins.inventory.ContainerVendorSell;
 import universalcoins.inventory.ContainerVendorWrench;
 import universalcoins.tile.TileCardStation;
+import universalcoins.tile.TileSafe;
 import universalcoins.tile.TileTradeStation;
 import universalcoins.tile.TileVendor;
 
@@ -44,6 +47,9 @@ class GuiHandler implements IGuiHandler {
         if (tileEntity instanceof TileCardStation) {
             return new ContainerCardStation(player.inventory, (TileCardStation) tileEntity);
         }
+        if (tileEntity instanceof TileSafe) {
+            return new ContainerSafe(player.inventory, (TileSafe) tileEntity);
+        }
         return null;
 	}
 
@@ -67,6 +73,9 @@ class GuiHandler implements IGuiHandler {
         }
         if (tileEntity instanceof TileCardStation) {
             return new CardStationGUI(player.inventory, (TileCardStation) tileEntity);
+        }
+        if (tileEntity instanceof TileSafe) {
+            return new SafeGUI(player.inventory, (TileSafe) tileEntity);
         }
         return null;
 		}	
