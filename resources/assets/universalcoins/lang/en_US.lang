@@ -1,22 +1,28 @@
 #####
 # Main
 #####
-tile.blockTradeStation.name=Universal Trade Station
-tile.blockVendor.name=Vending Block
-tile.blockVendorFrame.name=Vending Frame
-tile.blockCardStation.name=Universal Bank ATM
-tile.blockBase.name=Base Block
-tile.blockSafe.name=Ender Safe
-item.itemCoin.name=Coin
-item.itemSmallCoinStack.name=Coin Stack
-item.itemLargeCoinStack.name=Large Coin Stack
-item.itemSmallCoinBag.name=Coin Bag
-item.itemLargeCoinBag.name=Large Coin Bag
-item.itemUCCard.name=Universal Card
-item.itemEnderCard.name=Ender Card
-item.itemSeller.name=Selling Catalog
-item.itemVendorWrench.name=Vendor Wrench
-item.itemVendorFrame.name=Vending Frame
+tile.tradeStation.name=Universal Trade Station
+tile.vendor.name=Vending Block
+tile.vendorFrame.name=Vending Frame
+tile.cardStation.name=Universal Bank ATM
+tile.base.name=Base Block
+tile.safe.name=Ender Safe
+tile.bandit.name=Slot Machine
+tile.signal.name=Redstone Signal Generator
+tile.packager.name=Packager
+item.coin.name=Coin
+item.smallCoinStack.name=Coin Stack
+item.largeCoinStack.name=Large Coin Stack
+item.smallCoinBag.name=Coin Bag
+item.largeCoinBag.name=Large Coin Bag
+item.universalCard.name=Universal Card
+item.enderCard.name=Ender Card
+item.seller.name=Selling Catalog
+item.vendorWrench.name=Vendor Wrench
+item.vendorFrame.name=Vending Frame
+item.universalSign.name=Advanced Sign
+item.linkCard.name=Remote Storage Linking Card
+item.package.name=Package
 itemGroup.tabUniversalCoins=Universal Coins
 
 #####
@@ -26,6 +32,10 @@ general.button.buy=Buy
 general.button.sell=Sell
 general.button.edit=Edit
 general.button.save=Save
+general.button.spin=Spin
+general.button.coin=Coin
+general.label.balance=Balance: 
+general.label.price=Price: 
 
 #####
 # Commands
@@ -101,6 +111,14 @@ item.itemEnderCard.balance=Account balance:
 item.itemEnderCard.message.deposit=Deposited
 
 #####
+# Linking Card Messages
+#####
+item.linkCard.blank=Blank
+item.linkCard.stored=Location Stored
+item.linkCard.message.stored=Location stored: 
+item.linkCard.message.set=Remote storage location set.
+
+#####
 # Safe GUI
 #####
 safe.gui.balance=Balance:
@@ -108,14 +126,12 @@ safe.gui.balance=Balance:
 #####
 # TradeStation GUI
 #####
-tradestation.gui.button.coin=Coin
 tradestation.gui.button.mode=Mode
 tradestation.gui.warning.noitem=No item
 tradestation.gui.label.autobuy=Auto Buy/Sell
 tradestation.gui.autolabel.off=Off
 tradestation.gui.autolabel.buy=Buy
 tradestation.gui.autolabel.sell=Sell
-tradestation.gui.price=Price: 
 
 #####
 # Vending GUI
@@ -123,19 +139,44 @@ tradestation.gui.price=Price:
 vending.wrench.owner=Owner
 vending.wrench.infiniteon=Infinite: On
 vending.wrench.infiniteoff=Infinite: Off
-vending.gui.button.mode.sell=Sell
-vending.gui.button.mode.buy=Buy
-vending.gui.price=Price: 
 
 #####
-# Hint GUI
+# Sign GUI
 #####
-hintgui.sellmode.sell=Selling
-hintgui.sellmode.buy=Buying
-hintgui.price=Price: 
-hintgui.warning.stock=Out Of Stock!
-hintgui.warning.coins=Out Of Coins!
-hintgui.warning.inventoryfull=Inventory is Full!
+sign.sellmode.sell=Selling
+sign.sellmode.buy=Buying
+sign.price=Price: 
+sign.warning.stock=Out Of Stock!
+sign.warning.coins=Out Of Coins!
+sign.warning.inventoryfull=Inventory is Full!
+
+#####
+# Signal Generator GUI
+#####
+signal.label.fee=Coins:
+signal.label.duration=Duration:
+signal.face.label.second=second
+signal.face.label.seconds=seconds
+signal.face.label.coin=coin
+signal.face.label.coins=coins
+signal.message.notenough=Not enough coins!
+signal.message.activated=Signal activated.
+
+#####
+# Slot Machine Gui
+#####
+bandit.label.payout=Payout:
+bandit.label.fee=Fee
+bandit.label.four=Match Four
+bandit.label.five=Match Five
+
+
+#####
+# Packager GUI
+#####
+packager.button.small=Small
+packager.button.medium=Medium
+packager.button.large=Large
 
 #####
 # ATM GUI
@@ -163,7 +204,7 @@ cardstation.additional.two=<-- New Card
 cardstation.additional.three=
 cardstation.additional.four=<-- Account Transfer
 cardstation.additional.five=
-cardstation.additional.six=<-- Secondary Account
+cardstation.additional.six=<-- Secondary Acct.
 cardstation.additional.seven=
 cardstation.additional.eight=<-- Previous Menu
 cardstation.auth.one=

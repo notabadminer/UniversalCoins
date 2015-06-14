@@ -1,7 +1,0 @@
-{
-	"parent": "block/cube_column",
-    "textures": {
-        "end": "universalcoins:blocks/blockTradeStation",
-        "side": "universalcoins:blocks/blockTradeStationSide"
-    }
-}
