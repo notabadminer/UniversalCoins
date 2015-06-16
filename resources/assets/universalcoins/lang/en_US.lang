@@ -1,28 +1,28 @@
 #####
 # Main
 #####
-tile.tradeStation.name=Universal Trade Station
-tile.vendor.name=Vending Block
-tile.vendorFrame.name=Vending Frame
-tile.cardStation.name=Universal Bank ATM
-tile.base.name=Base Block
-tile.safe.name=Ender Safe
-tile.bandit.name=Slot Machine
-tile.signal.name=Redstone Signal Generator
-tile.packager.name=Packager
-item.coin.name=Coin
-item.smallCoinStack.name=Coin Stack
-item.largeCoinStack.name=Large Coin Stack
-item.smallCoinBag.name=Coin Bag
-item.largeCoinBag.name=Large Coin Bag
-item.universalCard.name=Universal Card
-item.enderCard.name=Ender Card
-item.seller.name=Selling Catalog
-item.vendorWrench.name=Vendor Wrench
-item.vendorFrame.name=Vending Frame
-item.universalSign.name=Advanced Sign
-item.linkCard.name=Remote Storage Linking Card
-item.package.name=Package
+tile.blockTradeStation.name=Universal Trade Station
+tile.blockVendor.name=Vending Block
+tile.blockVendorFrame.name=Vending Frame
+tile.blockCardStation.name=Universal Bank ATM
+tile.blockBase.name=Base Block
+tile.blockSafe.name=Ender Safe
+tile.blockBandit.name=Slot Machine
+tile.blockSignal.name=Redstone Signal Generator
+tile.blockPackager.name=Packager
+item.itemCoin.name=Coin
+item.itemSmallCoinStack.name=Coin Stack
+item.itemLargeCoinStack.name=Large Coin Stack
+item.itemSmallCoinBag.name=Coin Bag
+item.itemLargeCoinBag.name=Large Coin Bag
+item.itemUCCard.name=Universal Card
+item.itemEnderCard.name=Ender Card
+item.itemSeller.name=Selling Catalog
+item.itemVendorWrench.name=Vendor Wrench
+item.itemVendorFrame.name=Vending Frame
+item.itemUCSign.name=Advanced Sign
+item.itemLinkCard.name=Remote Storage Linking Card
+item.itemPackage.name=Package
 itemGroup.tabUniversalCoins=Universal Coins
 
 #####
