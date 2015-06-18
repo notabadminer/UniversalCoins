@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import universalcoins.tile.TileUCSign;
+import universalcoins.tile.TileVendorFrame;
 
 public class UCTextureMessage  implements IMessage, IMessageHandler<UCTextureMessage, IMessage> {
 	private int x, y, z;
@@ -68,9 +69,9 @@ private void processMessage(UCTextureMessage message, final MessageContext ctx) 
 		World world = ctx.getServerHandler().playerEntity.worldObj;
 
 		TileEntity tileEntity = world.getTileEntity(new BlockPos(message.x, message.y, message.z));
-		//if (tileEntity instanceof TileVendorFrame) {
-		//	((TileVendorFrame) tileEntity).blockIcon = message.blockIcon;
-		//}
+		if (tileEntity instanceof TileVendorFrame) {
+			((TileVendorFrame) tileEntity).blockIcon = message.blockIcon;
+		}
 		if (tileEntity instanceof TileUCSign) {
 			((TileUCSign) tileEntity).blockIcon = message.blockIcon;
 		}

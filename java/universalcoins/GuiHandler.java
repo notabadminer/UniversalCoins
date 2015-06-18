@@ -22,6 +22,7 @@ import universalcoins.gui.PackagerGUI;
 import universalcoins.gui.SafeGUI;
 import universalcoins.gui.SignalGUI;
 import universalcoins.gui.TradeStationGUI;
+import universalcoins.gui.UCSignEditGUI;
 import universalcoins.gui.VendorBuyGUI;
 import universalcoins.gui.VendorGUI;
 import universalcoins.gui.VendorSellGUI;
@@ -32,6 +33,7 @@ import universalcoins.tile.TilePackager;
 import universalcoins.tile.TileSafe;
 import universalcoins.tile.TileSignal;
 import universalcoins.tile.TileTradeStation;
+import universalcoins.tile.TileUCSign;
 import universalcoins.tile.TileVendor;
 
 class GuiHandler implements IGuiHandler {
@@ -111,6 +113,9 @@ class GuiHandler implements IGuiHandler {
         		return new VendorSellGUI(player.inventory, (TileVendor) tileEntity);
         	} else return new VendorBuyGUI(player.inventory, (TileVendor) tileEntity);
         }
+		if (tileEntity instanceof TileUCSign) {
+			return new UCSignEditGUI((TileUCSign) tileEntity);
+	    }
 		return null;
 	}
 }

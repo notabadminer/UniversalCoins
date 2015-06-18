@@ -5,6 +5,7 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
 
@@ -46,9 +47,12 @@ public class RecipeEnderCard implements IRecipe {
 	}
 
 	@Override
-	public ItemStack[] getRemainingItems(InventoryCrafting p_179532_1_) {
-		// TODO Auto-generated method stub
-		return null;
+	public ItemStack[] getRemainingItems(InventoryCrafting inventoryCrafting) {
+		ItemStack[] remainingItems = new ItemStack[inventoryCrafting.getSizeInventory()];
+		for (int i = 0; i < remainingItems.length; ++i) {
+			ItemStack itemstack = inventoryCrafting.getStackInSlot(i);
+			remainingItems[i] = net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack);
+		}
+		return remainingItems;
 	}
-
 }

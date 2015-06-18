@@ -4,8 +4,6 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockWallSign;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,6 +15,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.UniversalCoins;
@@ -63,7 +62,8 @@ public class BlockUCWallSign extends BlockWallSign {
 		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity != null && tileEntity instanceof TileUCSign) {
 			TileUCSign tentity = (TileUCSign) tileEntity;
-			if (player.getCommandSenderEntity().getName().matches(tentity.blockOwner)) {
+			if (player.getName().matches(tentity.blockOwner)) {
+				FMLLog.info("attempting to open gui");
 				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
 			}
 			return true;

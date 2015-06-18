@@ -33,6 +33,8 @@ import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCCardStationServerCustomNameMessage;
 import universalcoins.net.UCCardStationServerWithdrawalMessage;
 import universalcoins.net.UCRecipeMessage;
+import universalcoins.net.UCTextureMessage;
+import universalcoins.net.UCVendorServerMessage;
 import universalcoins.proxy.CommonProxy;
 import universalcoins.tile.TileBandit;
 import universalcoins.tile.TileCardStation;
@@ -193,20 +195,18 @@ public class UniversalCoins {
 		// network packet handling
 		snw = NetworkRegistry.INSTANCE.newSimpleChannel(modid);
 		snw.registerMessage(UCButtonMessage.class, UCButtonMessage.class, 0, Side.SERVER);
-		// snw.registerMessage(UCVendorServerMessage.class,
-		// UCVendorServerMessage.class, 1, Side.SERVER);
-		snw.registerMessage(UCCardStationServerWithdrawalMessage.class, UCCardStationServerWithdrawalMessage.class, 4,
+		snw.registerMessage(UCVendorServerMessage.class, UCVendorServerMessage.class, 1, Side.SERVER);
+		snw.registerMessage(UCCardStationServerWithdrawalMessage.class, UCCardStationServerWithdrawalMessage.class, 2,
 				Side.SERVER);
-		snw.registerMessage(UCCardStationServerCustomNameMessage.class, UCCardStationServerCustomNameMessage.class, 5,
+		snw.registerMessage(UCCardStationServerCustomNameMessage.class, UCCardStationServerCustomNameMessage.class, 3,
 				Side.SERVER);
-		snw.registerMessage(UCRecipeMessage.class, UCRecipeMessage.class, 6, Side.CLIENT);
-		// snw.registerMessage(UCTextureMessage.class, UCTextureMessage.class,
-		// 7, Side.SERVER);
-		snw.registerMessage(UCBanditServerMessage.class, UCBanditServerMessage.class, 8, Side.SERVER);
+		snw.registerMessage(UCRecipeMessage.class, UCRecipeMessage.class, 4, Side.CLIENT);
+		snw.registerMessage(UCTextureMessage.class, UCTextureMessage.class, 5, Side.SERVER);
+		snw.registerMessage(UCBanditServerMessage.class, UCBanditServerMessage.class, 6, Side.SERVER);
 
 		// update check using versionchecker
 		FMLInterModComms.sendRuntimeMessage(modid, "VersionChecker", "addVersionCheck",
-				"https://raw.githubusercontent.com/notabadminer/UniversalCoinsMod/master/version.json");
+				"https://raw.githubusercontent.com/notabadminer/UniversalCoins/master/version.json");
 	}
 
 	@EventHandler

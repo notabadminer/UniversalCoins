@@ -15,11 +15,9 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
-import universalcoins.blocks.BlockVendorFrame;
 import universalcoins.gui.VendorBuyGUI;
 import universalcoins.gui.VendorGUI;
 import universalcoins.gui.VendorSellGUI;
@@ -27,7 +25,7 @@ import universalcoins.items.ItemEnderCard;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCTextureMessage;
 import universalcoins.net.UCVendorServerMessage;
-import universalcoins.util.UCWorldData;
+import universalcoins.util.UniversalAccounts;
 
 public class TileVendor extends TileEntity implements IInventory, ISidedInventory {
 	
@@ -915,9 +913,7 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	public int getUserAccountBalance() {
 		if (inventory[itemUserCardSlot] != null) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
-			if (getWorldString(accountNumber) != "") {
-				return getWorldInt(accountNumber);
-			}
+			return UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
 		} return -1;
 	}
 	
@@ -949,78 +945,39 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 		}
 	}
 	
-	public boolean debitUserAccount(int amount) {
+	public void debitUserAccount(int amount) {
 		if (inventory[itemUserCardSlot] != null) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
-			if (getWorldString(accountNumber) != "") {
-				int balance = getWorldInt(accountNumber);
-				balance -= amount;
-				setWorldData(accountNumber, balance);
-				return true;
-			}
-		} return false;
+			UniversalAccounts.getInstance().debitAccount(worldObj, accountNumber, amount);
+		}
 	}
 	
 	public void creditUserAccount(int amount) {
 		if (inventory[itemUserCardSlot] != null) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
-			if (getWorldString(accountNumber) != "") {
-				int balance = getWorldInt(accountNumber);
-				balance += amount;
-				setWorldData(accountNumber, balance);
-			}
+			UniversalAccounts.getInstance().creditAccount(worldObj, accountNumber, amount);
 		}
 	}
 	
 	public int getOwnerAccountBalance() {
 		if (inventory[itemCardSlot] != null) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			if (getWorldString(accountNumber) != "") {
-				return getWorldInt(accountNumber);
-			}
+			return UniversalAccounts.getInstance().getAccountBalance(getWorld(), accountNumber);
 		} return -1;
 	}
 	
-	public boolean debitOwnerAccount(int amount) {
+	public void debitOwnerAccount(int amount) {
 		if (inventory[itemCardSlot] != null) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			if (getWorldString(accountNumber) != "") {
-				int balance = getWorldInt(accountNumber);
-				balance -= amount;
-				setWorldData(accountNumber, balance);
-				return true;
-			}
-		} return false;
+			UniversalAccounts.getInstance().debitAccount(worldObj, accountNumber, amount);
+		}
 	}
 	
 	public void creditOwnerAccount(int amount) {
 		if (inventory[itemCardSlot] != null) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			if (getWorldString(accountNumber) != "") {
-				int balance = getWorldInt(accountNumber);
-				balance += amount;
-				setWorldData(accountNumber, balance);
-			}
+			UniversalAccounts.getInstance().creditAccount(worldObj, accountNumber, amount);
 		}
-	}
-	
-	private void setWorldData(String tag, int data) {
-		UCWorldData wData = UCWorldData.get(super.worldObj);
-		NBTTagCompound wdTag = wData.getData();
-		wdTag.setInteger(tag, data);
-		wData.markDirty();
-	}
-	
-	private int getWorldInt(String tag) {
-		UCWorldData wData = UCWorldData.get(super.worldObj);
-		NBTTagCompound wdTag = wData.getData();
-		return wdTag.getInteger(tag);
-	}
-	
-	private String getWorldString(String tag) {
-		UCWorldData wData = UCWorldData.get(super.worldObj);
-		NBTTagCompound wdTag = wData.getData();
-		return wdTag.getString(tag);
 	}
 	
 	private void loadRemoteChunk(int x, int y, int z) {
@@ -1058,6 +1015,7 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 		if (buttonId == VendorGUI.idtcpButton) {
 			if(textColor < 15) textColor++;
 		}
+		updateEntity();
 	}
 
 	@Override

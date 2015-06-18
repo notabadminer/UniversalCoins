@@ -60,7 +60,7 @@ public class BlockUCStandingSign extends BlockStandingSign {
 		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity != null && tileEntity instanceof TileUCSign) {
 			TileUCSign tentity = (TileUCSign) tileEntity;
-			if (player.getCommandSenderEntity().getName().matches(tentity.blockOwner)) {
+			if (player.getName().matches(tentity.blockOwner)) {
 				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
 			}
 			return true;

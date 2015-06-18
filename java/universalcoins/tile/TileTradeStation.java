@@ -58,8 +58,6 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 
 	public void update() {
 		if (!worldObj.isRemote) {
-			activateBuySellButtons();
-			activateRetrieveButtons();
 			runAutoMode();
 			runCoinMode();
 		}
@@ -369,6 +367,8 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 		} else if (buttonId <= TradeStationGUI.idLBagButton) {
 			onRetrieveButtonsPressed(buttonId, shiftPressed);
 		}
+		activateRetrieveButtons();
+		activateBuySellButtons();
 		updateTE();
 	}
 
@@ -414,6 +414,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 		} catch (Throwable ex2) {
 			inUse = false;
 		}
+		activateRetrieveButtons();
 	}
 
 	@Override
@@ -507,6 +508,8 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 				}
 			}
 		}
+		activateBuySellButtons();
+		activateRetrieveButtons();
 		return stack;
 	}
 
@@ -538,8 +541,9 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 					}
 				}
 			}
+			activateRetrieveButtons();
+			activateBuySellButtons();
 		}
-		activateBuySellButtons();
 	}
 
 	private int getCoinType(Item item) {
@@ -639,14 +643,10 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 
 	@Override
 	public void openInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

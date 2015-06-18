@@ -21,7 +21,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.blocks.BlockUCStandingSign;
 import universalcoins.blocks.BlockUCWallSign;
@@ -56,10 +55,6 @@ public class ItemUCSign extends ItemSign {
 	            {
 	                return false;
 	            }
-	            else if (worldIn.isRemote)
-	            {
-	                return true;
-	            }
 	            else
 	            {
 	                if (side == EnumFacing.UP)
@@ -75,21 +70,22 @@ public class ItemUCSign extends ItemSign {
 	                --stack.stackSize;
 	                TileEntity tileentity = worldIn.getTileEntity(pos);
 
-	                if (tileentity instanceof TileUCSign && !ItemBlock.setTileEntityNBT(worldIn, pos, stack, playerIn))
-	                {
+	                if (tileentity instanceof TileUCSign) {
 	                	if (stack.hasTagCompound()) {
 	                		NBTTagCompound tagCompound = stack.getTagCompound();
 	                		if (tagCompound.getString("BlockIcon")  == "") {
 	        					NBTTagList textureList = tagCompound.getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
 	        					byte slot = tagCompound.getByte("Texture");
 	        					ItemStack textureStack  = ItemStack.loadItemStackFromNBT(tagCompound);
-	        					((TileUCSign)tileentity).sendTextureUpdateMessage(textureStack);
+	        					if (textureStack != null) {
+		        					((TileUCSign)tileentity).sendTextureUpdateMessage(textureStack);
+	        					}
 	        				} else {
 	        					((TileUCSign)tileentity).blockIcon = tagCompound.getString("BlockIcon");
 	        				}
 	                	}
 	                	((TileUCSign)tileentity).blockOwner = playerIn.getName();
-	                	playerIn.openGui(UniversalCoins.instance, 1, worldIn, pos.getX(), pos.getY(), pos.getZ());
+	                	playerIn.openGui(UniversalCoins.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
 	                }
 
 	                return true;
@@ -107,7 +103,6 @@ public class ItemUCSign extends ItemSign {
 				ItemStack textureStack  = ItemStack.loadItemStackFromNBT(tagCompound);
 				ItemModelMesher imm = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
 				String blockIcon = imm.getItemModel(textureStack).getTexture().toString();
-				FMLLog.info("BlockIcon: " + blockIcon);
 				if (blockIcon.startsWith("biomesoplenty")){
 					String[] iconInfo = blockIcon.split(":");
 					String[] blockName = textureStack.getUnlocalizedName().split("\\.", 3);

@@ -10,7 +10,6 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.container.ContainerCardStation;
 import universalcoins.tile.TileCardStation;
 
@@ -253,8 +252,6 @@ public class CardStationGUI extends GuiContainer {
 		case 3:
 			// additional menu
 			if (button.id == idButtonOne) {
-				FMLLog.info("cardOwner: " + tEntity.cardOwner);
-				FMLLog.info("playerUID: " + tEntity.playerUID);
 				if (!tEntity.cardOwner.contentEquals(tEntity.playerUID)) {
 					menuState = 15;
 				} else

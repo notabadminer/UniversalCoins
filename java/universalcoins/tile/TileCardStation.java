@@ -14,7 +14,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCCardStationServerCustomNameMessage;
@@ -115,7 +114,6 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			if (slot == itemCardSlot && !worldObj.isRemote) {
 				accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 				cardOwner = inventory[itemCardSlot].getTagCompound().getString("Owner");
-				FMLLog.info("cardOwner: " + cardOwner);
 				if (UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID) != "")
 					customAccountName = UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID);
 				accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
@@ -202,7 +200,7 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			coinWithdrawalAmount = 0;
 		}
 		try {
-			cardOwner = tagCompound.getString("cardOwner");
+			cardOwner = tagCompound.getString("CardOwner");
 		} catch (Throwable ex2) {
 			cardOwner = "";
 		}
@@ -271,6 +269,7 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
 			inventory[itemCardSlot].getTagCompound().setString("Account", accountNumber);
 			accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
+			cardOwner = playerUID;
 		}
 		if (functionId == 2) {
 			if (UniversalAccounts.getInstance().getPlayerAccount(worldObj, playerUID) == "") {
@@ -283,6 +282,7 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 				inventory[itemCardSlot].getTagCompound().setString("Account",
 						UniversalAccounts.getInstance().getPlayerAccount(worldObj, playerUID));
 				accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
+				cardOwner = playerUID;
 			}
 		}
 		if (functionId == 3) {

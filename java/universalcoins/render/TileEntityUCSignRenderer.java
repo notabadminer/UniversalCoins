@@ -79,7 +79,6 @@ public class TileEntityUCSignRenderer extends TileEntitySpecialRenderer {
 	        }
 
 	        this.bindTexture(blockTexture);
-	        GlStateManager.pushMatrix();
 	        Tessellator tessellator = Tessellator.getInstance();
 			WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 	        worldrenderer.startDrawingQuads();
@@ -159,7 +158,6 @@ public class TileEntityUCSignRenderer extends TileEntitySpecialRenderer {
 			
 			tessellator.draw();
 			
-			GlStateManager.popMatrix();
 	        FontRenderer fontrenderer = this.getFontRenderer();
 	        f3 = 0.016666668F * f1;
 	        GlStateManager.translate(0.5F, 0.5F, 0.105F);
@@ -202,7 +200,7 @@ public class TileEntityUCSignRenderer extends TileEntitySpecialRenderer {
 	            }
 	        }
 
-	        GlStateManager.depthMask(true);
+	        GlStateManager.enableDepth();
 	        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 	        GlStateManager.popMatrix();
 	    }

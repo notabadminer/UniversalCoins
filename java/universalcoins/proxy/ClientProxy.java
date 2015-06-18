@@ -42,6 +42,10 @@ public class ClientProxy extends CommonProxy {
 				+ itemUCCard.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(itemVendorWrench, 0, new ModelResourceLocation(UniversalCoins.modid + ":"
 				+ itemVendorWrench.getUnlocalizedName().substring(5), "inventory"));
+		mesher.register(itemUCSign, 0, new ModelResourceLocation(UniversalCoins.modid + ":"
+				+ itemUCSign.getUnlocalizedName().substring(5), "inventory"));
+		mesher.register(itemLinkCard, 0, new ModelResourceLocation(UniversalCoins.modid + ":"
+				+ itemLinkCard.getUnlocalizedName().substring(5), "inventory"));
 
 		// Blocks
 		mesher.register(Item.getItemFromBlock(blockBandit), 0, new ModelResourceLocation(UniversalCoins.modid + ":"
@@ -58,8 +62,8 @@ public class ClientProxy extends CommonProxy {
 				+ blockSignal.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(Item.getItemFromBlock(blockTradeStation), 0, new ModelResourceLocation(UniversalCoins.modid
 				+ ":" + blockTradeStation.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(Item.getItemFromBlock(blockVendor), 0, new ModelResourceLocation(UniversalCoins.modid
-				+ ":" + blockVendor.getUnlocalizedName().substring(5), "inventory"));
+		//mesher.register(Item.getItemFromBlock(blockVendor), 0, new ModelResourceLocation(UniversalCoins.modid
+		//		+ ":" + blockVendor.getUnlocalizedName().substring(5), "inventory"));
 
 		
 		ClientRegistry.bindTileEntitySpecialRenderer(TileCardStation.class, new TileEntityCardStationRenderer());

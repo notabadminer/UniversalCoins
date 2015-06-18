@@ -19,6 +19,7 @@ import universalcoins.items.ItemCoin;
 import universalcoins.items.ItemEnderCard;
 import universalcoins.items.ItemLargeCoinBag;
 import universalcoins.items.ItemLargeCoinStack;
+import universalcoins.items.ItemLinkCard;
 import universalcoins.items.ItemPackage;
 import universalcoins.items.ItemSeller;
 import universalcoins.items.ItemSmallCoinBag;
@@ -91,7 +92,7 @@ public class CommonProxy {
 		itemSeller = new ItemSeller().setUnlocalizedName("itemSeller");
 		itemVendorWrench = new ItemVendorWrench().setUnlocalizedName("itemVendorWrench");
 		itemUCSign = new ItemUCSign().setUnlocalizedName("itemUCSign");
-		// itemLinkCard = new ItemLinkCard().setUnlocalizedName("itemLinkCard");
+		itemLinkCard = new ItemLinkCard().setUnlocalizedName("itemLinkCard");
 		itemPackage = new ItemPackage().setUnlocalizedName("itemPackage");
 
 		GameRegistry.registerItem(itemCoin, itemCoin.getUnlocalizedName().substring(5));
@@ -104,8 +105,7 @@ public class CommonProxy {
 		GameRegistry.registerItem(itemSeller, itemSeller.getUnlocalizedName().substring(5));
 		GameRegistry.registerItem(itemVendorWrench, itemVendorWrench.getUnlocalizedName().substring(5));
 		GameRegistry.registerItem(itemUCSign, itemUCSign.getUnlocalizedName().substring(5));
-		// GameRegistry.registerItem(itemLinkCard,
-		// itemLinkCard.getUnlocalizedName().substring(5));
+		GameRegistry.registerItem(itemLinkCard, itemLinkCard.getUnlocalizedName().substring(5));
 		GameRegistry.registerItem(itemPackage, itemPackage.getUnlocalizedName().substring(5));
 	}
 
