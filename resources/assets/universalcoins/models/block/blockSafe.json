@@ -1,6 +1,8 @@
 {
-    "parent": "block/cube_all",
-	"textures": {
-        "all": "universalcoins:blocks/blockBase"
-    }
+	"parent": "block/orientable",
+    "textures": {
+        "top": "universalcoins:blocks/blockSafe",
+        "front": "universalcoins:blocks/blockSafeFace",
+        "side": "universalcoins:blocks/blockSafe"
+	}
 }

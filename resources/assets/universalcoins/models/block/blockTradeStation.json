@@ -1,6 +1,7 @@
 {
-    "parent": "block/cube_all",
-	"textures": {
-        "all": "universalcoins:blocks/blockBase"
+    "parent": "block/cube_column",
+    "textures": {
+        "end": "universalcoins:blocks/blockTradeStation",
+        "side": "universalcoins:blocks/blockTradeStationFace"
     }
 }

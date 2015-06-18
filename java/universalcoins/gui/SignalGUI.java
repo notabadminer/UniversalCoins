@@ -15,7 +15,7 @@ import universalcoins.container.ContainerSignal;
 import universalcoins.tile.TileSignal;
 
 public class SignalGUI extends GuiContainer {
-	
+
 	private TileSignal tEntity;
 	private GuiButton coinButton, durationMinusButton, durationPlusButton, coinMinusButton, coinPlusButton;
 	public static final int idCoinButton = 0;
@@ -23,11 +23,11 @@ public class SignalGUI extends GuiContainer {
 	public static final int idDurPlusButton = 2;
 	public static final int idCoinMinusButton = 3;
 	public static final int idCoinPlusButton = 4;
-		
+
 	public SignalGUI(InventoryPlayer inventoryPlayer, TileSignal tileEntity) {
 		super(new ContainerSignal(inventoryPlayer, tileEntity));
 		tEntity = tileEntity;
-		
+
 		xSize = 176;
 		ySize = 201;
 	}
@@ -35,11 +35,16 @@ public class SignalGUI extends GuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		coinButton = new GuiSlimButton(idCoinButton, 111 + (width - xSize) / 2, 92 + (height - ySize) / 2, 32, 12, StatCollector.translateToLocal("general.button.coin"));
-		durationMinusButton = new GuiSlimButton(idDurMinusButton, 95 + (width - xSize) / 2, 48 + (height - ySize) / 2, 12, 12, "-");
-		durationPlusButton = new GuiSlimButton(idDurPlusButton, 144 + (width - xSize) / 2, 48 + (height - ySize) / 2, 12, 12, "+");
-		coinMinusButton = new GuiSlimButton(idCoinMinusButton, 95 + (width - xSize) / 2, 26 + (height - ySize) / 2, 12, 12, "-");
-		coinPlusButton = new GuiSlimButton(idCoinPlusButton, 144 + (width - xSize) / 2, 26 + (height - ySize) / 2, 12, 12, "+");
+		coinButton = new GuiSlimButton(idCoinButton, 111 + (width - xSize) / 2, 92 + (height - ySize) / 2, 32, 12,
+				StatCollector.translateToLocal("general.button.coin"));
+		durationMinusButton = new GuiSlimButton(idDurMinusButton, 95 + (width - xSize) / 2, 48 + (height - ySize) / 2,
+				12, 12, "-");
+		durationPlusButton = new GuiSlimButton(idDurPlusButton, 144 + (width - xSize) / 2, 48 + (height - ySize) / 2,
+				12, 12, "+");
+		coinMinusButton = new GuiSlimButton(idCoinMinusButton, 95 + (width - xSize) / 2, 26 + (height - ySize) / 2, 12,
+				12, "-");
+		coinPlusButton = new GuiSlimButton(idCoinPlusButton, 144 + (width - xSize) / 2, 26 + (height - ySize) / 2, 12,
+				12, "+");
 		buttonList.clear();
 		buttonList.add(coinButton);
 		buttonList.add(durationMinusButton);
@@ -47,7 +52,7 @@ public class SignalGUI extends GuiContainer {
 		buttonList.add(coinMinusButton);
 		buttonList.add(coinPlusButton);
 	}
-	
+
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		DecimalFormat formatter = new DecimalFormat("#,###,###,###");
@@ -56,24 +61,22 @@ public class SignalGUI extends GuiContainer {
 		// the parameters for drawString are: string, x, y, color
 		fontRendererObj.drawString(tEntity.getName(), 8, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
-		fontRendererObj.drawString(
-				StatCollector.translateToLocal("container.inventory"), 8,
-				96, 4210752);
+		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, 96, 4210752);
 		String feeLabel = StatCollector.translateToLocal("signal.label.fee");
 		int stringWidth = fontRendererObj.getStringWidth(feeLabel);
 		fontRendererObj.drawString(feeLabel, 92 - stringWidth, 28, 4210752);
-		//draw fee right aligned
+		// draw fee right aligned
 		String fee = String.valueOf(formatter.format(tEntity.fee));
 		stringWidth = fontRendererObj.getStringWidth(fee);
 		fontRendererObj.drawString(fee, 138 - stringWidth, 28, 4210752);
 		String durationLabel = StatCollector.translateToLocal("signal.label.duration");
 		stringWidth = fontRendererObj.getStringWidth(durationLabel);
 		fontRendererObj.drawString(durationLabel, 92 - stringWidth, 50, 4210752);
-		//draw signal duration right aligned
+		// draw signal duration right aligned
 		String duration = String.valueOf(formatter.format(tEntity.duration));
 		stringWidth = fontRendererObj.getStringWidth(duration);
 		fontRendererObj.drawString(duration, 138 - stringWidth, 50, 4210752);
-		//draw coin sum right aligned
+		// draw coin sum right aligned
 		String coinSumString = String.valueOf(formatter.format(tEntity.coinSum));
 		stringWidth = fontRendererObj.getStringWidth(coinSumString);
 		fontRendererObj.drawString(coinSumString, 138 - stringWidth, 78, 4210752);
@@ -81,7 +84,7 @@ public class SignalGUI extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
-		//disable if no coins left
+		// disable if no coins left
 		coinButton.enabled = tEntity.coinSum > 0;
 
 		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/signal.png");
@@ -91,7 +94,7 @@ public class SignalGUI extends GuiContainer {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
 	}
-	
+
 	protected void actionPerformed(GuiButton button) {
 		tEntity.sendPacket(button.id, isShiftKeyDown());
 	}

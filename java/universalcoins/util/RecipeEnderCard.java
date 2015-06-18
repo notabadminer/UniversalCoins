@@ -9,12 +9,11 @@ import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
 
 public class RecipeEnderCard implements IRecipe {
-	
+
 	private ItemStack newStack;
-	private Item[] recipeItems = {null, Items.ender_pearl, null, 
-			Items.ender_pearl, UniversalCoins.proxy.itemUCCard, Items.ender_pearl, 
-			null, Items.ender_pearl, null};
-	
+	private Item[] recipeItems = { null, Items.ender_pearl, null, Items.ender_pearl, UniversalCoins.proxy.itemUCCard,
+			Items.ender_pearl, null, Items.ender_pearl, null };
+
 	@Override
 	public boolean matches(InventoryCrafting var1, World var2) {
 		this.newStack = null;
@@ -24,7 +23,7 @@ public class RecipeEnderCard implements IRecipe {
 			}
 			if (var1.getStackInSlot(j) != null && var1.getStackInSlot(j).getItem() != recipeItems[j]) {
 				return false;
-			} 
+			}
 		}
 		newStack = new ItemStack(UniversalCoins.proxy.itemEnderCard);
 		this.newStack.setTagCompound(var1.getStackInSlot(4).getTagCompound());

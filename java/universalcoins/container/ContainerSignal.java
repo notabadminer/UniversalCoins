@@ -22,29 +22,28 @@ public class ContainerSignal extends Container {
 		// the Slot constructor takes the IInventory and the slot number in that
 		// it binds to and the x-y coordinates it resides on-screen
 		addSlotToContainer(new UCSlotOutput(tEntity, tEntity.itemOutputSlot, 148, 73));
-		
+
 		// commonly used vanilla code that adds the player's inventory
 		bindPlayerInventory(inventoryPlayer);
 	}
-	
+
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
 		return tEntity.isUseableByPlayer(player);
 	}
-	
+
 	void bindPlayerInventory(InventoryPlayer inventoryPlayer) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 9; j++) {
-				addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9,
-						8 + j * 18, 108 + i * 18));
+				addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9, 8 + j * 18, 108 + i * 18));
 			}
 		}
-		
+
 		for (int i = 0; i < 9; i++) {
 			addSlotToContainer(new Slot(inventoryPlayer, i, 8 + i * 18, 166));
 		}
 	}
-	
+
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slot) {
 		ItemStack stack = null;
@@ -53,7 +52,7 @@ public class ContainerSignal extends Container {
 		if (slotObject != null && slotObject.getHasStack()) {
 			ItemStack stackInSlot = slotObject.getStack();
 			stack = stackInSlot.copy();
-			
+
 			// merges the item into player inventory since its in the tileEntity
 			if (slot < 3) {
 				if (!this.mergeItemStack(stackInSlot, 3, 39, true)) {
@@ -66,63 +65,58 @@ public class ContainerSignal extends Container {
 			// inventory
 			else {
 				boolean foundSlot = false;
-				for (int i = 0; i < 3; i++){
-					if (((Slot)inventorySlots.get(i)).isItemValid(stackInSlot) && this.mergeItemStack(stackInSlot, i, i + 1, false)) {
+				for (int i = 0; i < 3; i++) {
+					if (((Slot) inventorySlots.get(i)).isItemValid(stackInSlot)
+							&& this.mergeItemStack(stackInSlot, i, i + 1, false)) {
 						foundSlot = true;
 						break;
 					}
 				}
-				if (!foundSlot){
+				if (!foundSlot) {
 					return null;
 				}
 			}
-			
+
 			if (stackInSlot.stackSize == 0) {
 				slotObject.putStack(null);
-			}
-			else {
+			} else {
 				slotObject.onSlotChanged();
 			}
-			
+
 			if (stackInSlot.stackSize == stack.stackSize) {
 				return null;
 			}
 			slotObject.onPickupFromSlot(player, stackInSlot);
 		}
-		
+
 		return stack;
 	}
-	
+
 	/**
-     * Looks for changes made in the container, sends them to every listener.
-     */
+	 * Looks for changes made in the container, sends them to every listener.
+	 */
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
-		
-		for (int i = 0; i < this.crafters.size(); ++i)
-        {
-            ICrafting icrafting = (ICrafting)this.crafters.get(i);
 
-            if (this.lastCoinSum != tEntity.coinSum ||
-            		this.lastDuration != tEntity.duration||
-            		this.lastFee != tEntity.fee||
-            		this.lastCanProvidePower != tEntity.canProvidePower) {
-            	tEntity.updateTE();
-            }
+		for (int i = 0; i < this.crafters.size(); ++i) {
+			ICrafting icrafting = (ICrafting) this.crafters.get(i);
 
-	   		this.lastCoinSum = tEntity.coinSum;
-	   		this.lastDuration = tEntity.duration;
-	   		this.lastFee = tEntity.fee;
-	   		this.lastCanProvidePower = tEntity.canProvidePower;
-        }
+			if (this.lastCoinSum != tEntity.coinSum || this.lastDuration != tEntity.duration
+					|| this.lastFee != tEntity.fee || this.lastCanProvidePower != tEntity.canProvidePower) {
+				tEntity.updateTE();
+			}
+
+			this.lastCoinSum = tEntity.coinSum;
+			this.lastDuration = tEntity.duration;
+			this.lastFee = tEntity.fee;
+			this.lastCanProvidePower = tEntity.canProvidePower;
+		}
 	}
-	
+
 	@SideOnly(Side.CLIENT)
-    public void updateProgressBar(int par1, int par2)
-    {
-        if (par1 == 0)
-        {
-            //this.tileEntity.autoMode = par2;
-        }
-    }
+	public void updateProgressBar(int par1, int par2) {
+		if (par1 == 0) {
+			// this.tileEntity.autoMode = par2;
+		}
+	}
 }

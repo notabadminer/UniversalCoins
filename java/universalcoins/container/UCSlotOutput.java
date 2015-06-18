@@ -9,7 +9,7 @@ public class UCSlotOutput extends Slot {
 		super(parInventory, parSlotIndex, parX, parY);
 	}
 
-	public boolean isItemValid(ItemStack par1ItemStack){
+	public boolean isItemValid(ItemStack par1ItemStack) {
 		return false;
 	}
 }

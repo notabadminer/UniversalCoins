@@ -6,21 +6,20 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import universalcoins.UniversalCoins;
 
-
 public class UCSlotCard extends Slot {
 	public UCSlotCard(IInventory parInventory, int parSlotIndex, int parX, int parY) {
 		super(parInventory, parSlotIndex, parX, parY);
 	}
 
 	@Override
-	public boolean isItemValid(ItemStack par1ItemStack){
-		if (par1ItemStack == null){
+	public boolean isItemValid(ItemStack par1ItemStack) {
+		if (par1ItemStack == null) {
 			return true;
 		}
 		Item itemInStack = par1ItemStack.getItem();
 		return (itemInStack == UniversalCoins.proxy.itemUCCard || itemInStack == UniversalCoins.proxy.itemEnderCard);
 	}
-	
+
 	public ItemStack decrStackSize(int par1) {
 		if (getStack() != null && getStack().stackSize != par1) {
 			return new ItemStack(getStack().getItem(), -1);

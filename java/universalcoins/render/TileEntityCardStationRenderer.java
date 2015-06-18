@@ -1,10 +1,13 @@
 package universalcoins.render;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
@@ -34,11 +37,24 @@ public class TileEntityCardStationRenderer extends TileEntitySpecialRenderer {
 
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+		BlockPos tPos = new BlockPos(tileEntity.getPos().getX(), tileEntity.getPos().getY() + 1, tileEntity.getPos().getZ());
+		int brightness = (int) this.getWorld().getCombinedLight(tPos, 0);
 		GL11.glPushMatrix();
-		GL11.glTranslatef((float) posX + 0.5F,(float) posY + 0.5F,(float) posZ + 0.5F);
-		GL11.glRotatef(meta * -90F, 0F, 1F, 0F);
-		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+		float f3 = 0.0F;
+		if (meta == 2) {
+			f3 = 180.0F;
+		}
+		if (meta == 4) {
+			f3 = 90.0F;
+		}
+		if (meta == 5) {
+			f3 = -90.0F;
+		}
+		GlStateManager.translate((float) posX + 0.5F, (float) posY + 0.5F, (float) posZ + 0.5F);
+		GlStateManager.rotate(-f3, 0.0F, 1.0F, 0.0F);
+		GlStateManager.translate(-0.5F, -0.5F, -0.5F);
 		worldrenderer.startDrawingQuads();
+		worldrenderer.setBrightness(brightness);
 		worldrenderer.setNormal(0.0F, 1.0F, 0.0F); //top
 
 		
@@ -126,13 +142,14 @@ public class TileEntityCardStationRenderer extends TileEntitySpecialRenderer {
 		worldrenderer.addVertexWithUV(0.9, 0.9, 0.7, 0.9, 0.1);
 		worldrenderer.addVertexWithUV(0.9, 0.9, 1, 0.9, 0.9);
 		
-		worldrenderer.startDrawingQuads();
+		tessellator.draw();
 		
-		textures = (new ResourceLocation(UniversalCoins.modid, "textures/blocks/blockCardStation_face.png"));
+		textures = (new ResourceLocation(UniversalCoins.modid, "textures/blocks/blockCardStationFace.png"));
 		Minecraft.getMinecraft().renderEngine.bindTexture(textures);
 		
 		worldrenderer.startDrawingQuads();
-		
+		worldrenderer.setBrightness(brightness);
+				
 		// inside face
 		worldrenderer.setNormal(0.0F, 0.0F, 1.0F);
 		worldrenderer.addVertexWithUV(0.1, 0.9, 0.7, 0, 0);
@@ -147,7 +164,7 @@ public class TileEntityCardStationRenderer extends TileEntitySpecialRenderer {
 		worldrenderer.addVertexWithUV(0.9, 0.1, 1, 1, 1);
 		worldrenderer.addVertexWithUV(0.9, 0.4, 0.7, 1, 0.55);
 		
-		worldrenderer.startDrawingQuads();
+		tessellator.draw();
 		GL11.glPopMatrix();
 	}
 }

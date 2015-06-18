@@ -18,54 +18,57 @@ import universalcoins.net.UCButtonMessage;
 import universalcoins.util.UCWorldData;
 
 public class TilePackager extends TileEntity implements IInventory {
-	
+
 	private ItemStack[] inventory = new ItemStack[11];
-	public static final int[] itemPackageSlot = {0 ,1 ,2, 3, 4, 5, 6, 7};
+	public static final int[] itemPackageSlot = { 0, 1, 2, 3, 4, 5, 6, 7 };
 	public static final int itemCardSlot = 8;
 	public static final int itemCoinSlot = 9;
 	public static final int itemOutputSlot = 10;
-	private static final int[] multiplier = new int[] {1, 9, 81, 729, 6561};
+	private static final int[] multiplier = new int[] { 1, 9, 81, 729, 6561 };
 	private static final Item[] coins = new Item[] { UniversalCoins.proxy.itemCoin,
-		UniversalCoins.proxy.itemSmallCoinStack, UniversalCoins.proxy.itemLargeCoinStack, 
-		UniversalCoins.proxy.itemSmallCoinBag, UniversalCoins.proxy.itemLargeCoinBag };
+			UniversalCoins.proxy.itemSmallCoinStack, UniversalCoins.proxy.itemLargeCoinStack,
+			UniversalCoins.proxy.itemSmallCoinBag, UniversalCoins.proxy.itemLargeCoinBag };
 	public int coinSum = 0;
 	public boolean cardAvailable = false;
 	public String customName = "";
 	public String playerName = "";
 	public boolean inUse = false;
 	public int packageSize = 0;
-	public int[] packageCost = {UniversalCoins.smallPackagePrice, 
-			UniversalCoins.medPackagePrice, UniversalCoins.largePackagePrice};
+	public int[] packageCost = { UniversalCoins.smallPackagePrice, UniversalCoins.medPackagePrice,
+			UniversalCoins.largePackagePrice };
 
-	
 	public TilePackager() {
 		super();
 	}
-	
+
 	public void onButtonPressed(int buttonId) {
 		if (buttonId == 0) {
-			//TODO pack things up and take coins
-			coinSum -= packageCost[packageSize];
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.itemPackage);
-			
-			NBTTagList itemList = new NBTTagList();
-			NBTTagCompound tagCompound = new NBTTagCompound();
-			for (int i = 0; i < itemPackageSlot.length; i++) {
-				ItemStack invStack = inventory[i];
-				if (invStack != null) {
-					NBTTagCompound tag = new NBTTagCompound();
-					tag.setByte("Slot", (byte) i);
-					invStack.writeToNBT(tag);
-					itemList.appendTag(tag);
+			if (inventory[itemOutputSlot] == null) {
+
+				NBTTagList itemList = new NBTTagList();
+				NBTTagCompound tagCompound = new NBTTagCompound();
+				for (int i = 0; i < itemPackageSlot.length; i++) {
+					ItemStack invStack = inventory[i];
+					if (invStack != null && invStack.getItem() != UniversalCoins.proxy.itemPackage) {
+						NBTTagCompound tag = new NBTTagCompound();
+						tag.setByte("Slot", (byte) i);
+						invStack.writeToNBT(tag);
+						itemList.appendTag(tag);
+						inventory[i] = null;
+					}
 				}
+				if (itemList.tagCount() > 0) {
+					inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.itemPackage);
+					tagCompound.setTag("Inventory", itemList);
+					inventory[itemOutputSlot].setTagCompound(tagCompound);
+					coinSum -= packageCost[packageSize];
+				}
+
 			}
-			tagCompound.setTag("Inventory", itemList);
-			inventory[itemOutputSlot].setTagCompound(tagCompound);
 		}
 		if (buttonId == 1) {
 			fillOutputSlot();
 		}
-		//TODO on package change, move any stacks to player inventory
 		if (buttonId == 2) {
 			packageSize = 0;
 			for (int i = 0; i < 4; i++) {
@@ -73,8 +76,9 @@ public class TilePackager extends TileEntity implements IInventory {
 					if (worldObj.getPlayerEntityByName(playerName).inventory.getFirstEmptyStack() != -1) {
 						worldObj.getPlayerEntityByName(playerName).inventory.addItemStackToInventory(inventory[i]);
 					} else {
-						//spawn in world
-						EntityItem entityItem = new EntityItem(worldObj, pos.getX(), pos.getY(), pos.getZ(), inventory[i]);
+						// spawn in world
+						EntityItem entityItem = new EntityItem(worldObj, pos.getX(), pos.getY(), pos.getZ(),
+								inventory[i]);
 						worldObj.spawnEntityInWorld(entityItem);
 					}
 					inventory[i] = null;
@@ -88,8 +92,9 @@ public class TilePackager extends TileEntity implements IInventory {
 					if (worldObj.getPlayerEntityByName(playerName).inventory.getFirstEmptyStack() != -1) {
 						worldObj.getPlayerEntityByName(playerName).inventory.addItemStackToInventory(inventory[i]);
 					} else {
-						//spawn in world
-						EntityItem entityItem = new EntityItem(worldObj, pos.getX(), pos.getY(), pos.getZ(), inventory[i]);
+						// spawn in world
+						EntityItem entityItem = new EntityItem(worldObj, pos.getX(), pos.getY(), pos.getZ(),
+								inventory[i]);
 						worldObj.spawnEntityInWorld(entityItem);
 					}
 					inventory[i] = null;
@@ -100,17 +105,18 @@ public class TilePackager extends TileEntity implements IInventory {
 			packageSize = 2;
 		}
 	}
-	
+
 	public void inUseCleanup() {
-		if (worldObj.isRemote) return;
-			inUse = false;
+		if (worldObj.isRemote)
+			return;
+		inUse = false;
 	}
-	
+
 	@Override
 	public String getName() {
 		return this.hasCustomName() ? this.customName : UniversalCoins.proxy.blockPackager.getLocalizedName();
 	}
-	
+
 	public void setName(String name) {
 		customName = name;
 	}
@@ -123,7 +129,7 @@ public class TilePackager extends TileEntity implements IInventory {
 	public boolean hasCustomName() {
 		return this.customName != null && this.customName.length() > 0;
 	}
-	
+
 	private int getCoinType(Item item) {
 		for (int i = 0; i < 5; i++) {
 			if (item == coins[i]) {
@@ -132,7 +138,7 @@ public class TilePackager extends TileEntity implements IInventory {
 		}
 		return -1;
 	}
-	
+
 	public void checkCard() {
 		if (inventory[itemCardSlot] != null && getAccountBalance() >= packageCost[packageSize]) {
 			cardAvailable = true;
@@ -144,31 +150,29 @@ public class TilePackager extends TileEntity implements IInventory {
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
 		return worldObj.getTileEntity(pos) == this
-				&& entityplayer.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5,
-						pos.getZ() + 0.5) < 64;
+				&& entityplayer.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
 	}
-	
+
 	public void sendPacket(int button, boolean shiftPressed) {
-		UniversalCoins.snw.sendToServer(new UCButtonMessage(pos.getX(), pos.getY(),
-				pos.getZ(), button, shiftPressed));
+		UniversalCoins.snw.sendToServer(new UCButtonMessage(pos.getX(), pos.getY(), pos.getZ(), button, shiftPressed));
 	}
-	
+
 	@Override
 	public Packet getDescriptionPacket() {
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
 		return new S35PacketUpdateTileEntity(pos, 1, nbt);
 	}
-	
+
 	@Override
 	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
 		readFromNBT(pkt.getNbtCompound());
 	}
-	
+
 	public void updateTE() {
 		worldObj.markBlockForUpdate(pos);
 	}
-	
+
 	@Override
 	public void writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
@@ -192,13 +196,12 @@ public class TilePackager extends TileEntity implements IInventory {
 		tagCompound.setInteger("medPrice", packageCost[1]);
 		tagCompound.setInteger("largePrice", packageCost[2]);
 	}
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
-		
-		NBTTagList tagList = tagCompound.getTagList("Inventory",
-				Constants.NBT.TAG_COMPOUND);
+
+		NBTTagList tagList = tagCompound.getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 			byte slot = tag.getByte("Slot");
@@ -274,7 +277,7 @@ public class TilePackager extends TileEntity implements IInventory {
 		}
 		return stack;
 	}
-	
+
 	public void fillOutputSlot() {
 		inventory[itemOutputSlot] = null;
 		if (coinSum > 0) {
@@ -286,7 +289,7 @@ public class TilePackager extends TileEntity implements IInventory {
 			int itemValue = multiplier[logVal];
 			int debitAmount = 0;
 			debitAmount = Math.min(stackSize, (Integer.MAX_VALUE - coinSum) / itemValue);
-			if(!worldObj.isRemote) {
+			if (!worldObj.isRemote) {
 				coinSum -= debitAmount * itemValue;
 			}
 		}
@@ -316,7 +319,7 @@ public class TilePackager extends TileEntity implements IInventory {
 			if (slot == itemCardSlot) {
 				checkCard();
 			}
-		}		
+		}
 	}
 
 	@Override
@@ -335,9 +338,10 @@ public class TilePackager extends TileEntity implements IInventory {
 			if (getWorldString(accountNumber) != "") {
 				return getWorldInt(accountNumber);
 			}
-		} return -1;
+		}
+		return -1;
 	}
-	
+
 	public void debitAccount(int amount) {
 		if (inventory[itemCardSlot] != null) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
@@ -348,7 +352,7 @@ public class TilePackager extends TileEntity implements IInventory {
 			}
 		}
 	}
-	
+
 	public void creditAccount(int amount) {
 		if (inventory[itemCardSlot] != null) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
@@ -359,20 +363,20 @@ public class TilePackager extends TileEntity implements IInventory {
 			}
 		}
 	}
-	
+
 	private void setWorldData(String tag, int data) {
 		UCWorldData wData = UCWorldData.get(super.worldObj);
 		NBTTagCompound wdTag = wData.getData();
 		wdTag.setInteger(tag, data);
 		wData.markDirty();
 	}
-	
+
 	private int getWorldInt(String tag) {
 		UCWorldData wData = UCWorldData.get(super.worldObj);
 		NBTTagCompound wdTag = wData.getData();
 		return wdTag.getInteger(tag);
 	}
-	
+
 	private String getWorldString(String tag) {
 		UCWorldData wData = UCWorldData.get(super.worldObj);
 		NBTTagCompound wdTag = wData.getData();
@@ -388,13 +392,13 @@ public class TilePackager extends TileEntity implements IInventory {
 	@Override
 	public void openInventory(EntityPlayer player) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -406,7 +410,7 @@ public class TilePackager extends TileEntity implements IInventory {
 	@Override
 	public void setField(int id, int value) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -418,7 +422,7 @@ public class TilePackager extends TileEntity implements IInventory {
 	@Override
 	public void clear() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

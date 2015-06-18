@@ -17,30 +17,32 @@ import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
 import universalcoins.tile.TileSafe;
 
-public class BlockSafe extends BlockContainer {
-		
+public class BlockSafe extends BlockRotatable {
+
 	public BlockSafe() {
-		super(new Material(MapColor.stoneColor));
+		super();
 		setHardness(3.0F);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(30.0F);
 	}
-	
+
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side,
+			float hitX, float hitY, float hitZ) {
 		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity != null && tileEntity instanceof TileSafe) {
 			TileSafe tentity = (TileSafe) tileEntity;
 			if (player.getCommandSenderEntity().getName().matches(tentity.blockOwner)) {
-				tentity.updateAccountBalance();
+				if(!world.isRemote)tentity.updateAccountBalance();
 				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
 			}
 		}
 		return true;
 	}
-		
+
 	@Override
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player, ItemStack stack) {
+		world.setBlockState(pos, state.withProperty(FACING, player.getHorizontalFacing().getOpposite()), 2);
 		if (world.isRemote) return;
 		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity != null && tileEntity instanceof TileSafe) {
@@ -48,27 +50,11 @@ public class BlockSafe extends BlockContainer {
 			tentity.blockOwner = player.getCommandSenderEntity().getName();
 			tentity.setSafeAccount(player.getCommandSenderEntity().getName());
 		}
-		int l = MathHelper.floor_double((double) ((player.rotationYaw * 4F) / 360F) + 0.5D) & 3;
-
-		switch (l) {
-		case 0:
-			//world.setBlockMetadataWithNotify(x, y, z, 2, l);
-			break;
-		case 1:
-			//world.setBlockMetadataWithNotify(x, y, z, 5, l);
-			break;
-		case 2:
-			//world.setBlockMetadataWithNotify(x, y, z, 3, l);
-			break;
-		case 3:
-			//world.setBlockMetadataWithNotify(x, y, z, 4, l);
-			break;
-		}
 	}
-	
+
 	@Override
 	public boolean removedByPlayer(World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-		String ownerName = ((TileSafe)world.getTileEntity(pos)).blockOwner;
+		String ownerName = ((TileSafe) world.getTileEntity(pos)).blockOwner;
 		if (player.capabilities.isCreativeMode) {
 			super.removedByPlayer(world, pos, player, willHarvest);
 			return false;
@@ -83,12 +69,13 @@ public class BlockSafe extends BlockContainer {
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TileSafe();
 	}
-	
+
 	@Override
 	public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {
-        world.setBlockToAir(pos);
-        onBlockDestroyedByExplosion(world, pos, explosion);
-        EntityItem entityItem = new EntityItem( world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(this, 1));
-		if (!world.isRemote) world.spawnEntityInWorld(entityItem);
-    }
+		world.setBlockToAir(pos);
+		onBlockDestroyedByExplosion(world, pos, explosion);
+		EntityItem entityItem = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(this, 1));
+		if (!world.isRemote)
+			world.spawnEntityInWorld(entityItem);
+	}
 }

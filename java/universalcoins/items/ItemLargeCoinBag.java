@@ -8,13 +8,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import universalcoins.UniversalCoins;
 
-public class ItemLargeCoinBag extends Item{
+public class ItemLargeCoinBag extends Item {
 
 	public ItemLargeCoinBag() {
 		super();
 		this.setCreativeTab(UniversalCoins.tabUniversalCoins);
 	}
-	
+
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
 		DecimalFormat formatter = new DecimalFormat("###,###,###");

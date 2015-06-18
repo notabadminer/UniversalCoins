@@ -14,7 +14,7 @@ public class ItemSmallCoinStack extends Item {
 		super();
 		this.setCreativeTab(UniversalCoins.tabUniversalCoins);
 	}
-	
+
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
 		DecimalFormat formatter = new DecimalFormat("###,###,###");

@@ -12,12 +12,9 @@ import net.minecraft.world.WorldServer;
 import universalcoins.UniversalCoins;
 
 public class UCGive extends CommandBase {
-	private static final Item[] coins = new Item[] {
-		UniversalCoins.proxy.itemCoin,
-		UniversalCoins.proxy.itemSmallCoinStack,
-		UniversalCoins.proxy.itemLargeCoinStack,
-		UniversalCoins.proxy.itemSmallCoinBag,
-		UniversalCoins.proxy.itemLargeCoinBag };
+	private static final Item[] coins = new Item[] { UniversalCoins.proxy.itemCoin,
+			UniversalCoins.proxy.itemSmallCoinStack, UniversalCoins.proxy.itemLargeCoinStack,
+			UniversalCoins.proxy.itemSmallCoinBag, UniversalCoins.proxy.itemLargeCoinBag };
 
 	@Override
 	public String getName() {
@@ -33,31 +30,34 @@ public class UCGive extends CommandBase {
 	public void execute(ICommandSender sender, String[] astring) {
 		if (astring.length == 2) {
 			EntityPlayer recipient = null;
-			WorldServer[] ws= MinecraftServer.getServer().worldServers;
-			for(WorldServer w : ws) {
-				if(w.playerEntities.contains(w.getPlayerEntityByName(astring[0]))) {
+			WorldServer[] ws = MinecraftServer.getServer().worldServers;
+			for (WorldServer w : ws) {
+				if (w.playerEntities.contains(w.getPlayerEntityByName(astring[0]))) {
 					recipient = (EntityPlayer) w.getPlayerEntityByName(astring[0]);
 				}
 			}
 			int coinsToSend = 0;
 			if (recipient == null) {
-				sender.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("command.givecoins.error.notfound")));
+				sender.addChatMessage(new ChatComponentText(StatCollector
+						.translateToLocal("command.givecoins.error.notfound")));
 				return;
 			}
 			try {
 				coinsToSend = Integer.parseInt(astring[1]);
 			} catch (NumberFormatException e) {
-				sender.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("command.givecoins.error.badentry")));
+				sender.addChatMessage(new ChatComponentText(StatCollector
+						.translateToLocal("command.givecoins.error.badentry")));
 				return;
 			}
 			int change = givePlayerCoins(recipient, coinsToSend);
-			sender.addChatMessage(new ChatComponentText("Gave " + astring[0] + " " + (coinsToSend - change) + 
-					" " + StatCollector.translateToLocal("item.itemCoin.name")));
-			recipient.addChatMessage(new ChatComponentText( sender.getName() + " " +
-					StatCollector.translateToLocal("command.givecoins.result") + " " + (coinsToSend - change) + 
-					" " + StatCollector.translateToLocal("item.itemCoin.name")));
+			sender.addChatMessage(new ChatComponentText("Gave " + astring[0] + " " + (coinsToSend - change) + " "
+					+ StatCollector.translateToLocal("item.itemCoin.name")));
+			recipient.addChatMessage(new ChatComponentText(sender.getName() + " "
+					+ StatCollector.translateToLocal("command.givecoins.result") + " " + (coinsToSend - change) + " "
+					+ StatCollector.translateToLocal("item.itemCoin.name")));
 		} else
-			sender.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("command.givecoins.error.noname")));
+			sender.addChatMessage(new ChatComponentText(StatCollector
+					.translateToLocal("command.givecoins.error.noname")));
 	}
 
 	private int givePlayerCoins(EntityPlayer recipient, int coinsLeft) {
@@ -74,7 +74,8 @@ public class UCGive extends CommandBase {
 					ItemStack stack = recipient.inventory.getStackInSlot(i);
 					for (int j = 0; j < coins.length; j++) {
 						if (stack != null && stack.getItem() == coins[j]) {
-							int amountToAdd = (int) Math.min( coinsLeft / Math.pow(9, j), stack.getMaxStackSize() - stack.stackSize);
+							int amountToAdd = (int) Math.min(coinsLeft / Math.pow(9, j), stack.getMaxStackSize()
+									- stack.stackSize);
 							stack.stackSize += amountToAdd;
 							recipient.inventory.setInventorySlotContents(i, stack);
 							coinsLeft -= (amountToAdd * Math.pow(9, j));

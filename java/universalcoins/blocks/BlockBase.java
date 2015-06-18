@@ -11,19 +11,20 @@ import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
 
 public class BlockBase extends Block {
-	
+
 	public BlockBase() {
 		super(new Material(MapColor.stoneColor));
 		setHardness(3.0F);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(30.0F);
 	}
-	
+
 	@Override
 	public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {
-        world.setBlockToAir(pos);
-        onBlockDestroyedByExplosion(world, pos, explosion);
-        EntityItem entityItem = new EntityItem( world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(this, 1));
-		if (!world.isRemote) world.spawnEntityInWorld(entityItem);
-    }
+		world.setBlockToAir(pos);
+		onBlockDestroyedByExplosion(world, pos, explosion);
+		EntityItem entityItem = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(this, 1));
+		if (!world.isRemote)
+			world.spawnEntityInWorld(entityItem);
+	}
 }

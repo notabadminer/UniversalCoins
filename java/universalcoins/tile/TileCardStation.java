@@ -7,28 +7,30 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCCardStationServerCustomNameMessage;
 import universalcoins.net.UCCardStationServerWithdrawalMessage;
-import universalcoins.net.UCTileCardStationMessage;
-import universalcoins.util.UCWorldData;
+import universalcoins.util.UniversalAccounts;
 
 public class TileCardStation extends TileEntity implements IInventory, ISidedInventory {
 	private ItemStack[] inventory = new ItemStack[2];
 	public static final int itemCoinSlot = 0;
 	public static final int itemCardSlot = 1;
-	private static final int[] multiplier = new int[] {1, 9, 81, 729, 6561};
+	private static final int[] multiplier = new int[] { 1, 9, 81, 729, 6561 };
 	private static final Item[] coins = new Item[] { UniversalCoins.proxy.itemCoin,
-		UniversalCoins.proxy.itemSmallCoinStack, UniversalCoins.proxy.itemLargeCoinStack, 
-		UniversalCoins.proxy.itemSmallCoinBag, UniversalCoins.proxy.itemLargeCoinBag };
+			UniversalCoins.proxy.itemSmallCoinStack, UniversalCoins.proxy.itemLargeCoinStack,
+			UniversalCoins.proxy.itemSmallCoinBag, UniversalCoins.proxy.itemLargeCoinBag };
 	public String playerName = "";
-	public String playerUID = "";	
+	public String playerUID = "";
 	public boolean inUse = false;
 	public boolean depositCoins = false;
 	public boolean withdrawCoins = false;
@@ -39,19 +41,20 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	public int accountBalance = 0;
 	public String customAccountName = "none";
 	public String customAccountNumber = "none";
-	
+
 	public void inUseCleanup() {
-		if (worldObj.isRemote) return;
-			inUse = false;
-			withdrawCoins = false;
-			depositCoins = false;
-			accountNumber = "none";
+		if (worldObj.isRemote)
+			return;
+		inUse = false;
+		withdrawCoins = false;
+		depositCoins = false;
+		accountNumber = "none";
 	}
 
 	@Override
 	public int getSizeInventory() {
 		return inventory.length;
-		}
+	}
 
 	@Override
 	public ItemStack getStackInSlot(int slot) {
@@ -81,13 +84,12 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	@Override
 	public ItemStack getStackInSlotOnClosing(int slot) {
 		if (this.inventory[slot] != null) {
-            ItemStack itemstack = this.inventory[slot];
-            this.inventory[slot] = null;
-            return itemstack;
-        }
-        else {
-            return null;
-        }
+			ItemStack itemstack = this.inventory[slot];
+			this.inventory[slot] = null;
+			return itemstack;
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -100,8 +102,9 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 					int itemValue = multiplier[coinType];
 					int depositAmount = Math.min(stack.stackSize, (Integer.MAX_VALUE - accountBalance) / itemValue);
 					if (!worldObj.isRemote) {
-						creditAccount(accountNumber, depositAmount * itemValue);
-						accountBalance = getAccountBalance(accountNumber);
+						UniversalAccounts.getInstance().creditAccount(worldObj, accountNumber,
+								depositAmount * itemValue);
+						accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
 					}
 					inventory[slot].stackSize -= depositAmount;
 					if (inventory[slot].stackSize == 0) {
@@ -110,19 +113,13 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 				}
 			}
 			if (slot == itemCardSlot && !worldObj.isRemote) {
-				if (inventory[itemCardSlot].getTagCompound().getInteger("CoinSum") != 0 && 
-						inventory[itemCardSlot].getTagCompound().getString("Owner").contentEquals(playerName)) {
-					addPlayerAccount(playerUID);
-					accountNumber = getPlayerAccount(playerUID);
-					creditAccount(accountNumber, inventory[itemCardSlot].getTagCompound().getInteger("CoinSum"));
-					inventory[itemCardSlot].getTagCompound().removeTag("CoinSum");
-					inventory[itemCardSlot].getTagCompound().setString("Account", accountNumber);
-				}
 				accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 				cardOwner = inventory[itemCardSlot].getTagCompound().getString("Owner");
-				if (getCustomAccount(playerUID) != "") customAccountName = getCustomAccount(playerUID);
-				accountBalance = getAccountBalance(accountNumber);
-				}
+				FMLLog.info("cardOwner: " + cardOwner);
+				if (UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID) != "")
+					customAccountName = UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID);
+				accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
+			}
 		}
 	}
 
@@ -142,32 +139,41 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	}
 
 	public void sendButtonMessage(int functionID, boolean shiftPressed) {
-		UniversalCoins.snw.sendToServer(new UCButtonMessage(pos.getX(), pos.getY(), pos.getZ(), functionID, shiftPressed));
+		UniversalCoins.snw.sendToServer(new UCButtonMessage(pos.getX(), pos.getY(), pos.getZ(), functionID,
+				shiftPressed));
 	}
-	
+
 	@Override
-    public Packet getDescriptionPacket() {
-        return UniversalCoins.snw.getPacketFrom(new UCTileCardStationMessage(this));
-    }
-	
+	public Packet getDescriptionPacket() {
+		NBTTagCompound nbt = new NBTTagCompound();
+		writeToNBT(nbt);
+		return new S35PacketUpdateTileEntity(pos, 1, nbt);
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
+		readFromNBT(pkt.getNbtCompound());
+	}
+
 	public void sendServerUpdatePacket(int withdrawalAmount) {
-		UniversalCoins.snw.sendToServer(new UCCardStationServerWithdrawalMessage(pos.getX(), pos.getY(), pos.getZ(), withdrawalAmount));
+		UniversalCoins.snw.sendToServer(new UCCardStationServerWithdrawalMessage(pos.getX(), pos.getY(), pos.getZ(),
+				withdrawalAmount));
 	}
-	
+
 	public void sendServerUpdatePacket(String customName) {
-		UniversalCoins.snw.sendToServer(new UCCardStationServerCustomNameMessage(pos.getX(), pos.getY(), pos.getZ(), customName));
+		UniversalCoins.snw.sendToServer(new UCCardStationServerCustomNameMessage(pos.getX(), pos.getY(), pos.getZ(),
+				customName));
 	}
-	
+
 	public void updateTE() {
-		 worldObj.markBlockForUpdate(pos);
+		worldObj.markBlockForUpdate(pos);
 	}
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 
-		NBTTagList tagList = tagCompound.getTagList("Inventory",
-				Constants.NBT.TAG_COMPOUND);
+		NBTTagList tagList = tagCompound.getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 			byte slot = tag.getByte("Slot");
@@ -195,8 +201,13 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		} catch (Throwable ex2) {
 			coinWithdrawalAmount = 0;
 		}
+		try {
+			cardOwner = tagCompound.getString("cardOwner");
+		} catch (Throwable ex2) {
+			cardOwner = "";
+		}
 	}
-	
+
 	@Override
 	public void writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
@@ -215,21 +226,20 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		tagCompound.setBoolean("DepositCoins", depositCoins);
 		tagCompound.setBoolean("WithdrawCoins", withdrawCoins);
 		tagCompound.setInteger("CoinWithdrawalAmount", coinWithdrawalAmount);
+		tagCompound.setString("CardOwner", cardOwner);
 	}
-	
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
 		return worldObj.getTileEntity(pos) == this
-				&& entityplayer.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5,
-						pos.getZ() + 0.5) < 64;
+				&& entityplayer.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
 	}
 
 	@Override
 	public boolean isItemValidForSlot(int var1, ItemStack var2) {
 		return true;
 	}
-	
+
 	private int getCoinType(Item item) {
 		for (int i = 0; i < 5; i++) {
 			if (item == coins[i]) {
@@ -238,105 +248,118 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		}
 		return -1;
 	}
-	
+
 	public void onButtonPressed(int functionId) {
 		if (worldObj.isRemote) return;
-		accountError = false; //reset error state
-		//handle function IDs sent from CardStationGUI
-		//function1 - new card
-		//function2 - transfer account
-		//function3 - deposit
-		//function4 - withdraw
-		//function5 - get account info
-		//function6 - destroy invalid card
-		//function7 - new custom account
-		//function8 - new custom card
-		//function9 - transfer custom account
-		//function10 - account error reset
+		accountError = false; // reset error state
+		// handle function IDs sent from CardStationGUI
+		// function1 - new card
+		// function2 - transfer account
+		// function3 - deposit
+		// function4 - withdraw
+		// function5 - get account info
+		// function6 - destroy invalid card
+		// function7 - new custom account
+		// function8 - new custom card
+		// function9 - transfer custom account
+		// function10 - account error reset
 		if (functionId == 1) {
-			if (getPlayerAccount(playerUID) == "") {
-				addPlayerAccount(playerUID);
-			}
+			accountNumber = UniversalAccounts.getInstance().getOrCreatePlayerAccount(worldObj, playerUID);
 			inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
+			inventory[itemCardSlot].setTagCompound(new NBTTagCompound());
 			inventory[itemCardSlot].getTagCompound().setString("Name", playerName);
 			inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
 			inventory[itemCardSlot].getTagCompound().setString("Account", accountNumber);
-			accountBalance = getAccountBalance(accountNumber);
+			accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
 		}
 		if (functionId == 2) {
-			if (getPlayerAccount(playerUID) == "") {
+			if (UniversalAccounts.getInstance().getPlayerAccount(worldObj, playerUID) == "") {
 			} else {
-				transferPlayerAccount(playerUID);
+				UniversalAccounts.getInstance().transferPlayerAccount(worldObj, playerUID);
 				inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
+				inventory[itemCardSlot].setTagCompound(new NBTTagCompound());
 				inventory[itemCardSlot].getTagCompound().setString("Name", playerName);
 				inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
-				inventory[itemCardSlot].getTagCompound().setString("Account", getPlayerAccount(playerUID));
-				accountBalance = getAccountBalance(accountNumber);
+				inventory[itemCardSlot].getTagCompound().setString("Account",
+						UniversalAccounts.getInstance().getPlayerAccount(worldObj, playerUID));
+				accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
 			}
 		}
 		if (functionId == 3) {
-			//set to true if player presses deposit button, reset on any other button press
+			// set to true if player presses deposit button, reset on any other
+			// button press
 			depositCoins = true;
 			withdrawCoins = false;
-			//set account number if not already set and we have a card present
+			// set account number if not already set and we have a card present
 			if (accountNumber.contentEquals("none") && inventory[itemCardSlot] != null) {
 				accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 			}
-		} else { depositCoins = false; }
+		} else {
+			depositCoins = false;
+		}
 		if (functionId == 4) {
 			withdrawCoins = true;
 			depositCoins = false;
 			fillCoinSlot();
-		} else withdrawCoins = false;
+		} else
+			withdrawCoins = false;
 		if (functionId == 5) {
-			String storedAccount = getPlayerAccount(playerUID);
-			if (storedAccount != "") { 
+			String storedAccount = UniversalAccounts.getInstance().getPlayerAccount(worldObj, playerUID);
+			if (storedAccount != "") {
 				accountNumber = storedAccount;
-				cardOwner = playerUID; //needed for new card auth
-				accountBalance = getAccountBalance(accountNumber);
-				if (getCustomAccount(playerUID) != ""){
-					customAccountName = getCustomAccount(playerUID);
-					customAccountNumber = getPlayerAccount(customAccountName);
+				cardOwner = playerUID; // needed for new card auth
+				accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
+				if (UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID) != "") {
+					customAccountName = UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID);
+					customAccountNumber = UniversalAccounts.getInstance().getPlayerAccount(worldObj, customAccountName);
 				}
-			} else accountNumber = "none";
+			} else
+				accountNumber = "none";
 		}
 		if (functionId == 6) {
 			inventory[itemCardSlot] = null;
 		}
 		if (functionId == 7) {
-			if (getPlayerAccount(customAccountName) != "" && !getCustomAccount(playerUID).contentEquals(customAccountName)) {
+			if (UniversalAccounts.getInstance().getPlayerAccount(worldObj, customAccountName) != ""
+					&& !UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID)
+							.contentEquals(customAccountName)) {
 				accountError = true;
-				//we need to reset this so that that function 7 is called again on next attempt at getting an account
+				// we need to reset this so that that function 7 is called again
+				// on next attempt at getting an account
 				customAccountName = "none";
 				return;
-			} else if (getCustomAccount(playerUID) == "") {
-				addCustomAccount(customAccountName);
+			} else if (UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID) == "") {
+				UniversalAccounts.getInstance().addCustomAccount(worldObj, customAccountName, accountNumber);
 			}
-			customAccountName = getCustomAccount(playerUID);
-			customAccountNumber = getPlayerAccount(customAccountName);
+			customAccountName = UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID);
+			customAccountNumber = UniversalAccounts.getInstance().getPlayerAccount(worldObj, customAccountName);
 			inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
-			inventory[itemCardSlot].getTagCompound().setString("Name", customAccountName);
-			inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
-			inventory[itemCardSlot].getTagCompound().setString("Account", customAccountNumber);			
-		}
-		if (functionId == 8) {
-			inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
+			inventory[itemCardSlot].setTagCompound(new NBTTagCompound());
 			inventory[itemCardSlot].getTagCompound().setString("Name", customAccountName);
 			inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
 			inventory[itemCardSlot].getTagCompound().setString("Account", customAccountNumber);
-			accountBalance = getAccountBalance(customAccountNumber);
+		}
+		if (functionId == 8) {
+			inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
+			inventory[itemCardSlot].setTagCompound(new NBTTagCompound());
+			inventory[itemCardSlot].getTagCompound().setString("Name", customAccountName);
+			inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
+			inventory[itemCardSlot].getTagCompound().setString("Account", customAccountNumber);
+			accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, customAccountNumber);
 		}
 		if (functionId == 9) {
-			if (getCustomAccount(playerUID) == "" || getPlayerAccount(customAccountName) != "") {
+			if (UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID) == ""
+					|| UniversalAccounts.getInstance().getPlayerAccount(worldObj, customAccountName) != "") {
 				accountError = true;
 			} else {
 				accountError = false;
-				transferCustomAccount();
+				UniversalAccounts.getInstance().transferCustomAccount(worldObj, accountNumber, accountNumber);
 				inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
+				inventory[itemCardSlot].setTagCompound(new NBTTagCompound());
 				inventory[itemCardSlot].getTagCompound().setString("Name", customAccountName);
 				inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
 				inventory[itemCardSlot].getTagCompound().setString("Account", customAccountNumber);
-				accountBalance = getAccountBalance(customAccountNumber);
+				accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, customAccountNumber);
 			}
 		}
 	}
@@ -348,154 +371,14 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			int stackSize = Math.min((int) (coinWithdrawalAmount / Math.pow(9, logVal)), 64);
 			inventory[itemCoinSlot] = (new ItemStack(coins[logVal], stackSize));
 			coinWithdrawalAmount -= (stackSize * Math.pow(9, logVal));
-			debitAccount(accountNumber, (int) (stackSize * Math.pow(9, logVal)));
-			accountBalance = getAccountBalance(accountNumber);
+			UniversalAccounts.getInstance().debitAccount(worldObj, accountNumber,
+					(int) (stackSize * Math.pow(9, logVal)));
+			accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
 		}
 		if (coinWithdrawalAmount <= 0) {
 			withdrawCoins = false;
 			coinWithdrawalAmount = 0;
 		}
-	}
-	
-	private int getAccountBalance(String accountNumber) {
-		if (getWorldString(accountNumber) != "") {
-			return getWorldInt(accountNumber);
-		} else return -1;	
-	}
-	
-	private void debitAccount(String accountNumber, int amount) {
-		if (getWorldString(accountNumber) != "") {
-			int balance = getWorldInt(accountNumber);
-			balance -= amount;
-			setWorldData(accountNumber, balance);
-		}
-	}
-	
-	private void creditAccount(String accountNumber, int amount) {
-		if (getWorldString(accountNumber) != "") {
-			int balance = getWorldInt(accountNumber);
-			balance += amount;
-			setWorldData(accountNumber, balance);
-		}
-	}
-	
-	private String getPlayerAccount(String playerUID) {
-		//returns an empty string if no account found
-		return getWorldString(playerUID);
-	}
-	
-	private void addPlayerAccount(String playerUID) {
-		if (getWorldString(playerUID) == "") {
-			while (getWorldString(accountNumber) == "") {
-				accountNumber = String.valueOf(generateAccountNumber());
-				if (getWorldString(accountNumber) == "") {
-					setWorldData(playerUID, accountNumber);
-					setWorldData(accountNumber, 0);
-				}
-			}
-		} else {
-			//we have a problem we need to clear stale account data
-			
-		}
-	}
-	
-	private String getCustomAccount(String playerUID){
-		return getWorldString("¿" + playerUID);
-	}
-	
-	private boolean addCustomAccount(String customName) {
-		//custom accounts are added as a relation of playername to customname
-		//customnames are then associated with an account number
-		if (getWorldString("¿" + playerUID) == "" && getWorldString(customName) == "") {
-			while (getWorldString(customAccountNumber) == "") {
-				customAccountNumber = String.valueOf(generateAccountNumber());
-				if (getWorldString(customAccountNumber) == "") {
-					setWorldData("¿" + playerUID, customName);
-					setWorldData(customName, customAccountNumber);
-					setWorldData(customAccountNumber, 0);
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	private void transferCustomAccount() {
-		String oldName = getWorldString("¿" + playerUID);
-		String oldAccount = getWorldString(oldName);
-		int oldBalance = getAccountBalance(oldAccount);
-		delWorldData("¿" + playerUID);
-		delWorldData(oldName);
-		delWorldData(oldAccount);
-		if (getWorldString("¿" + playerUID) == "") {
-			customAccountNumber = "none";
-			while (getWorldString(customAccountNumber) == "") {
-				customAccountNumber = String.valueOf(generateAccountNumber());
-				if (getWorldString(customAccountNumber) == "") {
-					setWorldData("¿" + playerUID, customAccountName);
-					setWorldData(customAccountName, customAccountNumber);
-					setWorldData(customAccountNumber, oldBalance);
-				}
-				if (getWorldString(oldAccount) != "") {
-					delWorldData(oldAccount);
-					delWorldData(oldName);
-				}
-			}
-		}
-	}
-	
-	private void transferPlayerAccount(String playerUID) {
-		String oldAccount = getWorldString(playerUID);
-		int oldBalance = getAccountBalance(oldAccount);
-		delWorldData(playerUID);
-		if (getWorldString(playerUID) == "") {
-			accountNumber = "none";
-			while (getWorldString(accountNumber) == "") {
-				accountNumber = String.valueOf(generateAccountNumber());
-				if (getWorldString(accountNumber) == "") {
-					setWorldData(playerUID, accountNumber);
-					setWorldData(accountNumber, oldBalance);
-				}
-			}
-		}
-		delWorldData(oldAccount);
-	}
-	
-	private int generateAccountNumber() {
-		return (int) (Math.floor(Math.random() * 99999999) + 11111111);
-	}
-	
-	private void setWorldData(String tag, String data) {
-		UCWorldData wData = UCWorldData.get(super.worldObj);
-		NBTTagCompound wdTag = wData.getData();
-		wdTag.setString(tag, data);
-		wData.markDirty();
-	}
-	
-	private void setWorldData(String tag, int data) {
-		UCWorldData wData = UCWorldData.get(super.worldObj);
-		NBTTagCompound wdTag = wData.getData();
-		wdTag.setInteger(tag, data);
-		wData.markDirty();
-	}
-	
-	private int getWorldInt(String tag) {
-		UCWorldData wData = UCWorldData.get(super.worldObj);
-		NBTTagCompound wdTag = wData.getData();
-		return wdTag.getInteger(tag);
-	}
-	
-	private String getWorldString(String tag) {
-		UCWorldData wData = UCWorldData.get(super.worldObj);
-		NBTTagCompound wdTag = wData.getData();
-		return wdTag.getString(tag);
-	}
-	
-	private void delWorldData(String tag) {
-		UCWorldData wData = UCWorldData.get(super.worldObj);
-		NBTTagCompound wdTag = wData.getData();
-		wdTag.removeTag(tag);
-		wData.markDirty();
 	}
 
 	@Override
@@ -511,15 +394,13 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	}
 
 	@Override
-	public boolean canInsertItem(int index, ItemStack itemStackIn,
-			EnumFacing direction) {
+	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean canExtractItem(int index, ItemStack stack,
-			EnumFacing direction) {
+	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -527,13 +408,13 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	@Override
 	public void openInventory(EntityPlayer player) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -545,7 +426,7 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	@Override
 	public void setField(int id, int value) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -557,6 +438,6 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	@Override
 	public void clear() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
