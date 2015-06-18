@@ -1,0 +1,15 @@
+{
+	"versionList": [
+		{
+			"mcVersion":"Minecraft 1.8.0",
+			"modVersion":"1.8.0-101",
+			"changeLog": [
+				"still in alpha",
+				"only half the things work right now"
+			],
+			"updateURL":"https://github.com/notabadminer/UniversalCoins/releases",
+			"isDirectLink":"false",
+			"newFileName":""
+		}
+	]
+}
