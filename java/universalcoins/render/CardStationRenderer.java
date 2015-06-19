@@ -14,9 +14,9 @@ import org.lwjgl.opengl.GL11;
 
 import universalcoins.UniversalCoins;
 
-public class TileEntityCardStationRenderer extends TileEntitySpecialRenderer {
+public class CardStationRenderer extends TileEntitySpecialRenderer {
 
-	public TileEntityCardStationRenderer() {
+	public CardStationRenderer() {
 	}
 
 	public void renderTileEntityAt(TileEntity tileEntity, double posX,

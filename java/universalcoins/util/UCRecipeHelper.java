@@ -1,9 +1,11 @@
 package universalcoins.util;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.RecipeSorter;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 import universalcoins.UniversalCoins;
 
 public class UCRecipeHelper {
@@ -41,27 +43,31 @@ public class UCRecipeHelper {
 				"ICI", "III", 'I', Items.iron_ingot, 'G', Items.gold_ingot, 'C', UniversalCoins.proxy.itemSeller });
 	}
 
-	/*
-	 * public static void addVendingBlockRecipes() { for(int i=0; i <
-	 * Vending.supports.length; i++){ GameRegistry.addShapedRecipe(new
-	 * ItemStack(UniversalCoins.proxy.blockVendor,1,i), new Object[]{ "XXX",
-	 * "XRX", "*G*", 'X', Blocks.glass , 'G', Items.gold_ingot, 'R',
-	 * Items.redstone, '*', Vending.reagents[i] }); } }
-	 * 
-	 * public static void addVendingFrameRecipes() { GameRegistry.addRecipe(new
-	 * RecipeVendingFrame()); RecipeSorter.register("universalcoins:endercard",
-	 * RecipeVendingFrame.class, RecipeSorter.Category.SHAPED,
-	 * "after:minecraft:shaped"); GameRegistry.addRecipe(new ShapedOreRecipe(new
-	 * ItemStack(UniversalCoins.proxy.blockVendorFrame), "SGS", "RPR",
-	 * "SSS",'S', Items.stick, 'P', "plankWood", 'G', Items.gold_ingot, 'R',
-	 * Items.redstone)); }
-	 * 
-	 * public static void addSignRecipes() { GameRegistry.addShapelessRecipe(new
-	 * ItemStack(UniversalCoins.proxy.itemUCSign), new Object[]{ new
-	 * ItemStack(Items.sign) }); GameRegistry.addShapelessRecipe(new
-	 * ItemStack(Items.sign), new Object[]{ new
-	 * ItemStack(UniversalCoins.proxy.itemUCSign) }); }
-	 */
+	
+	public static void addVendingBlockRecipes() { 
+		GameRegistry.addShapedRecipe(new ItemStack(UniversalCoins.proxy.blockVendor), new Object[]{ 
+			"XXX",
+			"XRX", 
+			"IGI", 'X', Blocks.glass , 'G', Items.gold_ingot, 'R', Items.redstone, 'I', Items.iron_ingot });
+	}
+	
+	public static void addVendingFrameRecipes() { 
+		GameRegistry.addRecipe(new RecipeVendingFrame()); 
+	
+	RecipeSorter.register("universalcoins:endercard", RecipeVendingFrame.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped"); 
+	
+	GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(UniversalCoins.proxy.blockVendorFrame), 
+			"SGS", 
+			"RPR",
+			"SSS",'S', Items.stick, 'P', "plankWood", 'G', Items.gold_ingot, 'R', Items.redstone)); }
+	
+	public static void addSignRecipes() { 
+		
+		GameRegistry.addShapelessRecipe(new ItemStack(UniversalCoins.proxy.itemUCSign), new Object[]{ new
+			ItemStack(Items.sign) }); 
+		
+		GameRegistry.addShapelessRecipe(new ItemStack(Items.sign), new Object[]{ new
+			ItemStack(UniversalCoins.proxy.itemUCSign) }); }
 
 	public static void addCardStationRecipes() {
 		GameRegistry.addShapedRecipe(new ItemStack(UniversalCoins.proxy.blockCardStation), new Object[] { "III", "ICI",
@@ -96,22 +102,20 @@ public class UCRecipeHelper {
 				"XIX", 'I', Items.iron_ingot, 'R', Items.redstone });
 	}
 
-	/*
-	 * public static void addLinkCardRecipes() {
-	 * GameRegistry.addShapelessRecipe(new
-	 * ItemStack(UniversalCoins.proxy.itemLinkCard), new Object[]{ Items.paper,
-	 * Items.paper, Items.ender_pearl }); }
-	 */
+	
+	public static void addLinkCardRecipes() {
+	GameRegistry.addShapelessRecipe(new ItemStack(UniversalCoins.proxy.itemLinkCard), new Object[]{ Items.paper,
+		Items.paper, Items.ender_pearl }); }
+	
 
 	public static void addPackagerRecipes() {
 		GameRegistry.addShapedRecipe(new ItemStack(UniversalCoins.proxy.blockPackager), new Object[] { "IPI", "SRS",
 				"IRI", 'I', Items.iron_ingot, 'R', Items.redstone, 'S', Items.string, 'P', Items.paper });
 	}
-	/*
-	 * public static void addPlankTextureRecipes() { GameRegistry.addRecipe(new
-	 * RecipePlankTextureChange());
-	 * RecipeSorter.register("universalcoins:plankchange",
-	 * RecipePlankTextureChange.class, RecipeSorter.Category.SHAPELESS,
-	 * "after:minecraft:shapeless"); }
-	 */
+	
+	public static void addPlankTextureRecipes() { 
+		GameRegistry.addRecipe(new RecipePlankTextureChange());
+		RecipeSorter.register("universalcoins:plankchange", RecipePlankTextureChange.class, RecipeSorter.Category.SHAPELESS,
+			"after:minecraft:shapeless"); }
+	
 }

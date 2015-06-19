@@ -33,7 +33,9 @@ import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCCardStationServerCustomNameMessage;
 import universalcoins.net.UCCardStationServerWithdrawalMessage;
 import universalcoins.net.UCRecipeMessage;
+import universalcoins.net.UCSignServerMessage;
 import universalcoins.net.UCTextureMessage;
+import universalcoins.net.UCTileSignMessage;
 import universalcoins.net.UCVendorServerMessage;
 import universalcoins.proxy.CommonProxy;
 import universalcoins.tile.TileBandit;
@@ -196,13 +198,15 @@ public class UniversalCoins {
 		snw = NetworkRegistry.INSTANCE.newSimpleChannel(modid);
 		snw.registerMessage(UCButtonMessage.class, UCButtonMessage.class, 0, Side.SERVER);
 		snw.registerMessage(UCVendorServerMessage.class, UCVendorServerMessage.class, 1, Side.SERVER);
-		snw.registerMessage(UCCardStationServerWithdrawalMessage.class, UCCardStationServerWithdrawalMessage.class, 2,
-				Side.SERVER);
-		snw.registerMessage(UCCardStationServerCustomNameMessage.class, UCCardStationServerCustomNameMessage.class, 3,
-				Side.SERVER);
+		snw.registerMessage(UCCardStationServerWithdrawalMessage.class, UCCardStationServerWithdrawalMessage.class, 2, Side.SERVER);
+		snw.registerMessage(UCCardStationServerCustomNameMessage.class, UCCardStationServerCustomNameMessage.class, 3, Side.SERVER);
 		snw.registerMessage(UCRecipeMessage.class, UCRecipeMessage.class, 4, Side.CLIENT);
 		snw.registerMessage(UCTextureMessage.class, UCTextureMessage.class, 5, Side.SERVER);
 		snw.registerMessage(UCBanditServerMessage.class, UCBanditServerMessage.class, 6, Side.SERVER);
+	    snw.registerMessage(UCSignServerMessage.class, UCSignServerMessage.class, 7, Side.SERVER);
+	    snw.registerMessage(UCTileSignMessage.class, UCTileSignMessage.class, 8, Side.CLIENT);
+
+
 
 		// update check using versionchecker
 		FMLInterModComms.sendRuntimeMessage(modid, "VersionChecker", "addVersionCheck",
@@ -265,10 +269,10 @@ public class UniversalCoins {
 			UCRecipeHelper.addTradeStationRecipe();
 		}
 		if (vendorRecipesEnabled) {
-			// UCRecipeHelper.addVendingBlockRecipes();
+			UCRecipeHelper.addVendingBlockRecipes();
 		}
 		if (vendorFrameRecipesEnabled) {
-			// UCRecipeHelper.addVendingFrameRecipes();
+			UCRecipeHelper.addVendingFrameRecipes();
 		}
 		if (atmRecipeEnabled) {
 			UCRecipeHelper.addCardStationRecipes();
@@ -284,13 +288,13 @@ public class UniversalCoins {
 			UCRecipeHelper.addSignalRecipes();
 		}
 		if (linkCardRecipeEnabled) {
-			// UCRecipeHelper.addLinkCardRecipes();
+			UCRecipeHelper.addLinkCardRecipes();
 		}
 		if (packagerRecipeEnabled) {
 			UCRecipeHelper.addPackagerRecipes();
 		}
-		// UCRecipeHelper.addSignRecipes();
-		// UCRecipeHelper.addPlankTextureRecipes();
+		UCRecipeHelper.addSignRecipes();
+		UCRecipeHelper.addPlankTextureRecipes();
 	}
 
 }

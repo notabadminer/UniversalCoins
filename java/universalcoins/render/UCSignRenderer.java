@@ -17,7 +17,7 @@ import universalcoins.UniversalCoins;
 import universalcoins.tile.TileUCSign;
 
 @SideOnly(Side.CLIENT)
-public class TileEntityUCSignRenderer extends TileEntitySpecialRenderer {
+public class UCSignRenderer extends TileEntitySpecialRenderer {
 	    private int counter = 0;
 	    private boolean showStick = false;
 

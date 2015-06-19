@@ -82,10 +82,10 @@ public class UCRecipeMessage implements IMessage, IMessageHandler<UCRecipeMessag
 			UCRecipeHelper.addTradeStationRecipe();
 		}
 		if (message.vendorRecipesEnabled) {
-			// UCRecipeHelper.addVendingBlockRecipes();
+			UCRecipeHelper.addVendingBlockRecipes();
 		}
 		if (message.vendorFrameRecipesEnabled) {
-			// UCRecipeHelper.addVendingFrameRecipes();
+			UCRecipeHelper.addVendingFrameRecipes();
 		}
 		if (message.atmRecipeEnabled) {
 			UCRecipeHelper.addCardStationRecipes();
@@ -101,12 +101,12 @@ public class UCRecipeMessage implements IMessage, IMessageHandler<UCRecipeMessag
 			UCRecipeHelper.addSignalRecipes();
 		}
 		if (message.linkCardRecipeEnabled) {
-			// UCRecipeHelper.addLinkCardRecipes();
+			UCRecipeHelper.addLinkCardRecipes();
 		}
 		if (message.packagerRecipeEnabled) {
 			UCRecipeHelper.addPackagerRecipes();
 		}
-		// UCRecipeHelper.addSignRecipes();
-		// UCRecipeHelper.addPlankTextureRecipes();
+		UCRecipeHelper.addSignRecipes();
+		UCRecipeHelper.addPlankTextureRecipes();
 	}
 }

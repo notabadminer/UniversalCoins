@@ -2,17 +2,21 @@ package universalcoins.proxy;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelMesher;
+import net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import universalcoins.UniversalCoins;
-import universalcoins.render.TileEntityCardStationRenderer;
-import universalcoins.render.TileEntitySignalRenderer;
-import universalcoins.render.TileEntityUCSignRenderer;
+import universalcoins.render.InventoryVendorRenderer;
+import universalcoins.render.CardStationRenderer;
+import universalcoins.render.SignalRenderer;
+import universalcoins.render.UCSignRenderer;
+import universalcoins.render.VendorBlockRenderer;
 import universalcoins.render.VendorFrameRenderer;
 import universalcoins.tile.TileCardStation;
 import universalcoins.tile.TileSignal;
 import universalcoins.tile.TileUCSign;
+import universalcoins.tile.TileVendorBlock;
 import universalcoins.tile.TileVendorFrame;
 
 public class ClientProxy extends CommonProxy {
@@ -62,16 +66,24 @@ public class ClientProxy extends CommonProxy {
 				+ blockSignal.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(Item.getItemFromBlock(blockTradeStation), 0, new ModelResourceLocation(UniversalCoins.modid
 				+ ":" + blockTradeStation.getUnlocalizedName().substring(5), "inventory"));
-		//mesher.register(Item.getItemFromBlock(blockVendor), 0, new ModelResourceLocation(UniversalCoins.modid
-		//		+ ":" + blockVendor.getUnlocalizedName().substring(5), "inventory"));
+		mesher.register(Item.getItemFromBlock(blockVendor), 0, new ModelResourceLocation(UniversalCoins.modid
+				+ ":" + blockVendor.getUnlocalizedName().substring(5), "inventory"));
 
 		
-		ClientRegistry.bindTileEntitySpecialRenderer(TileCardStation.class, new TileEntityCardStationRenderer());
-		ClientRegistry.bindTileEntitySpecialRenderer(TileUCSign.class, new TileEntityUCSignRenderer());
-		ClientRegistry.bindTileEntitySpecialRenderer(TileSignal.class, new TileEntitySignalRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileCardStation.class, new CardStationRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileUCSign.class, new UCSignRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileSignal.class, new SignalRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileVendorFrame.class,new VendorFrameRenderer());
-		// ClientRegistry.bindTileEntitySpecialRenderer(TileVendor.class, new TileEntityVendorRenderer());
-		// RenderingRegistry.registerBlockHandler(new BlockVendorRenderer(RenderingRegistry.getNextAvailableRenderId()));
+		ClientRegistry.bindTileEntitySpecialRenderer(TileVendorBlock.class,new VendorBlockRenderer());
 		
+		//inventory render helpers for TESR
+		TileEntityItemStackRenderer.instance = new InventoryVendorRenderer();
+		mesher.getModelManager().getBlockModelShapes().registerBuiltInBlocks(blockVendorFrame);
+		mesher.register(Item.getItemFromBlock(blockVendorFrame),0,new ModelResourceLocation(UniversalCoins.modid
+				+ ":" + blockVendorFrame.getUnlocalizedName().substring(5),"inventory"));
+		
+		//this is to stop model definition errors for signs
+		mesher.getModelManager().getBlockModelShapes().registerBuiltInBlocks(wall_ucsign);
+		mesher.getModelManager().getBlockModelShapes().registerBuiltInBlocks(standing_ucsign);
 	}
 }

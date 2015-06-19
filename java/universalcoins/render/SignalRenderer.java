@@ -16,9 +16,9 @@ import org.lwjgl.opengl.GL11;
 import universalcoins.UniversalCoins;
 import universalcoins.tile.TileSignal;
 
-public class TileEntitySignalRenderer extends TileEntitySpecialRenderer {
+public class SignalRenderer extends TileEntitySpecialRenderer {
 
-	public TileEntitySignalRenderer() {
+	public SignalRenderer() {
 	}
 
 	public void renderTileEntityAt(TileEntity tileentity, double posX, double posY, double posZ, float p_180535_8_,

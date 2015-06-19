@@ -5,7 +5,6 @@ import java.text.DecimalFormat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -77,36 +76,10 @@ public class UCPlayerPickupEventHandler {
 	}
 
 	private int getAccountBalance(String accountNumber) {
-		if (getWorldString(accountNumber) != "") {
-			return getWorldInt(accountNumber);
-		} else
-			return -1;
+		return UniversalAccounts.getInstance().getAccountBalance(world, accountNumber);
 	}
 
 	private void creditAccount(String accountNumber, int amount) {
-		if (getWorldString(accountNumber) != "") {
-			int balance = getWorldInt(accountNumber);
-			balance += amount;
-			setWorldData(accountNumber, balance);
-		}
-	}
-
-	private int getWorldInt(String tag) {
-		UCWorldData wData = UCWorldData.get(world);
-		NBTTagCompound wdTag = wData.getData();
-		return wdTag.getInteger(tag);
-	}
-
-	private String getWorldString(String tag) {
-		UCWorldData wData = UCWorldData.get(world);
-		NBTTagCompound wdTag = wData.getData();
-		return wdTag.getString(tag);
-	}
-
-	private void setWorldData(String tag, int data) {
-		UCWorldData wData = UCWorldData.get(world);
-		NBTTagCompound wdTag = wData.getData();
-		wdTag.setInteger(tag, data);
-		wData.markDirty();
+		UniversalAccounts.getInstance().creditAccount(world, accountNumber, amount);
 	}
 }

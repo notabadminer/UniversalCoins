@@ -8,6 +8,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.Constants;
 
@@ -74,28 +75,36 @@ public class TileVendorBlock extends TileVendor {
 			te = super.worldObj.getTileEntity(new BlockPos(pos.getX()  + 1, pos.getY() - 1, pos.getZ()));
 				if (te != null && te instanceof TileUCSign) {
 					TileUCSign tesign = (TileUCSign) te;
-					//tesign.signText = this.signText;
+					for (int i = 0; i < 4; i++) {
+						tesign.signText[i] = new ChatComponentText(this.signText[i]);
+					}
 					tesign.updateSign();
 					tesign.markDirty();
 				} 
 			te = super.worldObj.getTileEntity(new BlockPos(pos.getX() - 1, pos.getY() - 1, pos.getZ()));
 				if (te != null && te instanceof TileUCSign) {
 					TileUCSign tesign = (TileUCSign) te;
-					//tesign.signText = this.signText;
+					for (int i = 0; i < 4; i++) {
+						tesign.signText[i] = new ChatComponentText(this.signText[i]);
+					}
 					tesign.updateSign();
 					tesign.markDirty();
 				}
 			te = super.worldObj.getTileEntity(new BlockPos(pos.getX(), pos.getY() - 1, pos.getZ() - 1));
 				if (te != null && te instanceof TileUCSign) {
 					TileUCSign tesign = (TileUCSign) te;
-					//tesign.signText = this.signText;
+					for (int i = 0; i < 4; i++) {
+						tesign.signText[i] = new ChatComponentText(this.signText[i]);
+					}
 					tesign.updateSign();
 					tesign.markDirty();
 				} 
 			te = super.worldObj.getTileEntity(new BlockPos(pos.getX(), pos.getY() - 1, pos.getZ() + 1));
 				if (te != null && te instanceof TileUCSign) {
 					TileUCSign tesign = (TileUCSign) te;
-					//tesign.signText = this.signText;
+					for (int i = 0; i < 4; i++) {
+						tesign.signText[i] = new ChatComponentText(this.signText[i]);
+					}
 					tesign.updateSign();
 					tesign.markDirty();
 				}
