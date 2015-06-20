@@ -74,18 +74,18 @@ public class UniversalAccounts {
 	}
 
 	public String getCustomAccount(World world, String playerUID) {
-		return getWorldString(world, "¿" + playerUID);
+		return getWorldString(world, "ï¿½" + playerUID);
 	}
 
 	public boolean addCustomAccount(World world, String customName, String playerUID) {
 		// custom accounts are added as a relation of playername to customname
 		// customnames are then associated with an account number
-		if (getWorldString(world, "¿" + playerUID) == "" && getWorldString(world, customName) == "") {
+		if (getWorldString(world, "ï¿½" + playerUID) == "" && getWorldString(world, customName) == "") {
 			String customAccountNumber = "";
 			while (getWorldString(world, customAccountNumber) == "") {
 				customAccountNumber = String.valueOf(generateAccountNumber());
 				if (getWorldString(world, customAccountNumber) == "") {
-					setWorldData(world, "¿" + playerUID, customName);
+					setWorldData(world, "ï¿½" + playerUID, customName);
 					setWorldData(world, customName, customAccountNumber);
 					setWorldData(world, customAccountNumber, 0);
 					return true;
@@ -96,18 +96,18 @@ public class UniversalAccounts {
 	}
 
 	public void transferCustomAccount(World world, String playerUID, String customAccountName) {
-		String oldName = getWorldString(world, "¿" + playerUID);
+		String oldName = getWorldString(world, "ï¿½" + playerUID);
 		String oldAccount = getWorldString(world, oldName);
 		int oldBalance = getAccountBalance(world, oldAccount);
-		delWorldData(world, "¿" + playerUID);
+		delWorldData(world, "ï¿½" + playerUID);
 		delWorldData(world, oldName);
 		delWorldData(world, oldAccount);
-		if (getWorldString(world, "¿" + playerUID) == "") {
+		if (getWorldString(world, "ï¿½" + playerUID) == "") {
 			String customAccountNumber = "none";
 			while (getWorldString(world, customAccountNumber) == "") {
 				customAccountNumber = String.valueOf(generateAccountNumber());
 				if (getWorldString(world, customAccountNumber) == "") {
-					setWorldData(world, "¿" + playerUID, customAccountName);
+					setWorldData(world, "ï¿½" + playerUID, customAccountName);
 					setWorldData(world, customAccountName, customAccountNumber);
 					setWorldData(world, customAccountNumber, oldBalance);
 				}

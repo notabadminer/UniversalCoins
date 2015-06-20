@@ -65,6 +65,7 @@ public class BlockVendor extends BlockContainer {
 				if (!world.isRemote) { player.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("chat.warning.inuse"))); }
 				return true;
 			} else {
+				tentity.updateEntity();
 				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
 				tentity.playerName = player.getName();
 				tentity.inUse = true;

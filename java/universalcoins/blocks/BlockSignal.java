@@ -48,8 +48,7 @@ public class BlockSignal extends BlockRotatable {
 				}
 			}
 		} else {
-			if (world.isRemote)
-				return false;
+			if (world.isRemote) return false;
 			// take coins and activate on click
 			ItemStack[] inventory = player.inventory.mainInventory;
 			TileSignal tentity = (TileSignal) world.getTileEntity(pos);
@@ -109,7 +108,25 @@ public class BlockSignal extends BlockRotatable {
 			((TileSignal) world.getTileEntity(pos)).blockOwner = player.getCommandSenderEntity().getName();
 		}
 	}
+	
+	//block.shouldCheckWeakPower(this, pos, facing) ? this.getStrongPower(pos) : block.isProvidingWeakPower(this, pos, iblockstate, facing);
+	@Override
+	public int isProvidingStrongPower(IBlockAccess worldIn, BlockPos pos, IBlockState state, EnumFacing side) {
+		TileEntity te = worldIn.getTileEntity(pos);
+		if (te != null && te instanceof TileSignal) {
+			TileSignal tentity = (TileSignal) te;
+			return tentity.canProvidePower ? 15 : 0;
+		}
+		return 0;
+    }
+	
+	
+	@Override
+	 public boolean shouldCheckWeakPower(IBlockAccess world, BlockPos pos, EnumFacing side) {
+        return true;
+    }
 
+	@Override
 	public int isProvidingWeakPower(IBlockAccess worldIn, BlockPos pos, IBlockState state, EnumFacing side) {
 		TileEntity te = worldIn.getTileEntity(pos);
 		if (te != null && te instanceof TileSignal) {

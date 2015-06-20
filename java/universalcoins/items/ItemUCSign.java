@@ -2,25 +2,21 @@ package universalcoins.items;
 
 import java.util.List;
 
-import net.minecraft.block.BlockStandingSign;
-import net.minecraft.block.BlockWallSign;
-import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemSign;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.blocks.BlockUCStandingSign;
 import universalcoins.blocks.BlockUCWallSign;
@@ -102,7 +98,7 @@ public class ItemUCSign extends ItemSign {
 				byte slot = tagCompound.getByte("Texture");
 				ItemStack textureStack  = ItemStack.loadItemStackFromNBT(tagCompound);
 				ItemModelMesher imm = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
-				String blockIcon = imm.getItemModel(textureStack).getTexture().toString();
+				String blockIcon = imm.getItemModel(textureStack).getTexture().getIconName();
 				if (blockIcon.startsWith("biomesoplenty")){
 					String[] iconInfo = blockIcon.split(":");
 					String[] blockName = textureStack.getUnlocalizedName().split("\\.", 3);

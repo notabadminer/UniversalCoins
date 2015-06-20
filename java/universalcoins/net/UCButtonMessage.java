@@ -16,6 +16,7 @@ import universalcoins.tile.TileCardStation;
 import universalcoins.tile.TilePackager;
 import universalcoins.tile.TileSignal;
 import universalcoins.tile.TileTradeStation;
+import universalcoins.tile.TileVendor;
 
 public class UCButtonMessage implements IMessage, IMessageHandler<UCButtonMessage, IMessage> {
 	private int x, y, z, buttonId;
@@ -89,6 +90,9 @@ public class UCButtonMessage implements IMessage, IMessageHandler<UCButtonMessag
 		}
 		if (tileEntity instanceof TilePackager) {
 			((TilePackager) tileEntity).onButtonPressed(message.buttonId);
+		}
+		if (tileEntity instanceof TileVendor) {
+			((TileVendor) tileEntity).onButtonPressed(message.buttonId, message.shiftPressed);
 		}
 	}
 }

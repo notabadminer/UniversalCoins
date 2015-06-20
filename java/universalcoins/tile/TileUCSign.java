@@ -81,7 +81,7 @@ public class TileUCSign extends TileEntitySign {
 	public void sendTextureUpdateMessage(ItemStack stack) {
 		if (!worldObj.isRemote) return;
 			ItemModelMesher imm = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
-			String blockIcon = imm.getItemModel(stack).getTexture().toString();
+			String blockIcon = imm.getItemModel(stack).getTexture().getIconName();
 			//the iconIndex function does not work with BOP so we have to do a bit of a hack here
 			if (blockIcon.startsWith("biomesoplenty")){
 				String[] iconInfo = blockIcon.split(":");

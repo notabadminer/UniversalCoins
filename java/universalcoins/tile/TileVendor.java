@@ -1,5 +1,7 @@
 package universalcoins.tile;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -606,6 +608,7 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 			checkSellingInventory(); //update inventory status
 			hasInventorySpace();
 		}
+		updateEntity();
 	}
 	
 	private int getCoinType(Item item) {
@@ -672,7 +675,8 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	
 	public void sendTextureUpdateMessage(ItemStack stack) {
 		if (!worldObj.isRemote) return;
-			//String blockIcon = stack.getIconIndex().getIconName();
+			ItemModelMesher imm = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+			String blockIcon = imm.getItemModel(stack).getTexture().getIconName();
 			//the iconIndex function does not work with BOP so we have to do a bit of a hack here
 			if (blockIcon.startsWith("biomesoplenty")){
 				String[] iconInfo = blockIcon.split(":");

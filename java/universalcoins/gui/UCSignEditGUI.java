@@ -5,8 +5,6 @@ import java.io.IOException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.network.play.client.C12PacketUpdateSign;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.ChatComponentText;
@@ -139,7 +137,7 @@ public class UCSignEditGUI extends GuiScreen {
         	if (tileSign.signText[i].getUnformattedText().length() > 15) {
         		displayString = tileSign.signText[i].getUnformattedText().substring(tileSign.signText[i].getUnformattedText().length() - 15);
         	} else {
-        		displayString = tileSign.signText[i].getFormattedText();
+        		displayString = tileSign.signText[i].getUnformattedText();
         	}
         	int stringLength = fontRendererObj.getStringWidth(displayString);
             fontRendererObj.drawString(displayString, (this.width - stringLength) / 2, this.height / 2 + lineOffset[i], 0x000000);

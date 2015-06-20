@@ -26,6 +26,7 @@ public class VendorFrameRenderer extends TileEntitySpecialRenderer {
 	@Override
 	public void renderTileEntityAt(TileEntity tileentity, double posX,
 			double posY, double posZ, float p_180535_8_, int p_180535_9_) {
+		blockIcon = "";
 		TileVendor te = (TileVendor) tileentity;
 		//default texture
 		ResourceLocation blockTexture = (new ResourceLocation("textures/blocks/planks_birch.png"));
@@ -33,16 +34,9 @@ public class VendorFrameRenderer extends TileEntitySpecialRenderer {
 		if (((TileVendorFrame) tileentity).blockIcon != "") {
 			blockIcon = (((TileVendorFrame) tileentity).blockIcon);
 		}
-
 		if (blockIcon != null && blockIcon != "") {
 			String[] tempIconName = blockIcon.split(":", 3); //split string
-			if (tempIconName.length == 1) {
-				//if minecraft, set resourcelocation using last part
-				blockTexture = (new ResourceLocation("textures/blocks/" + tempIconName[0] + ".png"));
-			} else {
-				//if mod use mod path
-				blockTexture = (new ResourceLocation(tempIconName[0] + ":textures/blocks/" + tempIconName[1] + ".png"));
-			}
+			blockTexture = (new ResourceLocation(tempIconName[0] + ":textures/" + tempIconName[1] + ".png"));
 		}
 		
 		this.bindTexture(blockTexture);

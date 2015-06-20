@@ -127,6 +127,7 @@ public class BlockVendorFrame extends BlockRotatable {
 				}
 				return true;
 			} else {
+				tentity.updateEntity();
 				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
 				tentity.playerName = player.getName();
 				tentity.inUse = true;
@@ -170,7 +171,7 @@ public class BlockVendorFrame extends BlockRotatable {
 			world.markBlockForUpdate(pos);
 		} else {
 			// Vending Frame pulled from NEI or creative. Cheaters :P
-			((TileVendorFrame) world.getTileEntity(pos)).blockIcon = "planks_birch";
+			((TileVendorFrame) world.getTileEntity(pos)).blockIcon = "minecraft:blocks/planks_birch";
 			((TileVendorFrame) world.getTileEntity(pos)).blockOwner = player.getName();
 		}
 

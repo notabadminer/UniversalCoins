@@ -36,10 +36,10 @@ public class UCSignRenderer extends TileEntitySpecialRenderer {
 	        	String[] tempIconName = tentity.blockIcon.split(":", 3); //split string
 				if (tempIconName.length == 1) {
 					//if minecraft, set resourcelocation using last part
-					blockTexture = (new ResourceLocation("textures/blocks/" + tempIconName[0] + ".png"));
+					blockTexture = (new ResourceLocation("textures/" + tempIconName[0] + ".png"));
 				} else {
 					//if mod use mod path
-					blockTexture = (new ResourceLocation(tempIconName[0] + ":textures/blocks/" + tempIconName[1] + ".png"));
+					blockTexture = (new ResourceLocation(tempIconName[0] + ":textures/" + tempIconName[1] + ".png"));
 				}
 	        }
 
@@ -172,6 +172,7 @@ public class UCSignRenderer extends TileEntitySpecialRenderer {
 	        {
 	            String s = tentity.signText[i].getUnformattedText();
 	            int colorCode = 0;
+	            if (s.startsWith("§r")) s = s.substring(2);
 	            if (s.startsWith("&") && s.length() > 1 && String.valueOf(s.charAt(1)).matches("[0-9a-fA-F]+")) {
         			colorCode = Integer.parseInt(s.substring(1, 2), 16);
         			s = s.substring(2);

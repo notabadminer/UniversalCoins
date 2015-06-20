@@ -111,7 +111,7 @@ public class TileSignal extends TileEntity implements IInventory, IUpdatePlayerL
 	}
 
 	private void updateNeighbors() {
-		Block block = super.blockType;
+		Block block = worldObj.getBlockState(pos).getBlock(); //TODO may be broken
 		worldObj.notifyBlockOfStateChange(pos, block);
 	}
 
@@ -264,22 +264,7 @@ public class TileSignal extends TileEntity implements IInventory, IUpdatePlayerL
 				}
 			}
 		}
-		coinsTaken(stack);
 		return stack;
-	}
-
-	public void coinsTaken(ItemStack stack) {
-		int coinType = getCoinType(stack.getItem());
-		if (coinType != -1) {
-			int itemValue = multiplier[coinType];
-			int debitAmount = 0;
-			debitAmount = Math.min(stack.stackSize, (Integer.MAX_VALUE - coinSum) / itemValue);
-			if (!worldObj.isRemote) {
-				coinSum -= debitAmount * itemValue;
-				// debitAccount(debitAmount * itemValue);
-				// updateAccountBalance();
-			}
-		}
 	}
 
 	public void fillOutputSlot() {
@@ -290,6 +275,12 @@ public class TileSignal extends TileEntity implements IInventory, IUpdatePlayerL
 			int stackSize = Math.min((int) (coinSum / Math.pow(9, logVal)), 64);
 			// add a stack to the slot
 			inventory[itemOutputSlot] = new ItemStack(coins[logVal], stackSize);
+			int itemValue = multiplier[logVal];
+			int debitAmount = 0;
+			debitAmount = Math.min(stackSize, (Integer.MAX_VALUE - coinSum) / itemValue);
+			if (!worldObj.isRemote) {
+				coinSum -= debitAmount * itemValue;
+			}
 		}
 	}
 
