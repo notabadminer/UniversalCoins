@@ -2,12 +2,6 @@ package universalcoins.blocks;
 
 import java.util.Random;
 
-import net.minecraft.block.BlockContainer;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyInteger;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -28,7 +22,7 @@ import universalcoins.UniversalCoins;
 import universalcoins.tile.TileSignal;
 
 public class BlockSignal extends BlockRotatable {
-	
+		
 	public BlockSignal() {
 		super();
 		setHardness(3.0F);
@@ -109,22 +103,19 @@ public class BlockSignal extends BlockRotatable {
 		}
 	}
 	
-	//block.shouldCheckWeakPower(this, pos, facing) ? this.getStrongPower(pos) : block.isProvidingWeakPower(this, pos, iblockstate, facing);
-	@Override
-	public int isProvidingStrongPower(IBlockAccess worldIn, BlockPos pos, IBlockState state, EnumFacing side) {
-		TileEntity te = worldIn.getTileEntity(pos);
-		if (te != null && te instanceof TileSignal) {
-			TileSignal tentity = (TileSignal) te;
-			return tentity.canProvidePower ? 15 : 0;
-		}
-		return 0;
-    }
-	
-	
-	@Override
-	 public boolean shouldCheckWeakPower(IBlockAccess world, BlockPos pos, EnumFacing side) {
-        return true;
-    }
+	public void updatePower(World worldIn, BlockPos pos) {
+		if (!worldIn.isRemote) {
+			worldIn.notifyNeighborsOfStateChange(pos, this);
+            EnumFacing[] aenumfacing = EnumFacing.values();
+            int i = aenumfacing.length;
+
+            for (int j = 0; j < i; ++j)
+            {
+                EnumFacing enumfacing = aenumfacing[j];
+                worldIn.notifyNeighborsOfStateChange(pos.offset(enumfacing), this);
+            }
+        }
+	}
 
 	@Override
 	public int isProvidingWeakPower(IBlockAccess worldIn, BlockPos pos, IBlockState state, EnumFacing side) {
@@ -135,12 +126,13 @@ public class BlockSignal extends BlockRotatable {
 		}
 		return 0;
 	}
-
+	
 	@Override
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TileSignal();
 	}
 
+	@Override
 	public boolean canProvidePower() {
 		return true;
 	}

@@ -15,6 +15,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
+import universalcoins.blocks.BlockSignal;
 import universalcoins.net.UCButtonMessage;
 
 public class TileSignal extends TileEntity implements IInventory, IUpdatePlayerListBox {
@@ -111,8 +112,10 @@ public class TileSignal extends TileEntity implements IInventory, IUpdatePlayerL
 	}
 
 	private void updateNeighbors() {
-		Block block = worldObj.getBlockState(pos).getBlock(); //TODO may be broken
-		worldObj.notifyBlockOfStateChange(pos, block);
+		this.blockType = this.getBlockType();
+        if (this.blockType instanceof BlockSignal){
+        	((BlockSignal) blockType).updatePower(worldObj, pos);
+        }
 	}
 
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
