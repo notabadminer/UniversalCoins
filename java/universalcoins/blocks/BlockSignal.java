@@ -42,7 +42,6 @@ public class BlockSignal extends BlockRotatable {
 				}
 			}
 		} else {
-			if (world.isRemote) return false;
 			// take coins and activate on click
 			ItemStack[] inventory = player.inventory.mainInventory;
 			TileSignal tentity = (TileSignal) world.getTileEntity(pos);
@@ -56,6 +55,7 @@ public class BlockSignal extends BlockRotatable {
 					}
 				}
 			}
+			if (world.isRemote) return false; //we don't want to do the rest on client side
 			if (coinsFound < tentity.fee) {
 				player.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("signal.message.notenough")));
 			} else {

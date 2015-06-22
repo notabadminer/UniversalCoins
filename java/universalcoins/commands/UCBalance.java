@@ -12,6 +12,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UCWorldData;
+import universalcoins.util.UniversalAccounts;
 
 public class UCBalance extends CommandBase {
 	private static final int[] multiplier = new int[] { 1, 9, 81, 729, 6561 };
@@ -71,31 +72,15 @@ public class UCBalance extends CommandBase {
 	}
 
 	private String getCustomAccount(EntityPlayerMP player) {
-		String accountName = getWorldString(player, "¿" + player.getUniqueID().toString());
-		return getWorldString(player, accountName);
+		return UniversalAccounts.getInstance().getCustomAccount(player.worldObj, player.getUniqueID().toString());
 	}
 
 	private String getPlayerAccount(EntityPlayerMP player) {
 		// returns an empty string if no account found
-		return getWorldString(player, player.getUniqueID().toString());
+		return UniversalAccounts.getInstance().getPlayerAccount(player.worldObj, player.getUniqueID().toString());
 	}
 
 	private int getAccountBalance(EntityPlayerMP player, String accountNumber) {
-		if (getWorldString(player, accountNumber) != "") {
-			return getWorldInt(player, accountNumber);
-		} else
-			return -1;
-	}
-
-	private int getWorldInt(EntityPlayerMP player, String tag) {
-		UCWorldData wData = UCWorldData.get(player.worldObj);
-		NBTTagCompound wdTag = wData.getData();
-		return wdTag.getInteger(tag);
-	}
-
-	private String getWorldString(EntityPlayerMP player, String tag) {
-		UCWorldData wData = UCWorldData.get(player.worldObj);
-		NBTTagCompound wdTag = wData.getData();
-		return wdTag.getString(tag);
+		return UniversalAccounts.getInstance().getAccountBalance(player.worldObj, accountNumber);
 	}
 }
