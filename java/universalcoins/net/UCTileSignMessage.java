@@ -57,10 +57,10 @@ public class UCTileSignMessage implements IMessage, IMessageHandler<UCTileSignMe
     	buf.writeInt(this.xCoord);
         buf.writeShort(this.yCoord);
         buf.writeInt(this.zCoord);
-        ByteBufUtils.writeUTF8String(buf, signText0.getFormattedText());
-        ByteBufUtils.writeUTF8String(buf, signText1.getFormattedText());
-        ByteBufUtils.writeUTF8String(buf, signText2.getFormattedText());
-        ByteBufUtils.writeUTF8String(buf, signText3.getFormattedText());
+        ByteBufUtils.writeUTF8String(buf, signText0.getUnformattedText());
+        ByteBufUtils.writeUTF8String(buf, signText1.getUnformattedText());
+        ByteBufUtils.writeUTF8String(buf, signText2.getUnformattedText());
+        ByteBufUtils.writeUTF8String(buf, signText3.getUnformattedText());
         ByteBufUtils.writeUTF8String(buf, this.blockOwner);
         ByteBufUtils.writeUTF8String(buf, this.blockIcon);
     }
