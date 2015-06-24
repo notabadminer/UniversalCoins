@@ -2,15 +2,11 @@ package universalcoins.render;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.EnumSkyBlock;
-import net.minecraftforge.fml.common.FMLLog;
 
 import org.lwjgl.opengl.GL11;
 
@@ -39,7 +35,7 @@ public class CardStationRenderer extends TileEntitySpecialRenderer {
 
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		int brightness = (int) this.getWorld().getCombinedLight(tileEntity.getPos(), 12);
+		int brightness = (int) this.getWorld().getCombinedLight(tileEntity.getPos(), 0);
 		GL11.glPushMatrix();
 		float f3 = 0.0F;
 		if (meta == 2) {

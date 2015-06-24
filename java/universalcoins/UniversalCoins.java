@@ -10,6 +10,7 @@ import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -32,6 +33,7 @@ import universalcoins.net.UCBanditServerMessage;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCCardStationServerCustomNameMessage;
 import universalcoins.net.UCCardStationServerWithdrawalMessage;
+import universalcoins.net.UCRecipeMessage;
 import universalcoins.net.UCSignServerMessage;
 import universalcoins.net.UCTextureMessage;
 import universalcoins.net.UCTileSignMessage;
@@ -48,6 +50,7 @@ import universalcoins.tile.TileVendorBlock;
 import universalcoins.tile.TileVendorFrame;
 import universalcoins.util.UCItemPricer;
 import universalcoins.util.UCMobDropEventHandler;
+import universalcoins.util.UCPlayerLoginEventHandler;
 import universalcoins.util.UCPlayerPickupEventHandler;
 import universalcoins.util.UCRecipeHelper;
 
@@ -65,10 +68,10 @@ public class UniversalCoins {
 	public static UniversalCoins instance;
 	public static final String modid = "universalcoins";
 	public static final String name = "Universal Coins";
-	public static final String version = "1.8-2.0.1";
+	public static final String version = "1.8-2.0.2";
 
 	public static Boolean autoModeEnabled;
-	public static Boolean recipesEnabled;
+	public static Boolean tradeStationRecipesEnabled;
 	public static Boolean vendorRecipesEnabled;
 	public static Boolean vendorFrameRecipesEnabled;
 	public static Boolean atmRecipeEnabled;
@@ -107,7 +110,7 @@ public class UniversalCoins {
 		// recipes
 		Property recipes = config.get("Recipes", "Trade Station Recipes", true);
 		recipes.comment = "Set to false to disable crafting recipes for selling catalog and trade station.";
-		recipesEnabled = recipes.getBoolean(true);
+		tradeStationRecipesEnabled = recipes.getBoolean(true);
 		Property vendorRecipes = config.get("Recipes", "Vending Block Recipes", true);
 		vendorRecipes.comment = "Set to false to disable crafting recipes for vending blocks.";
 		vendorRecipesEnabled = vendorRecipes.getBoolean(true);
@@ -192,6 +195,7 @@ public class UniversalCoins {
 		}
 
 		MinecraftForge.EVENT_BUS.register(new UCPlayerPickupEventHandler());
+		FMLCommonHandler.instance().bus().register(new UCPlayerLoginEventHandler());
 
 		// network packet handling
 		snw = NetworkRegistry.INSTANCE.newSimpleChannel(modid);
@@ -203,6 +207,7 @@ public class UniversalCoins {
 		snw.registerMessage(UCBanditServerMessage.class, UCBanditServerMessage.class, 5, Side.SERVER);
 	    snw.registerMessage(UCSignServerMessage.class, UCSignServerMessage.class, 6, Side.SERVER);
 	    snw.registerMessage(UCTileSignMessage.class, UCTileSignMessage.class, 7, Side.CLIENT);
+	    snw.registerMessage(UCRecipeMessage.class, UCRecipeMessage.class, 8, Side.CLIENT);
 
 
 
@@ -243,7 +248,7 @@ public class UniversalCoins {
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 
 		UCRecipeHelper.addCoinRecipes();
-		if (recipesEnabled) {
+		if (tradeStationRecipesEnabled) {
 			UCRecipeHelper.addTradeStationRecipe();
 		}
 		if (vendorRecipesEnabled) {
