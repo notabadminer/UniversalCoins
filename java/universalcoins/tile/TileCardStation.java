@@ -204,6 +204,11 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		} catch (Throwable ex2) {
 			cardOwner = "";
 		}
+		try {
+			accountBalance = tagCompound.getInteger("accountBalance");
+		} catch (Throwable ex2) {
+			accountBalance = 0;
+		}
 	}
 
 	@Override
@@ -225,6 +230,7 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		tagCompound.setBoolean("WithdrawCoins", withdrawCoins);
 		tagCompound.setInteger("CoinWithdrawalAmount", coinWithdrawalAmount);
 		tagCompound.setString("CardOwner", cardOwner);
+		tagCompound.setInteger("accountBalance", accountBalance);
 	}
 
 	@Override

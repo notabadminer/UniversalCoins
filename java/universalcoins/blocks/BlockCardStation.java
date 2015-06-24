@@ -28,6 +28,7 @@ public class BlockCardStation extends BlockRotatable {
 		setHardness(3.0F);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(30.0F);
+		setLightLevel(8);
 	}
 	
 	@Override

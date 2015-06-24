@@ -32,7 +32,6 @@ import universalcoins.net.UCBanditServerMessage;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCCardStationServerCustomNameMessage;
 import universalcoins.net.UCCardStationServerWithdrawalMessage;
-import universalcoins.net.UCRecipeMessage;
 import universalcoins.net.UCSignServerMessage;
 import universalcoins.net.UCTextureMessage;
 import universalcoins.net.UCTileSignMessage;
@@ -66,7 +65,7 @@ public class UniversalCoins {
 	public static UniversalCoins instance;
 	public static final String modid = "universalcoins";
 	public static final String name = "Universal Coins";
-	public static final String version = "2.0.0";
+	public static final String version = "1.8-2.0.1";
 
 	public static Boolean autoModeEnabled;
 	public static Boolean recipesEnabled;
@@ -200,11 +199,10 @@ public class UniversalCoins {
 		snw.registerMessage(UCVendorServerMessage.class, UCVendorServerMessage.class, 1, Side.SERVER);
 		snw.registerMessage(UCCardStationServerWithdrawalMessage.class, UCCardStationServerWithdrawalMessage.class, 2, Side.SERVER);
 		snw.registerMessage(UCCardStationServerCustomNameMessage.class, UCCardStationServerCustomNameMessage.class, 3, Side.SERVER);
-		snw.registerMessage(UCRecipeMessage.class, UCRecipeMessage.class, 4, Side.CLIENT);
-		snw.registerMessage(UCTextureMessage.class, UCTextureMessage.class, 5, Side.SERVER);
-		snw.registerMessage(UCBanditServerMessage.class, UCBanditServerMessage.class, 6, Side.SERVER);
-	    snw.registerMessage(UCSignServerMessage.class, UCSignServerMessage.class, 7, Side.SERVER);
-	    snw.registerMessage(UCTileSignMessage.class, UCTileSignMessage.class, 8, Side.CLIENT);
+		snw.registerMessage(UCTextureMessage.class, UCTextureMessage.class, 4, Side.SERVER);
+		snw.registerMessage(UCBanditServerMessage.class, UCBanditServerMessage.class, 5, Side.SERVER);
+	    snw.registerMessage(UCSignServerMessage.class, UCSignServerMessage.class, 6, Side.SERVER);
+	    snw.registerMessage(UCTileSignMessage.class, UCTileSignMessage.class, 7, Side.CLIENT);
 
 
 
@@ -243,27 +241,7 @@ public class UniversalCoins {
 		GameRegistry.registerTileEntity(TileUCSign.class, "TileUCSign");
 		
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
-	}
 
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
-		UCItemPricer.initializeConfigs();
-		UCItemPricer.loadConfigs();
-	}
-
-	@EventHandler
-	public void serverStart(FMLServerStartingEvent event) {
-		MinecraftServer server = MinecraftServer.getServer();
-		ICommandManager command = server.getCommandManager();
-		ServerCommandManager manager = (ServerCommandManager) command;
-		manager.registerCommand(new UCCommand());
-		manager.registerCommand(new UCBalance());
-		manager.registerCommand(new UCRebalance());
-		manager.registerCommand(new UCGive());
-		manager.registerCommand(new UCSend());
-
-		// load recipes server side. client side are loaded by
-		// UCPlayerLoginEventHandler
 		UCRecipeHelper.addCoinRecipes();
 		if (recipesEnabled) {
 			UCRecipeHelper.addTradeStationRecipe();
@@ -295,6 +273,24 @@ public class UniversalCoins {
 		}
 		UCRecipeHelper.addSignRecipes();
 		UCRecipeHelper.addPlankTextureRecipes();
+	}
+
+	@EventHandler
+	public void postInit(FMLPostInitializationEvent event) {
+		UCItemPricer.initializeConfigs();
+		UCItemPricer.loadConfigs();
+	}
+
+	@EventHandler
+	public void serverStart(FMLServerStartingEvent event) {
+		MinecraftServer server = MinecraftServer.getServer();
+		ICommandManager command = server.getCommandManager();
+		ServerCommandManager manager = (ServerCommandManager) command;
+		manager.registerCommand(new UCCommand());
+		manager.registerCommand(new UCBalance());
+		manager.registerCommand(new UCRebalance());
+		manager.registerCommand(new UCGive());
+		manager.registerCommand(new UCSend());
 	}
 
 }

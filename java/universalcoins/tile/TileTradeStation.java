@@ -15,6 +15,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.TradeStationGUI;
 import universalcoins.net.UCButtonMessage;
@@ -92,9 +93,10 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 				}
 
 				buyButtonActive = (UniversalCoins.tradeStationBuyEnabled
-						&& (inventory[itemOutputSlot] == null || (inventory[itemOutputSlot]).getItem() == inventory[itemInputSlot]
-								.getItem()
-								&& inventory[itemOutputSlot].stackSize < inventory[itemInputSlot].getMaxStackSize()) && (coinSum >= itemPrice || (inventory[itemCardSlot] != null
+						&& (inventory[itemOutputSlot] == null || (inventory[itemOutputSlot]).getItem() 
+						== inventory[itemInputSlot].getItem() && inventory[itemOutputSlot].stackSize 
+						< inventory[itemInputSlot].getMaxStackSize()) && (coinSum >= itemPrice 
+						|| (inventory[itemCardSlot] != null
 						&& !worldObj.isRemote && getAccountBalance() > itemPrice)));
 			}
 		}
@@ -414,6 +416,16 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 		} catch (Throwable ex2) {
 			inUse = false;
 		}
+		try {
+			buyButtonActive = tagCompound.getBoolean("buyButtonActive");
+		} catch (Throwable ex2) {
+			buyButtonActive = false;
+		}
+		try {
+			sellButtonActive = tagCompound.getBoolean("sellButtonActive");
+		} catch (Throwable ex2) {
+			sellButtonActive = false;
+		}
 		activateRetrieveButtons();
 	}
 
@@ -438,6 +450,8 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 		tagCompound.setInteger("ItemPrice", itemPrice);
 		tagCompound.setString("CustomName", getName());
 		tagCompound.setBoolean("InUse", inUse);
+		tagCompound.setBoolean("buyButtonActive", buyButtonActive);
+		tagCompound.setBoolean("sellButtonActive", sellButtonActive);
 	}
 
 	public void updateTE() {

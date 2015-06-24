@@ -9,6 +9,8 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.EnumSkyBlock;
+import net.minecraftforge.fml.common.FMLLog;
 
 import org.lwjgl.opengl.GL11;
 
@@ -37,8 +39,7 @@ public class CardStationRenderer extends TileEntitySpecialRenderer {
 
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		BlockPos tPos = new BlockPos(tileEntity.getPos().getX(), tileEntity.getPos().getY() + 1, tileEntity.getPos().getZ());
-		int brightness = (int) this.getWorld().getCombinedLight(tPos, 0);
+		int brightness = (int) this.getWorld().getCombinedLight(tileEntity.getPos(), 12);
 		GL11.glPushMatrix();
 		float f3 = 0.0F;
 		if (meta == 2) {

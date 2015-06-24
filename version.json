@@ -2,10 +2,12 @@
 	"versionList": [
 		{
 			"mcVersion":"Minecraft 1.8",
-			"modVersion":"2.0.0",
+			"modVersion":"1.8-2.0.1",
 			"changeLog": [
-				"still in alpha",
-				"only half the things work right now"
+				"fixed buy button not enabling in trade station when using cards",
+				"fixed atm dark when placed in wall",
+				"fixed atm not showing current balance",
+				"fixed recipes not showing in NEI on multiplayer"
 			],
 			"updateURL":"https://github.com/notabadminer/UniversalCoins/releases",
 			"isDirectLink":"false",
