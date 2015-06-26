@@ -23,6 +23,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import universalcoins.commands.UCBalance;
 import universalcoins.commands.UCCommand;
@@ -53,6 +54,7 @@ import universalcoins.util.UCMobDropEventHandler;
 import universalcoins.util.UCPlayerLoginEventHandler;
 import universalcoins.util.UCPlayerPickupEventHandler;
 import universalcoins.util.UCRecipeHelper;
+import universalcoins.worldgen.VillageGenBank;
 
 /**
  * UniversalCoins, Sell all your extra blocks and buy more!!! Create a trading
@@ -85,6 +87,7 @@ public class UniversalCoins {
 	public static Boolean coinsInMineshaft;
 	public static Integer mineshaftCoinChance;
 	public static Boolean coinsInDungeon;
+	public static Boolean worldGenEnabled;
 	public static Integer dungeonCoinChance;
 	public static Integer mobDropMax;
 	public static Integer mobDropChance;
@@ -177,7 +180,6 @@ public class UniversalCoins {
 		Property tsBuyEnabled = config.get("Trade Station", "Trade Station Buy enabled", true);
 		tsBuyEnabled.comment = "Set to false to disable buying items from trade station.";
 		tradeStationBuyEnabled = tsBuyEnabled.getBoolean(true);
-		config.save();
 
 		// packager
 		Property smallPackage = config.get("Packager", "Small Package Price", 10);
@@ -189,6 +191,13 @@ public class UniversalCoins {
 		Property largePackage = config.get("Packager", "Large Package Price", 40);
 		largePackage.comment = "Set the price of large package";
 		largePackagePrice = Math.max(1, Math.min(largePackage.getInt(40), 1000));
+
+		// world gen
+		Property worldGenProperty = config.get("World Generation", "Village addons enabled", true);
+		worldGenProperty.comment = "Set to false to disable adding banks or shops to villages.";
+		worldGenEnabled = worldGenProperty.getBoolean(true);
+
+		config.save();
 
 		if (mobsDropCoins) {
 			MinecraftForge.EVENT_BUS.register(new UCMobDropEventHandler());
@@ -278,6 +287,14 @@ public class UniversalCoins {
 		}
 		UCRecipeHelper.addSignRecipes();
 		UCRecipeHelper.addPlankTextureRecipes();
+
+		// worldgen
+		if (worldGenEnabled) {
+			VillageGenBank villageHandler = new VillageGenBank();
+			VillagerRegistry.instance().registerVillageCreationHandler(villageHandler);
+			//VillageGenShop villageHandler2 = new VillageGenShop();
+			//VillagerRegistry.instance().registerVillageCreationHandler(villageHandler2);
+		}
 	}
 
 	@EventHandler

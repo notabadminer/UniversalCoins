@@ -44,6 +44,7 @@ public class BlockCardStation extends BlockRotatable {
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side,
 			float hitX, float hitY, float hitZ) {
+		FMLLog.info("meta: " + this.getMetaFromState(state));
 		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity != null && tileEntity instanceof TileCardStation) {
 			if (((TileCardStation) tileEntity).inUse) {
