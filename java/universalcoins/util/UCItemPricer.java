@@ -14,7 +14,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -24,10 +26,21 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class UCItemPricer {
+	
+	private static UCItemPricer instance = new UCItemPricer();
 
 	private static Map<String, Integer> ucPriceMap = new HashMap<String, Integer>(0);
 	private static Map<String, String> ucModnameMap = new HashMap<String, String>(0);
 	private static String configPath = "config/universalcoins/";
+	private Random random = new Random();
+	
+	public static UCItemPricer getInstance() {
+		return instance;
+	}
+
+	private UCItemPricer() {
+
+	}
 
 	public static void initializeConfigs() {
 		if (!new File(configPath).exists()) {
@@ -294,5 +307,26 @@ public class UCItemPricer {
 		} catch (IOException e) {
 			// fail quietly
 		}
+	}
+	
+	public ItemStack getRandomPricedStack() {
+		List keys = new ArrayList(ucPriceMap.keySet());
+		ItemStack stack = null;
+		while (stack == null){
+			int rnd = random.nextInt(keys.size());
+			String test = (String) keys.get(rnd);
+			int price = 0;
+			if (ucPriceMap.get(test) != null) {
+				price = ucPriceMap.get(test);
+			}
+			if (price > 0) {
+				test = test.substring(5);
+				Item item = (Item)Item.itemRegistry.getObject(test);
+				if (item != null) {
+					stack = new ItemStack(item);
+				}
+			}
+		}
+		return stack;
 	}
 }
