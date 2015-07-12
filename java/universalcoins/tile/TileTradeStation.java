@@ -75,7 +75,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 			buyButtonActive = false;
 			sellButtonActive = false;
 		} else {
-			itemPrice = UCItemPricer.getItemPrice(inventory[itemInputSlot]);
+			itemPrice = UCItemPricer.getInstance().getItemPrice(inventory[itemInputSlot]);
 			if (itemPrice <= -1 || itemPrice == 0) {
 				itemPrice = 0;
 				buyButtonActive = false;
@@ -142,7 +142,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 		if (amount > inventory[itemInputSlot].stackSize) {
 			return;
 		}
-		itemPrice = UCItemPricer.getItemPrice(inventory[itemInputSlot]);
+		itemPrice = UCItemPricer.getInstance().getItemPrice(inventory[itemInputSlot]);
 		if (itemPrice == -1) {
 			sellButtonActive = false;
 			return;
@@ -178,7 +178,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 			sellButtonActive = false;
 			return;
 		}
-		itemPrice = UCItemPricer.getItemPrice(inventory[itemInputSlot]);
+		itemPrice = UCItemPricer.getInstance().getItemPrice(inventory[itemInputSlot]);
 		if (itemPrice == -1) {
 			sellButtonActive = false;
 			return;
@@ -201,7 +201,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 			buyButtonActive = false;
 			return;
 		}
-		itemPrice = UCItemPricer.getItemPrice(inventory[itemInputSlot]);
+		itemPrice = UCItemPricer.getInstance().getItemPrice(inventory[itemInputSlot]);
 		// use the card if we have it
 		if (inventory[itemCardSlot] != null && getAccountBalance() > itemPrice * amount) {
 			useCard = true;
@@ -239,7 +239,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 	public void onBuyMaxPressed() {
 		boolean useCard = false;
 		int amount = 0;
-		itemPrice = UCItemPricer.getItemPrice(inventory[itemInputSlot]);
+		itemPrice = UCItemPricer.getInstance().getItemPrice(inventory[itemInputSlot]);
 		// use the card if we have it
 		if (inventory[itemCardSlot] != null && getAccountBalance() > itemPrice) {
 			useCard = true;

@@ -16,24 +16,32 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 public class UCItemPricer {
-	
+
 	private static UCItemPricer instance = new UCItemPricer();
 
 	private static Map<String, Integer> ucPriceMap = new HashMap<String, Integer>(0);
 	private static Map<String, String> ucModnameMap = new HashMap<String, String>(0);
 	private static String configPath = "config/universalcoins/";
 	private Random random = new Random();
-	
+
 	public static UCItemPricer getInstance() {
 		return instance;
 	}
@@ -42,35 +50,35 @@ public class UCItemPricer {
 
 	}
 
-	public static void initializeConfigs() {
+	public void loadConfigs() {
 		if (!new File(configPath).exists()) {
-			//FMLLog.info("Universal Coins: Building Pricelists");
-			buildInitialPricelistHashMap();
+			// FMLLog.info("Universal Coins: Loading default prices");
+			buildPricelistHashMap();
 			try {
 				loadDefaults();
 			} catch (IOException e) {
 				FMLLog.warning("Universal Coins: Failed to load default configs");
 				e.printStackTrace();
 			}
+			autoPriceCraftedItems();
+			autoPriceSmeltedItems();
 			writePriceLists();
+		} else {
+			try {
+				loadPricelists();
+			} catch (IOException e) {
+				FMLLog.warning("Universal Coins: Failed to load config files");
+				e.printStackTrace();
+			}
 		}
 	}
 
-	public static void loadConfigs() {
-		try {
-			UCItemPricer.loadPricelists();
-		} catch (IOException e) {
-			FMLLog.warning("Universal Coins: Failed to load config files");
-			e.printStackTrace();
-		}
-	}
-
-	private static void loadDefaults() throws IOException {
-		String[] configList = { 
-				"pricelists/minecraft.cfg", 
-				"pricelists/BuildCraft.cfg",
-				"pricelists/universalcoins.cfg", 
-				"pricelists/oredictionary.cfg", };
+	private void loadDefaults() throws IOException {
+		String[] configList = { "pricelists/minecraft.cfg", "pricelists/BuildCraft.cfg",
+				"pricelists/universalcoins.cfg", "pricelists/ThermalExpansion.cfg",
+				"pricelists/SolarFlux.cfg", "pricelists/eplus.cfg", "pricelists/betterstorage.cfg",
+				"pricelists/Backpack.cfg", "pricelists/ThermalFoundation.cfg", "pricelists/cfm.cfg",
+				"pricelists/BiblioCraft.cfg", "pricelists/FLabsBF.cfg", "pricelists/oredictionary.cfg", };
 		InputStream priceResource;
 		// load those files into hashmap(ucPriceMap)
 		for (int i = 0; i < configList.length; i++) {
@@ -79,11 +87,11 @@ public class UCItemPricer {
 				return;
 			}
 			String priceString = convertStreamToString(priceResource);
-			updateInitialPricelistHashMap(priceString);
+			processDefaultConfigs(priceString);
 		}
 	}
 
-	private static String convertStreamToString(java.io.InputStream is) {
+	private String convertStreamToString(java.io.InputStream is) {
 		// Thanks to Pavel Repin on StackOverflow.
 		java.util.Scanner scanner = new java.util.Scanner(is);
 		java.util.Scanner s = scanner.useDelimiter("\\A");
@@ -92,25 +100,25 @@ public class UCItemPricer {
 		return result;
 	}
 
-	private static void updateInitialPricelistHashMap(String priceString) {
+	private void processDefaultConfigs(String priceString) {
 		StringTokenizer tokenizer = new StringTokenizer(priceString, "\n\r", false);
 		while (tokenizer.hasMoreElements()) {
 			String token = tokenizer.nextToken();
 			String[] tempData = token.split("=");
-			// FMLLog.info("Universal Coins: Updating UCPricelist: " +
-			// tempData[0] + "=" + Integer.valueOf(tempData[1]));
-			// We'll update the prices of all the items and not add all the
-			// default prices to the config folder if the mods are not present
+			// FMLLog.info("Universal Coins: Updating UCPricelist: " + tempData[0] + "=" +
+			// Integer.valueOf(tempData[1]));
+			// We'll update the prices of all the items and not add all the default prices to the config folder if the
+			// mods are not present
 			if (ucPriceMap.get(tempData[0]) != null) {
 				ucPriceMap.put(tempData[0], Integer.valueOf(tempData[1]));
 			}
 		}
 	}
 
-	public static void buildInitialPricelistHashMap() {
+	private void buildPricelistHashMap() {
 		ArrayList<ItemStack> itemsDiscovered = new ArrayList<ItemStack>();
 		Object[] itemSet = Item.itemRegistry.getKeys().toArray();
-		FMLLog.info("Set: " + itemSet);
+		
 		for (Object itemObject : itemSet) {
 			String item = itemObject.toString();
 			// pass the itemkey to a temp variable after splitting on
@@ -139,7 +147,18 @@ public class UCItemPricer {
 			// parse oredictionary
 			for (String ore : OreDictionary.getOreNames()) {
 				ucModnameMap.put(ore, "oredictionary");
-				ucPriceMap.put(ore, -1);
+				if (!ucPriceMap.containsKey(ore)) {
+					// check ore to see if any of the types has a price, use it if true
+					List<ItemStack> test = OreDictionary.getOres(ore);
+					int itemValue = -1;
+					for (int j = 0; j < test.size(); j++) {
+						int subItemValue = UCItemPricer.getInstance().getItemPrice((ItemStack) test.get(j));
+						if (subItemValue > 0) {
+							itemValue = subItemValue;
+						}
+					}
+					ucPriceMap.put(ore, itemValue);
+				}
 			}
 
 			// iterate through the items and update the hashmaps
@@ -147,32 +166,43 @@ public class UCItemPricer {
 				// update ucModnameMap with items found
 				ucModnameMap.put(itemstack.getUnlocalizedName(), modName);
 				// update ucPriceMap with initial values
-				ucPriceMap.put(itemstack.getUnlocalizedName(), -1);
+				if (!ucPriceMap.containsKey(itemstack.getUnlocalizedName())) {
+					ucPriceMap.put(itemstack.getUnlocalizedName(), -1);
+				}
 			}
 			// clear this variable so we can use it next round
 			itemsDiscovered.clear();
 		}
 	}
 
-	private static void loadPricelists() throws IOException {
+	private void loadPricelists() throws IOException {
 		// search config file folder for files
 		File folder = new File(configPath);
 		File[] configList = folder.listFiles();
 		// load those files into hashmap(UCPriceMap)
 		for (int i = 0; i < configList.length; i++) {
 			if (configList[i].isFile()) {
-				// FMLLog.info("Universal Coins: Loading Pricelist " +
-				// configList[i]);
+				// FMLLog.info("Universal Coins: Loading Pricelist: " + configList[i]);
 				BufferedReader br = new BufferedReader(new FileReader(configList[i]));
 				String tempString = "";
 				String[] modName = configList[i].getName().split("\\.");
 				while ((tempString = br.readLine()) != null) {
+					if (tempString.startsWith("//") || tempString.startsWith("#")) {
+						continue; // we have a comment. skip it
+					}
 					String[] tempData = tempString.split("=");
+					if (tempData.length < 2) {
+						// something is wrong with this line
+						FMLLog.warning("Universal Coins: Error detected in pricelist: " + configList[i].getName() + " "
+								+ tempString + " is invalid input");
+						continue;
+					}
 					int itemPrice = -1;
 					try {
 						itemPrice = Integer.valueOf(tempData[1]);
 					} catch (NumberFormatException e) {
-						FMLLog.warning("Universal Coins: Invalid price for " + tempData[0] + " in pricelist.");
+						FMLLog.warning("Universal Coins: Error detected in pricelist: " + configList[i].getName() + " "
+								+ tempString + " is invalid input");
 					}
 					ucPriceMap.put(tempData[0], itemPrice);
 					ucModnameMap.put(tempData[0], modName[0]);
@@ -182,7 +212,7 @@ public class UCItemPricer {
 		}
 	}
 
-	public static void writePriceLists() {
+	private void writePriceLists() {
 		// write config set from item hashmap
 		Set set = ucPriceMap.entrySet();
 		Iterator i = set.iterator();
@@ -215,13 +245,18 @@ public class UCItemPricer {
 		}
 	}
 
-	public static int getItemPrice(ItemStack itemStack) {
+	public int getItemPrice(ItemStack itemStack) {
 		if (itemStack == null) {
 			// FMLLog.warning("itemstack is null");
 			return -1;
 		}
 		Integer ItemPrice = -1;
-		String itemName = itemStack.getUnlocalizedName();
+		String itemName = null;
+		try {
+			itemName = itemStack.getUnlocalizedName();
+		} catch (Exception e) {
+			// fail silently
+		}
 		if (ucPriceMap.get(itemName) != null) {
 			ItemPrice = ucPriceMap.get(itemName);
 		}
@@ -238,7 +273,7 @@ public class UCItemPricer {
 		return ItemPrice;
 	}
 
-	public static int getItemPrice(String string) {
+	public int getItemPrice(String string) {
 		if (string.isEmpty()) {
 			return -1;
 		}
@@ -249,7 +284,7 @@ public class UCItemPricer {
 		return ItemPrice;
 	}
 
-	public static boolean setItemPrice(ItemStack itemStack, int price) {
+	public boolean setItemPrice(ItemStack itemStack, int price) {
 		if (itemStack == null) {
 			return false;
 		}
@@ -267,15 +302,18 @@ public class UCItemPricer {
 			return false;
 		}
 		String itemName = itemStack.getUnlocalizedName();
-		if (ucPriceMap.containsKey(itemName)) {
-			// FMLLog.info("UC: Pricemap contains item. Updating price");
-			ucPriceMap.put(itemName, price);
-			return true;
-		}
-		return false;
+		// get modName to add to mapping
+		String itemRegistryKey = (String) Item.itemRegistry.getNameForObject(itemStack.getItem());
+		String[] tempModName = itemRegistryKey.split("\\W", 3);
+		// pass the first value as modname
+		String modName = tempModName[0];
+		ucModnameMap.put(itemName, modName);
+		// update price
+		ucPriceMap.put(itemName, price);
+		return true;
 	}
 
-	public static boolean setItemPrice(String string, int price) {
+	public boolean setItemPrice(String string, int price) {
 		if (string.isEmpty()) {
 			return false;
 		}
@@ -286,9 +324,30 @@ public class UCItemPricer {
 		return false;
 	}
 
-	public static void updatePriceLists() {
+	public void updatePriceLists() {
 		// delete old configs
 		File folder = new File(configPath);
+		// cleanup
+		if (folder.exists()) {
+			File[] files = folder.listFiles();
+			if (null != files) {
+				for (int i = 0; i < files.length; i++) {
+					files[i].delete();
+				}
+			}
+		}
+		// update mod itemlist
+		buildPricelistHashMap();
+		// update prices
+		autoPriceCraftedItems();
+		// write new configs
+		writePriceLists();
+	}
+
+	public void savePriceLists() {
+		// delete old configs
+		File folder = new File(configPath);
+		// cleanup
 		if (folder.exists()) {
 			File[] files = folder.listFiles();
 			if (null != files) {
@@ -301,18 +360,18 @@ public class UCItemPricer {
 		writePriceLists();
 	}
 
-	public static void resetDefaults() {
+	public void resetDefaults() {
 		try {
 			loadDefaults();
 		} catch (IOException e) {
 			// fail quietly
 		}
 	}
-	
+
 	public ItemStack getRandomPricedStack() {
 		List keys = new ArrayList(ucPriceMap.keySet());
 		ItemStack stack = null;
-		while (stack == null){
+		while (stack == null) {
 			int rnd = random.nextInt(keys.size());
 			String test = (String) keys.get(rnd);
 			int price = 0;
@@ -321,12 +380,141 @@ public class UCItemPricer {
 			}
 			if (price > 0) {
 				test = test.substring(5);
-				Item item = (Item)Item.itemRegistry.getObject(test);
+				Item item = (Item) Item.itemRegistry.getObject(test);
 				if (item != null) {
 					stack = new ItemStack(item);
 				}
 			}
 		}
 		return stack;
+	}
+
+	private void autoPriceCraftedItems() {
+		List<IRecipe> allrecipes = new ArrayList<IRecipe>(CraftingManager.getInstance().getRecipeList());
+
+		for (IRecipe irecipe : allrecipes) {
+			int itemCost = 0;
+			boolean validRecipe = true;
+			ItemStack output = irecipe.getRecipeOutput();
+			if (output == null) {
+				continue;
+			}
+			if (UCItemPricer.getInstance().getItemPrice(output) != -1) {
+				continue;
+			}
+			List recipeItems = getRecipeInputs(irecipe);
+			for (int i = 0; i < recipeItems.size(); i++) {
+				ItemStack stack = (ItemStack) recipeItems.get(i);
+				if (UCItemPricer.getInstance().getItemPrice(stack) != -1) {
+					itemCost += UCItemPricer.getInstance().getItemPrice(stack);
+				} else {
+					validRecipe = false;
+				}
+			}
+			if (validRecipe && itemCost > 0) {
+				if (output.stackSize > 1) {
+					itemCost = itemCost / output.stackSize;
+				}
+				try {
+					UCItemPricer.getInstance().setItemPrice(output, itemCost);
+				} catch (Exception e) {
+					FMLLog.warning("Universal Coins Autopricer: Failed to set item price.");
+				}
+			}
+		}
+	}
+
+	public static List<ItemStack> getRecipeInputs(IRecipe recipe) {
+		ArrayList<ItemStack> recipeInputs = new ArrayList<ItemStack>();
+		if (recipe instanceof ShapedRecipes) {
+			ShapedRecipes shapedRecipe = (ShapedRecipes) recipe;
+			for (int i = 0; i < shapedRecipe.recipeItems.length; i++) {
+				if (shapedRecipe.recipeItems[i] instanceof ItemStack) {
+					ItemStack itemStack = shapedRecipe.recipeItems[i].copy();
+					if (itemStack.stackSize > 1) {
+						itemStack.stackSize = 1;
+					}
+					recipeInputs.add(itemStack);
+				}
+			}
+		} else if (recipe instanceof ShapelessRecipes) {
+			ShapelessRecipes shapelessRecipe = (ShapelessRecipes) recipe;
+			for (Object object : shapelessRecipe.recipeItems) {
+				if (object instanceof ItemStack) {
+					ItemStack itemStack = ((ItemStack) object).copy();
+					if (itemStack.stackSize > 1) {
+						itemStack.stackSize = 1;
+					}
+					recipeInputs.add(itemStack);
+				}
+			}
+		} else if (recipe instanceof ShapedOreRecipe) {
+			ShapedOreRecipe shapedOreRecipe = (ShapedOreRecipe) recipe;
+			for (int i = 0; i < shapedOreRecipe.getInput().length; i++) {
+				if (shapedOreRecipe.getInput()[i] instanceof ArrayList) {
+					ArrayList test = (ArrayList) shapedOreRecipe.getInput()[i];
+					if (test.size() > 0) {
+						boolean arrayListHasPricedItem = false;
+						for (int j = 0; j < test.size(); j++) {
+							if (UCItemPricer.getInstance().getItemPrice((ItemStack) test.get(j)) > 0) {
+								recipeInputs.add((ItemStack) test.get(j));
+								arrayListHasPricedItem = true;
+								break;
+							}
+						}
+						// everything is invalid, just add one
+						if (!arrayListHasPricedItem) {
+							recipeInputs.add((ItemStack) test.get(0));
+						}
+					}
+				} else if (shapedOreRecipe.getInput()[i] instanceof ItemStack) {
+					ItemStack itemStack = ((ItemStack) shapedOreRecipe.getInput()[i]).copy();
+					if (itemStack.stackSize > 1) {
+						itemStack.stackSize = 1;
+					}
+					recipeInputs.add(itemStack);
+				}
+			}
+		} else if (recipe instanceof ShapelessOreRecipe) {
+			ShapelessOreRecipe shapelessOreRecipe = (ShapelessOreRecipe) recipe;
+			for (Object object : shapelessOreRecipe.getInput()) {
+				if (object instanceof ArrayList) {
+					ArrayList test = (ArrayList) object;
+					boolean arrayListHasPricedItem = false;
+					for (int j = 0; j < test.size(); j++) {
+						if (UCItemPricer.getInstance().getItemPrice((ItemStack) test.get(j)) > 0) {
+							recipeInputs.add((ItemStack) test.get(j));
+							arrayListHasPricedItem = true;
+							break;
+						}
+					}
+					// everything is invalid, just add one
+					if (!arrayListHasPricedItem && test.size() > 0)
+						recipeInputs.add((ItemStack) test.get(0));
+				} else if (object instanceof ItemStack) {
+					ItemStack itemStack = ((ItemStack) object).copy();
+					if (itemStack.stackSize > 1) {
+						itemStack.stackSize = 1;
+					}
+					recipeInputs.add(itemStack);
+				}
+			}
+		}
+		return recipeInputs;
+	}
+
+	private void autoPriceSmeltedItems() {
+		Map<ItemStack, ItemStack> recipes = (Map<ItemStack, ItemStack>) FurnaceRecipes.instance().getSmeltingList();
+		for (Entry<ItemStack, ItemStack> recipe : recipes.entrySet()) {
+			ItemStack input = recipe.getKey();
+			ItemStack output = recipe.getValue();
+			if (ucPriceMap.get(input.getUnlocalizedName()) != null) {
+				int inputValue = ucPriceMap.get(input.getUnlocalizedName());
+				int outputValue = ucPriceMap.get(output.getUnlocalizedName());
+				if (inputValue != -1 && outputValue == -1) {
+					ucPriceMap.put(output.getUnlocalizedName(), inputValue + 2);
+				}
+			}
+		}
 	}
 }

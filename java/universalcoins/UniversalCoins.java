@@ -58,8 +58,7 @@ import universalcoins.worldgen.VillageGenBank;
 import universalcoins.worldgen.VillageGenShop;
 
 /**
- * UniversalCoins, Sell all your extra blocks and buy more!!! Create a trading
- * economy, jobs, whatever.
+ * UniversalCoins, Sell all your extra blocks and buy more!!! Create a trading economy, jobs, whatever.
  * 
  * @author notabadminer, ted_996, AUTOMATIC_MAIDEN
  * 
@@ -71,7 +70,7 @@ public class UniversalCoins {
 	public static UniversalCoins instance;
 	public static final String modid = "universalcoins";
 	public static final String name = "Universal Coins";
-	public static final String version = "1.8-2.0.2";
+	public static final String version = "1.8-2.0.3";
 
 	public static Boolean autoModeEnabled;
 	public static Boolean tradeStationRecipesEnabled;
@@ -224,15 +223,15 @@ public class UniversalCoins {
 		snw = NetworkRegistry.INSTANCE.newSimpleChannel(modid);
 		snw.registerMessage(UCButtonMessage.class, UCButtonMessage.class, 0, Side.SERVER);
 		snw.registerMessage(UCVendorServerMessage.class, UCVendorServerMessage.class, 1, Side.SERVER);
-		snw.registerMessage(UCCardStationServerWithdrawalMessage.class, UCCardStationServerWithdrawalMessage.class, 2, Side.SERVER);
-		snw.registerMessage(UCCardStationServerCustomNameMessage.class, UCCardStationServerCustomNameMessage.class, 3, Side.SERVER);
+		snw.registerMessage(UCCardStationServerWithdrawalMessage.class, UCCardStationServerWithdrawalMessage.class, 2,
+				Side.SERVER);
+		snw.registerMessage(UCCardStationServerCustomNameMessage.class, UCCardStationServerCustomNameMessage.class, 3,
+				Side.SERVER);
 		snw.registerMessage(UCTextureMessage.class, UCTextureMessage.class, 4, Side.SERVER);
 		snw.registerMessage(UCBanditServerMessage.class, UCBanditServerMessage.class, 5, Side.SERVER);
-	    snw.registerMessage(UCSignServerMessage.class, UCSignServerMessage.class, 6, Side.SERVER);
-	    snw.registerMessage(UCTileSignMessage.class, UCTileSignMessage.class, 7, Side.CLIENT);
-	    snw.registerMessage(UCRecipeMessage.class, UCRecipeMessage.class, 8, Side.CLIENT);
-
-
+		snw.registerMessage(UCSignServerMessage.class, UCSignServerMessage.class, 6, Side.SERVER);
+		snw.registerMessage(UCTileSignMessage.class, UCTileSignMessage.class, 7, Side.CLIENT);
+		snw.registerMessage(UCRecipeMessage.class, UCRecipeMessage.class, 8, Side.CLIENT);
 
 		// update check using versionchecker
 		FMLInterModComms.sendRuntimeMessage(modid, "VersionChecker", "addVersionCheck",
@@ -267,7 +266,7 @@ public class UniversalCoins {
 		GameRegistry.registerTileEntity(TileVendorBlock.class, "TileVendorBlock");
 		GameRegistry.registerTileEntity(TileVendorFrame.class, "TileVendorFrame");
 		GameRegistry.registerTileEntity(TileUCSign.class, "TileUCSign");
-		
+
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 
 		UCRecipeHelper.addCoinRecipes();
@@ -315,8 +314,16 @@ public class UniversalCoins {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		UCItemPricer.initializeConfigs();
-		UCItemPricer.loadConfigs();
+		// auto pricing the items takes a while so we start a thread
+		// and let it work in the background.
+		Runnable r = new Runnable() {
+			public void run() {
+				UCItemPricer.getInstance().loadConfigs();
+			}
+		};
+
+		Thread t = new Thread(r);
+		t.start();
 	}
 
 	@EventHandler

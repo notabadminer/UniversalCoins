@@ -1,7 +1,10 @@
 package universalcoins.render;
 
+import java.lang.reflect.Field;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderEntityItem;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
@@ -14,8 +17,9 @@ import org.lwjgl.opengl.GL12;
 import universalcoins.tile.TileVendor;
 
 public class VendorBlockRenderer extends TileEntitySpecialRenderer {
-	RenderItem renderer = Minecraft.getMinecraft().getRenderItem();
-
+	
+	RenderEntityItem renderer = new RenderEntityItem(Minecraft.getMinecraft().getRenderManager() , Minecraft.getMinecraft().getRenderItem());
+	
 	public VendorBlockRenderer() {
 	}
 
@@ -33,14 +37,17 @@ public class VendorBlockRenderer extends TileEntitySpecialRenderer {
 		if (itemstack == null) {
 			return;
 		}
+		EntityItem entity = new EntityItem(null, posZ, posZ, posZ, itemstack);
+		
+		entity.hoverStart = 0;		
 
 		GlStateManager.pushMatrix();
-		GlStateManager.translate((float) posX + 0.5F, (float) posY + 0.35F, (float) posZ + 0.5F);
-		GlStateManager.scale(0.9F, 0.9F, 0.9F);
+		GlStateManager.translate((float) posX + 0.5F, (float) posY + 0.15F, (float) posZ + 0.5F);
 
-		// render trade item or block
-		if (itemstack != null) {
-			renderer.renderItemModel(itemstack);
+		try {
+			// render trade item
+			renderer.doRender(entity, 0, 0, 0, 0, Minecraft.getMinecraft().thePlayer.ticksExisted);
+		} catch (Throwable e) {
 		}
 		GlStateManager.popMatrix();
 	}
