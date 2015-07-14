@@ -109,7 +109,7 @@ public class UCItemPricer {
 			// Integer.valueOf(tempData[1]));
 			// We'll update the prices of all the items and not add all the default prices to the config folder if the
 			// mods are not present
-			if (ucPriceMap.get(tempData[0]) != null) {
+			if (ucPriceMap.get(tempData[0]) != null && tempData.length == 2) {
 				ucPriceMap.put(tempData[0], Integer.valueOf(tempData[1]));
 			}
 		}
@@ -372,14 +372,15 @@ public class UCItemPricer {
 		List keys = new ArrayList(ucPriceMap.keySet());
 		ItemStack stack = null;
 		while (stack == null) {
-			int rnd = random.nextInt(keys.size());
-			String test = (String) keys.get(rnd);
+			String test = (String) keys.get(random.nextInt(keys.size()));
 			int price = 0;
 			if (ucPriceMap.get(test) != null) {
 				price = ucPriceMap.get(test);
 			}
 			if (price > 0) {
-				test = test.substring(5);
+				if (test.startsWith("tile.") || test.startsWith("item.")) {
+					test = test.substring(5);
+				}
 				Item item = (Item) Item.itemRegistry.getObject(test);
 				if (item != null) {
 					stack = new ItemStack(item);
@@ -516,5 +517,9 @@ public class UCItemPricer {
 				}
 			}
 		}
+	}
+
+	public static Map<String, Integer> getUcPriceMap() {
+		return ucPriceMap;
 	}
 }

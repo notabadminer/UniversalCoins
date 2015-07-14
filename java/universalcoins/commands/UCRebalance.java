@@ -64,7 +64,6 @@ public class UCRebalance extends CommandBase {
 						EntityItem entityItem = new EntityItem(world, ((EntityPlayerMP) sender).posX + rx,
 								((EntityPlayerMP) sender).posY + ry, ((EntityPlayerMP) sender).posZ + rz,
 								new ItemStack(coins[logVal], stackSize));
-						world.spawnEntityInWorld(entityItem);
 						leftOvers -= Math.pow(9, logVal) * stackSize;
 					}
 				}

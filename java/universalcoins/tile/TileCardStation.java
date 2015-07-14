@@ -101,9 +101,9 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 					int itemValue = multiplier[coinType];
 					int depositAmount = Math.min(stack.stackSize, (Integer.MAX_VALUE - accountBalance) / itemValue);
 					if (!worldObj.isRemote) {
-						UniversalAccounts.getInstance().creditAccount(worldObj, accountNumber,
+						UniversalAccounts.getInstance().creditAccount(accountNumber,
 								depositAmount * itemValue);
-						accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
+						accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 					}
 					inventory[slot].stackSize -= depositAmount;
 					if (inventory[slot].stackSize == 0) {
@@ -114,9 +114,9 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			if (slot == itemCardSlot && !worldObj.isRemote) {
 				accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 				cardOwner = inventory[itemCardSlot].getTagCompound().getString("Owner");
-				if (UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID) != "")
-					customAccountName = UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID);
-				accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
+				if (UniversalAccounts.getInstance().getCustomAccount(playerUID) != "")
+					customAccountName = UniversalAccounts.getInstance().getCustomAccount(playerUID);
+				accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 			}
 		}
 	}
@@ -268,26 +268,26 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		// function9 - transfer custom account
 		// function10 - account error reset
 		if (functionId == 1) {
-			accountNumber = UniversalAccounts.getInstance().getOrCreatePlayerAccount(worldObj, playerUID);
+			accountNumber = UniversalAccounts.getInstance().getOrCreatePlayerAccount(playerUID);
 			inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
 			inventory[itemCardSlot].setTagCompound(new NBTTagCompound());
 			inventory[itemCardSlot].getTagCompound().setString("Name", playerName);
 			inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
 			inventory[itemCardSlot].getTagCompound().setString("Account", accountNumber);
-			accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
+			accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 			cardOwner = playerUID;
 		}
 		if (functionId == 2) {
-			if (UniversalAccounts.getInstance().getPlayerAccount(worldObj, playerUID) == "") {
+			if (UniversalAccounts.getInstance().getPlayerAccount(playerUID) == "") {
 			} else {
-				UniversalAccounts.getInstance().transferPlayerAccount(worldObj, playerUID);
+				UniversalAccounts.getInstance().transferPlayerAccount(playerUID);
 				inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
 				inventory[itemCardSlot].setTagCompound(new NBTTagCompound());
 				inventory[itemCardSlot].getTagCompound().setString("Name", playerName);
 				inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
 				inventory[itemCardSlot].getTagCompound().setString("Account",
-						UniversalAccounts.getInstance().getPlayerAccount(worldObj, playerUID));
-				accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
+						UniversalAccounts.getInstance().getPlayerAccount(playerUID));
+				accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 				cardOwner = playerUID;
 			}
 		}
@@ -310,14 +310,14 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		} else
 			withdrawCoins = false;
 		if (functionId == 5) {
-			String storedAccount = UniversalAccounts.getInstance().getPlayerAccount(worldObj, playerUID);
+			String storedAccount = UniversalAccounts.getInstance().getPlayerAccount(playerUID);
 			if (storedAccount != "") {
 				accountNumber = storedAccount;
 				cardOwner = playerUID; // needed for new card auth
-				accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
-				if (UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID) != "") {
-					customAccountName = UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID);
-					customAccountNumber = UniversalAccounts.getInstance().getPlayerAccount(worldObj, customAccountName);
+				accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
+				if (UniversalAccounts.getInstance().getCustomAccount(playerUID) != "") {
+					customAccountName = UniversalAccounts.getInstance().getCustomAccount(playerUID);
+					customAccountNumber = UniversalAccounts.getInstance().getPlayerAccount(customAccountName);
 				}
 			} else
 				accountNumber = "none";
@@ -326,19 +326,19 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			inventory[itemCardSlot] = null;
 		}
 		if (functionId == 7) {
-			if (UniversalAccounts.getInstance().getPlayerAccount(worldObj, customAccountName) != ""
-					&& !UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID)
+			if (UniversalAccounts.getInstance().getPlayerAccount(customAccountName) != ""
+					&& !UniversalAccounts.getInstance().getCustomAccount(playerUID)
 							.contentEquals(customAccountName)) {
 				accountError = true;
 				// we need to reset this so that that function 7 is called again
 				// on next attempt at getting an account
 				customAccountName = "none";
 				return;
-			} else if (UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID) == "") {
-				UniversalAccounts.getInstance().addCustomAccount(worldObj, customAccountName, accountNumber);
+			} else if (UniversalAccounts.getInstance().getCustomAccount(playerUID) == "") {
+				UniversalAccounts.getInstance().addCustomAccount(customAccountName, accountNumber);
 			}
-			customAccountName = UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID);
-			customAccountNumber = UniversalAccounts.getInstance().getPlayerAccount(worldObj, customAccountName);
+			customAccountName = UniversalAccounts.getInstance().getCustomAccount(playerUID);
+			customAccountNumber = UniversalAccounts.getInstance().getPlayerAccount(customAccountName);
 			inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
 			inventory[itemCardSlot].setTagCompound(new NBTTagCompound());
 			inventory[itemCardSlot].getTagCompound().setString("Name", customAccountName);
@@ -351,21 +351,21 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			inventory[itemCardSlot].getTagCompound().setString("Name", customAccountName);
 			inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
 			inventory[itemCardSlot].getTagCompound().setString("Account", customAccountNumber);
-			accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, customAccountNumber);
+			accountBalance = UniversalAccounts.getInstance().getAccountBalance(customAccountNumber);
 		}
 		if (functionId == 9) {
-			if (UniversalAccounts.getInstance().getCustomAccount(worldObj, playerUID) == ""
-					|| UniversalAccounts.getInstance().getPlayerAccount(worldObj, customAccountName) != "") {
+			if (UniversalAccounts.getInstance().getCustomAccount(playerUID) == ""
+					|| UniversalAccounts.getInstance().getPlayerAccount(customAccountName) != "") {
 				accountError = true;
 			} else {
 				accountError = false;
-				UniversalAccounts.getInstance().transferCustomAccount(worldObj, accountNumber, accountNumber);
+				UniversalAccounts.getInstance().transferCustomAccount(accountNumber, accountNumber);
 				inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.itemUCCard, 1);
 				inventory[itemCardSlot].setTagCompound(new NBTTagCompound());
 				inventory[itemCardSlot].getTagCompound().setString("Name", customAccountName);
 				inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
 				inventory[itemCardSlot].getTagCompound().setString("Account", customAccountNumber);
-				accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, customAccountNumber);
+				accountBalance = UniversalAccounts.getInstance().getAccountBalance(customAccountNumber);
 			}
 		}
 	}
@@ -377,9 +377,9 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			int stackSize = Math.min((int) (coinWithdrawalAmount / Math.pow(9, logVal)), 64);
 			inventory[itemCoinSlot] = (new ItemStack(coins[logVal], stackSize));
 			coinWithdrawalAmount -= (stackSize * Math.pow(9, logVal));
-			UniversalAccounts.getInstance().debitAccount(worldObj, accountNumber,
+			UniversalAccounts.getInstance().debitAccount(accountNumber,
 					(int) (stackSize * Math.pow(9, logVal)));
-			accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
+			accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 		}
 		if (coinWithdrawalAmount <= 0) {
 			withdrawCoins = false;

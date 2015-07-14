@@ -1,6 +1,7 @@
 package universalcoins.util;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 
 public class UniversalAccounts {
@@ -15,79 +16,64 @@ public class UniversalAccounts {
 
 	}
 
-	public int getAccountBalance(World world, String accountNumber) {
-		if (hasKey(world, accountNumber)) {
-			return getWorldInt(world, accountNumber);
+	public int getAccountBalance(String accountNumber) {
+		if (hasKey(accountNumber)) {
+			return getWorldInt(accountNumber);
 		} else
 			return -1;
 	}
 
-	public void debitAccount(World world, String accountNumber, int amount) {
-		if (hasKey(world, accountNumber)) {
-			int balance = getWorldInt(world, accountNumber);
-			balance -= amount;
-			setWorldData(world, accountNumber, balance);
+	public boolean debitAccount(String accountNumber, int amount) {
+		if (hasKey(accountNumber)) {
+			int balance = getWorldInt(accountNumber);
+			if (amount <= balance) {
+				balance -= amount;
+				setWorldData(accountNumber, balance);
+				return true;
+			}
 		}
+		return false;
 	}
 
-	public void creditAccount(World world, String accountNumber, int amount) {
-		if (hasKey(world, accountNumber)) {
-			int balance = getWorldInt(world, accountNumber);
-			balance += amount;
-			setWorldData(world, accountNumber, balance);
+	public boolean creditAccount(String accountNumber, int amount) {
+		if (hasKey(accountNumber)) {
+			int balance = getWorldInt(accountNumber);
+			if (balance + amount < Integer.MAX_VALUE) {
+				balance += amount;
+				setWorldData(accountNumber, balance);
+				return true;
+			}
 		}
+		return false;
 	}
 
-	public String getPlayerAccount(World world, String playerUID) {
+	public String getPlayerAccount(String playerUID) {
 		// returns an empty string if no account found
-		return getWorldString(world, playerUID);
+		return getWorldString(playerUID);
 	}
 
-	public String getOrCreatePlayerAccount(World world, String playerUID) {
-		String accountNumber = getWorldString(world, playerUID);
+	public String getOrCreatePlayerAccount(String playerUID) {
+		String accountNumber = getWorldString(playerUID);
 		if (accountNumber == "") {
-			while (!hasKey(world, playerUID)) {
+			while (!hasKey(playerUID)) {
 				accountNumber = String.valueOf(generateAccountNumber());
-				if (getWorldString(world, accountNumber) == "") {
-					setWorldData(world, playerUID, accountNumber);
-					setWorldData(world, accountNumber, 0);
+				if (getWorldString(accountNumber) == "") {
+					setWorldData(playerUID, accountNumber);
+					setWorldData(accountNumber, 0);
 				}
 			}
 		}
 		return accountNumber;
 	}
 
-	public void addPlayerAccount(World world, String playerUID) {
-		if (getWorldString(world, playerUID) == "") {
+	public boolean addPlayerAccount(String playerUID) {
+		if (getWorldString(playerUID) == "") {
 			String accountNumber = "";
-			while (getWorldString(world, accountNumber) == "") {
+			while (getWorldString(accountNumber) == "") {
 				accountNumber = String.valueOf(generateAccountNumber());
-				if (getWorldString(world, accountNumber) == "") {
-					setWorldData(world, playerUID, accountNumber);
-					setWorldData(world, accountNumber, 0);
-				}
-			}
-		} else {
-			// we have a problem we need to clear stale account data
-
-		}
-	}
-
-	public String getCustomAccount(World world, String playerUID) {
-		return getWorldString(world, "�" + playerUID);
-	}
-
-	public boolean addCustomAccount(World world, String customName, String playerUID) {
-		// custom accounts are added as a relation of playername to customname
-		// customnames are then associated with an account number
-		if (getWorldString(world, "�" + playerUID) == "" && getWorldString(world, customName) == "") {
-			String customAccountNumber = "";
-			while (getWorldString(world, customAccountNumber) == "") {
-				customAccountNumber = String.valueOf(generateAccountNumber());
-				if (getWorldString(world, customAccountNumber) == "") {
-					setWorldData(world, "�" + playerUID, customName);
-					setWorldData(world, customName, customAccountNumber);
-					setWorldData(world, customAccountNumber, 0);
+				if (getWorldString(accountNumber) == "") {
+					setWorldData(playerUID, accountNumber);
+					setWorldData(accountNumber, 0);
 					return true;
 				}
 			}
@@ -95,84 +81,108 @@ public class UniversalAccounts {
 		return false;
 	}
 
-	public void transferCustomAccount(World world, String playerUID, String customAccountName) {
-		String oldName = getWorldString(world, "�" + playerUID);
-		String oldAccount = getWorldString(world, oldName);
-		int oldBalance = getAccountBalance(world, oldAccount);
-		delWorldData(world, "�" + playerUID);
-		delWorldData(world, oldName);
-		delWorldData(world, oldAccount);
-		if (getWorldString(world, "�" + playerUID) == "") {
-			String customAccountNumber = "none";
-			while (getWorldString(world, customAccountNumber) == "") {
+	public String getCustomAccount(String playerUID) {
+		return getWorldString("�" + playerUID);
+	}
+
+	public boolean addCustomAccount(String customName, String playerUID) {
+		// custom accounts are added as a relation of playername to customname
+		// customnames are then associated with an account number
+		if (getWorldString("�" + playerUID) == "" && getWorldString(customName) == "") {
+			String customAccountNumber = "";
+			while (getWorldString(customAccountNumber) == "") {
 				customAccountNumber = String.valueOf(generateAccountNumber());
-				if (getWorldString(world, customAccountNumber) == "") {
-					setWorldData(world, "�" + playerUID, customAccountName);
-					setWorldData(world, customAccountName, customAccountNumber);
-					setWorldData(world, customAccountNumber, oldBalance);
+				if (getWorldString(customAccountNumber) == "") {
+					setWorldData("�" + playerUID, customName);
+					setWorldData(customName, customAccountNumber);
+					setWorldData(customAccountNumber, 0);
+					return true;
 				}
-				if (getWorldString(world, oldAccount) != "") {
-					delWorldData(world, oldAccount);
-					delWorldData(world, oldName);
+			}
+		}
+		return false;
+	}
+
+	public void transferCustomAccount(String playerUID, String customAccountName) {
+		String oldName = getWorldString("�" + playerUID);
+		String oldAccount = getWorldString(oldName);
+		int oldBalance = getAccountBalance(oldAccount);
+		delWorldData("�" + playerUID);
+		delWorldData(oldName);
+		delWorldData(oldAccount);
+		if (getWorldString("�" + playerUID) == "") {
+			String customAccountNumber = "none";
+			while (getWorldString(customAccountNumber) == "") {
+				customAccountNumber = String.valueOf(generateAccountNumber());
+				if (getWorldString(customAccountNumber) == "") {
+					setWorldData("�" + playerUID, customAccountName);
+					setWorldData(customAccountName, customAccountNumber);
+					setWorldData(customAccountNumber, oldBalance);
+				}
+				if (getWorldString(oldAccount) != "") {
+					delWorldData(oldAccount);
+					delWorldData(oldName);
 				}
 			}
 		}
 	}
 
-	public void transferPlayerAccount(World world, String playerUID) {
-		String oldAccount = getWorldString(world, playerUID);
-		int oldBalance = getAccountBalance(world, oldAccount);
-		delWorldData(world, playerUID);
-		if (getWorldString(world, playerUID) == "") {
+	public void transferPlayerAccount(String playerUID) {
+		String oldAccount = getWorldString(playerUID);
+		int oldBalance = getAccountBalance(oldAccount);
+		delWorldData(playerUID);
+		if (getWorldString(playerUID) == "") {
 			String accountNumber = "none";
-			while (getWorldString(world, accountNumber) == "") {
+			while (getWorldString(accountNumber) == "") {
 				accountNumber = String.valueOf(generateAccountNumber());
-				if (getWorldString(world, accountNumber) == "") {
-					setWorldData(world, playerUID, accountNumber);
-					setWorldData(world, accountNumber, oldBalance);
+				if (getWorldString(accountNumber) == "") {
+					setWorldData(playerUID, accountNumber);
+					setWorldData(accountNumber, oldBalance);
 				}
 			}
 		}
-		delWorldData(world, oldAccount);
+		delWorldData(oldAccount);
 	}
 
 	private int generateAccountNumber() {
 		return (int) (Math.floor(Math.random() * 99999999) + 11111111);
 	}
 
-	private boolean hasKey(World world, String tag) {
+	World world = MinecraftServer.getServer().worldServers[0];
+
+	private boolean hasKey(String tag) {
 		UCWorldData wData = UCWorldData.get(world);
 		NBTTagCompound wdTag = wData.getData();
 		return wdTag.hasKey(tag);
 	}
 
-	private void setWorldData(World world, String tag, String data) {
+	private void setWorldData(String tag, String data) {
 		UCWorldData wData = UCWorldData.get(world);
 		NBTTagCompound wdTag = wData.getData();
 		wdTag.setString(tag, data);
 		wData.markDirty();
 	}
 
-	private void setWorldData(World world, String tag, int data) {
+	private void setWorldData(String tag, int data) {
 		UCWorldData wData = UCWorldData.get(world);
 		NBTTagCompound wdTag = wData.getData();
 		wdTag.setInteger(tag, data);
 		wData.markDirty();
 	}
 
-	private int getWorldInt(World world, String tag) {
+	private int getWorldInt(String tag) {
 		UCWorldData wData = UCWorldData.get(world);
 		NBTTagCompound wdTag = wData.getData();
 		return wdTag.getInteger(tag);
 	}
 
-	private String getWorldString(World world, String tag) {
+	private String getWorldString(String tag) {
 		UCWorldData wData = UCWorldData.get(world);
 		NBTTagCompound wdTag = wData.getData();
 		return wdTag.getString(tag);
 	}
 
-	private void delWorldData(World world, String tag) {
+	private void delWorldData(String tag) {
 		UCWorldData wData = UCWorldData.get(world);
 		NBTTagCompound wdTag = wData.getData();
 		wdTag.removeTag(tag);

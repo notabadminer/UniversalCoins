@@ -76,10 +76,10 @@ public class UCPlayerPickupEventHandler {
 	}
 
 	private int getAccountBalance(String accountNumber) {
-		return UniversalAccounts.getInstance().getAccountBalance(world, accountNumber);
+		return UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 	}
 
 	private void creditAccount(String accountNumber, int amount) {
-		UniversalAccounts.getInstance().creditAccount(world, accountNumber, amount);
+		UniversalAccounts.getInstance().creditAccount(accountNumber, amount);
 	}
 }

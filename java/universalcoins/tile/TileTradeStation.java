@@ -630,7 +630,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 	public int getAccountBalance() {
 		if (inventory[itemCardSlot] != null) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			return UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
+			return UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 		}
 		return -1;
 	}
@@ -638,14 +638,14 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 	public void debitAccount(int amount) {
 		if (inventory[itemCardSlot] != null) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			UniversalAccounts.getInstance().debitAccount(worldObj, accountNumber, amount);
+			UniversalAccounts.getInstance().debitAccount(accountNumber, amount);
 		}
 	}
 
 	public void creditAccount(int amount) {
 		if (inventory[itemCardSlot] != null) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			UniversalAccounts.getInstance().creditAccount(worldObj, accountNumber, amount);
+			UniversalAccounts.getInstance().creditAccount(accountNumber, amount);
 		}
 	}
 

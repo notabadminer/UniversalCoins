@@ -70,7 +70,7 @@ public class UniversalCoins {
 	public static UniversalCoins instance;
 	public static final String modid = "universalcoins";
 	public static final String name = "Universal Coins";
-	public static final String version = "1.8-2.0.3";
+	public static final String version = "1.8-2.0.4";
 
 	public static Boolean autoModeEnabled;
 	public static Boolean tradeStationRecipesEnabled;

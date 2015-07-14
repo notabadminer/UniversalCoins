@@ -64,7 +64,7 @@ public class TilePackager extends TileEntity implements IInventory {
 					inventory[itemOutputSlot].setTagCompound(tagCompound);
 					if (cardAvailable) {
 						String account = inventory[itemCardSlot].getTagCompound().getString("accountNumber");
-						UniversalAccounts.getInstance().debitAccount(worldObj, account, packageCost[packageSize]);
+						UniversalAccounts.getInstance().debitAccount(account, packageCost[packageSize]);
 					} else {
 						coinSum -= packageCost[packageSize];
 
@@ -149,7 +149,7 @@ public class TilePackager extends TileEntity implements IInventory {
 		cardAvailable = false;
 		if (inventory[itemCardSlot] != null) {
 			String account = inventory[itemCardSlot].getTagCompound().getString("accountNumber");
-			int accountBalance = UniversalAccounts.getInstance().getAccountBalance(worldObj, account);
+			int accountBalance = UniversalAccounts.getInstance().getAccountBalance(account);
 			if (accountBalance > packageCost[packageSize]) {
 				cardAvailable = true;
 			}

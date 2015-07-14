@@ -914,13 +914,6 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 		}
 	}
 	
-	public int getUserAccountBalance() {
-		if (inventory[itemUserCardSlot] != null) {
-			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
-			return UniversalAccounts.getInstance().getAccountBalance(worldObj, accountNumber);
-		} return -1;
-	}
-	
 	public void setRemoteStorage(int[] storageLocation) {
 		remoteX = storageLocation[0];
 		remoteY = storageLocation[1];
@@ -949,38 +942,45 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 		}
 	}
 	
-	public void debitUserAccount(int amount) {
-		if (inventory[itemUserCardSlot] != null) {
+	public int getUserAccountBalance() {
+		if (inventory[itemUserCardSlot] != null && !worldObj.isRemote) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
-			UniversalAccounts.getInstance().debitAccount(worldObj, accountNumber, amount);
+			return UniversalAccounts.getInstance().getAccountBalance(accountNumber);
+		} return -1;
+	}
+	
+	public void debitUserAccount(int amount) {
+		if (inventory[itemUserCardSlot] != null && !worldObj.isRemote) {
+			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
+			UniversalAccounts.getInstance().debitAccount(accountNumber, amount);
 		}
 	}
 	
 	public void creditUserAccount(int amount) {
-		if (inventory[itemUserCardSlot] != null) {
+		if (inventory[itemUserCardSlot] != null && !worldObj.isRemote) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
-			UniversalAccounts.getInstance().creditAccount(worldObj, accountNumber, amount);
+			UniversalAccounts.getInstance().creditAccount(accountNumber, amount);
 		}
 	}
 	
 	public int getOwnerAccountBalance() {
-		if (inventory[itemCardSlot] != null) {
+		if (inventory[itemCardSlot] != null && !worldObj.isRemote) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			return UniversalAccounts.getInstance().getAccountBalance(getWorld(), accountNumber);
+			return UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 		} return -1;
 	}
 	
 	public void debitOwnerAccount(int amount) {
-		if (inventory[itemCardSlot] != null) {
+		if (inventory[itemCardSlot] != null && !worldObj.isRemote) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			UniversalAccounts.getInstance().debitAccount(worldObj, accountNumber, amount);
+			UniversalAccounts.getInstance().debitAccount(accountNumber, amount);
 		}
 	}
 	
 	public void creditOwnerAccount(int amount) {
-		if (inventory[itemCardSlot] != null) {
+		if (inventory[itemCardSlot] != null && !worldObj.isRemote) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			UniversalAccounts.getInstance().creditAccount(worldObj, accountNumber, amount);
+			UniversalAccounts.getInstance().creditAccount(accountNumber, amount);
 		}
 	}
 	
@@ -992,12 +992,12 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	public void onButtonPressed(int buttonId, boolean shiftPressed) {
 		if (buttonId == VendorGUI.idModeButton) {
 			onModeButtonPressed();
-		}
-		if (buttonId < VendorGUI.idCoinButton) {
-			//do nothing here
-		} else if (buttonId <= VendorGUI.idLBagButton) {
-			onRetrieveButtonsPressed(
-					buttonId, shiftPressed);
+		} else if (buttonId >= VendorGUI.idCoinButton && buttonId <= VendorGUI.idLBagButton) {
+			onRetrieveButtonsPressed(buttonId, shiftPressed);
+		} else if (buttonId == VendorGUI.idtcmButton) {
+			if(textColor > 0) textColor--;
+		} else if (buttonId == VendorGUI.idtcpButton) {
+			if(textColor < 15) textColor++;
 		} else if (buttonId == VendorBuyGUI.idSellButton) {
 			if (shiftPressed) {
 				onSellMaxPressed();
@@ -1010,15 +1010,9 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 			} else {
 				onBuyPressed();
 			}
-		} else if (buttonId <= VendorSellGUI.idLBagButton) {
+		} else if (buttonId >= VendorBuyGUI.idCoinButton && buttonId <= VendorBuyGUI.idLBagButton) {
 			onRetrieveButtonsPressed(buttonId, shiftPressed);
-		}
-		if (buttonId == VendorGUI.idtcmButton) {
-			if(textColor > 0) textColor--;
-		}
-		if (buttonId == VendorGUI.idtcpButton) {
-			if(textColor < 15) textColor++;
-		}
+		} 
 		updateEntity();
 	}
 

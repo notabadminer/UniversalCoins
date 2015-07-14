@@ -13,12 +13,12 @@ public class VendorSellGUI extends GuiContainer{
 	private TileVendor tileEntity;
 	private GuiButton buyButton;
 	private GuiCoinButton retrCoinButton, retrSStackButton, retrLStackButton, retrSBagButton, retrLBagButton;
-	public static final int idBuyButton = 9;
-	public static final int idCoinButton = 10;
-	private static final int idSStackButton = 11;
-	private static final int idLStackButton = 12;
-	public static final int idSBagButton = 13;
-	public static final int idLBagButton = 14;
+	public static final int idBuyButton = 11;
+	public static final int idCoinButton = 12;
+	private static final int idSStackButton = 13;
+	private static final int idLStackButton = 14;
+	public static final int idSBagButton = 15;
+	public static final int idLBagButton = 16;
 	
 	public VendorSellGUI(InventoryPlayer inventoryPlayer, TileVendor tEntity) {
 		super(new ContainerVendorSell(inventoryPlayer, tEntity));

@@ -41,8 +41,7 @@ public class ItemEnderCard extends Item {
 		if (itemstack.getTagCompound() == null) {
 			createNBT(itemstack, world, player);
 		}
-		int accountBalance = UniversalAccounts.getInstance().getAccountBalance(world,
-				itemstack.getTagCompound().getString("Account"));
+		int accountBalance = UniversalAccounts.getInstance().getAccountBalance(itemstack.getTagCompound().getString("Account"));
 		DecimalFormat formatter = new DecimalFormat("#,###,###,###");
 		ItemStack[] inventory = player.inventory.mainInventory;
 		String accountNumber = itemstack.getTagCompound().getString("Account");
@@ -61,7 +60,7 @@ public class ItemEnderCard extends Item {
 					return true; // something went wrong
 				int coinValue = multiplier[coinType];
 				int depositAmount = Math.min(inventory[i].stackSize, (Integer.MAX_VALUE - accountBalance) / coinValue);
-				UniversalAccounts.getInstance().creditAccount(world, accountNumber, depositAmount * coinValue);
+				UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue);
 				coinsDeposited += depositAmount * coinValue;
 				inventory[i].stackSize -= depositAmount;
 				if (inventory[i].stackSize == 0) {
@@ -78,13 +77,12 @@ public class ItemEnderCard extends Item {
 					+ " " + StatCollector.translateToLocal("item.itemCoin.name")));
 		}
 		player.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("item.itemEnderCard.balance") + " "
-				+ formatter.format(UniversalAccounts.getInstance().getAccountBalance(world, accountNumber))));
+				+ formatter.format(UniversalAccounts.getInstance().getAccountBalance(accountNumber))));
 		return true;
 	}
 
 	private void createNBT(ItemStack stack, World world, EntityPlayer entityPlayer) {
-		String accountNumber = UniversalAccounts.getInstance().getOrCreatePlayerAccount(world,
-				entityPlayer.getPersistentID().toString());
+		String accountNumber = UniversalAccounts.getInstance().getOrCreatePlayerAccount(entityPlayer.getPersistentID().toString());
 		stack.getTagCompound().setString("Name", entityPlayer.getName());
 		stack.getTagCompound().setString("Owner", entityPlayer.getPersistentID().toString());
 		stack.getTagCompound().setString("Account", accountNumber);
