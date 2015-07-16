@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.BlockTorch;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -47,6 +49,9 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 
 			this.boundingBox.offset(0, this.getPathHeight(world) - this.boundingBox.minY - 1, 0);
 		}
+
+		// fill under building with cobblestone
+		buildFoundation(world, sbb);
 
 		// Clear area twice in case of sand or gravel
 		fillWithAir(world, sbb, 0, 0, 0, 5, 6, 7);
@@ -203,5 +208,28 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 			return pos.getY();
 		}
 		return 0;
+	}
+	
+	private void buildFoundation(World world, StructureBoundingBox sbb) {
+		for (int i = sbb.minX; i <= sbb.maxX; i++) {
+			for (int j = sbb.minZ; j <= sbb.maxZ; j++) {
+				int scanPos = sbb.minY;
+				if (isReplaceableBlock(world, i, scanPos, j)) {
+					world.setBlockState(new BlockPos(i, scanPos, j), Blocks.cobblestone.getDefaultState());
+				} else {
+					continue;
+				}
+			}
+		}
+	}
+
+	private boolean isReplaceableBlock(World world, int x, int y, int z) {
+		IBlockState state = world.getBlockState(new BlockPos(x, y, z));
+		if (state.getBlock().getMaterial() == Material.air
+				|| state.getBlock().getMaterial() == Material.water
+				|| state.getBlock().getMaterial() == Material.grass) {
+			return true;
+		}
+		return false;
 	}
 }

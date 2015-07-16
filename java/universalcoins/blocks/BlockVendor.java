@@ -4,6 +4,7 @@ package universalcoins.blocks;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,8 +17,10 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumWorldBlockLayer;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.UniversalCoins;
@@ -33,6 +36,7 @@ public class BlockVendor extends BlockContainer {
 		setCreativeTab(UniversalCoins.tabUniversalCoins);	
 		setHardness(0.3F);
 		setResistance(6000.0F);
+		setLightOpacity(0);
 		setBlockBounds(0.0625f, 0.125f, 0.0625f, 0.9375f, 0.9375f, 0.9375f);
 	}
 	
@@ -43,7 +47,7 @@ public class BlockVendor extends BlockContainer {
     
 	@Override
     public boolean isFullCube() {
-        return false;
+        return true;
     }
     
 	@Override
@@ -53,7 +57,7 @@ public class BlockVendor extends BlockContainer {
 
 	@SideOnly(Side.CLIENT)
 	public EnumWorldBlockLayer getBlockLayer() {
-		return EnumWorldBlockLayer.CUTOUT_MIPPED;
+		return EnumWorldBlockLayer.TRANSLUCENT;
 	}
 
 	@Override

@@ -70,7 +70,7 @@ public class UniversalCoins {
 	public static UniversalCoins instance;
 	public static final String modid = "universalcoins";
 	public static final String name = "Universal Coins";
-	public static final String version = "1.8-2.0.4";
+	public static final String version = "1.8-2.0.3";
 
 	public static Boolean autoModeEnabled;
 	public static Boolean tradeStationRecipesEnabled;
@@ -85,8 +85,8 @@ public class UniversalCoins {
 	public static Boolean packagerRecipeEnabled;
 	public static Boolean mobsDropCoins;
 	public static Boolean coinsInMineshaft;
-	public static Boolean bankGenEnabled;
-	public static Boolean shopGenEnabled;
+	public static Integer bankGenWeight;
+	public static Integer shopGenWeight;
 	public static Integer shopMinPrice;
 	public static Integer shopMaxPrice;
 	public static Integer mineshaftCoinChance;
@@ -196,12 +196,12 @@ public class UniversalCoins {
 		largePackagePrice = Math.max(1, Math.min(largePackage.getInt(40), 1000));
 
 		// world gen
-		Property bankGenProperty = config.get("World Generation", "Village bank enabled", true);
-		bankGenProperty.comment = "Set to false to disable chance of adding bank to villages.";
-		bankGenEnabled = bankGenProperty.getBoolean(true);
-		Property shopGenProperty = config.get("World Generation", "Village shop enabled", true);
-		shopGenProperty.comment = "Set to false to disable chance of adding shop to villages.";
-		shopGenEnabled = shopGenProperty.getBoolean(true);
+		Property bankGenProperty = config.get("world generation", "Village bank weight", 6);
+		bankGenProperty.comment = "Probability of adding bank to villages. min 0, max 20, default 6.";
+		bankGenWeight = Math.max(0, Math.min(bankGenProperty.getInt(6), 20));
+		Property shopGenProperty = config.get("world generation", "Village shop weight", 6);
+		shopGenProperty.comment = "Probably of adding shop to villages. min 0, max 20, default 6.";
+		shopGenWeight = Math.max(0, Math.min(shopGenProperty.getInt(6), 20));
 
 		Property shopMinPriceProperty = config.get("World Generation", "Minimum shop price", 80);
 		shopMinPriceProperty.comment = "Set the minimum price of items for sale in shops as a percent (min=1,max=100,default=80)";
@@ -302,11 +302,11 @@ public class UniversalCoins {
 		UCRecipeHelper.addPlankTextureRecipes();
 
 		// worldgen
-		if (bankGenEnabled) {
+		if (bankGenWeight > 0) {
 			VillageGenBank villageHandler = new VillageGenBank();
 			VillagerRegistry.instance().registerVillageCreationHandler(villageHandler);
 		}
-		if (shopGenEnabled) {
+		if (shopGenWeight > 0) {
 			VillageGenShop villageHandler2 = new VillageGenShop();
 			VillagerRegistry.instance().registerVillageCreationHandler(villageHandler2);
 		}

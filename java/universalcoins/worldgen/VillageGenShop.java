@@ -3,6 +3,7 @@ package universalcoins.worldgen;
 import java.util.List;
 import java.util.Random;
 
+import universalcoins.UniversalCoins;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.gen.structure.StructureVillagePieces;
@@ -14,10 +15,8 @@ public class VillageGenShop implements IVillageCreationHandler {
 
 	@Override
 	public PieceWeight getVillagePieceWeight(Random random, int i) {
-		//return new StructureVillagePieces.PieceWeight(ComponentVillageShop.class, 
-		//		4, MathHelper.getRandomIntegerInRange(random, 0, 1));
-		return new StructureVillagePieces.PieceWeight(ComponentVillageBank.class, 
-				9, 1);
+		return new StructureVillagePieces.PieceWeight(ComponentVillageBank.class, UniversalCoins.shopGenWeight,
+				random.nextInt(2));
 	}
 
 	@Override

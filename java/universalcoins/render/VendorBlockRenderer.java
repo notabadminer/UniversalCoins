@@ -17,15 +17,16 @@ import org.lwjgl.opengl.GL12;
 import universalcoins.tile.TileVendor;
 
 public class VendorBlockRenderer extends TileEntitySpecialRenderer {
-	
-	RenderEntityItem renderer = new RenderEntityItem(Minecraft.getMinecraft().getRenderManager() , Minecraft.getMinecraft().getRenderItem());
-	
+
+	RenderEntityItem renderer = new RenderEntityItem(Minecraft.getMinecraft().getRenderManager(), Minecraft
+			.getMinecraft().getRenderItem());
+
 	public VendorBlockRenderer() {
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntity tileentity, double posX,
-			double posY, double posZ, float f, int p_180535_9_) {
+	public void renderTileEntityAt(TileEntity tileentity, double posX, double posY, double posZ, float f,
+			int p_180535_9_) {
 		TileVendor tVendor = (TileVendor) tileentity;
 
 		if (tVendor == null || tVendor.getBlockType() == null) {
@@ -38,8 +39,8 @@ public class VendorBlockRenderer extends TileEntitySpecialRenderer {
 			return;
 		}
 		EntityItem entity = new EntityItem(null, posZ, posZ, posZ, itemstack);
-		
-		entity.hoverStart = 0;		
+
+		entity.hoverStart = 0;
 
 		GlStateManager.pushMatrix();
 		GlStateManager.translate((float) posX + 0.5F, (float) posY + 0.15F, (float) posZ + 0.5F);
