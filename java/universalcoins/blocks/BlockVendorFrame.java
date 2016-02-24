@@ -16,7 +16,6 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.UniversalCoins;
@@ -26,7 +25,6 @@ import universalcoins.tile.TileVendorFrame;
 public class BlockVendorFrame extends BlockRotatable {
 
 	public BlockVendorFrame() {
-		super();
 		setHardness(1.0f);
 		setResistance(6000.0F);
 		setBlockBounds(0, 0, 0, 0, 0, 0);
@@ -82,7 +80,7 @@ public class BlockVendorFrame extends BlockRotatable {
 
 	@Override
 	public int getRenderType() {
-		return 2;
+		return 3;
 	}
 
 	@Override
@@ -101,16 +99,16 @@ public class BlockVendorFrame extends BlockRotatable {
 		IBlockState state = worldIn.getBlockState(pos);
 		EnumFacing facing = (EnumFacing) state.getValue(FACING);
 
-		if (facing == EnumFacing.SOUTH) {
+		if (facing == EnumFacing.NORTH) {
 			this.setBlockBounds(0.12f, 0.12f, 0f, 0.88f, 0.88f, 0.07f);
 		}
-		if (facing == EnumFacing.WEST) {
+		if (facing == EnumFacing.EAST) {
 			this.setBlockBounds(0.93f, 0.12f, 0.12f, 1.0f, 0.88f, 0.88f);
 		}
-		if (facing == EnumFacing.NORTH) {
+		if (facing == EnumFacing.SOUTH) {
 			this.setBlockBounds(0.12f, 0.12f, 0.93f, 0.88f, 0.88f, 1.00f);
 		}
-		if (facing == EnumFacing.EAST) {
+		if (facing == EnumFacing.WEST) {
 			this.setBlockBounds(0.07f, 0.12f, 0.12f, 0f, 0.88f, 0.88f);
 		}
 	}
@@ -138,8 +136,9 @@ public class BlockVendorFrame extends BlockRotatable {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player, ItemStack stack) {
-		// set block meta so we can use it later for rotation
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
+			ItemStack stack) {
+		world.setBlockState(pos, state.withProperty(FACING, player.getHorizontalFacing()), 2);
 		if (stack.hasTagCompound()) {
 			TileEntity te = world.getTileEntity(pos);
 			if (te instanceof TileVendorFrame) {

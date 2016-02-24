@@ -15,7 +15,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UniversalAccounts;
 
@@ -96,7 +95,7 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 		}
 	}
 
-	@Override
+	// @Override
 	public ItemStack getStackInSlotOnClosing(int slot) {
 		return getStackInSlot(slot);
 	}
@@ -250,6 +249,12 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 
 	@Override
 	public IChatComponent getDisplayName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ItemStack removeStackFromSlot(int index) {
 		// TODO Auto-generated method stub
 		return null;
 	}

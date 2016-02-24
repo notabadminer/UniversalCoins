@@ -30,17 +30,14 @@ import universalcoins.commands.UCCommand;
 import universalcoins.commands.UCGive;
 import universalcoins.commands.UCRebalance;
 import universalcoins.commands.UCSend;
-import universalcoins.net.UCBanditServerMessage;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCCardStationServerCustomNameMessage;
 import universalcoins.net.UCCardStationServerWithdrawalMessage;
 import universalcoins.net.UCRecipeMessage;
 import universalcoins.net.UCSignServerMessage;
-import universalcoins.net.UCTextureMessage;
 import universalcoins.net.UCTileSignMessage;
 import universalcoins.net.UCVendorServerMessage;
 import universalcoins.proxy.CommonProxy;
-import universalcoins.tile.TileBandit;
 import universalcoins.tile.TileCardStation;
 import universalcoins.tile.TilePackager;
 import universalcoins.tile.TileSafe;
@@ -58,19 +55,20 @@ import universalcoins.worldgen.VillageGenBank;
 import universalcoins.worldgen.VillageGenShop;
 
 /**
- * UniversalCoins, Sell all your extra blocks and buy more!!! Create a trading economy, jobs, whatever.
+ * UniversalCoins, Sell all your extra blocks and buy more!!! Create a trading
+ * economy, jobs, whatever.
  * 
  * @author notabadminer, ted_996, AUTOMATIC_MAIDEN
  * 
  **/
 
-@Mod(modid = UniversalCoins.modid, name = UniversalCoins.name, version = UniversalCoins.version, acceptedMinecraftVersions = "[1.8.0]", dependencies = "required-after:Forge@[11.14.3.1446,)")
+@Mod(modid = UniversalCoins.modid, name = UniversalCoins.name, version = UniversalCoins.version, acceptedMinecraftVersions = "@MC_VERSION@")
 public class UniversalCoins {
 	@Instance("universalcoins")
 	public static UniversalCoins instance;
 	public static final String modid = "universalcoins";
 	public static final String name = "Universal Coins";
-	public static final String version = "1.8-2.0.3";
+	public static final String version = "@VERSION@";
 
 	public static Boolean autoModeEnabled;
 	public static Boolean tradeStationRecipesEnabled;
@@ -78,7 +76,6 @@ public class UniversalCoins {
 	public static Boolean vendorFrameRecipesEnabled;
 	public static Boolean atmRecipeEnabled;
 	public static Boolean enderCardRecipeEnabled;
-	public static Boolean banditRecipeEnabled;
 	public static Boolean signalRecipeEnabled;
 	public static Boolean linkCardRecipeEnabled;
 	public static Boolean tradeStationBuyEnabled;
@@ -129,9 +126,6 @@ public class UniversalCoins {
 		Property enderCardRecipe = config.get("Recipes", "Ender Card Recipe", true);
 		enderCardRecipe.comment = "Set to false to disable crafting recipes for Ender Card and Safe.";
 		enderCardRecipeEnabled = enderCardRecipe.getBoolean(true);
-		Property banditRecipe = config.get("Recipes", "Slot Machine Recipe", true);
-		banditRecipe.comment = "Set to false to disable crafting recipes for Slot Machine.";
-		banditRecipeEnabled = banditRecipe.getBoolean(true);
 		Property signalRecipe = config.get("Recipes", "Redstone Signal Generator Recipe", true);
 		signalRecipe.comment = "Set to false to disable crafting recipes for Redstone Signal Generator.";
 		signalRecipeEnabled = signalRecipe.getBoolean(true);
@@ -227,11 +221,9 @@ public class UniversalCoins {
 				Side.SERVER);
 		snw.registerMessage(UCCardStationServerCustomNameMessage.class, UCCardStationServerCustomNameMessage.class, 3,
 				Side.SERVER);
-		snw.registerMessage(UCTextureMessage.class, UCTextureMessage.class, 4, Side.SERVER);
-		snw.registerMessage(UCBanditServerMessage.class, UCBanditServerMessage.class, 5, Side.SERVER);
-		snw.registerMessage(UCSignServerMessage.class, UCSignServerMessage.class, 6, Side.SERVER);
-		snw.registerMessage(UCTileSignMessage.class, UCTileSignMessage.class, 7, Side.CLIENT);
-		snw.registerMessage(UCRecipeMessage.class, UCRecipeMessage.class, 8, Side.CLIENT);
+		snw.registerMessage(UCSignServerMessage.class, UCSignServerMessage.class, 4, Side.SERVER);
+		snw.registerMessage(UCTileSignMessage.class, UCTileSignMessage.class, 5, Side.CLIENT);
+		snw.registerMessage(UCRecipeMessage.class, UCRecipeMessage.class, 6, Side.CLIENT);
 
 		// update check using versionchecker
 		FMLInterModComms.sendRuntimeMessage(modid, "VersionChecker", "addVersionCheck",
@@ -260,7 +252,6 @@ public class UniversalCoins {
 		GameRegistry.registerTileEntity(TileTradeStation.class, "TileTradeStation");
 		GameRegistry.registerTileEntity(TileCardStation.class, "TileCardStation");
 		GameRegistry.registerTileEntity(TileSafe.class, "TileSafe");
-		GameRegistry.registerTileEntity(TileBandit.class, "TileBandit");
 		GameRegistry.registerTileEntity(TileSignal.class, "TileSignal");
 		GameRegistry.registerTileEntity(TilePackager.class, "TilePackager");
 		GameRegistry.registerTileEntity(TileVendorBlock.class, "TileVendorBlock");
@@ -286,9 +277,6 @@ public class UniversalCoins {
 			UCRecipeHelper.addEnderCardRecipes();
 			UCRecipeHelper.addBlockSafeRecipe();
 		}
-		if (banditRecipeEnabled) {
-			UCRecipeHelper.addBanditRecipes();
-		}
 		if (signalRecipeEnabled) {
 			UCRecipeHelper.addSignalRecipes();
 		}
@@ -299,8 +287,6 @@ public class UniversalCoins {
 			UCRecipeHelper.addPackagerRecipes();
 		}
 		UCRecipeHelper.addSignRecipes();
-		UCRecipeHelper.addPlankTextureRecipes();
-
 		// worldgen
 		if (bankGenWeight > 0) {
 			VillageGenBank villageHandler = new VillageGenBank();

@@ -13,12 +13,9 @@ import universalcoins.tile.TileVendor;
 public class ContainerVendorBuy extends Container {
 	private TileVendor tileEntity;
 	private int lastUserCoinSum, lastItemPrice;
-	private boolean lastOoStock, lastOoCoins, lastInvFull,	
-	 lastSellButtonActive, lastUCoinButtonActive, lastUSStackButtonActive,
-	 lastULStackButtonActive, lastUSBagButtonActive, lastULBagButtonActive,
-	 lastInUse;
-	
-	
+	private boolean lastOoStock, lastOoCoins, lastInvFull, lastSellButtonActive, lastUCoinButtonActive,
+			lastUSStackButtonActive, lastULStackButtonActive, lastUSBagButtonActive, lastULBagButtonActive, lastInUse;
+
 	public ContainerVendorBuy(InventoryPlayer inventoryPlayer, TileVendor tEntity) {
 		tileEntity = tEntity;
 		// the Slot constructor takes the IInventory and the slot number in that
@@ -27,7 +24,7 @@ public class ContainerVendorBuy extends Container {
 		addSlotToContainer(new Slot(tileEntity, TileVendor.itemSellSlot, 26, 24));
 		addSlotToContainer(new UCSlotOutput(tileEntity, TileVendor.itemCoinOutputSlot, 152, 64));
 		addSlotToContainer(new UCSlotCard(tileEntity, TileVendor.itemUserCardSlot, 43, 64));
-		
+
 		// commonly used vanilla code that adds the player's inventory
 		bindPlayerInventory(inventoryPlayer);
 	}
@@ -36,20 +33,19 @@ public class ContainerVendorBuy extends Container {
 	public boolean canInteractWith(EntityPlayer player) {
 		return tileEntity.isUseableByPlayer(player);
 	}
-	
+
 	void bindPlayerInventory(InventoryPlayer inventoryPlayer) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 9; j++) {
-				addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9,
-						8 + j * 18, 117 + i * 18));
+				addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9, 8 + j * 18, 117 + i * 18));
 			}
 		}
-		
+
 		for (int i = 0; i < 9; i++) {
 			addSlotToContainer(new Slot(inventoryPlayer, i, 8 + i * 18, 175));
 		}
 	}
-	
+
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slot) {
 		ItemStack stack = null;
@@ -58,7 +54,7 @@ public class ContainerVendorBuy extends Container {
 		if (slotObject != null && slotObject.getHasStack()) {
 			ItemStack stackInSlot = slotObject.getStack();
 			stack = stackInSlot.copy();
-			
+
 			// merges the item into player inventory since its in the tileEntity
 			if (slot < 5) {
 				if (!this.mergeItemStack(stackInSlot, 5, 40, true)) {
@@ -69,83 +65,79 @@ public class ContainerVendorBuy extends Container {
 			// inventory
 			else {
 				boolean foundSlot = false;
-				for (int i = 0; i < 4; i++){
-					if (((Slot)inventorySlots.get(i)).isItemValid(stackInSlot) && this.mergeItemStack(stackInSlot, i, i + 1, false)) {
+				for (int i = 0; i < 4; i++) {
+					if (((Slot) inventorySlots.get(i)).isItemValid(stackInSlot)
+							&& this.mergeItemStack(stackInSlot, i, i + 1, false)) {
 						foundSlot = true;
 						break;
 					}
 				}
-				if (!foundSlot){
+				if (!foundSlot) {
 					return null;
 				}
 			}
-			
+
 			if (stackInSlot.stackSize == 0) {
 				slotObject.putStack(null);
-			}
-			else {
+			} else {
 				slotObject.onSlotChanged();
 			}
-			
+
 			if (stackInSlot.stackSize == stack.stackSize) {
 				return null;
 			}
 			slotObject.onPickupFromSlot(player, stackInSlot);
 		}
-		
+
 		return stack;
 	}
-	
+
 	/**
-     * Looks for changes made in the container, sends them to every listener.
-     */
+	 * Looks for changes made in the container, sends them to every listener.
+	 */
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
-		
-		for (int i = 0; i < this.crafters.size(); ++i)
-        {
-            ICrafting icrafting = (ICrafting)this.crafters.get(i);
 
-            if ( this.lastItemPrice != tileEntity.itemPrice
-                    || this.lastUserCoinSum != tileEntity.userCoinSum 
-            		|| this.lastOoStock != this.tileEntity.ooStockWarning
-            		|| this.lastOoCoins != this.tileEntity.ooCoinsWarning
-                    || this.lastInvFull != this.tileEntity.inventoryFullWarning
-            		|| this.lastSellButtonActive != tileEntity.sellButtonActive
-            		|| this.lastUCoinButtonActive != this.tileEntity.uCoinButtonActive
-            		|| this.lastUSStackButtonActive != this.tileEntity.uSStackButtonActive
-            		|| this.lastULStackButtonActive != this.tileEntity.uLStackButtonActive
-            		|| this.lastUSBagButtonActive != this.tileEntity.uSBagButtonActive
-            		|| this.lastULBagButtonActive != this.tileEntity.uLBagButtonActive
-            		|| this.lastInUse != this.tileEntity.inUse) {
-                //update
-            	tileEntity.updateTE();
-            	
-            	this.lastUserCoinSum = tileEntity.userCoinSum;
-        		this.lastItemPrice = tileEntity.itemPrice;
-        		this.lastOoStock = this.tileEntity.ooStockWarning;
-                this.lastOoCoins = this.tileEntity.ooCoinsWarning;
-                this.lastInvFull = this.tileEntity.inventoryFullWarning;
-        		this.lastSellButtonActive = tileEntity.sellButtonActive;
-        		this.lastUCoinButtonActive = this.tileEntity.uCoinButtonActive;
-                this.lastUSStackButtonActive = this.tileEntity.uSStackButtonActive;
-                this.lastULStackButtonActive = this.tileEntity.uLStackButtonActive;
-                this.lastUSBagButtonActive = this.tileEntity.uSBagButtonActive;
-                this.lastULBagButtonActive = this.tileEntity.uLBagButtonActive;
-                this.lastInUse = this.tileEntity.inUse;
-            }
-        }
+		for (int i = 0; i < this.crafters.size(); ++i) {
+			ICrafting icrafting = (ICrafting) this.crafters.get(i);
+
+			if (this.lastItemPrice != tileEntity.itemPrice || this.lastUserCoinSum != tileEntity.userCoinSum
+					|| this.lastOoStock != this.tileEntity.ooStockWarning
+					|| this.lastOoCoins != this.tileEntity.ooCoinsWarning
+					|| this.lastInvFull != this.tileEntity.inventoryFullWarning
+					|| this.lastSellButtonActive != tileEntity.sellButtonActive
+					|| this.lastUCoinButtonActive != this.tileEntity.uCoinButtonActive
+					|| this.lastUSStackButtonActive != this.tileEntity.uSStackButtonActive
+					|| this.lastULStackButtonActive != this.tileEntity.uLStackButtonActive
+					|| this.lastUSBagButtonActive != this.tileEntity.uSBagButtonActive
+					|| this.lastULBagButtonActive != this.tileEntity.uLBagButtonActive
+					|| this.lastInUse != this.tileEntity.inUse) {
+				// update
+				tileEntity.updateTE();
+
+				this.lastUserCoinSum = tileEntity.userCoinSum;
+				this.lastItemPrice = tileEntity.itemPrice;
+				this.lastOoStock = this.tileEntity.ooStockWarning;
+				this.lastOoCoins = this.tileEntity.ooCoinsWarning;
+				this.lastInvFull = this.tileEntity.inventoryFullWarning;
+				this.lastSellButtonActive = tileEntity.sellButtonActive;
+				this.lastUCoinButtonActive = this.tileEntity.uCoinButtonActive;
+				this.lastUSStackButtonActive = this.tileEntity.uSStackButtonActive;
+				this.lastULStackButtonActive = this.tileEntity.uLStackButtonActive;
+				this.lastUSBagButtonActive = this.tileEntity.uSBagButtonActive;
+				this.lastULBagButtonActive = this.tileEntity.uLBagButtonActive;
+				this.lastInUse = this.tileEntity.inUse;
+			}
+		}
 	}
-	
+
 	@SideOnly(Side.CLIENT)
-    public void updateProgressBar(int par1, int par2)
-    {
-        if (par1 == 0)
-        {
-            //this.tileEntity.autoMode = par2;
-        }
-    }
-	
+	public void updateProgressBar(int par1, int par2) {
+		if (par1 == 0) {
+			// this.tileEntity.autoMode = par2;
+		}
+	}
+
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {
 		this.tileEntity.inUseCleanup();
 	}

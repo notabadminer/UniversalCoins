@@ -11,7 +11,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
-import universalcoins.tile.TileBandit;
 import universalcoins.tile.TileCardStation;
 import universalcoins.tile.TilePackager;
 import universalcoins.tile.TileSignal;
@@ -50,27 +49,26 @@ public class UCButtonMessage implements IMessage, IMessageHandler<UCButtonMessag
 		this.buttonId = buf.readInt();
 		this.shiftPressed = buf.readBoolean();
 	}
-	
-	 public IMessage onMessage(final UCButtonMessage message, final MessageContext ctx) {
-	        Runnable task = new Runnable() {
-	            @Override
-	            public void run() {
-	                processMessage(message, ctx);
-	            }
-	        };
-	        if(ctx.side == Side.CLIENT) {
-	            Minecraft.getMinecraft().addScheduledTask(task);
-	        }
-	        else if(ctx.side == Side.SERVER) {
-	            EntityPlayerMP playerEntity = ctx.getServerHandler().playerEntity;
-	            if(playerEntity == null) {
-	                FMLLog.warning("onMessage-server: Player is null");
-	                return null;
-	            }
-	            playerEntity.getServerForPlayer().addScheduledTask(task);
-	        }
-	        return null;
-	 }
+
+	public IMessage onMessage(final UCButtonMessage message, final MessageContext ctx) {
+		Runnable task = new Runnable() {
+			@Override
+			public void run() {
+				processMessage(message, ctx);
+			}
+		};
+		if (ctx.side == Side.CLIENT) {
+			Minecraft.getMinecraft().addScheduledTask(task);
+		} else if (ctx.side == Side.SERVER) {
+			EntityPlayerMP playerEntity = ctx.getServerHandler().playerEntity;
+			if (playerEntity == null) {
+				FMLLog.warning("onMessage-server: Player is null");
+				return null;
+			}
+			playerEntity.getServerForPlayer().addScheduledTask(task);
+		}
+		return null;
+	}
 
 	private void processMessage(UCButtonMessage message, final MessageContext ctx) {
 		World world = ctx.getServerHandler().playerEntity.worldObj;
@@ -81,9 +79,6 @@ public class UCButtonMessage implements IMessage, IMessageHandler<UCButtonMessag
 		}
 		if (tileEntity instanceof TileCardStation) {
 			((TileCardStation) tileEntity).onButtonPressed(message.buttonId);
-		}
-		if (tileEntity instanceof TileBandit) {
-			((TileBandit) tileEntity).onButtonPressed(message.buttonId);
 		}
 		if (tileEntity instanceof TileSignal) {
 			((TileSignal) tileEntity).onButtonPressed(message.buttonId, message.shiftPressed);

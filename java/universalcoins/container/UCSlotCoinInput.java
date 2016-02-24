@@ -20,6 +20,7 @@ public class UCSlotCoinInput extends Slot {
 		Item itemInStack = par1ItemStack.getItem();
 		return (itemInStack == UniversalCoins.proxy.itemCoin || itemInStack == UniversalCoins.proxy.itemSmallCoinStack
 				|| itemInStack == UniversalCoins.proxy.itemLargeCoinStack
-				|| itemInStack == UniversalCoins.proxy.itemSmallCoinBag || itemInStack == UniversalCoins.proxy.itemLargeCoinBag);
+				|| itemInStack == UniversalCoins.proxy.itemSmallCoinBag
+				|| itemInStack == UniversalCoins.proxy.itemLargeCoinBag);
 	}
 }

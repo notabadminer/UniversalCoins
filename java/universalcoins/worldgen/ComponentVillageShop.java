@@ -34,9 +34,10 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 
 	public static ComponentVillageShop buildComponent(Start startPiece, List pieces, Random random, int p1, int p2,
 			int p3, EnumFacing facing, int p5) {
-		StructureBoundingBox box = StructureBoundingBox.func_175897_a(p1, p2, p3, 0, 0, 0, 5, 6, 6, facing);
-		return canVillageGoDeeper(box) && StructureComponent.findIntersecting(pieces, box) == null ? new ComponentVillageShop(
-				startPiece, p5, random, box, facing) : null;
+		StructureBoundingBox box = StructureBoundingBox.getComponentToAddBoundingBox(p1, p2, p3, 0, 0, 0, 5, 6, 6,
+				facing);
+		return canVillageGoDeeper(box) && StructureComponent.findIntersecting(pieces, box) == null
+				? new ComponentVillageShop(startPiece, p5, random, box, facing) : null;
 	}
 
 	@Override
@@ -57,22 +58,22 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 		fillWithAir(world, sbb, 0, 0, 0, 5, 6, 7);
 		fillWithAir(world, sbb, 0, 0, 0, 5, 6, 7);
 		// start with block
-		func_175804_a(world, sbb, 0, 0, 0, 5, 0, 7, Blocks.double_stone_slab.getDefaultState(),
+		this.fillWithBlocks(world, sbb, 0, 0, 0, 5, 0, 7, Blocks.double_stone_slab.getDefaultState(),
 				Blocks.double_stone_slab.getDefaultState(), false);
 		// main wall
-		func_175804_a(world, sbb, 0, 1, 0, 5, 1, 7, Blocks.planks.getDefaultState(), Blocks.planks.getDefaultState(),
-				false);
+		this.fillWithBlocks(world, sbb, 0, 1, 0, 5, 1, 7, Blocks.planks.getDefaultState(),
+				Blocks.planks.getDefaultState(), false);
 		// front
-		func_175804_a(world, sbb, 0, 2, 0, 5, 3, 0, Blocks.oak_fence.getDefaultState(),
+		this.fillWithBlocks(world, sbb, 0, 2, 0, 5, 3, 0, Blocks.oak_fence.getDefaultState(),
 				Blocks.oak_fence.getDefaultState(), false);
 		// back
-		func_175804_a(world, sbb, 0, 2, 7, 5, 3, 7, Blocks.oak_fence.getDefaultState(),
+		this.fillWithBlocks(world, sbb, 0, 2, 7, 5, 3, 7, Blocks.oak_fence.getDefaultState(),
 				Blocks.oak_fence.getDefaultState(), false);
 		// top
-		func_175804_a(world, sbb, 0, 4, 0, 5, 4, 7, Blocks.planks.getDefaultState(), Blocks.planks.getDefaultState(),
-				false);
-		func_175804_a(world, sbb, 1, 5, 1, 4, 5, 6, Blocks.planks.getDefaultState(), Blocks.planks.getDefaultState(),
-				false);
+		this.fillWithBlocks(world, sbb, 0, 4, 0, 5, 4, 7, Blocks.planks.getDefaultState(),
+				Blocks.planks.getDefaultState(), false);
+		this.fillWithBlocks(world, sbb, 1, 5, 1, 4, 5, 6, Blocks.planks.getDefaultState(),
+				Blocks.planks.getDefaultState(), false);
 		// clear main
 		fillWithAir(world, sbb, 1, 1, 1, 4, 4, 6);
 		// clear door
@@ -80,25 +81,25 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 		// clear back
 		fillWithAir(world, sbb, 1, 2, 7, 4, 2, 7);
 		// torches
-		this.func_175811_a(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, this.coordBaseMode),
-				1, 4, 1, boundingBox);
-		this.func_175811_a(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, this.coordBaseMode),
-				4, 4, 1, boundingBox);
-		this.func_175811_a(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, this.coordBaseMode),
-				1, 4, 6, boundingBox);
-		this.func_175811_a(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, this.coordBaseMode),
-				4, 4, 6, boundingBox);
+		this.setBlockState(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, this.coordBaseMode), 1,
+				4, 1, boundingBox);
+		this.setBlockState(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, this.coordBaseMode), 4,
+				4, 1, boundingBox);
+		this.setBlockState(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, this.coordBaseMode), 1,
+				4, 6, boundingBox);
+		this.setBlockState(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, this.coordBaseMode), 4,
+				4, 6, boundingBox);
 		// signs
-		this.func_175804_a(world, sbb, 1, 1, 1, 1, 1, 6,
+		this.fillWithBlocks(world, sbb, 1, 1, 1, 1, 1, 6,
 				UniversalCoins.proxy.wall_ucsign.getStateFromMeta(getSignMeta(5)),
 				UniversalCoins.proxy.wall_ucsign.getStateFromMeta(getSignMeta(5)), false);
-		this.func_175804_a(world, sbb, 4, 1, 1, 4, 1, 6,
+		this.fillWithBlocks(world, sbb, 4, 1, 1, 4, 1, 6,
 				UniversalCoins.proxy.wall_ucsign.getStateFromMeta(getSignMeta(4)),
 				UniversalCoins.proxy.wall_ucsign.getStateFromMeta(getSignMeta(4)), false);
 		// vending blocks
-		func_175804_a(world, sbb, 0, 2, 1, 0, 2, 6, UniversalCoins.proxy.blockVendor.getDefaultState(),
+		this.fillWithBlocks(world, sbb, 0, 2, 1, 0, 2, 6, UniversalCoins.proxy.blockVendor.getDefaultState(),
 				UniversalCoins.proxy.blockVendor.getDefaultState(), false);
-		func_175804_a(world, sbb, 5, 2, 1, 5, 2, 6, UniversalCoins.proxy.blockVendor.getDefaultState(),
+		this.fillWithBlocks(world, sbb, 5, 2, 1, 5, 2, 6, UniversalCoins.proxy.blockVendor.getDefaultState(),
 				UniversalCoins.proxy.blockVendor.getDefaultState(), false);
 		// fill left vending blocks
 		for (int i = 0; i < 6; i++) {
@@ -209,7 +210,7 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 		}
 		return 0;
 	}
-	
+
 	private void buildFoundation(World world, StructureBoundingBox sbb) {
 		for (int i = sbb.minX; i <= sbb.maxX; i++) {
 			for (int j = sbb.minZ; j <= sbb.maxZ; j++) {
@@ -225,8 +226,7 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 
 	private boolean isReplaceableBlock(World world, int x, int y, int z) {
 		IBlockState state = world.getBlockState(new BlockPos(x, y, z));
-		if (state.getBlock().getMaterial() == Material.air
-				|| state.getBlock().getMaterial() == Material.water
+		if (state.getBlock().getMaterial() == Material.air || state.getBlock().getMaterial() == Material.water
 				|| state.getBlock().getMaterial() == Material.grass) {
 			return true;
 		}

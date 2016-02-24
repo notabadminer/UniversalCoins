@@ -3,7 +3,6 @@ package universalcoins.proxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import universalcoins.blocks.BlockBandit;
 import universalcoins.blocks.BlockBase;
 import universalcoins.blocks.BlockCardStation;
 import universalcoins.blocks.BlockPackager;
@@ -51,7 +50,6 @@ public class CommonProxy {
 	public static Block blockSafe;
 	public static Block standing_ucsign;
 	public static Block wall_ucsign;
-	public static Block blockBandit;
 	public static Block blockSignal;
 	public static Block blockPackager;
 
@@ -64,7 +62,6 @@ public class CommonProxy {
 		blockSafe = new BlockSafe().setUnlocalizedName("blockSafe");
 		standing_ucsign = new BlockUCStandingSign(TileUCSign.class).setUnlocalizedName("standing_ucsign");
 		wall_ucsign = new BlockUCWallSign(TileUCSign.class).setUnlocalizedName("wall_ucsign");
-		blockBandit = new BlockBandit().setUnlocalizedName("blockBandit");
 		blockSignal = new BlockSignal().setUnlocalizedName("blockSignal");
 		blockPackager = new BlockPackager().setUnlocalizedName("blockPackager");
 
@@ -76,7 +73,6 @@ public class CommonProxy {
 		GameRegistry.registerBlock(blockSafe, blockSafe.getUnlocalizedName().substring(5));
 		GameRegistry.registerBlock(standing_ucsign, standing_ucsign.getUnlocalizedName().substring(5));
 		GameRegistry.registerBlock(wall_ucsign, wall_ucsign.getUnlocalizedName().substring(5));
-		GameRegistry.registerBlock(blockBandit, blockBandit.getUnlocalizedName().substring(5));
 		GameRegistry.registerBlock(blockSignal, blockSignal.getUnlocalizedName().substring(5));
 		GameRegistry.registerBlock(blockPackager, blockPackager.getUnlocalizedName().substring(5));
 	}

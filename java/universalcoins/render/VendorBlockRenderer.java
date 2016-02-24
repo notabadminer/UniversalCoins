@@ -1,25 +1,18 @@
 package universalcoins.render;
 
-import java.lang.reflect.Field;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderEntityItem;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
 import universalcoins.tile.TileVendor;
 
 public class VendorBlockRenderer extends TileEntitySpecialRenderer {
 
-	RenderEntityItem renderer = new RenderEntityItem(Minecraft.getMinecraft().getRenderManager(), Minecraft
-			.getMinecraft().getRenderItem());
+	RenderEntityItem renderer = new RenderEntityItem(Minecraft.getMinecraft().getRenderManager(),
+			Minecraft.getMinecraft().getRenderItem());
 
 	public VendorBlockRenderer() {
 	}
@@ -38,7 +31,7 @@ public class VendorBlockRenderer extends TileEntitySpecialRenderer {
 		if (itemstack == null) {
 			return;
 		}
-		EntityItem entity = new EntityItem(null, posZ, posZ, posZ, itemstack);
+		EntityItem entity = new EntityItem(null, posX, posY, posZ, itemstack);
 
 		entity.hoverStart = 0;
 

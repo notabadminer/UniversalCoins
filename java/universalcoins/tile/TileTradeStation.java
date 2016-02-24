@@ -10,19 +10,17 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.TradeStationGUI;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.util.UCItemPricer;
 import universalcoins.util.UniversalAccounts;
 
-public class TileTradeStation extends TileEntity implements IInventory, ISidedInventory, IUpdatePlayerListBox {
+public class TileTradeStation extends TileEntity implements IInventory, ISidedInventory {
 
 	private ItemStack[] inventory = new ItemStack[4];
 	public static final int itemInputSlot = 0;
@@ -65,7 +63,8 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 	}
 
 	public void inUseCleanup() {
-		if (worldObj.isRemote) return;
+		if (worldObj.isRemote)
+			return;
 		inUse = false;
 	}
 
@@ -93,11 +92,11 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 				}
 
 				buyButtonActive = (UniversalCoins.tradeStationBuyEnabled
-						&& (inventory[itemOutputSlot] == null || (inventory[itemOutputSlot]).getItem() 
-						== inventory[itemInputSlot].getItem() && inventory[itemOutputSlot].stackSize 
-						< inventory[itemInputSlot].getMaxStackSize()) && (coinSum >= itemPrice 
-						|| (inventory[itemCardSlot] != null
-						&& !worldObj.isRemote && getAccountBalance() > itemPrice)));
+						&& (inventory[itemOutputSlot] == null || (inventory[itemOutputSlot])
+								.getItem() == inventory[itemInputSlot].getItem()
+								&& inventory[itemOutputSlot].stackSize < inventory[itemInputSlot].getMaxStackSize())
+						&& (coinSum >= itemPrice || (inventory[itemCardSlot] != null && !worldObj.isRemote
+								&& getAccountBalance() > itemPrice)));
 			}
 		}
 	}
@@ -110,23 +109,28 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 		isLBagButtonActive = false;
 		if (coinSum > 0) {
 			coinButtonActive = inventory[itemOutputSlot] == null
-					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.itemCoin && inventory[itemOutputSlot].stackSize != 64);
+					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.itemCoin
+							&& inventory[itemOutputSlot].stackSize != 64);
 		}
 		if (coinSum >= 9) {
 			isSStackButtonActive = inventory[itemOutputSlot] == null
-					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.itemSmallCoinStack && inventory[itemOutputSlot].stackSize != 64);
+					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.itemSmallCoinStack
+							&& inventory[itemOutputSlot].stackSize != 64);
 		}
 		if (coinSum >= 81) {
 			isLStackButtonActive = inventory[itemOutputSlot] == null
-					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.itemLargeCoinStack && inventory[itemOutputSlot].stackSize != 64);
+					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.itemLargeCoinStack
+							&& inventory[itemOutputSlot].stackSize != 64);
 		}
 		if (coinSum >= 729) {
 			isSBagButtonActive = inventory[itemOutputSlot] == null
-					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.itemSmallCoinBag && inventory[itemOutputSlot].stackSize != 64);
+					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.itemSmallCoinBag
+							&& inventory[itemOutputSlot].stackSize != 64);
 		}
 		if (coinSum >= 6561) {
 			isLBagButtonActive = inventory[itemOutputSlot] == null
-					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.itemLargeCoinBag && inventory[itemOutputSlot].stackSize != 64);
+					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.itemLargeCoinBag
+							&& inventory[itemOutputSlot].stackSize != 64);
 		}
 	}
 
@@ -149,8 +153,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 		}
 		// handle damaged items
 		if (inventory[itemInputSlot].isItemDamaged()) {
-			itemPrice = itemPrice
-					* (inventory[itemInputSlot].getMaxDamage() - inventory[itemInputSlot].getItemDamage())
+			itemPrice = itemPrice * (inventory[itemInputSlot].getMaxDamage() - inventory[itemInputSlot].getItemDamage())
 					/ inventory[itemInputSlot].getMaxDamage();
 		}
 		inventory[itemInputSlot].stackSize -= amount;
@@ -250,7 +253,8 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 		}
 		if (inventory[itemOutputSlot] == null) { // empty stack
 			if (inventory[itemInputSlot].getMaxStackSize() * itemPrice <= (useCard ? getAccountBalance() : coinSum)) {
-				amount = inventory[itemInputSlot].getMaxStackSize(); // buy one stack
+				amount = inventory[itemInputSlot].getMaxStackSize(); // buy one
+																		// stack
 			} else {
 				amount = (useCard ? getAccountBalance() : coinSum) / itemPrice;
 			}
@@ -258,12 +262,12 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 				&& inventory[itemOutputSlot].getItemDamage() == inventory[itemInputSlot].getItemDamage()
 				&& inventory[itemOutputSlot].stackSize < inventory[itemInputSlot].getMaxStackSize()) {
 
-			if ((inventory[itemOutputSlot].getMaxStackSize() - inventory[itemOutputSlot].stackSize) * 
-					itemPrice <= (useCard ? getAccountBalance()	: coinSum)) {
+			if ((inventory[itemOutputSlot].getMaxStackSize() - inventory[itemOutputSlot].stackSize)
+					* itemPrice <= (useCard ? getAccountBalance() : coinSum)) {
 				amount = inventory[itemOutputSlot].getMaxStackSize() - inventory[itemOutputSlot].stackSize;
 				// buy as much as i can fit in a stack
 			} else {
-				amount = (useCard ? getAccountBalance() : coinSum) / itemPrice; 
+				amount = (useCard ? getAccountBalance() : coinSum) / itemPrice;
 			}
 		} else {
 			buyButtonActive = false;
@@ -334,8 +338,8 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 					inventory[itemOutputSlot].stackSize = amount;
 				}
 			} else {
-				int amount = Math.min(coinSum / multiplier, inventory[itemOutputSlot].getMaxStackSize()
-						- inventory[itemOutputSlot].stackSize);
+				int amount = Math.min(coinSum / multiplier,
+						inventory[itemOutputSlot].getMaxStackSize() - inventory[itemOutputSlot].stackSize);
 				inventory[itemOutputSlot].stackSize += amount;
 				coinSum -= multiplier * amount;
 			}
@@ -348,8 +352,8 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 			}
 		}
 	}
-	
-	public void onButtonPressed(int buttonId, boolean shiftPressed){
+
+	public void onButtonPressed(int buttonId, boolean shiftPressed) {
 		if (buttonId == TradeStationGUI.idBuyButton) {
 			if (shiftPressed) {
 				onBuyMaxPressed();
@@ -527,7 +531,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 		return stack;
 	}
 
-	@Override
+	// @Override
 	public ItemStack getStackInSlotOnClosing(int i) {
 		inUse = false;
 		return getStackInSlot(i);
@@ -603,11 +607,11 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
 		// first check if items inserted are coins. put them in the coin input
 		// slot if they are.
-		if (index == itemCoinSlot
-				&& (itemStackIn.getItem() == (UniversalCoins.proxy.itemCoin)
-						|| itemStackIn.getItem() == (UniversalCoins.proxy.itemSmallCoinStack)
-						|| itemStackIn.getItem() == (UniversalCoins.proxy.itemLargeCoinStack)
-						|| itemStackIn.getItem() == (UniversalCoins.proxy.itemSmallCoinBag) || itemStackIn.getItem() == (UniversalCoins.proxy.itemLargeCoinBag))) {
+		if (index == itemCoinSlot && (itemStackIn.getItem() == (UniversalCoins.proxy.itemCoin)
+				|| itemStackIn.getItem() == (UniversalCoins.proxy.itemSmallCoinStack)
+				|| itemStackIn.getItem() == (UniversalCoins.proxy.itemLargeCoinStack)
+				|| itemStackIn.getItem() == (UniversalCoins.proxy.itemSmallCoinBag)
+				|| itemStackIn.getItem() == (UniversalCoins.proxy.itemLargeCoinBag))) {
 			return true;
 			// put everything else in the item input slot
 		} else if (index == itemInputSlot) {
@@ -656,11 +660,21 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 	}
 
 	@Override
+	public ItemStack removeStackFromSlot(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public void openInventory(EntityPlayer player) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override

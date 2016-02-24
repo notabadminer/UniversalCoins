@@ -18,79 +18,74 @@ import universalcoins.tile.TileUCSign;
 
 public class UCTileSignMessage implements IMessage, IMessageHandler<UCTileSignMessage, IMessage> {
 	private int xCoord;
-    private int yCoord;
-    private int zCoord;
-    private IChatComponent signText0, signText1, signText2, signText3;
-    private String blockOwner;
-    private String blockIcon;
+	private int yCoord;
+	private int zCoord;
+	private IChatComponent signText0, signText1, signText2, signText3;
+	private String blockOwner;
 
-    public UCTileSignMessage() {
-    }
+	public UCTileSignMessage() {
+	}
 
-    public UCTileSignMessage(int x, int y, int z, IChatComponent[] signText, String blockOwner, String blockIcon) {
-    	 this.xCoord = x;
-         this.yCoord = y;
-         this.zCoord = z;
-         this.signText0 = signText[0];
-         this.signText1 = signText[1];
-         this.signText2 = signText[2];
-         this.signText3 = signText[3];
-         this.blockOwner = blockOwner;
-         this.blockIcon = blockIcon;
-    }
+	public UCTileSignMessage(int x, int y, int z, IChatComponent[] signText, String blockOwner) {
+		this.xCoord = x;
+		this.yCoord = y;
+		this.zCoord = z;
+		this.signText0 = signText[0];
+		this.signText1 = signText[1];
+		this.signText2 = signText[2];
+		this.signText3 = signText[3];
+		this.blockOwner = blockOwner;
+	}
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-    	this.xCoord = buf.readInt();
-        this.yCoord = buf.readShort();
-        this.zCoord = buf.readInt();
-        this.signText0 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
-        this.signText1 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
-        this.signText2 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
-        this.signText3 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
-        this.blockOwner = ByteBufUtils.readUTF8String(buf);
-        this.blockIcon = ByteBufUtils.readUTF8String(buf);
-    }
+	@Override
+	public void fromBytes(ByteBuf buf) {
+		this.xCoord = buf.readInt();
+		this.yCoord = buf.readShort();
+		this.zCoord = buf.readInt();
+		this.signText0 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
+		this.signText1 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
+		this.signText2 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
+		this.signText3 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
+		this.blockOwner = ByteBufUtils.readUTF8String(buf);
+	}
 
-    @Override
-    public void toBytes(ByteBuf buf) {
-    	buf.writeInt(this.xCoord);
-        buf.writeShort(this.yCoord);
-        buf.writeInt(this.zCoord);
-        ByteBufUtils.writeUTF8String(buf, signText0.getUnformattedText());
-        ByteBufUtils.writeUTF8String(buf, signText1.getUnformattedText());
-        ByteBufUtils.writeUTF8String(buf, signText2.getUnformattedText());
-        ByteBufUtils.writeUTF8String(buf, signText3.getUnformattedText());
-        ByteBufUtils.writeUTF8String(buf, this.blockOwner);
-        ByteBufUtils.writeUTF8String(buf, this.blockIcon);
-    }
+	@Override
+	public void toBytes(ByteBuf buf) {
+		buf.writeInt(this.xCoord);
+		buf.writeShort(this.yCoord);
+		buf.writeInt(this.zCoord);
+		ByteBufUtils.writeUTF8String(buf, signText0.getUnformattedText());
+		ByteBufUtils.writeUTF8String(buf, signText1.getUnformattedText());
+		ByteBufUtils.writeUTF8String(buf, signText2.getUnformattedText());
+		ByteBufUtils.writeUTF8String(buf, signText3.getUnformattedText());
+		ByteBufUtils.writeUTF8String(buf, this.blockOwner);
+	}
 
 	@Override
 	public IMessage onMessage(final UCTileSignMessage message, final MessageContext ctx) {
 		Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                processMessage(message, ctx);
-            }
-        };
-        if(ctx.side == Side.CLIENT) {
-            Minecraft.getMinecraft().addScheduledTask(task);
-        }
-        else if(ctx.side == Side.SERVER) {
-            EntityPlayerMP playerEntity = ctx.getServerHandler().playerEntity;
-            if(playerEntity == null) {
-                FMLLog.warning("onMessage-server: Player is null");
-                return null;
-            }
-            playerEntity.getServerForPlayer().addScheduledTask(task);
-        }
-        return null;
- }
-	
-private void processMessage(UCTileSignMessage message, final MessageContext ctx) {
+			@Override
+			public void run() {
+				processMessage(message, ctx);
+			}
+		};
+		if (ctx.side == Side.CLIENT) {
+			Minecraft.getMinecraft().addScheduledTask(task);
+		} else if (ctx.side == Side.SERVER) {
+			EntityPlayerMP playerEntity = ctx.getServerHandler().playerEntity;
+			if (playerEntity == null) {
+				FMLLog.warning("onMessage-server: Player is null");
+				return null;
+			}
+			playerEntity.getServerForPlayer().addScheduledTask(task);
+		}
+		return null;
+	}
+
+	private void processMessage(UCTileSignMessage message, final MessageContext ctx) {
 		TileEntity tileEntity = FMLClientHandler.instance().getClient().theWorld
 				.getTileEntity(new BlockPos(message.xCoord, message.yCoord, message.zCoord));
-		
+
 		if (tileEntity != null && tileEntity instanceof TileUCSign) {
 			TileUCSign tentity = (TileUCSign) tileEntity;
 			tentity.signText[0] = message.signText0;
@@ -98,7 +93,6 @@ private void processMessage(UCTileSignMessage message, final MessageContext ctx)
 			tentity.signText[2] = message.signText2;
 			tentity.signText[3] = message.signText3;
 			tentity.blockOwner = message.blockOwner;
-			tentity.blockIcon = message.blockIcon;
 		}
 	}
 }

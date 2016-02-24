@@ -1,14 +1,13 @@
 package universalcoins.gui;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
-
-import org.lwjgl.opengl.GL11;
-
 import universalcoins.UniversalCoins;
 import universalcoins.container.ContainerTradeStation;
 import universalcoins.tile.TileTradeStation;
@@ -71,8 +70,8 @@ public class TradeStationGUI extends GuiContainer {
 
 		// display only if auto buy/sell enabled?
 		if (tileEntity.autoModeButtonActive) {
-			autoModeButton = new GuiSlimButton(idAutoModeButton, 6 + (width - xSize) / 2, 84 + (height - ySize) / 2,
-					28, 12, StatCollector.translateToLocal("tradestation.gui.button.mode"));
+			autoModeButton = new GuiSlimButton(idAutoModeButton, 6 + (width - xSize) / 2, 84 + (height - ySize) / 2, 28,
+					12, StatCollector.translateToLocal("tradestation.gui.button.mode"));
 			buttonList.add(autoModeButton);
 		}
 	}
@@ -109,8 +108,8 @@ public class TradeStationGUI extends GuiContainer {
 		}
 		// display only if auto buy/sell enabled
 		if (tileEntity.autoModeButtonActive) {
-			fontRendererObj
-					.drawString(StatCollector.translateToLocal("tradestation.gui.label.autobuy"), 6, 74, 4210752);
+			fontRendererObj.drawString(StatCollector.translateToLocal("tradestation.gui.label.autobuy"), 6, 74,
+					4210752);
 			fontRendererObj.drawString(autoLabels[tileEntity.autoMode], 38, 87, 4210752);
 		}
 	}

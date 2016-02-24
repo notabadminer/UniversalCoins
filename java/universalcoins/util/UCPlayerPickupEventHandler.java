@@ -47,12 +47,10 @@ public class UCPlayerPickupEventHandler {
 					int depositAmount = Math.min(event.item.getEntityItem().stackSize,
 							(Integer.MAX_VALUE - accountBalance) / coinValue);
 					creditAccount(accountNumber, depositAmount * coinValue);
-					player.addChatMessage(new ChatComponentText(StatCollector
-							.translateToLocal("item.itemEnderCard.message.deposit")
-							+ " "
-							+ formatter.format(depositAmount * coinValue)
-							+ " "
-							+ StatCollector.translateToLocal("item.itemCoin.name")));
+					player.addChatMessage(
+							new ChatComponentText(StatCollector.translateToLocal("item.itemEnderCard.message.deposit")
+									+ " " + formatter.format(depositAmount * coinValue) + " "
+									+ StatCollector.translateToLocal("item.itemCoin.name")));
 					event.item.getEntityItem().stackSize -= depositAmount;
 					if (event.item.getEntityItem().stackSize == 0) {
 						event.setCanceled(true);

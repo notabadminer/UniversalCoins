@@ -6,7 +6,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -16,40 +15,41 @@ import universalcoins.tile.TileVendor;
 import universalcoins.tile.TileVendorBlock;
 import universalcoins.tile.TileVendorFrame;
 
-public class UCVendorServerMessage  implements IMessage, IMessageHandler<UCVendorServerMessage, IMessage> {
+public class UCVendorServerMessage implements IMessage, IMessageHandler<UCVendorServerMessage, IMessage> {
 	private int x, y, z, itemPrice;
 	private String blockOwner;
 	private boolean infinite;
 
-    public UCVendorServerMessage() {}
+	public UCVendorServerMessage() {
+	}
 
-    public UCVendorServerMessage(int x, int y, int z, int price, String blockOwner, boolean infinite) { 
-    	this.x = x;
-    	this.y = y;
-    	this.z = z;
-        this.itemPrice = price;
-        this.blockOwner = blockOwner;
-        this.infinite = infinite;
-    }
+	public UCVendorServerMessage(int x, int y, int z, int price, String blockOwner, boolean infinite) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.itemPrice = price;
+		this.blockOwner = blockOwner;
+		this.infinite = infinite;
+	}
 
-    @Override
-    public void toBytes(ByteBuf buf) { 
-        buf.writeInt(x);
-        buf.writeInt(y);
-        buf.writeInt(z);
-        buf.writeInt(itemPrice);
-        ByteBufUtils.writeUTF8String(buf, blockOwner);
-        buf.writeBoolean(infinite);
-    }
+	@Override
+	public void toBytes(ByteBuf buf) {
+		buf.writeInt(x);
+		buf.writeInt(y);
+		buf.writeInt(z);
+		buf.writeInt(itemPrice);
+		ByteBufUtils.writeUTF8String(buf, blockOwner);
+		buf.writeBoolean(infinite);
+	}
 
-    @Override
-    public void fromBytes(ByteBuf buf) { 
-        this.x = buf.readInt();
-        this.y = buf.readInt();
-        this.z = buf.readInt();
-        this.itemPrice = buf.readInt();
-        this.blockOwner = ByteBufUtils.readUTF8String(buf);
-        this.infinite = buf.readBoolean();
+	@Override
+	public void fromBytes(ByteBuf buf) {
+		this.x = buf.readInt();
+		this.y = buf.readInt();
+		this.z = buf.readInt();
+		this.itemPrice = buf.readInt();
+		this.blockOwner = ByteBufUtils.readUTF8String(buf);
+		this.infinite = buf.readBoolean();
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class UCVendorServerMessage  implements IMessage, IMessageHandler<UCVendo
 		}
 		return null;
 	}
-	
+
 	private void processMessage(UCVendorServerMessage message, final MessageContext ctx) {
 		World world = ctx.getServerHandler().playerEntity.worldObj;
 
@@ -81,7 +81,7 @@ public class UCVendorServerMessage  implements IMessage, IMessageHandler<UCVendo
 			tEntity.itemPrice = message.itemPrice;
 			tEntity.blockOwner = message.blockOwner;
 			tEntity.infiniteMode = message.infinite;
-			}
+		}
 		if (tileEntity instanceof TileVendorFrame) {
 			((TileVendorFrame) tileEntity).updateSigns();
 		}

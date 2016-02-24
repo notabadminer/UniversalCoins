@@ -26,12 +26,12 @@ public class UCSend extends CommandBase {
 			UniversalCoins.proxy.itemSmallCoinBag, UniversalCoins.proxy.itemLargeCoinBag };
 
 	@Override
-	public String getName() {
+	public String getCommandName() {
 		return StatCollector.translateToLocal("command.send.name");
 	}
 
 	@Override
-	public List getAliases() {
+	public List getCommandAliases() {
 		List aliases = new ArrayList();
 		aliases.add("pay");
 		return aliases;
@@ -43,12 +43,12 @@ public class UCSend extends CommandBase {
 	}
 
 	@Override
-	public boolean canCommandSenderUse(ICommandSender par1ICommandSender) {
+	public boolean canCommandSenderUseCommand(ICommandSender par1ICommandSender) {
 		return true;
 	}
 
 	@Override
-	public void execute(ICommandSender sender, String[] astring) {
+	public void processCommand(ICommandSender sender, String[] astring) {
 		if (sender instanceof EntityPlayerMP) {
 			if (astring.length == 2) {
 				// check for player
@@ -60,20 +60,20 @@ public class UCSend extends CommandBase {
 					}
 				}
 				if (recipient == null) {
-					sender.addChatMessage(new ChatComponentText("§c"
-							+ StatCollector.translateToLocal("command.send.error.notfound")));
+					sender.addChatMessage(new ChatComponentText(
+							"§c" + StatCollector.translateToLocal("command.send.error.notfound")));
 				}
 				int requestedSendAmount = 0;
 				try {
 					requestedSendAmount = Integer.parseInt(astring[1]);
 				} catch (NumberFormatException e) {
-					sender.addChatMessage(new ChatComponentText("§c"
-							+ StatCollector.translateToLocal("command.send.error.badentry")));
+					sender.addChatMessage(new ChatComponentText(
+							"§c" + StatCollector.translateToLocal("command.send.error.badentry")));
 				}
 				// get sender account, check balance, get coins
 				if (getPlayerCoins((EntityPlayerMP) sender) < requestedSendAmount) {
-					sender.addChatMessage(new ChatComponentText("§c"
-							+ StatCollector.translateToLocal("command.send.error.insufficient")));
+					sender.addChatMessage(new ChatComponentText(
+							"§c" + StatCollector.translateToLocal("command.send.error.insufficient")));
 				}
 				// get coins from player inventory
 				int coinsFromSender = 0;
@@ -94,13 +94,13 @@ public class UCSend extends CommandBase {
 				sender.addChatMessage(new ChatComponentText((requestedSendAmount - coinChange) + " "
 						+ StatCollector.translateToLocal("command.send.result.sender") + " " + astring[0]));
 				recipient.addChatMessage(new ChatComponentText((requestedSendAmount - coinChange) + " "
-						+ StatCollector.translateToLocal("command.send.result.receiver") + " "
-						+ sender.getName()));
+						+ StatCollector.translateToLocal("command.send.result.receiver") + " " + sender.getName()));
 				// add change back to sender coins
 				coinsFromSender += coinChange;
 				// give sender back change
 				int leftOvers = givePlayerCoins(player, coinsFromSender);
-				// if we have coins that won't fit in inventory, dump them to the world
+				// if we have coins that won't fit in inventory, dump them to
+				// the world
 				if (leftOvers > 0) {
 					World world = ((EntityPlayerMP) sender).worldObj;
 					Random rand = new Random();
@@ -118,8 +118,8 @@ public class UCSend extends CommandBase {
 					}
 				}
 			} else
-				sender.addChatMessage(new ChatComponentText("§c"
-						+ StatCollector.translateToLocal("command.send.error.incomplete")));
+				sender.addChatMessage(
+						new ChatComponentText("§c" + StatCollector.translateToLocal("command.send.error.incomplete")));
 		}
 	}
 
@@ -146,8 +146,8 @@ public class UCSend extends CommandBase {
 					ItemStack stack = recipient.inventory.getStackInSlot(i);
 					for (int j = 0; j < coins.length; j++) {
 						if (stack != null && stack.getItem() == coins[j]) {
-							int amountToAdd = (int) Math.min(coinsLeft / Math.pow(9, j), stack.getMaxStackSize()
-									- stack.stackSize);
+							int amountToAdd = (int) Math.min(coinsLeft / Math.pow(9, j),
+									stack.getMaxStackSize() - stack.stackSize);
 							stack.stackSize += amountToAdd;
 							recipient.inventory.setInventorySlotContents(i, stack);
 							coinsLeft -= (amountToAdd * Math.pow(9, j));
@@ -180,7 +180,7 @@ public class UCSend extends CommandBase {
 			for (EntityPlayer p : (List<EntityPlayer>) sender.getEntityWorld().playerEntities) {
 				players.add(p.getName());
 			}
-			return func_175762_a(args, players);
+			return getListOfStringsMatchingLastWord(args, players);
 		}
 		return null;
 	}

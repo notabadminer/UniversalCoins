@@ -80,7 +80,7 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		return stack;
 	}
 
-	@Override
+	// @Override
 	public ItemStack getStackInSlotOnClosing(int slot) {
 		if (this.inventory[slot] != null) {
 			ItemStack itemstack = this.inventory[slot];
@@ -101,8 +101,7 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 					int itemValue = multiplier[coinType];
 					int depositAmount = Math.min(stack.stackSize, (Integer.MAX_VALUE - accountBalance) / itemValue);
 					if (!worldObj.isRemote) {
-						UniversalAccounts.getInstance().creditAccount(accountNumber,
-								depositAmount * itemValue);
+						UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * itemValue);
 						accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 					}
 					inventory[slot].stackSize -= depositAmount;
@@ -137,8 +136,8 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	}
 
 	public void sendButtonMessage(int functionID, boolean shiftPressed) {
-		UniversalCoins.snw.sendToServer(new UCButtonMessage(pos.getX(), pos.getY(), pos.getZ(), functionID,
-				shiftPressed));
+		UniversalCoins.snw
+				.sendToServer(new UCButtonMessage(pos.getX(), pos.getY(), pos.getZ(), functionID, shiftPressed));
 	}
 
 	@Override
@@ -154,13 +153,13 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	}
 
 	public void sendServerUpdatePacket(int withdrawalAmount) {
-		UniversalCoins.snw.sendToServer(new UCCardStationServerWithdrawalMessage(pos.getX(), pos.getY(), pos.getZ(),
-				withdrawalAmount));
+		UniversalCoins.snw.sendToServer(
+				new UCCardStationServerWithdrawalMessage(pos.getX(), pos.getY(), pos.getZ(), withdrawalAmount));
 	}
 
 	public void sendServerUpdatePacket(String customName) {
-		UniversalCoins.snw.sendToServer(new UCCardStationServerCustomNameMessage(pos.getX(), pos.getY(), pos.getZ(),
-				customName));
+		UniversalCoins.snw
+				.sendToServer(new UCCardStationServerCustomNameMessage(pos.getX(), pos.getY(), pos.getZ(), customName));
 	}
 
 	public void updateTE() {
@@ -254,7 +253,8 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	}
 
 	public void onButtonPressed(int functionId) {
-		if (worldObj.isRemote) return;
+		if (worldObj.isRemote)
+			return;
 		accountError = false; // reset error state
 		// handle function IDs sent from CardStationGUI
 		// function1 - new card
@@ -327,8 +327,7 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		}
 		if (functionId == 7) {
 			if (UniversalAccounts.getInstance().getPlayerAccount(customAccountName) != ""
-					&& !UniversalAccounts.getInstance().getCustomAccount(playerUID)
-							.contentEquals(customAccountName)) {
+					&& !UniversalAccounts.getInstance().getCustomAccount(playerUID).contentEquals(customAccountName)) {
 				accountError = true;
 				// we need to reset this so that that function 7 is called again
 				// on next attempt at getting an account
@@ -377,8 +376,7 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			int stackSize = Math.min((int) (coinWithdrawalAmount / Math.pow(9, logVal)), 64);
 			inventory[itemCoinSlot] = (new ItemStack(coins[logVal], stackSize));
 			coinWithdrawalAmount -= (stackSize * Math.pow(9, logVal));
-			UniversalAccounts.getInstance().debitAccount(accountNumber,
-					(int) (stackSize * Math.pow(9, logVal)));
+			UniversalAccounts.getInstance().debitAccount(accountNumber, (int) (stackSize * Math.pow(9, logVal)));
 			accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 		}
 		if (coinWithdrawalAmount <= 0) {
@@ -409,6 +407,12 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public ItemStack removeStackFromSlot(int index) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

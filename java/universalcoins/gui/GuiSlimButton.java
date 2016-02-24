@@ -1,12 +1,12 @@
 package universalcoins.gui;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.opengl.GL11;
 
 public class GuiSlimButton extends GuiButton {
 	protected ResourceLocation buttonTexture = new ResourceLocation("universalcoins", "textures/gui/buttons.png");
@@ -32,8 +32,8 @@ public class GuiSlimButton extends GuiButton {
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			this.drawTexturedModalRect(this.xPosition, this.yPosition, 0 * this.width, 54 + k * this.height,
 					this.width / 2, this.height);
-			this.drawTexturedModalRect(this.xPosition + this.width / 2, this.yPosition, 90 - this.width / 2, 54 + k
-					* this.height, this.width / 2, this.height);
+			this.drawTexturedModalRect(this.xPosition + this.width / 2, this.yPosition, 90 - this.width / 2,
+					54 + k * this.height, this.width / 2, this.height);
 			this.mouseDragged(p_146112_1_, p_146112_2_, p_146112_3_);
 			int l = 14737632;
 
@@ -45,8 +45,8 @@ public class GuiSlimButton extends GuiButton {
 				l = 16777120;
 			}
 
-			this.drawCenteredString(fontrenderer, this.displayString, this.xPosition + this.width / 2, this.yPosition
-					+ (this.height - 8) / 2, l);
+			this.drawCenteredString(fontrenderer, this.displayString, this.xPosition + this.width / 2,
+					this.yPosition + (this.height - 8) / 2, l);
 		}
 	}
 

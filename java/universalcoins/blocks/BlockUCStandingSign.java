@@ -32,18 +32,18 @@ public class BlockUCStandingSign extends BlockStandingSign {
 		float f1 = 1.0F;
 		this.setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, f1, 0.5F + f);
 	}
-	
+
 	@Override
 	public int getRenderType() {
-        return 2;
-    }
-	
+		return -1;
+	}
+
 	@Override
 	@SideOnly(Side.CLIENT)
-    public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos) {
-        this.setBlockBoundsBasedOnState(worldIn, pos);
-        return super.getSelectedBoundingBox(worldIn, pos);
-    }
+	public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos) {
+		this.setBlockBoundsBasedOnState(worldIn, pos);
+		return super.getSelectedBoundingBox(worldIn, pos);
+	}
 
 	@Override
 	public TileEntity createNewTileEntity(World world, int p_149915_2_) {
@@ -96,7 +96,7 @@ public class BlockUCStandingSign extends BlockStandingSign {
 		} else
 			return stack;
 	}
-	
+
 	@Override
 	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
 		return UniversalCoins.proxy.itemUCSign;

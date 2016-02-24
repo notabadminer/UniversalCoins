@@ -1,8 +1,0 @@
-{
-    "variants": {
-        "facing=north": { "model": "universalcoins:blockBandit" },
-        "facing=south": { "model": "universalcoins:blockBandit", "y": 180 },
-        "facing=west":  { "model": "universalcoins:blockBandit", "y": 270 },
-        "facing=east":  { "model": "universalcoins:blockBandit", "y": 90 }
-    }
-}

@@ -2,6 +2,8 @@ package universalcoins.blocks;
 
 import java.util.Random;
 
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -15,14 +17,11 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
-import org.lwjgl.input.Keyboard;
-
 import universalcoins.UniversalCoins;
 import universalcoins.tile.TileSignal;
 
 public class BlockSignal extends BlockRotatable {
-		
+
 	public BlockSignal() {
 		super();
 		setHardness(3.0F);
@@ -55,13 +54,16 @@ public class BlockSignal extends BlockRotatable {
 					}
 				}
 			}
-			if (world.isRemote) return false; //we don't want to do the rest on client side
+			if (world.isRemote)
+				return false; // we don't want to do the rest on client side
 			if (coinsFound < tentity.fee) {
-				player.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("signal.message.notenough")));
+				player.addChatMessage(
+						new ChatComponentText(StatCollector.translateToLocal("signal.message.notenough")));
 			} else {
 				// we have enough coins to cover the fee so we pay it and return
 				// the change
-				player.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("signal.message.activated")));
+				player.addChatMessage(
+						new ChatComponentText(StatCollector.translateToLocal("signal.message.activated")));
 				coinsFound -= tentity.fee;
 				tentity.activateSignal();
 			}
@@ -73,9 +75,9 @@ public class BlockSignal extends BlockRotatable {
 					float rz = rand.nextFloat() * 0.8F + 0.1F;
 					int logVal = Math.min((int) (Math.log(coinsFound) / Math.log(9)), 4);
 					int stackSize = Math.min((int) (coinsFound / Math.pow(9, logVal)), 64);
-					EntityItem entityItem = new EntityItem(world, player.getPosition().getX() + rx, player
-							.getPosition().getY() + ry, player.getPosition().getZ() + rz, new ItemStack(
-							tentity.coins[logVal], stackSize));
+					EntityItem entityItem = new EntityItem(world, player.getPosition().getX() + rx,
+							player.getPosition().getY() + ry, player.getPosition().getZ() + rz,
+							new ItemStack(tentity.coins[logVal], stackSize));
 					world.spawnEntityInWorld(entityItem);
 					coinsFound -= Math.pow(9, logVal) * stackSize;
 				}
@@ -94,31 +96,32 @@ public class BlockSignal extends BlockRotatable {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player, ItemStack stack) {
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
+			ItemStack stack) {
 		world.setBlockState(pos, state.withProperty(FACING, player.getHorizontalFacing().getOpposite()), 2);
-		if (world.isRemote) return;
+		if (world.isRemote)
+			return;
 		TileEntity te = world.getTileEntity(pos);
 		if (te != null) {
 			((TileSignal) world.getTileEntity(pos)).blockOwner = player.getCommandSenderEntity().getName();
 		}
 	}
-	
+
 	public void updatePower(World worldIn, BlockPos pos) {
 		if (!worldIn.isRemote) {
 			worldIn.notifyNeighborsOfStateChange(pos, this);
-            EnumFacing[] aenumfacing = EnumFacing.values();
-            int i = aenumfacing.length;
+			EnumFacing[] aenumfacing = EnumFacing.values();
+			int i = aenumfacing.length;
 
-            for (int j = 0; j < i; ++j)
-            {
-                EnumFacing enumfacing = aenumfacing[j];
-                worldIn.notifyNeighborsOfStateChange(pos.offset(enumfacing), this);
-            }
-        }
+			for (int j = 0; j < i; ++j) {
+				EnumFacing enumfacing = aenumfacing[j];
+				worldIn.notifyNeighborsOfStateChange(pos.offset(enumfacing), this);
+			}
+		}
 	}
 
 	@Override
-	public int isProvidingWeakPower(IBlockAccess worldIn, BlockPos pos, IBlockState state, EnumFacing side) {
+	public int getWeakPower(IBlockAccess worldIn, BlockPos pos, IBlockState state, EnumFacing side) {
 		TileEntity te = worldIn.getTileEntity(pos);
 		if (te != null && te instanceof TileSignal) {
 			TileSignal tentity = (TileSignal) te;
@@ -126,7 +129,7 @@ public class BlockSignal extends BlockRotatable {
 		}
 		return 0;
 	}
-	
+
 	@Override
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TileSignal();

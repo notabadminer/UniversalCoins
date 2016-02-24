@@ -108,15 +108,11 @@ public class ContainerCardStation extends Container {
 		for (int i = 0; i < this.crafters.size(); ++i) {
 			ICrafting icrafting = (ICrafting) this.crafters.get(i);
 
-			if (this.lastPlayerName != tEntity.playerName 
-					|| this.lastPlayerUID != tEntity.playerUID
-					|| this.lastInUse != tEntity.inUse 
-					|| this.lastDepositCoins != tEntity.depositCoins
-					|| this.lastWithdrawCoins != tEntity.withdrawCoins 
-					|| this.lastAccountError != tEntity.accountError
+			if (this.lastPlayerName != tEntity.playerName || this.lastPlayerUID != tEntity.playerUID
+					|| this.lastInUse != tEntity.inUse || this.lastDepositCoins != tEntity.depositCoins
+					|| this.lastWithdrawCoins != tEntity.withdrawCoins || this.lastAccountError != tEntity.accountError
 					|| this.lastCoinWithdrawalAmount != tEntity.coinWithdrawalAmount
-					|| this.lastCardOwner != tEntity.cardOwner 
-					|| this.lastAccountNumber != tEntity.accountNumber
+					|| this.lastCardOwner != tEntity.cardOwner || this.lastAccountNumber != tEntity.accountNumber
 					|| this.lastAccountBalance != tEntity.accountBalance
 					|| this.lastGroupAccountName != tEntity.customAccountName
 					|| this.lastGroupAccountNumber != tEntity.customAccountNumber) {

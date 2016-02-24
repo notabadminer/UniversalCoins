@@ -32,9 +32,10 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 
 	public static ComponentVillageBank buildComponent(Start startPiece, List pieces, Random random, int p1, int p2,
 			int p3, EnumFacing facing, int p5) {
-		StructureBoundingBox box = StructureBoundingBox.func_175897_a(p1, p2, p3, 0, 0, 0, 5, 6, 6, facing);
-		return canVillageGoDeeper(box) && StructureComponent.findIntersecting(pieces, box) == null ? new ComponentVillageBank(
-				startPiece, p5, random, box, facing) : null;
+		StructureBoundingBox box = StructureBoundingBox.getComponentToAddBoundingBox(p1, p2, p3, 0, 0, 0, 5, 6, 6,
+				facing);
+		return canVillageGoDeeper(box) && StructureComponent.findIntersecting(pieces, box) == null
+				? new ComponentVillageBank(startPiece, p5, random, box, facing) : null;
 	}
 
 	@Override
@@ -54,15 +55,15 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		// Clear area twice in case of sand
 		fillWithAir(world, sbb, 0, 0, 0, 4, 4, 5);
 		// start with block
-		func_175804_a(world, sbb, 0, 0, 0, 4, 3, 5, Blocks.stone.getDefaultState(), Blocks.stone.getDefaultState(),
-				false);
+		this.fillWithBlocks(world, sbb, 0, 0, 0, 4, 3, 5, Blocks.stone.getDefaultState(),
+				Blocks.stone.getDefaultState(), false);
 		// windows
-		func_175804_a(world, sbb, 0, 2, 2, 4, 2, 3, Blocks.glass.getDefaultState(), Blocks.glass.getDefaultState(),
-				false);
+		this.fillWithBlocks(world, sbb, 0, 2, 2, 4, 2, 3, Blocks.glass.getDefaultState(),
+				Blocks.glass.getDefaultState(), false);
 		// roof
-		func_175804_a(world, sbb, 0, 4, 1, 4, 4, 5, Blocks.stone_slab.getDefaultState(),
+		this.fillWithBlocks(world, sbb, 0, 4, 1, 4, 4, 5, Blocks.stone_slab.getDefaultState(),
 				Blocks.stone_slab.getDefaultState(), false);
-		func_175804_a(world, sbb, 1, 4, 2, 3, 4, 4, Blocks.double_stone_slab.getDefaultState(),
+		this.fillWithBlocks(world, sbb, 1, 4, 2, 3, 4, 4, Blocks.double_stone_slab.getDefaultState(),
 				Blocks.double_stone_slab.getDefaultState(), false);
 		// clear inside
 		fillWithAir(world, sbb, 1, 1, 2, 3, 3, 3);
@@ -71,17 +72,17 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		// door opening
 		fillWithAir(world, sbb, 2, 1, 1, 2, 2, 1);
 		// atm - meta, LR, TB, FB
-		this.func_175811_a(world, UniversalCoins.proxy.blockCardStation.getStateFromMeta(getCorrectedMeta(3)), 2, 2, 4,
+		this.setBlockState(world, UniversalCoins.proxy.blockCardStation.getStateFromMeta(getCorrectedMeta(3)), 2, 2, 4,
 				boundingBox);
-		this.func_175811_a(world, UniversalCoins.proxy.blockBase.getDefaultState(), 2, 1, 4, boundingBox);
+		this.setBlockState(world, UniversalCoins.proxy.blockBase.getDefaultState(), 2, 1, 4, boundingBox);
 		// door
-		this.func_175810_a(world, boundingBox, random, 2, 1, 1,
+		this.placeDoorCurrentPosition(world, boundingBox, random, 2, 1, 1,
 				EnumFacing.getHorizontal(this.getMetadataWithOffset(Blocks.oak_door, 3)));
 		// torches
-		this.func_175811_a(world, Blocks.torch.getDefaultState(), 1, 2, 2, boundingBox);
-		this.func_175811_a(world, Blocks.torch.getDefaultState(), 3, 2, 2, boundingBox);
+		this.setBlockState(world, Blocks.torch.getDefaultState(), 1, 2, 2, boundingBox);
+		this.setBlockState(world, Blocks.torch.getDefaultState(), 3, 2, 2, boundingBox);
 		// sign
-		this.func_175811_a(world, UniversalCoins.proxy.wall_ucsign.getStateFromMeta(getCorrectedMeta(3)), 1, 2, 0,
+		this.setBlockState(world, UniversalCoins.proxy.wall_ucsign.getStateFromMeta(getCorrectedMeta(3)), 1, 2, 0,
 				boundingBox);
 		addSignText(world, boundingBox, 1, 2, 0);
 
@@ -181,7 +182,7 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		}
 		return 0;
 	}
-	
+
 	private void buildFoundation(World world, StructureBoundingBox sbb) {
 		for (int i = sbb.minX; i <= sbb.maxX; i++) {
 			for (int j = sbb.minZ; j <= sbb.maxZ; j++) {
@@ -197,8 +198,7 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 
 	private boolean isReplaceableBlock(World world, int x, int y, int z) {
 		IBlockState state = world.getBlockState(new BlockPos(x, y, z));
-		if (state.getBlock().getMaterial() == Material.air
-				|| state.getBlock().getMaterial() == Material.water
+		if (state.getBlock().getMaterial() == Material.air || state.getBlock().getMaterial() == Material.water
 				|| state.getBlock().getMaterial() == Material.grass) {
 			return true;
 		}

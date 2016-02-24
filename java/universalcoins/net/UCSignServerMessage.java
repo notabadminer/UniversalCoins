@@ -16,42 +16,43 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import universalcoins.tile.TileUCSign;
 
-public class UCSignServerMessage  implements IMessage, IMessageHandler<UCSignServerMessage, IMessage> {
+public class UCSignServerMessage implements IMessage, IMessageHandler<UCSignServerMessage, IMessage> {
 	private int x, y, z;
 	private IChatComponent signText0, signText1, signText2, signText3;
 
-    public UCSignServerMessage() {}
+	public UCSignServerMessage() {
+	}
 
-    public UCSignServerMessage(int x, int y, int z, IChatComponent[] signText) { 
-    	this.x = x;
-    	this.y = y;
-    	this.z = z;
-        this.signText0 = signText[0];
-        this.signText1 = signText[1];
-        this.signText2 = signText[2];
-        this.signText3 = signText[3];
-    }
+	public UCSignServerMessage(int x, int y, int z, IChatComponent[] signText) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.signText0 = signText[0];
+		this.signText1 = signText[1];
+		this.signText2 = signText[2];
+		this.signText3 = signText[3];
+	}
 
-    @Override
-    public void toBytes(ByteBuf buf) { 
-        buf.writeInt(x);
-        buf.writeInt(y);
-        buf.writeInt(z);
-        ByteBufUtils.writeUTF8String(buf, signText0.getFormattedText());
-        ByteBufUtils.writeUTF8String(buf, signText1.getFormattedText());
-        ByteBufUtils.writeUTF8String(buf, signText2.getFormattedText());
-        ByteBufUtils.writeUTF8String(buf, signText3.getFormattedText());
-    }
+	@Override
+	public void toBytes(ByteBuf buf) {
+		buf.writeInt(x);
+		buf.writeInt(y);
+		buf.writeInt(z);
+		ByteBufUtils.writeUTF8String(buf, signText0.getFormattedText());
+		ByteBufUtils.writeUTF8String(buf, signText1.getFormattedText());
+		ByteBufUtils.writeUTF8String(buf, signText2.getFormattedText());
+		ByteBufUtils.writeUTF8String(buf, signText3.getFormattedText());
+	}
 
-    @Override
-    public void fromBytes(ByteBuf buf) { 
-        this.x = buf.readInt();
-        this.y = buf.readInt();
-        this.z = buf.readInt();
-        this.signText0 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
-        this.signText1 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
-        this.signText2 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
-        this.signText3 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
+	@Override
+	public void fromBytes(ByteBuf buf) {
+		this.x = buf.readInt();
+		this.y = buf.readInt();
+		this.z = buf.readInt();
+		this.signText0 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
+		this.signText1 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
+		this.signText2 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
+		this.signText3 = new ChatComponentText(ByteBufUtils.readUTF8String(buf));
 	}
 
 	@Override

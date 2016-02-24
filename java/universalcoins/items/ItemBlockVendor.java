@@ -9,9 +9,9 @@ public class ItemBlockVendor extends ItemBlock {
 		super(block);
 		setHasSubtypes(true);
 	}
-	
+
 	@Override
-	public int getMetadata(int meta){
-	return meta;
+	public int getMetadata(int meta) {
+		return meta;
 	}
 }

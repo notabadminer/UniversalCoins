@@ -1,7 +1,6 @@
 package universalcoins.blocks;
 
 import net.minecraft.block.BlockContainer;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -28,11 +27,11 @@ public class BlockTradeStation extends BlockContainer {
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(6000.0F);
 	}
-	
+
 	@Override
 	public int getRenderType() {
-        return 3;
-    }
+		return 3;
+	}
 
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side,
@@ -83,7 +82,8 @@ public class BlockTradeStation extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player, ItemStack stack) {
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
+			ItemStack stack) {
 		if (world.isRemote)
 			return;
 		if (stack.hasTagCompound()) {

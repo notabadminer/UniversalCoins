@@ -20,7 +20,7 @@ public class UCRebalance extends CommandBase {
 			UniversalCoins.proxy.itemSmallCoinBag, UniversalCoins.proxy.itemLargeCoinBag };
 
 	@Override
-	public String getName() {
+	public String getCommandName() {
 		return StatCollector.translateToLocal("command.rebalance.name");
 	}
 
@@ -30,12 +30,12 @@ public class UCRebalance extends CommandBase {
 	}
 
 	@Override
-	public boolean canCommandSenderUse(ICommandSender par1ICommandSender) {
+	public boolean canCommandSenderUseCommand(ICommandSender par1ICommandSender) {
 		return true;
 	}
 
 	@Override
-	public void execute(ICommandSender sender, String[] astring) {
+	public void processCommand(ICommandSender sender, String[] astring) {
 		if (sender instanceof EntityPlayerMP) {
 			if (astring.length == 0) {
 				// get coins from player inventory
@@ -94,8 +94,8 @@ public class UCRebalance extends CommandBase {
 					ItemStack stack = recipient.inventory.getStackInSlot(i);
 					for (int j = 0; j < coins.length; j++) {
 						if (stack != null && stack.getItem() == coins[j]) {
-							int amountToAdd = (int) Math.min(coinsLeft / Math.pow(9, j), stack.getMaxStackSize()
-									- stack.stackSize);
+							int amountToAdd = (int) Math.min(coinsLeft / Math.pow(9, j),
+									stack.getMaxStackSize() - stack.stackSize);
 							stack.stackSize += amountToAdd;
 							recipient.inventory.setInventorySlotContents(i, stack);
 							coinsLeft -= (amountToAdd * Math.pow(9, j));

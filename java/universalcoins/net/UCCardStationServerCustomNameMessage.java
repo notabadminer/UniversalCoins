@@ -14,8 +14,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import universalcoins.tile.TileCardStation;
 
-public class UCCardStationServerCustomNameMessage implements IMessage,
-		IMessageHandler<UCCardStationServerCustomNameMessage, IMessage> {
+public class UCCardStationServerCustomNameMessage
+		implements IMessage, IMessageHandler<UCCardStationServerCustomNameMessage, IMessage> {
 	private int x, y, z;
 	private String groupName;
 
@@ -48,25 +48,24 @@ public class UCCardStationServerCustomNameMessage implements IMessage,
 	@Override
 	public IMessage onMessage(final UCCardStationServerCustomNameMessage message, final MessageContext ctx) {
 		Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                processMessage(message, ctx);
-            }
-        };
-        if(ctx.side == Side.CLIENT) {
-            Minecraft.getMinecraft().addScheduledTask(task);
-        }
-        else if(ctx.side == Side.SERVER) {
-            EntityPlayerMP playerEntity = ctx.getServerHandler().playerEntity;
-            if(playerEntity == null) {
-                FMLLog.warning("onMessage-server: Player is null");
-                return null;
-            }
-            playerEntity.getServerForPlayer().addScheduledTask(task);
-        }
-        return null;		
+			@Override
+			public void run() {
+				processMessage(message, ctx);
+			}
+		};
+		if (ctx.side == Side.CLIENT) {
+			Minecraft.getMinecraft().addScheduledTask(task);
+		} else if (ctx.side == Side.SERVER) {
+			EntityPlayerMP playerEntity = ctx.getServerHandler().playerEntity;
+			if (playerEntity == null) {
+				FMLLog.warning("onMessage-server: Player is null");
+				return null;
+			}
+			playerEntity.getServerForPlayer().addScheduledTask(task);
+		}
+		return null;
 	}
-	
+
 	private void processMessage(UCCardStationServerCustomNameMessage message, final MessageContext ctx) {
 		World world = ctx.getServerHandler().playerEntity.worldObj;
 

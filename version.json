@@ -1,12 +1,10 @@
 {
 	"versionList": [
 		{
-			"mcVersion":"Minecraft 1.8",
-			"modVersion":"1.8-2.0.3",
+			"mcVersion":"Minecraft 1.8.9",
+			"modVersion":"1.8.9-0.6",
 			"changeLog": [
-				"-added modifier for looting enchantment on mob drops, looting I = 2x, looting II = 3x, looting III = 4x",
-				"-added foundations to shop and bank. buildings will not float anymore",
-				"-changed config option for village spawn from boolean to int for more precise control of how often a bank or shop spawns"
+				"-initial port of 1.8 code to 1.8.9"
 			],
 			"updateURL":"https://github.com/notabadminer/UniversalCoins/releases",
 			"isDirectLink":"false",

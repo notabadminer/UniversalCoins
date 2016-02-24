@@ -23,16 +23,16 @@ public class BlockCardStation extends BlockRotatable {
 		setResistance(30.0F);
 		setLightLevel(8);
 	}
-	
-	@Override
-	public int getRenderType() {
-        return -1;
-    }
-	
-	@Override
-	public boolean isNormalCube(){
-		return false;
-	}
+
+	// @Override
+	// public int getRenderType() {
+	// return -1;
+	// }
+	//
+	// @Override
+	// public boolean isNormalCube(){
+	// return false;
+	// }
 
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side,

@@ -34,18 +34,18 @@ public class BlockUCWallSign extends BlockWallSign {
 		float f1 = 1.0F;
 		this.setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, f1, 0.5F + f);
 	}
-	
+
 	@Override
 	public int getRenderType() {
-        return 2;
-    }
-	
+		return -1;
+	}
+
 	@Override
 	@SideOnly(Side.CLIENT)
-    public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos) {
-        this.setBlockBoundsBasedOnState(worldIn, pos);
-        return super.getSelectedBoundingBox(worldIn, pos);
-    }
+	public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos) {
+		this.setBlockBoundsBasedOnState(worldIn, pos);
+		return super.getSelectedBoundingBox(worldIn, pos);
+	}
 
 	@Override
 	public TileEntity createNewTileEntity(World world, int p_149915_2_) {
@@ -103,7 +103,8 @@ public class BlockUCWallSign extends BlockWallSign {
 	@Override
 	public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock) {
 		TileEntity tileEntity = worldIn.getTileEntity(pos);
-		if (neighborBlock.getLocalizedName().matches("Chest") && tileEntity != null && tileEntity instanceof TileUCSign) {
+		if (neighborBlock.getLocalizedName().matches("Chest") && tileEntity != null
+				&& tileEntity instanceof TileUCSign) {
 			((TileUCSign) tileEntity).scanChestContents();
 		}
 	}

@@ -15,7 +15,6 @@ import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
 import universalcoins.net.UCButtonMessage;
-import universalcoins.util.UCWorldData;
 import universalcoins.util.UniversalAccounts;
 
 public class TilePackager extends TileEntity implements IInventory {
@@ -304,7 +303,7 @@ public class TilePackager extends TileEntity implements IInventory {
 		}
 	}
 
-	@Override
+	// @Override
 	public ItemStack getStackInSlotOnClosing(int i) {
 		return getStackInSlot(i);
 	}
@@ -340,9 +339,15 @@ public class TilePackager extends TileEntity implements IInventory {
 	public boolean isItemValidForSlot(int var1, ItemStack var2) {
 		return false;
 	}
-	
+
 	@Override
 	public IChatComponent getDisplayName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ItemStack removeStackFromSlot(int index) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -382,5 +387,4 @@ public class TilePackager extends TileEntity implements IInventory {
 		// TODO Auto-generated method stub
 
 	}
-
 }

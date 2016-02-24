@@ -8,13 +8,13 @@ import universalcoins.UniversalCoins;
 import universalcoins.net.UCRecipeMessage;
 
 public class UCPlayerLoginEventHandler {
-	
+
 	@SubscribeEvent
 	public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-				
+
 		MinecraftServer server = MinecraftServer.getServer();
 		if (!server.isSinglePlayer()) {
-			//we need to update client with recipes that are enabled
+			// we need to update client with recipes that are enabled
 			UniversalCoins.snw.sendTo(new UCRecipeMessage(), (EntityPlayerMP) event.player);
 		}
 	}

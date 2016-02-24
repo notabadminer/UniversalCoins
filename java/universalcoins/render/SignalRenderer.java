@@ -1,19 +1,13 @@
 package universalcoins.render;
 
-import net.minecraft.client.Minecraft;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
-
-import org.lwjgl.opengl.GL11;
-
-import universalcoins.UniversalCoins;
 import universalcoins.tile.TileSignal;
 
 public class SignalRenderer extends TileEntitySpecialRenderer {
@@ -35,7 +29,8 @@ public class SignalRenderer extends TileEntitySpecialRenderer {
 			}
 		}
 
-		BlockPos tPos = new BlockPos(tileentity.getPos().getX(), tileentity.getPos().getY() + 1, tileentity.getPos().getZ());
+		BlockPos tPos = new BlockPos(tileentity.getPos().getX(), tileentity.getPos().getY() + 1,
+				tileentity.getPos().getZ());
 		int brightness = (int) this.getWorld().getCombinedLight(tPos, 0);
 		GL11.glPushMatrix();
 		float correction = 0.0F;
@@ -51,7 +46,7 @@ public class SignalRenderer extends TileEntitySpecialRenderer {
 		GlStateManager.translate((float) posX + 0.5F, (float) posY + 0.5F, (float) posZ + 0.5F);
 		GlStateManager.rotate(-correction, 0.0F, 1.0F, 0.0F);
 		GlStateManager.translate(-0.5F, -0.5F, -0.5F);
-		
+
 		// draw text on front face
 		FontRenderer fontrenderer = this.getFontRenderer();
 		byte b0 = 0;
@@ -64,23 +59,17 @@ public class SignalRenderer extends TileEntitySpecialRenderer {
 			GL11.glDepthMask(false);
 			if (te.secondsLeft > 0) {
 				int time = te.secondsLeft;
-				String s = time
-						+ " "
-						+ (time > 1 ? StatCollector.translateToLocal("signal.face.label.seconds") : StatCollector
-								.translateToLocal("signal.face.label.second"));
+				String s = time + " " + (time > 1 ? StatCollector.translateToLocal("signal.face.label.seconds")
+						: StatCollector.translateToLocal("signal.face.label.second"));
 				fontrenderer.drawString(s, -fontrenderer.getStringWidth(s) / 2, 16, b0);
 			} else {
 				int duration = te.duration;
 				int coins = te.fee;
-				String s = coins
-						+ " "
-						+ (coins > 1 ? StatCollector.translateToLocal("signal.face.label.coins") : StatCollector
-								.translateToLocal("signal.face.label.coin"));
+				String s = coins + " " + (coins > 1 ? StatCollector.translateToLocal("signal.face.label.coins")
+						: StatCollector.translateToLocal("signal.face.label.coin"));
 				fontrenderer.drawString(s, -fontrenderer.getStringWidth(s) / 2, 6, b0);
-				String s2 = duration
-						+ " "
-						+ (duration > 1 ? StatCollector.translateToLocal("signal.face.label.seconds") : StatCollector
-								.translateToLocal("signal.face.label.second"));
+				String s2 = duration + " " + (duration > 1 ? StatCollector.translateToLocal("signal.face.label.seconds")
+						: StatCollector.translateToLocal("signal.face.label.second"));
 				fontrenderer.drawString(s2, -fontrenderer.getStringWidth(s2) / 2, 16, b0);
 			}
 			GL11.glDepthMask(true);

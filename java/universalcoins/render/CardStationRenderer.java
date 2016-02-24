@@ -1,15 +1,15 @@
 package universalcoins.render;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.opengl.GL11;
-
 import universalcoins.UniversalCoins;
 
 public class CardStationRenderer extends TileEntitySpecialRenderer {
@@ -17,12 +17,13 @@ public class CardStationRenderer extends TileEntitySpecialRenderer {
 	public CardStationRenderer() {
 	}
 
-	public void renderTileEntityAt(TileEntity tileEntity, double posX,
-			double posY, double posZ, float p_180535_8_, int p_180535_9_) {
+	public void renderTileEntityAt(TileEntity tileEntity, double posX, double posY, double posZ, float p_180535_8_,
+			int p_180535_9_) {
 
-		ResourceLocation textures = (new ResourceLocation(UniversalCoins.modid, "textures/blocks/blockCardStation.png"));
+		ResourceLocation textures = (new ResourceLocation(UniversalCoins.modid,
+				"textures/blocks/blockCardStation.png"));
 		Minecraft.getMinecraft().renderEngine.bindTexture(textures);
-		
+
 		// adjust block rotation based on block meta
 		int meta = tileEntity.getBlockMetadata();
 		if (meta == -1) { // fix for inventory crash on get block meta
@@ -50,118 +51,179 @@ public class CardStationRenderer extends TileEntitySpecialRenderer {
 		GlStateManager.translate((float) posX + 0.5F, (float) posY + 0.5F, (float) posZ + 0.5F);
 		GlStateManager.rotate(-f3, 0.0F, 1.0F, 0.0F);
 		GlStateManager.translate(-0.5F, -0.5F, -0.5F);
-		worldrenderer.startDrawingQuads();
-		worldrenderer.setBrightness(brightness);
-		worldrenderer.setNormal(0.0F, 1.0F, 0.0F); //top
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
-		
-		// back
-		worldrenderer.setNormal(0.0F, 0.0F, -1.0F);
-		worldrenderer.addVertexWithUV(0, 0, 0, 0, 0);
-		worldrenderer.addVertexWithUV(0, 1, 0, 0, 1);
-		worldrenderer.addVertexWithUV(1, 1, 0, 1, 1);
-		worldrenderer.addVertexWithUV(1, 0, 0, 1, 0);
+		// right - working 4th
+		worldrenderer.normal(0.0F, 0.0F, 1.0F);
+		worldrenderer.pos(1, 0, 0).tex(0, 0).endVertex();
+		worldrenderer.pos(1, 1, 0).tex(0, 1).endVertex();
+		worldrenderer.pos(1, 1, 1).tex(1, 1).endVertex();
+		worldrenderer.pos(1, 0, 1).tex(1, 0).endVertex();
 
-		// bottom
-		worldrenderer.setNormal(0.0F, -1.0F, 0.0F);
-		worldrenderer.addVertexWithUV(0, 0, 1, 0, 0);
-		worldrenderer.addVertexWithUV(0, 0, 0, 0, 1);
-		worldrenderer.addVertexWithUV(1, 0, 0, 1, 1);
-		worldrenderer.addVertexWithUV(1, 0, 1, 1, 0);
+		// front - working 2nd
+		worldrenderer.normal(0.0F, 0.0F, 1.0F);
+		worldrenderer.pos(1, 0, 1).tex(0, 0).endVertex();
+		worldrenderer.pos(1, 1, 1).tex(0, 1).endVertex();
+		worldrenderer.pos(0, 1, 1).tex(1, 1).endVertex();
+		worldrenderer.pos(0, 0, 1).tex(1, 0).endVertex();
 
-		// left
-		worldrenderer.setNormal(0.0F, 0.0F, -1.0F);
-		worldrenderer.addVertexWithUV(0, 0, 1, 0, 0);
-		worldrenderer.addVertexWithUV(0, 1, 1, 0, 1);
-		worldrenderer.addVertexWithUV(0, 1, 0, 1, 1);
-		worldrenderer.addVertexWithUV(0, 0, 0, 1, 0);
+		// back - working 2nd, 4th
+		worldrenderer.normal(0.0F, 0.0F, -1.0F);
+		worldrenderer.pos(0, 0, 0).tex(0, 0).endVertex();
+		worldrenderer.pos(0, 1, 0).tex(0, 1).endVertex();
+		worldrenderer.pos(1, 1, 0).tex(1, 1).endVertex();
+		worldrenderer.pos(1, 0, 0).tex(1, 0).endVertex();
 
-		// right
-		worldrenderer.setNormal(0.0F, 0.0F, 1.0F);
-		worldrenderer.addVertexWithUV(1, 1, 1, 0, 0);
-		worldrenderer.addVertexWithUV(1, 0, 1, 0, 1);
-		worldrenderer.addVertexWithUV(1, 0, 0, 1, 1);
-		worldrenderer.addVertexWithUV(1, 1, 0, 1, 0);
+		// bottom - working 2nd, 4th
+		worldrenderer.normal(0.0F, -1.0F, 0.0F);
+		worldrenderer.pos(1, 0, 0).tex(0, 0).endVertex();
+		worldrenderer.pos(1, 0, 1).tex(0, 1).endVertex();
+		worldrenderer.pos(0, 0, 1).tex(1, 1).endVertex();
+		worldrenderer.pos(0, 0, 0).tex(1, 0).endVertex();
 
-		// top
-		worldrenderer.setNormal(0.0F, 1.0F, 0.0F);
-		worldrenderer.addVertexWithUV(1, 1, 1, 0, 0);
-		worldrenderer.addVertexWithUV(1, 1, 0, 0, 1);
-		worldrenderer.addVertexWithUV(0, 1, 0, 1, 1);
-		worldrenderer.addVertexWithUV(0, 1, 1, 1, 0);
-		
-		// front top
-		worldrenderer.setNormal(0.0F, 0.0F, 1.0F);
-		worldrenderer.addVertexWithUV(0.1, 1, 1, 0.1, 0);
-		worldrenderer.addVertexWithUV(0.1, 0.9, 1, 0.1, 0.1);
-		worldrenderer.addVertexWithUV(0.9, 0.9, 1, 0.9, 0.1);
-		worldrenderer.addVertexWithUV(0.9, 1, 1, 0.9, 0);
+		// top - working 2nd, 4th
+		worldrenderer.normal(0.0F, 1.0F, 0.0F);
+		worldrenderer.pos(1, 1, 1).tex(0, 0).endVertex();
+		worldrenderer.pos(1, 1, 0).tex(0, 1).endVertex();
+		worldrenderer.pos(0, 1, 0).tex(1, 1).endVertex();
+		worldrenderer.pos(0, 1, 1).tex(1, 0).endVertex();
 
-		// front left
-		worldrenderer.setNormal(0.0F, 0.0F, 1.0F);
-		worldrenderer.addVertexWithUV(0, 0, 1, 0, 0);
-		worldrenderer.addVertexWithUV(0.1, 0, 1, 0.1, 0);
-		worldrenderer.addVertexWithUV(0.1, 1, 1, 0.1, 1);
-		worldrenderer.addVertexWithUV(0, 1, 1, 0, 1);
-		
-		// front right
-		worldrenderer.setNormal(0.0F, 0.0F, 1.0F);
-		worldrenderer.addVertexWithUV(0.9, 0, 1, 0.9, 0);
-		worldrenderer.addVertexWithUV(1, 0, 1, 1, 0);
-		worldrenderer.addVertexWithUV(1, 1, 1, 1, 1);
-		worldrenderer.addVertexWithUV(0.9, 1, 1, 0.9, 1);
-		
-		// front bottom
-		worldrenderer.setNormal(0.0F, 0.0F, 1.0F);
-		worldrenderer.addVertexWithUV(0.1, 0.1, 1, 0.1, 0.9);
-		worldrenderer.addVertexWithUV(0.1, 0, 1, 0.1, 1);
-		worldrenderer.addVertexWithUV(0.9, 0, 1, 0.9, 1);
-		worldrenderer.addVertexWithUV(0.9, 0.1, 1, 0.9, 0.9);
-		
-		// inside left
-		worldrenderer.setNormal(0.0F, 0.0F, 1.0F);
-		worldrenderer.addVertexWithUV(0.1, 0.9, 1, 0.1, 0.1);
-		worldrenderer.addVertexWithUV(0.1, 0.1, 1, 0.1, 0.9);
-		worldrenderer.addVertexWithUV(0.1, 0.1, 0.7, 0.4, 0.9);
-		worldrenderer.addVertexWithUV(0.1, 0.9, 0.7, 0.4, 0.1);
-		
-		// inside right
-		worldrenderer.setNormal(0.0F, 0.0F, -1.0F);
-		worldrenderer.addVertexWithUV(0.9, 0.9, 0.7, 0.1, 0.1);
-		worldrenderer.addVertexWithUV(0.9, 0.1, 0.7, 0.1, 0.9);
-		worldrenderer.addVertexWithUV(0.9, 0.1, 1, 0.4, 0.9);
-		worldrenderer.addVertexWithUV(0.9, 0.9, 1, 0.4, 0.1);
-		
-		// inside top
-		worldrenderer.setNormal(0.0F, -1.0F, 0.0F);
-		worldrenderer.addVertexWithUV(0.1, 0.9, 1, 0.1, 0.9);
-		worldrenderer.addVertexWithUV(0.1, 0.9, 0.7, 0.1, 0.1);
-		worldrenderer.addVertexWithUV(0.9, 0.9, 0.7, 0.9, 0.1);
-		worldrenderer.addVertexWithUV(0.9, 0.9, 1, 0.9, 0.9);
-		
+		// left working 6th, 2nd, 4th
+		worldrenderer.normal(0.0F, 0.0F, -1.0F);
+		worldrenderer.pos(0, 0, 1).tex(0, 0).endVertex();
+		worldrenderer.pos(0, 1, 1).tex(0, 1).endVertex();
+		worldrenderer.pos(0, 1, 0).tex(1, 1).endVertex();
+		worldrenderer.pos(0, 0, 0).tex(1, 0).endVertex();
+
+		// // front top
+		// worldrenderer.normal(0.0F, 0.0F, 1.0F);
+		// worldrenderer.pos(0.1, 1, 1);
+		// worldrenderer.tex(0.1, 0);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.1, 0.9, 1);
+		// worldrenderer.tex(0.1, 0.1);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.9, 0.9, 1);
+		// worldrenderer.tex(0.9, 0.1);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.9, 1, 1);
+		// worldrenderer.tex(0.9, 0);
+		// worldrenderer.endVertex();
+
+		// // front left
+		// worldrenderer.normal(0.0F, 0.0F, 1.0F);
+		// worldrenderer.pos(0, 0, 1);
+		// worldrenderer.tex(0, 0);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.1, 0, 1);
+		// worldrenderer.tex(0.1, 0);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.1, 1, 1);
+		// worldrenderer.tex(0.1, 1);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0, 1, 1);
+		// worldrenderer.tex(0, 1);
+		// worldrenderer.endVertex();
+		//
+		// // front right
+		// worldrenderer.normal(0.0F, 0.0F, 1.0F);
+		// worldrenderer.pos(0.9, 0, 1);
+		// worldrenderer.tex(0.9, 0);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(1, 0, 1);
+		// worldrenderer.tex(1, 0);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(1, 1, 1);
+		// worldrenderer.tex(1, 1);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.9, 1, 1);
+		// worldrenderer.tex(0.9, 1);
+		// worldrenderer.endVertex();
+		//
+		// // front bottom
+		// worldrenderer.normal(0.0F, 0.0F, 1.0F);
+		// worldrenderer.pos(0.1, 0.1, 1);
+		// worldrenderer.tex(0.1, 0.9);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.1, 0, 1);
+		// worldrenderer.tex(0.1, 1);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.9, 0, 1);
+		// worldrenderer.tex(0.9, 1);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.9, 0.1, 1);
+		// worldrenderer.tex(0.9, 0.9);
+		// worldrenderer.endVertex();
+		//
+		// // inside left
+		// worldrenderer.normal(0.0F, 0.0F, 1.0F);
+		// worldrenderer.pos(0.1, 0.9, 1);
+		// worldrenderer.tex(0.1, 0.1);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.1, 0.1, 1);
+		// worldrenderer.tex(0.1, 0.9);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.1, 0.1, 0.7);
+		// worldrenderer.tex(0.4, 0.9);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.1, 0.9, 0.7);
+		// worldrenderer.tex(0.4, 0.1);
+		// worldrenderer.endVertex();
+		//
+		// // inside right
+		// worldrenderer.normal(0.0F, 0.0F, -1.0F);
+		// worldrenderer.pos(0.9, 0.9, 0.7);
+		// worldrenderer.tex(0.1, 0.1);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.9, 0.1, 0.7);
+		// worldrenderer.tex(0.1, 0.9);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.9, 0.1, 1);
+		// worldrenderer.tex(0.4, 0.9);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.9, 0.9, 1);
+		// worldrenderer.tex(0.4, 0.1);
+		// worldrenderer.endVertex();
+		//
+		// // inside top
+		// worldrenderer.normal(0.0F, -1.0F, 0.0F);
+		// worldrenderer.pos(0.1, 0.9, 0.1);
+		// worldrenderer.tex(0.1, 0.9);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.1, 0.9, 0.7);
+		// worldrenderer.tex(0.1, 0.1);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.9, 0.9, 0.7);
+		// worldrenderer.tex(0.9, 0.1);
+		// worldrenderer.endVertex();
+		// worldrenderer.pos(0.9, 0.9, 1);
+		// worldrenderer.tex(0.9, 0.9);
+		// worldrenderer.endVertex();
+
 		tessellator.draw();
-		
-		textures = (new ResourceLocation(UniversalCoins.modid, "textures/blocks/blockCardStationFace.png"));
-		Minecraft.getMinecraft().renderEngine.bindTexture(textures);
-		
-		worldrenderer.startDrawingQuads();
-		worldrenderer.setBrightness(brightness);
-				
-		// inside face
-		worldrenderer.setNormal(0.0F, 0.0F, 1.0F);
-		worldrenderer.addVertexWithUV(0.1, 0.9, 0.7, 0, 0);
-		worldrenderer.addVertexWithUV(0.1, 0.1, 0.7, 0, 1);
-		worldrenderer.addVertexWithUV(0.9, 0.1, 0.7, 1, 1);
-		worldrenderer.addVertexWithUV(0.9, 0.9, 0.7, 1, 0);
 
-		// inside bottom
-		worldrenderer.setNormal(0.0F, 1.0F, 0.0F);
-		worldrenderer.addVertexWithUV(0.1, 0.4, 0.7, 0, 0.55);
-		worldrenderer.addVertexWithUV(0.1, 0.1, 1, 0, 1);
-		worldrenderer.addVertexWithUV(0.9, 0.1, 1, 1, 1);
-		worldrenderer.addVertexWithUV(0.9, 0.4, 0.7, 1, 0.55);
-		
-		tessellator.draw();
+		// textures = (new ResourceLocation(UniversalCoins.modid,
+		// "textures/blocks/blockCardStationFace.png"));
+		// Minecraft.getMinecraft().renderEngine.bindTexture(textures);
+		//
+		// worldrenderer.begin(GL11.GL_QUADS,
+		// DefaultVertexFormats.POSITION_TEX);
+
+		// // inside face lr bt bf
+		// worldrenderer.normal(0.0F, 0.0F, 1.0F);
+		// worldrenderer.pos(0.9, 0.1, 0.7).tex(0, 0).endVertex();
+		// worldrenderer.pos(0.9, 0.9, 0.7).tex(0, 1).endVertex();
+		// worldrenderer.pos(0.1, 0.9, 0.7).tex(1, 1).endVertex();
+		// worldrenderer.pos(0.1, 0.1, 0.7).tex(1, 0).endVertex();
+
+		// // inside bottom - working
+		// worldrenderer.normal(0.0F, 1.0F, 0.0F);
+		// worldrenderer.pos(0.1, 0.4, 0.7).tex(0, 0.55).endVertex();
+		// worldrenderer.pos(0.1, 0.1, 1).tex(0, 1).endVertex();
+		// worldrenderer.pos(0.9, 0.1, 1).tex(1, 1).endVertex();
+		// worldrenderer.pos(0.9, 0.4, 0.7).tex(1, 0.55).endVertex();
+		//
+		// tessellator.draw();
 		GL11.glPopMatrix();
 	}
 }

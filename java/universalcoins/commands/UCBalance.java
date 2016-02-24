@@ -19,7 +19,7 @@ public class UCBalance extends CommandBase {
 			UniversalCoins.proxy.itemSmallCoinBag, UniversalCoins.proxy.itemLargeCoinBag };
 
 	@Override
-	public String getName() {
+	public String getCommandName() {
 		return StatCollector.translateToLocal("command.balance.name");
 	}
 
@@ -29,12 +29,12 @@ public class UCBalance extends CommandBase {
 	}
 
 	@Override
-	public boolean canCommandSenderUse(ICommandSender par1ICommandSender) {
+	public boolean canCommandSenderUseCommand(ICommandSender par1ICommandSender) {
 		return true;
 	}
 
 	@Override
-	public void execute(ICommandSender sender, String[] astring) {
+	public void processCommand(ICommandSender sender, String[] astring) {
 		if (sender instanceof EntityPlayerMP) {
 			int playerCoins = getPlayerCoins((EntityPlayerMP) sender);
 			String uuid = ((EntityPlayerMP) sender).getPersistentID().toString();
@@ -43,16 +43,18 @@ public class UCBalance extends CommandBase {
 			int accountBalance = UniversalAccounts.getInstance().getAccountBalance(playerAcct);
 			int custAccountBalance = UniversalAccounts.getInstance().getAccountBalance(customAcct);
 			DecimalFormat formatter = new DecimalFormat("#,###,###,###");
-			sender.addChatMessage(new ChatComponentText(StatCollector
-					.translateToLocal("command.balance.result.inventory") + formatter.format(playerCoins)));
+			sender.addChatMessage(
+					new ChatComponentText(StatCollector.translateToLocal("command.balance.result.inventory")
+							+ formatter.format(playerCoins)));
 			if (accountBalance != -1) {
-				sender.addChatMessage(new ChatComponentText(StatCollector
-						.translateToLocal("command.balance.result.account") + formatter.format(accountBalance)));
+				sender.addChatMessage(
+						new ChatComponentText(StatCollector.translateToLocal("command.balance.result.account")
+								+ formatter.format(accountBalance)));
 			}
 			if (custAccountBalance != -1) {
-				sender.addChatMessage(new ChatComponentText(StatCollector
-						.translateToLocal("command.balance.result.customaccount")
-						+ formatter.format(custAccountBalance)));
+				sender.addChatMessage(
+						new ChatComponentText(StatCollector.translateToLocal("command.balance.result.customaccount")
+								+ formatter.format(custAccountBalance)));
 			}
 		}
 	}

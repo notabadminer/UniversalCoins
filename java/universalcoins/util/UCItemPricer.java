@@ -28,6 +28,7 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -75,10 +76,10 @@ public class UCItemPricer {
 
 	private void loadDefaults() throws IOException {
 		String[] configList = { "pricelists/minecraft.cfg", "pricelists/BuildCraft.cfg",
-				"pricelists/universalcoins.cfg", "pricelists/ThermalExpansion.cfg",
-				"pricelists/SolarFlux.cfg", "pricelists/eplus.cfg", "pricelists/betterstorage.cfg",
-				"pricelists/Backpack.cfg", "pricelists/ThermalFoundation.cfg", "pricelists/cfm.cfg",
-				"pricelists/BiblioCraft.cfg", "pricelists/FLabsBF.cfg", "pricelists/oredictionary.cfg", };
+				"pricelists/universalcoins.cfg", "pricelists/ThermalExpansion.cfg", "pricelists/SolarFlux.cfg",
+				"pricelists/eplus.cfg", "pricelists/betterstorage.cfg", "pricelists/Backpack.cfg",
+				"pricelists/ThermalFoundation.cfg", "pricelists/cfm.cfg", "pricelists/BiblioCraft.cfg",
+				"pricelists/FLabsBF.cfg", "pricelists/oredictionary.cfg", };
 		InputStream priceResource;
 		// load those files into hashmap(ucPriceMap)
 		for (int i = 0; i < configList.length; i++) {
@@ -105,9 +106,11 @@ public class UCItemPricer {
 		while (tokenizer.hasMoreElements()) {
 			String token = tokenizer.nextToken();
 			String[] tempData = token.split("=");
-			// FMLLog.info("Universal Coins: Updating UCPricelist: " + tempData[0] + "=" +
+			// FMLLog.info("Universal Coins: Updating UCPricelist: " +
+			// tempData[0] + "=" +
 			// Integer.valueOf(tempData[1]));
-			// We'll update the prices of all the items and not add all the default prices to the config folder if the
+			// We'll update the prices of all the items and not add all the
+			// default prices to the config folder if the
 			// mods are not present
 			if (ucPriceMap.get(tempData[0]) != null && tempData.length == 2) {
 				ucPriceMap.put(tempData[0], Integer.valueOf(tempData[1]));
@@ -118,7 +121,7 @@ public class UCItemPricer {
 	private void buildPricelistHashMap() {
 		ArrayList<ItemStack> itemsDiscovered = new ArrayList<ItemStack>();
 		Object[] itemSet = Item.itemRegistry.getKeys().toArray();
-		
+
 		for (Object itemObject : itemSet) {
 			String item = itemObject.toString();
 			// pass the itemkey to a temp variable after splitting on
@@ -127,7 +130,10 @@ public class UCItemPricer {
 			// pass the first value as modname
 			String modName = tempModName[0];
 			if (item != null) {
-				Item test = (Item) Item.itemRegistry.getObject(item);
+				Item test = (Item) Item.itemRegistry.getObject(new ResourceLocation(item)); // TODO
+																							// verify
+																							// this
+																							// works
 				// check for meta values so we catch all items
 				// Iterate through damage values and add them if unique
 				for (int i = 0; i < 16; i++) {
@@ -148,7 +154,8 @@ public class UCItemPricer {
 			for (String ore : OreDictionary.getOreNames()) {
 				ucModnameMap.put(ore, "oredictionary");
 				if (!ucPriceMap.containsKey(ore)) {
-					// check ore to see if any of the types has a price, use it if true
+					// check ore to see if any of the types has a price, use it
+					// if true
 					List<ItemStack> test = OreDictionary.getOres(ore);
 					int itemValue = -1;
 					for (int j = 0; j < test.size(); j++) {
@@ -182,7 +189,8 @@ public class UCItemPricer {
 		// load those files into hashmap(UCPriceMap)
 		for (int i = 0; i < configList.length; i++) {
 			if (configList[i].isFile()) {
-				// FMLLog.info("Universal Coins: Loading Pricelist: " + configList[i]);
+				// FMLLog.info("Universal Coins: Loading Pricelist: " +
+				// configList[i]);
 				BufferedReader br = new BufferedReader(new FileReader(configList[i]));
 				String tempString = "";
 				String[] modName = configList[i].getName().split("\\.");
@@ -303,7 +311,9 @@ public class UCItemPricer {
 		}
 		String itemName = itemStack.getUnlocalizedName();
 		// get modName to add to mapping
-		String itemRegistryKey = (String) Item.itemRegistry.getNameForObject(itemStack.getItem());
+		String itemRegistryKey = Item.itemRegistry.getNameForObject(itemStack.getItem()).toString(); // TODO
+																										// verify
+																										// this
 		String[] tempModName = itemRegistryKey.split("\\W", 3);
 		// pass the first value as modname
 		String modName = tempModName[0];
@@ -381,7 +391,7 @@ public class UCItemPricer {
 				if (test.startsWith("tile.") || test.startsWith("item.")) {
 					test = test.substring(5);
 				}
-				Item item = (Item) Item.itemRegistry.getObject(test);
+				Item item = (Item) Item.itemRegistry.getObject(new ResourceLocation(test));
 				if (item != null) {
 					stack = new ItemStack(item);
 				}
