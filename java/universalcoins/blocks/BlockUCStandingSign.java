@@ -76,25 +76,12 @@ public class BlockUCStandingSign extends BlockStandingSign {
 			return false;
 		}
 		if (player.getDisplayName().equals(ownerName) && !world.isRemote) {
-			ItemStack stack = getItemStackWithData(world, pos.getX(), pos.getY(), pos.getZ());
+			ItemStack stack = new ItemStack(UniversalCoins.proxy.itemUCSign);
 			EntityItem entityItem = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), stack);
 			world.spawnEntityInWorld(entityItem);
 			super.removedByPlayer(world, pos, player, willHarvest);
 		}
 		return false;
-	}
-
-	public ItemStack getItemStackWithData(World world, int x, int y, int z) {
-		ItemStack stack = new ItemStack(UniversalCoins.proxy.itemUCSign);
-		TileEntity tentity = world.getTileEntity(new BlockPos(x, y, z));
-		if (tentity instanceof TileUCSign) {
-			TileUCSign te = (TileUCSign) tentity;
-			NBTTagCompound tagCompound = new NBTTagCompound();
-			tagCompound.setString("BlockIcon", te.blockIcon);
-			stack.setTagCompound(tagCompound);
-			return stack;
-		} else
-			return stack;
 	}
 
 	@Override

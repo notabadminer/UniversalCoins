@@ -53,7 +53,6 @@ public class BlockVendorFrame extends BlockRotatable {
 			tagCompound.setInteger("ItemPrice", te.itemPrice);
 			tagCompound.setString("BlockOwner", te.blockOwner);
 			tagCompound.setBoolean("Infinite", te.infiniteMode);
-			tagCompound.setString("BlockIcon", te.blockIcon);
 
 			stack.setTagCompound(tagCompound);
 			return stack;
@@ -148,7 +147,6 @@ public class BlockVendorFrame extends BlockRotatable {
 					NBTTagList textureList = tagCompound.getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
 					byte slot = tagCompound.getByte("Texture");
 					ItemStack textureStack = ItemStack.loadItemStackFromNBT(tagCompound);
-					tentity.sendTextureUpdateMessage(textureStack);
 				}
 				NBTTagList tagList = tagCompound.getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
 				if (tagList.tagCount() > 0) {
@@ -165,12 +163,10 @@ public class BlockVendorFrame extends BlockRotatable {
 				tentity.itemPrice = tagCompound.getInteger("ItemPrice");
 				tentity.infiniteMode = tagCompound.getBoolean("Infinite");
 				tentity.blockOwner = player.getName();
-				tentity.blockIcon = tagCompound.getString("BlockIcon");
 			}
 			world.markBlockForUpdate(pos);
 		} else {
 			// Vending Frame pulled from NEI or creative. Cheaters :P
-			((TileVendorFrame) world.getTileEntity(pos)).blockIcon = "minecraft:blocks/planks_birch";
 			((TileVendorFrame) world.getTileEntity(pos)).blockOwner = player.getName();
 		}
 

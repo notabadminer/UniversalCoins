@@ -2,7 +2,7 @@
 	"versionList": [
 		{
 			"mcVersion":"Minecraft 1.8.9",
-			"modVersion":"1.8.9-0.6",
+			"modVersion":"1.8.9-0.1",
 			"changeLog": [
 				"-initial port of 1.8 code to 1.8.9"
 			],

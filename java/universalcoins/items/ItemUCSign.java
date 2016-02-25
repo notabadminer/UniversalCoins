@@ -56,19 +56,6 @@ public class ItemUCSign extends ItemSign {
 				TileEntity tileentity = worldIn.getTileEntity(pos);
 
 				if (tileentity instanceof TileUCSign) {
-					if (stack.hasTagCompound()) {
-						NBTTagCompound tagCompound = stack.getTagCompound();
-						if (tagCompound.getString("BlockIcon") == "") {
-							NBTTagList textureList = tagCompound.getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
-							byte slot = tagCompound.getByte("Texture");
-							ItemStack textureStack = ItemStack.loadItemStackFromNBT(tagCompound);
-							if (textureStack != null) {
-								((TileUCSign) tileentity).sendTextureUpdateMessage(textureStack);
-							}
-						} else {
-							((TileUCSign) tileentity).blockIcon = tagCompound.getString("BlockIcon");
-						}
-					}
 					((TileUCSign) tileentity).blockOwner = playerIn.getName();
 					playerIn.openGui(UniversalCoins.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
 				}
