@@ -164,7 +164,7 @@ public class TilePackager extends TileEntity implements IInventory {
 	public void checkCard() {
 		cardAvailable = false;
 		if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
-			String account = inventory[itemCardSlot].getTagCompound().getString("accountNumber");
+			String account = inventory[itemCardSlot].getTagCompound().getString("Account");
 			int accountBalance = UniversalAccounts.getInstance().getAccountBalance(account);
 			if (accountBalance > packageCost[packageSize]) {
 				cardAvailable = true;
@@ -254,6 +254,11 @@ public class TilePackager extends TileEntity implements IInventory {
 			customName = tagCompound.getString("customName");
 		} catch (Throwable ex2) {
 			customName = "";
+		}
+		try {
+			inUse = tagCompound.getBoolean("inUse");
+		} catch (Throwable ex2) {
+			inUse = false;
 		}
 		try {
 			packageSize = tagCompound.getInteger("packageSize");

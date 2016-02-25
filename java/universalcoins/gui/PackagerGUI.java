@@ -125,7 +125,6 @@ public class PackagerGUI extends GuiContainer {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
 
-		// disable if player has no money
 		if (sendMode) {
 			this.drawTexturedModalRect(x + 3, y + 20, 0, 190, 169, 40);
 			if (tEntity.packageTarget != "")
@@ -136,25 +135,22 @@ public class PackagerGUI extends GuiContainer {
 		} else {
 			buyButton.displayString = StatCollector.translateToLocal("general.button.buy");
 			buyButton.enabled = tEntity.coinSum >= tEntity.packageCost[tEntity.packageSize] || tEntity.cardAvailable;
+
+			// draw highlight over currently selected package mode
+			int yHighlight[] = { 24, 36, 48 };
+			// check tileEntity for mode and highlight proper mode
+			this.drawTexturedModalRect(x + 80, y + yHighlight[tEntity.packageSize], 176, 0, 6, 6);
+
+			// draw background for slots
+			if (tEntity.packageSize == 1) {
+				this.drawTexturedModalRect(x + 25, y + 21, 176, 6, 18, 36);
+			}
+			if (tEntity.packageSize == 2) {
+				this.drawTexturedModalRect(x + 7, y + 21, 176, 6, 36, 36);
+			}
 		}
+		// disable if player has no money
 		coinButton.enabled = tEntity.coinSum > 0;
-
-		// draw highlight over currently selected package mode
-		int yHighlight[] = { 24, 36, 48 };
-		// check tileEntity for mode and highlight proper mode
-		this.drawTexturedModalRect(x + 80, y + yHighlight[tEntity.packageSize], 176, 0, 6, 6);
-
-		// draw background for slots
-		if (tEntity.packageSize == 1) {
-			this.drawTexturedModalRect(x + 25, y + 21, 176, 6, 18, 36);
-		}
-		if (tEntity.packageSize == 2) {
-			this.drawTexturedModalRect(x + 7, y + 21, 176, 6, 36, 36);
-		}
-		if (sendMode) {
-			this.drawTexturedModalRect(x + 3, y + 20, 0, 190, 169, 40);
-			fontRendererObj.drawString(packageReceiverField.getText(), x + 30, y + 30, 4210752);
-		}
 	}
 
 	private void updateSlots(int mode) {
@@ -311,7 +307,7 @@ public class PackagerGUI extends GuiContainer {
 	}
 
 	private boolean canSend() {
-		if (tEntity.getStackInSlot(tEntity.itemPackageInputSlot) != null && tEntity.packageTarget != "") {
+		if (tEntity.getStackInSlot(tEntity.itemPackageInputSlot) != null && !tEntity.packageTarget.contentEquals("")) {
 			return true;
 		}
 		return false;

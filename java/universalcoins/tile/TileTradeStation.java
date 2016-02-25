@@ -182,7 +182,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 			return;
 		}
 		itemPrice = UCItemPricer.getInstance().getItemPrice(inventory[itemInputSlot]);
-		if (itemPrice == -1) {
+		if (itemPrice == -1 || itemPrice == 0) {
 			sellButtonActive = false;
 			return;
 		}
@@ -220,7 +220,8 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 			} else {
 				coinSum -= itemPrice * amount;
 			}
-			inventory[itemOutputSlot] = new ItemStack(inventory[itemInputSlot].getItem(), amount, inventory[itemInputSlot].getItemDamage());
+			inventory[itemOutputSlot] = new ItemStack(inventory[itemInputSlot].getItem(), amount,
+					inventory[itemInputSlot].getItemDamage());
 		} else if (inventory[itemOutputSlot].getItem() == inventory[itemInputSlot].getItem()
 				&& inventory[itemOutputSlot].getItemDamage() == inventory[itemInputSlot].getItemDamage()
 				&& inventory[itemOutputSlot].stackSize + amount <= inventory[itemInputSlot].getMaxStackSize()) {
@@ -542,8 +543,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 				if (coinType != -1) {
 					int itemValue = multiplier[coinType];
 					int depositAmount = Math.min(stack.stackSize, (Integer.MAX_VALUE - coinSum) / itemValue);
-					if (inventory[itemCardSlot] != null
-							&& inventory[itemCardSlot].hasTagCompound() 
+					if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound()
 							&& inventory[itemCardSlot].getItem() == UniversalCoins.proxy.itemEnderCard
 							&& getAccountBalance() + (itemPrice * depositAmount) < Integer.MAX_VALUE) {
 						creditAccount(depositAmount * itemValue);
@@ -558,6 +558,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 			}
 			activateRetrieveButtons();
 			activateBuySellButtons();
+			update();
 		}
 	}
 
@@ -595,9 +596,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 
 	@Override
 	public int[] getSlotsForFace(EnumFacing side) {
-		return null;
-		// return side == 0 ? slots_bottom : (side == 1 ? slots_top :
-		// slots_sides);
+		return side == EnumFacing.DOWN ? slots_bottom : (side == EnumFacing.UP ? slots_top : slots_sides);
 	}
 
 	@Override

@@ -11,12 +11,14 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IChatComponent;
+import net.minecraft.util.ITickable;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.blocks.BlockSignal;
 import universalcoins.net.UCButtonMessage;
 
-public class TileSignal extends TileEntity implements IInventory {
+public class TileSignal extends TileEntity implements IInventory, ITickable {
 
 	private ItemStack[] inventory = new ItemStack[1];
 	public static final int itemOutputSlot = 0;
@@ -34,19 +36,21 @@ public class TileSignal extends TileEntity implements IInventory {
 	public String customName = "";
 	public boolean canProvidePower = false;
 
+	@Override
 	public void update() {
 		if (!worldObj.isRemote) {
 			if (counter > 0) {
 				counter--;
+				FMLLog.info("counter: " + counter);
 				secondsLeft = counter / 20;
 				if (secondsLeft != lastSecondsLeft) {
 					lastSecondsLeft = secondsLeft;
 					updateTE();
 				}
-				if (counter == 0) {
-					canProvidePower = false;
-					updateNeighbors();
-				}
+			} else {
+				canProvidePower = false;
+				updateTE();
+				updateNeighbors();
 			}
 		}
 	}
@@ -54,7 +58,6 @@ public class TileSignal extends TileEntity implements IInventory {
 	public void onButtonPressed(int buttonId, boolean shift) {
 		if (buttonId == 0) {
 			fillOutputSlot();
-			updateTE();
 		}
 		if (buttonId == 1) {
 			if (shift) {
@@ -100,6 +103,7 @@ public class TileSignal extends TileEntity implements IInventory {
 				}
 			}
 		}
+		updateTE();
 	}
 
 	public void activateSignal() {

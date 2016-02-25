@@ -2,9 +2,9 @@
 	"versionList": [
 		{
 			"mcVersion":"Minecraft 1.8.9",
-			"modVersion":"1.8.9-0.1",
+			"modVersion":"1.8.9-0.2",
 			"changeLog": [
-				"-initial port of 1.8 code to 1.8.9"
+				"Please read changes on release page."
 			],
 			"updateURL":"https://github.com/notabadminer/UniversalCoins/releases",
 			"isDirectLink":"false",

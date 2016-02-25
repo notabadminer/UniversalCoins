@@ -259,7 +259,7 @@ public class UCItemPricer {
 			// FMLLog.warning("itemstack is null");
 			return -1;
 		}
-		Integer ItemPrice = -1;
+		int ItemPrice = -1;
 		String itemName = null;
 		try {
 			itemName = itemStack.getUnlocalizedName();
@@ -403,34 +403,39 @@ public class UCItemPricer {
 
 	private void autoPriceCraftedItems() {
 		List<IRecipe> allrecipes = new ArrayList<IRecipe>(CraftingManager.getInstance().getRecipeList());
+		boolean priceUpdate = false;
 
-		for (IRecipe irecipe : allrecipes) {
-			int itemCost = 0;
-			boolean validRecipe = true;
-			ItemStack output = irecipe.getRecipeOutput();
-			if (output == null) {
-				continue;
-			}
-			if (UCItemPricer.getInstance().getItemPrice(output) != -1) {
-				continue;
-			}
-			List recipeItems = getRecipeInputs(irecipe);
-			for (int i = 0; i < recipeItems.size(); i++) {
-				ItemStack stack = (ItemStack) recipeItems.get(i);
-				if (UCItemPricer.getInstance().getItemPrice(stack) != -1) {
-					itemCost += UCItemPricer.getInstance().getItemPrice(stack);
-				} else {
-					validRecipe = false;
+		while (priceUpdate == true) {
+			priceUpdate = false;
+			for (IRecipe irecipe : allrecipes) {
+				int itemCost = 0;
+				boolean validRecipe = true;
+				ItemStack output = irecipe.getRecipeOutput();
+				if (output == null) {
+					continue;
 				}
-			}
-			if (validRecipe && itemCost > 0) {
-				if (output.stackSize > 1) {
-					itemCost = itemCost / output.stackSize;
+				if (UCItemPricer.getInstance().getItemPrice(output) != -1) {
+					continue;
 				}
-				try {
-					UCItemPricer.getInstance().setItemPrice(output, itemCost);
-				} catch (Exception e) {
-					FMLLog.warning("Universal Coins Autopricer: Failed to set item price.");
+				List recipeItems = getRecipeInputs(irecipe);
+				for (int i = 0; i < recipeItems.size(); i++) {
+					ItemStack stack = (ItemStack) recipeItems.get(i);
+					if (UCItemPricer.getInstance().getItemPrice(stack) != -1) {
+						itemCost += UCItemPricer.getInstance().getItemPrice(stack);
+					} else {
+						validRecipe = false;
+					}
+				}
+				if (validRecipe && itemCost > 0) {
+					priceUpdate = true;
+					if (output.stackSize > 1) {
+						itemCost = itemCost / output.stackSize;
+					}
+					try {
+						UCItemPricer.getInstance().setItemPrice(output, itemCost);
+					} catch (Exception e) {
+						FMLLog.warning("Universal Coins Autopricer: Failed to set item price.");
+					}
 				}
 			}
 		}
