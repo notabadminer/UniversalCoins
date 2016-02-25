@@ -51,6 +51,11 @@ public class UCGive extends CommandBase {
 				sender.addChatMessage(new ChatComponentText(
 						"Â§c" + StatCollector.translateToLocal("command.givecoins.error.badentry")));
 			}
+			if (coinsToSend <= 0) {
+				sender.addChatMessage(
+						new ChatComponentText("§c" + StatCollector.translateToLocal("command.send.error.badentry")));
+				return;
+			}
 			int change = givePlayerCoins(recipient, coinsToSend);
 			sender.addChatMessage(new ChatComponentText("Gave " + astring[0] + " " + (coinsToSend - change) + " "
 					+ StatCollector.translateToLocal("item.itemCoin.name")));

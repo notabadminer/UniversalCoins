@@ -6,7 +6,7 @@ import net.minecraft.world.World;
 
 public class UniversalAccounts {
 
-	private static UniversalAccounts instance = new UniversalAccounts();
+	private static final UniversalAccounts instance = new UniversalAccounts();
 
 	public static UniversalAccounts getInstance() {
 		return instance;
@@ -38,7 +38,7 @@ public class UniversalAccounts {
 	public boolean creditAccount(String accountNumber, int amount) {
 		if (hasKey(accountNumber)) {
 			int balance = getWorldInt(accountNumber);
-			if (balance + amount < Integer.MAX_VALUE) {
+			if ((double) balance + (double)amount <= Integer.MAX_VALUE) {
 				balance += amount;
 				setWorldData(accountNumber, balance);
 				return true;
@@ -148,42 +148,44 @@ public class UniversalAccounts {
 		return (int) (Math.floor(Math.random() * 99999999) + 11111111);
 	}
 
-	World world = MinecraftServer.getServer().worldServers[0];
+	private World getWorld() {
+				return MinecraftServer.getServer().worldServers[0];
+			}
 
 	private boolean hasKey(String tag) {
-		UCWorldData wData = UCWorldData.get(world);
+		UCWorldData wData = UCWorldData.get(getWorld());
 		NBTTagCompound wdTag = wData.getData();
 		return wdTag.hasKey(tag);
 	}
 
 	private void setWorldData(String tag, String data) {
-		UCWorldData wData = UCWorldData.get(world);
+		UCWorldData wData = UCWorldData.get(getWorld());
 		NBTTagCompound wdTag = wData.getData();
 		wdTag.setString(tag, data);
 		wData.markDirty();
 	}
 
 	private void setWorldData(String tag, int data) {
-		UCWorldData wData = UCWorldData.get(world);
+		UCWorldData wData = UCWorldData.get(getWorld());
 		NBTTagCompound wdTag = wData.getData();
 		wdTag.setInteger(tag, data);
 		wData.markDirty();
 	}
 
 	private int getWorldInt(String tag) {
-		UCWorldData wData = UCWorldData.get(world);
+		UCWorldData wData = UCWorldData.get(getWorld());
 		NBTTagCompound wdTag = wData.getData();
 		return wdTag.getInteger(tag);
 	}
 
 	private String getWorldString(String tag) {
-		UCWorldData wData = UCWorldData.get(world);
+		UCWorldData wData = UCWorldData.get(getWorld());
 		NBTTagCompound wdTag = wData.getData();
 		return wdTag.getString(tag);
 	}
 
 	private void delWorldData(String tag) {
-		UCWorldData wData = UCWorldData.get(world);
+		UCWorldData wData = UCWorldData.get(getWorld());
 		NBTTagCompound wdTag = wData.getData();
 		wdTag.removeTag(tag);
 		wData.markDirty();

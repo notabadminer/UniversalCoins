@@ -23,47 +23,47 @@ public class ClientProxy extends CommonProxy {
 
 		// Items
 		mesher.register(itemCoin, 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + itemCoin.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + itemCoin.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(itemSmallCoinStack, 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + itemSmallCoinStack.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + itemSmallCoinStack.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(itemLargeCoinStack, 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + itemLargeCoinStack.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + itemLargeCoinStack.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(itemSmallCoinBag, 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + itemSmallCoinBag.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + itemSmallCoinBag.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(itemLargeCoinBag, 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + itemLargeCoinBag.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + itemLargeCoinBag.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(itemEnderCard, 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + itemEnderCard.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + itemEnderCard.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(itemPackage, 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + itemPackage.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + itemPackage.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(itemSeller, 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + itemSeller.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + itemSeller.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(itemUCCard, 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + itemUCCard.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + itemUCCard.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(itemVendorWrench, 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + itemVendorWrench.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + itemVendorWrench.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(itemUCSign, 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + itemUCSign.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + itemUCSign.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(itemLinkCard, 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + itemLinkCard.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + itemLinkCard.getUnlocalizedName().substring(5), "inventory"));
 
 		// Blocks
 		mesher.register(Item.getItemFromBlock(blockBase), 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + blockBase.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + blockBase.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(Item.getItemFromBlock(blockCardStation), 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + blockCardStation.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + blockCardStation.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(Item.getItemFromBlock(blockPackager), 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + blockPackager.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + blockPackager.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(Item.getItemFromBlock(blockSafe), 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + blockSafe.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + blockSafe.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(Item.getItemFromBlock(blockSignal), 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + blockSignal.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + blockSignal.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(Item.getItemFromBlock(blockTradeStation), 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + blockTradeStation.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + blockTradeStation.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(Item.getItemFromBlock(blockVendor), 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + blockVendor.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + blockVendor.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(Item.getItemFromBlock(blockVendorFrame), 0, new ModelResourceLocation(
-				UniversalCoins.modid + ":" + blockVendorFrame.getUnlocalizedName().substring(5), "inventory"));
+				UniversalCoins.MODID + ":" + blockVendorFrame.getUnlocalizedName().substring(5), "inventory"));
 
 		ClientRegistry.bindTileEntitySpecialRenderer(TileUCSign.class, new UCSignRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileSignal.class, new SignalRenderer());

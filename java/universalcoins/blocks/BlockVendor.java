@@ -72,6 +72,7 @@ public class BlockVendor extends BlockContainer {
 				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
 				tentity.playerName = player.getName();
 				tentity.inUse = true;
+				tentity.updateCoinsForPurchase();
 				return true;
 			}
 		}

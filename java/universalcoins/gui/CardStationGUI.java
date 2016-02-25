@@ -120,7 +120,8 @@ public class CardStationGUI extends GuiContainer {
 				}
 			}
 		}
-		if (menuState == 2 && tEntity.accountBalance == -1) {
+		if (menuState == 2 && (tEntity.accountBalance == -1 || (tEntity.getStackInSlot(tEntity.itemCardSlot) != null
+				&& !tEntity.getStackInSlot(tEntity.itemCardSlot).hasTagCompound()))) {
 			tEntity.sendButtonMessage(6, false); // message to destroy card
 			menuState = 14;
 		}

@@ -12,7 +12,8 @@ import universalcoins.tile.TileVendor;
 
 public class ContainerVendor extends Container {
 	private TileVendor tileEntity;
-	private boolean lastOoStock, lastOoCoins, lastInvFull, lastSellMode, lastInUse;
+	private boolean lastOoStock, lastOoCoins, lastInvFull, lastSellMode, lastInUse, lastCoinButtonActive,
+			lastSStackButtonActive, lastLStackButtonActive, lastSBagButtonActive, lastLBagButtonActive;
 	private int lastCoinSum, lastUserCoinSum, lastItemPrice, lastTextColor;
 
 	public ContainerVendor(InventoryPlayer inventoryPlayer, TileVendor tEntity) {
@@ -60,8 +61,8 @@ public class ContainerVendor extends Container {
 			stack = stackInSlot.copy();
 
 			// merges the item into player inventory since its in the tileEntity
-			if (slot < 14) {
-				if (!this.mergeItemStack(stackInSlot, 14, 49, true)) {
+			if (slot < 13) {
+				if (!this.mergeItemStack(stackInSlot, 13, 49, true)) {
 					return null;
 				}
 			}
@@ -69,7 +70,7 @@ public class ContainerVendor extends Container {
 			// inventory
 			else {
 				boolean foundSlot = false;
-				for (int i = 1; i < 14; i++) { // we start at 1 to avoid shift
+				for (int i = 1; i < 13; i++) { // we start at 1 to avoid shift
 												// clicking into trade slot
 					if (((Slot) inventorySlots.get(i)).isItemValid(stackInSlot)
 							&& this.mergeItemStack(stackInSlot, i, i + 1, false)) {
@@ -111,7 +112,13 @@ public class ContainerVendor extends Container {
 					|| this.lastCoinSum != this.tileEntity.coinSum
 					|| this.lastUserCoinSum != this.tileEntity.userCoinSum
 					|| this.lastItemPrice != this.tileEntity.itemPrice || this.lastSellMode != this.tileEntity.sellMode
-					|| this.lastTextColor != this.tileEntity.textColor || this.lastInUse != this.tileEntity.inUse) {
+					|| this.lastTextColor != this.tileEntity.textColor
+					|| this.lastCoinButtonActive != this.tileEntity.coinButtonActive
+					|| this.lastSStackButtonActive != this.tileEntity.isSStackButtonActive
+					|| this.lastLStackButtonActive != this.tileEntity.isLStackButtonActive
+					|| this.lastSBagButtonActive != this.tileEntity.isSBagButtonActive
+					|| this.lastLBagButtonActive != this.tileEntity.isLBagButtonActive
+					|| this.lastInUse != this.tileEntity.inUse) {
 				// update
 				tileEntity.updateTE();
 
@@ -123,6 +130,11 @@ public class ContainerVendor extends Container {
 				this.lastItemPrice = this.tileEntity.itemPrice;
 				this.lastSellMode = this.tileEntity.sellMode;
 				this.lastTextColor = this.tileEntity.textColor;
+				this.lastCoinButtonActive = this.tileEntity.coinButtonActive;
+				this.lastSStackButtonActive = this.tileEntity.isSStackButtonActive;
+				this.lastLStackButtonActive = this.tileEntity.isLStackButtonActive;
+				this.lastSBagButtonActive = this.tileEntity.isSBagButtonActive;
+				this.lastLBagButtonActive = this.tileEntity.isLBagButtonActive;
 				this.lastInUse = this.tileEntity.inUse;
 			}
 		}

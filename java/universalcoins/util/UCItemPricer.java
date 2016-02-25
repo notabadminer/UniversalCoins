@@ -30,17 +30,18 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.relauncher.FMLInjectionData;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 public class UCItemPricer {
 
-	private static UCItemPricer instance = new UCItemPricer();
+	private static final UCItemPricer instance = new UCItemPricer();
 
 	private static Map<String, Integer> ucPriceMap = new HashMap<String, Integer>(0);
 	private static Map<String, String> ucModnameMap = new HashMap<String, String>(0);
-	private static String configPath = "config/universalcoins/";
+	private static String configPath = FMLInjectionData.data()[6] + "/config/universalcoins/";
 	private Random random = new Random();
 
 	public static UCItemPricer getInstance() {

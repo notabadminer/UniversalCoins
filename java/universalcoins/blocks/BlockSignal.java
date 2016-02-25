@@ -2,8 +2,6 @@ package universalcoins.blocks;
 
 import java.util.Random;
 
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -32,7 +30,7 @@ public class BlockSignal extends BlockRotatable {
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side,
 			float hitX, float hitY, float hitZ) {
-		if (Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+		if (player.isSneaking()) {
 			TileEntity te = world.getTileEntity(pos);
 			if (te != null && te instanceof TileSignal) {
 				TileSignal tentity = (TileSignal) te;

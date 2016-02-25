@@ -15,6 +15,7 @@ public class ContainerPackager extends Container {
 	private TilePackager tEntity;
 	private int lastCoinSum;
 	private int lastPackageSize;
+	private String lastPackageTarget = "";
 	private boolean lastCardAvailable;
 	private String lastCustomName;
 	private boolean lastInUse = false;
@@ -34,6 +35,7 @@ public class ContainerPackager extends Container {
 		addSlotToContainer(new UCSlotCard(tEntity, tEntity.itemCardSlot, 8, 73));
 		addSlotToContainer(new UCSlotCoinInput(tEntity, tEntity.itemCoinSlot, 26, 73));
 		addSlotToContainer(new UCSlotOutput(tEntity, tEntity.itemOutputSlot, 152, 73));
+		addSlotToContainer(new UCSlotPackage(tEntity, tEntity.itemPackageInputSlot, Integer.MAX_VALUE, 26));
 
 		// commonly used vanilla code that adds the player's inventory
 		bindPlayerInventory(inventoryPlayer);
@@ -112,12 +114,14 @@ public class ContainerPackager extends Container {
 			ICrafting icrafting = (ICrafting) this.crafters.get(i);
 
 			if (this.lastCoinSum != tEntity.coinSum || this.lastPackageSize != tEntity.packageSize
-					|| this.lastCardAvailable != tEntity.cardAvailable || this.lastInUse != tEntity.inUse) {
+					|| this.lastCardAvailable != tEntity.cardAvailable || this.lastInUse != tEntity.inUse
+					|| this.lastPackageTarget != tEntity.packageTarget) {
 				tEntity.updateTE();
 			}
 
 			this.lastCoinSum = tEntity.coinSum;
 			this.lastPackageSize = tEntity.packageSize;
+			this.lastPackageTarget = tEntity.packageTarget;
 			this.lastCardAvailable = tEntity.cardAvailable;
 			this.lastInUse = tEntity.inUse;
 		}

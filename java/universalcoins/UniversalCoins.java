@@ -33,6 +33,7 @@ import universalcoins.commands.UCSend;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCCardStationServerCustomNameMessage;
 import universalcoins.net.UCCardStationServerWithdrawalMessage;
+import universalcoins.net.UCPackagerServerMessage;
 import universalcoins.net.UCRecipeMessage;
 import universalcoins.net.UCSignServerMessage;
 import universalcoins.net.UCTileSignMessage;
@@ -62,13 +63,13 @@ import universalcoins.worldgen.VillageGenShop;
  * 
  **/
 
-@Mod(modid = UniversalCoins.modid, name = UniversalCoins.name, version = UniversalCoins.version, acceptedMinecraftVersions = "@MC_VERSION@")
+@Mod(modid = UniversalCoins.MODID, name = UniversalCoins.NAME, version = UniversalCoins.VERSION, acceptedMinecraftVersions = "@MC_VERSION@")
 public class UniversalCoins {
 	@Instance("universalcoins")
 	public static UniversalCoins instance;
-	public static final String modid = "universalcoins";
-	public static final String name = "Universal Coins";
-	public static final String version = "@VERSION@";
+	public static final String MODID = "universalcoins";
+	public static final String NAME = "Universal Coins";
+	public static final String VERSION = "@VERSION@";
 
 	public static Boolean autoModeEnabled;
 	public static Boolean tradeStationRecipesEnabled;
@@ -91,6 +92,7 @@ public class UniversalCoins {
 	public static Integer dungeonCoinChance;
 	public static Integer mobDropMax;
 	public static Integer mobDropChance;
+	public static Integer enderDragonMultiplier;
 	public static Double itemSellRatio;
 	public static Integer fourMatchPayout;
 	public static Integer fiveMatchPayout;
@@ -146,6 +148,9 @@ public class UniversalCoins {
 		Property dropChance = config.get("Loot", "Mob Drop Chance", 3);
 		dropChance.comment = "Chance of a mob dropping coins. Lower number means higher chance. Minimum 0 (always drop). Default 3 (1 in 4 chance).";
 		mobDropChance = Math.max(0, Math.min(dropChance.getInt(3), 100));
+		Property dragonMultiplier = config.get("Loot", "Ender Dragon Multiplier", 1000);
+		dragonMultiplier.comment = "Drop multiplier for ender dragon kills. Minimum 1. Default 1,000. Max 100,000";
+		enderDragonMultiplier = Math.max(1, Math.min(dragonMultiplier.getInt(1000), 100000));
 		Property mineshaftCoins = config.get("Loot", "Mineshaft CoinBag", true);
 		mineshaftCoins.comment = "Set to false to disable coinbag spawning in mineshaft chests.";
 		coinsInMineshaft = mineshaftCoins.getBoolean(true);
@@ -214,7 +219,7 @@ public class UniversalCoins {
 		FMLCommonHandler.instance().bus().register(new UCPlayerLoginEventHandler());
 
 		// network packet handling
-		snw = NetworkRegistry.INSTANCE.newSimpleChannel(modid);
+		snw = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 		snw.registerMessage(UCButtonMessage.class, UCButtonMessage.class, 0, Side.SERVER);
 		snw.registerMessage(UCVendorServerMessage.class, UCVendorServerMessage.class, 1, Side.SERVER);
 		snw.registerMessage(UCCardStationServerWithdrawalMessage.class, UCCardStationServerWithdrawalMessage.class, 2,
@@ -224,9 +229,10 @@ public class UniversalCoins {
 		snw.registerMessage(UCSignServerMessage.class, UCSignServerMessage.class, 4, Side.SERVER);
 		snw.registerMessage(UCTileSignMessage.class, UCTileSignMessage.class, 5, Side.CLIENT);
 		snw.registerMessage(UCRecipeMessage.class, UCRecipeMessage.class, 6, Side.CLIENT);
+		snw.registerMessage(UCPackagerServerMessage.class, UCPackagerServerMessage.class, 7, Side.SERVER);
 
 		// update check using versionchecker
-		FMLInterModComms.sendRuntimeMessage(modid, "VersionChecker", "addVersionCheck",
+		FMLInterModComms.sendRuntimeMessage(MODID, "VersionChecker", "addVersionCheck",
 				"https://raw.githubusercontent.com/notabadminer/UniversalCoins/master/version.json");
 	}
 
@@ -242,11 +248,11 @@ public class UniversalCoins {
 
 		if (coinsInMineshaft) {
 			ChestGenHooks.getInfo(ChestGenHooks.MINESHAFT_CORRIDOR).addItem(
-					new WeightedRandomChestContent(new ItemStack(proxy.itemLargeCoinBag), 2, 64, mineshaftCoinChance));
+					new WeightedRandomChestContent(new ItemStack(proxy.itemSmallCoinBag), 2, 64, mineshaftCoinChance));
 		}
 		if (coinsInDungeon) {
 			ChestGenHooks.getInfo(ChestGenHooks.DUNGEON_CHEST).addItem(
-					new WeightedRandomChestContent(new ItemStack(proxy.itemLargeCoinBag), 2, 64, dungeonCoinChance));
+					new WeightedRandomChestContent(new ItemStack(proxy.itemSmallCoinBag), 2, 64, dungeonCoinChance));
 		}
 
 		GameRegistry.registerTileEntity(TileTradeStation.class, "TileTradeStation");
@@ -259,6 +265,8 @@ public class UniversalCoins {
 		GameRegistry.registerTileEntity(TileUCSign.class, "TileUCSign");
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
+		
+		proxy.registerAchievements();
 
 		UCRecipeHelper.addCoinRecipes();
 		if (tradeStationRecipesEnabled) {

@@ -94,6 +94,7 @@ public class ContainerCardStation extends Container {
 				return null;
 			}
 			slotObject.onPickupFromSlot(player, stackInSlot);
+			tEntity.fillCoinSlot();
 		}
 
 		return stack;

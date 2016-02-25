@@ -56,8 +56,8 @@ public class ContainerVendorBuy extends Container {
 			stack = stackInSlot.copy();
 
 			// merges the item into player inventory since its in the tileEntity
-			if (slot < 5) {
-				if (!this.mergeItemStack(stackInSlot, 5, 40, true)) {
+			if (slot < 4) {
+				if (!this.mergeItemStack(stackInSlot, 4, 40, true)) {
 					return null;
 				}
 			}

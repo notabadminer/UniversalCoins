@@ -3,6 +3,8 @@ package universalcoins.util;
 import java.util.Random;
 
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -32,10 +34,23 @@ public class UCMobDropEventHandler {
 			float health = ((EntityLivingBase) event.entity).getMaxHealth();
 			if (health == 0)
 				health = 10;
-			int dropped = (int) (randomDropValue * Math.pow((health / 20), 4) * (event.lootingLevel + 1));
+			int dropped = (int) (randomDropValue * health / 20 * (event.lootingLevel + 1));
+
+			// multiply drop if ender dragon
+			if (event.entity instanceof EntityDragon) {
+				dropped = dropped * UniversalCoins.enderDragonMultiplier;
+				while (dropped > 0) {
+					int logVal = Math.min((int) (Math.log(dropped) / Math.log(9)), 4);
+					int stackSize = Math.min((int) (dropped / Math.pow(9, logVal)), 64);
+					ItemStack test = new ItemStack(coins[logVal], stackSize);
+					event.entity.entityDropItem(test, 0.0F);
+					dropped -= Math.pow(9, logVal) * stackSize;
+				}
+			}
 
 			// drop coins
-			if ((event.entity instanceof EntityMob) && !event.entity.worldObj.isRemote && chance == 0) {
+			if ((event.entity instanceof EntityMob || event.entity instanceof EntityWither)
+					&& !event.entity.worldObj.isRemote && chance == 0) {
 				while (dropped > 0) {
 					int logVal = Math.min((int) (Math.log(dropped) / Math.log(9)), 4);
 					int stackSize = Math.min((int) (dropped / Math.pow(9, logVal)), 64);

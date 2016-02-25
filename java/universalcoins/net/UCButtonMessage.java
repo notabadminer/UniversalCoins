@@ -84,7 +84,7 @@ public class UCButtonMessage implements IMessage, IMessageHandler<UCButtonMessag
 			((TileSignal) tileEntity).onButtonPressed(message.buttonId, message.shiftPressed);
 		}
 		if (tileEntity instanceof TilePackager) {
-			((TilePackager) tileEntity).onButtonPressed(message.buttonId);
+			((TilePackager) tileEntity).onButtonPressed(message.buttonId, message.shiftPressed);
 		}
 		if (tileEntity instanceof TileVendor) {
 			((TileVendor) tileEntity).onButtonPressed(message.buttonId, message.shiftPressed);

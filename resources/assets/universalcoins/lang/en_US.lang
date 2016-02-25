@@ -26,12 +26,27 @@ item.itemPackage.name=Package
 itemGroup.tabUniversalCoins=Universal Coins
 
 #####
+# Achievements
+#####
+achievement.AchievementCoin=Money!
+achievement.AchievementCoin.desc=Pick up some coins.
+achievement.AchievementThousand=Now were getting somewhere
+achievement.AchievementThousand.desc=Balance of 1,000 coins.
+achievement.AchievementMillion=Over a million
+achievement.AchievementMillion.desc=Balance of 1,000,000 coins.
+achievement.AchievementBillion=Over a billion
+achievement.AchievementBillion.desc=Balance of 1,000,000,000 coins.
+achievement.AchievementMaxed=Account balance at maximum
+achievement.AchievementMaxed.desc=Balance of 2,147,483,647 coins.
+
+#####
 # General
 #####
 general.button.buy=Buy
 general.button.sell=Sell
 general.button.edit=Edit
 general.button.save=Save
+general.button.send=Send
 general.button.spin=Spin
 general.button.coin=Coin
 general.label.balance=Balance: 
@@ -177,6 +192,9 @@ bandit.label.five=Match Five
 packager.button.small=Small
 packager.button.medium=Medium
 packager.button.large=Large
+packager.button.mode.buy=Mode: Buy
+packager.button.mode.send=Mode: Send
+packager.message.sent= sent you a package
 
 #####
 # ATM GUI

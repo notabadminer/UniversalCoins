@@ -111,6 +111,9 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 				}
 			}
 			if (slot == itemCardSlot && !worldObj.isRemote) {
+				if (!inventory[itemCardSlot].hasTagCompound()) {
+					return;
+				}
 				accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 				cardOwner = inventory[itemCardSlot].getTagCompound().getString("Owner");
 				if (UniversalAccounts.getInstance().getCustomAccount(playerUID) != "")
@@ -369,15 +372,24 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 		}
 	}
 
-	private void fillCoinSlot() {
+	public void fillCoinSlot() {
 		if (inventory[itemCoinSlot] == null && coinWithdrawalAmount > 0) {
 			// use logarithm to find largest cointype for coins being withdrawn
 			int logVal = Math.min((int) (Math.log(coinWithdrawalAmount) / Math.log(9)), 4);
 			int stackSize = Math.min((int) (coinWithdrawalAmount / Math.pow(9, logVal)), 64);
-			inventory[itemCoinSlot] = (new ItemStack(coins[logVal], stackSize));
-			coinWithdrawalAmount -= (stackSize * Math.pow(9, logVal));
-			UniversalAccounts.getInstance().debitAccount(accountNumber, (int) (stackSize * Math.pow(9, logVal)));
-			accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
+			if (!worldObj.isRemote) {
+				if (UniversalAccounts.getInstance().debitAccount(accountNumber,
+						(int) (stackSize * Math.pow(9, logVal)))) {
+					inventory[itemCoinSlot] = (new ItemStack(coins[logVal], stackSize));
+					coinWithdrawalAmount -= (stackSize * Math.pow(9, logVal));
+					accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
+					updateTE();
+				} else {
+					coinWithdrawalAmount = 0;
+					withdrawCoins = false;
+					return;
+				}
+			}
 		}
 		if (coinWithdrawalAmount <= 0) {
 			withdrawCoins = false;

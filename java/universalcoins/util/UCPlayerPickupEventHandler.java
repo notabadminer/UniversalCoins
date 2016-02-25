@@ -10,6 +10,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import universalcoins.Achievements;
 import universalcoins.UniversalCoins;
 
 public class UCPlayerPickupEventHandler {
@@ -25,6 +26,7 @@ public class UCPlayerPickupEventHandler {
 				|| event.item.getEntityItem().getItem() == UniversalCoins.proxy.itemLargeCoinStack
 				|| event.item.getEntityItem().getItem() == UniversalCoins.proxy.itemSmallCoinBag
 				|| event.item.getEntityItem().getItem() == UniversalCoins.proxy.itemLargeCoinBag) {
+			event.entityPlayer.addStat(Achievements.achCoin, 1);
 			world = event.entityPlayer.worldObj;
 			EntityPlayer player = event.entityPlayer;
 			ItemStack[] inventory = player.inventory.mainInventory;
@@ -46,12 +48,14 @@ public class UCPlayerPickupEventHandler {
 					int coinValue = multiplier[coinType];
 					int depositAmount = Math.min(event.item.getEntityItem().stackSize,
 							(Integer.MAX_VALUE - accountBalance) / coinValue);
-					creditAccount(accountNumber, depositAmount * coinValue);
-					player.addChatMessage(
-							new ChatComponentText(StatCollector.translateToLocal("item.itemEnderCard.message.deposit")
-									+ " " + formatter.format(depositAmount * coinValue) + " "
-									+ StatCollector.translateToLocal("item.itemCoin.name")));
-					event.item.getEntityItem().stackSize -= depositAmount;
+					if (depositAmount > 0) {
+						creditAccount(accountNumber, depositAmount * coinValue);
+						player.addChatMessage(new ChatComponentText(
+								StatCollector.translateToLocal("item.itemEnderCard.message.deposit") + " "
+										+ formatter.format(depositAmount * coinValue) + " "
+										+ StatCollector.translateToLocal("item.itemCoin.name")));
+						event.item.getEntityItem().stackSize -= depositAmount;
+					}
 					if (event.item.getEntityItem().stackSize == 0) {
 						event.setCanceled(true);
 					}

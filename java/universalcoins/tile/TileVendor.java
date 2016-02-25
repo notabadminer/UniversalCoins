@@ -60,9 +60,9 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	public int itemPrice = 0;
 	public boolean infiniteMode = false;
 	public boolean sellMode = true;
-	public boolean ooStockWarning = true;
-	public boolean ooCoinsWarning = true;
-	public boolean inventoryFullWarning = true;
+	public boolean ooStockWarning = false;
+	public boolean ooCoinsWarning = false;
+	public boolean inventoryFullWarning = false;
 	public boolean buyButtonActive = false;
 	public boolean sellButtonActive = false;
 	public boolean coinButtonActive = false;
@@ -482,6 +482,7 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 
 	public void onModeButtonPressed() {
 		sellMode ^= true;
+		updateSigns();
 	}
 
 	public void checkSellingInventory() {
@@ -525,15 +526,11 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 
 	public void updateCoinsForPurchase() {
 		if (coinSum >= itemPrice || (inventory[itemCardSlot] != null && getOwnerAccountBalance() >= itemPrice)) {
-			if (ooCoinsWarning) {
-				this.ooCoinsWarning = false;
-				updateSigns();
-			}
+			this.ooCoinsWarning = false;
+			updateSigns();
 		} else {
-			if (!ooCoinsWarning) {
-				this.ooCoinsWarning = true;
-				updateSigns();
-			}
+			this.ooCoinsWarning = true;
+			updateSigns();
 		}
 	}
 
@@ -595,7 +592,7 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 					int depositAmount = 0;
 					if (slot == itemCoinInputSlot) {
 						depositAmount = Math.min(stack.stackSize, (Integer.MAX_VALUE - coinSum) / itemValue);
-						if (inventory[itemCardSlot] != null
+						if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound()
 								&& inventory[itemCardSlot].getItem() == UniversalCoins.proxy.itemEnderCard
 								&& getOwnerAccountBalance() != -1
 								&& getOwnerAccountBalance() + (depositAmount * itemValue) < Integer.MAX_VALUE) {
@@ -607,6 +604,7 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 					} else {
 						depositAmount = Math.min(stack.stackSize, (Integer.MAX_VALUE - userCoinSum) / itemValue);
 						if (inventory[itemUserCardSlot] != null
+								&& inventory[itemCardSlot].hasTagCompound() 
 								&& inventory[itemUserCardSlot].getItem() == UniversalCoins.proxy.itemEnderCard
 								&& getUserAccountBalance() != -1
 								&& getUserAccountBalance() + (depositAmount * itemValue) < Integer.MAX_VALUE) {
@@ -743,17 +741,17 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 		try {
 			ooStockWarning = tagCompound.getBoolean("OutOfStock");
 		} catch (Throwable ex2) {
-			ooStockWarning = true;
+			ooStockWarning = false;
 		}
 		try {
 			ooCoinsWarning = tagCompound.getBoolean("OutOfCoins");
 		} catch (Throwable ex2) {
-			ooCoinsWarning = true;
+			ooCoinsWarning = false;
 		}
 		try {
 			inventoryFullWarning = tagCompound.getBoolean("InventoryFull");
 		} catch (Throwable ex2) {
-			inventoryFullWarning = true;
+			inventoryFullWarning = false;
 		}
 		try {
 			buyButtonActive = tagCompound.getBoolean("BuyButtonActive");
@@ -941,7 +939,7 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	}
 
 	public int getUserAccountBalance() {
-		if (inventory[itemUserCardSlot] != null && !worldObj.isRemote) {
+		if (inventory[itemUserCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
 			return UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 		}
@@ -949,21 +947,21 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	}
 
 	public void debitUserAccount(int amount) {
-		if (inventory[itemUserCardSlot] != null && !worldObj.isRemote) {
+		if (inventory[itemUserCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
 			UniversalAccounts.getInstance().debitAccount(accountNumber, amount);
 		}
 	}
 
 	public void creditUserAccount(int amount) {
-		if (inventory[itemUserCardSlot] != null && !worldObj.isRemote) {
+		if (inventory[itemUserCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
 			UniversalAccounts.getInstance().creditAccount(accountNumber, amount);
 		}
 	}
 
 	public int getOwnerAccountBalance() {
-		if (inventory[itemCardSlot] != null && !worldObj.isRemote) {
+		if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 			return UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 		}
@@ -971,14 +969,14 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	}
 
 	public void debitOwnerAccount(int amount) {
-		if (inventory[itemCardSlot] != null && !worldObj.isRemote) {
+		if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 			UniversalAccounts.getInstance().debitAccount(accountNumber, amount);
 		}
 	}
 
 	public void creditOwnerAccount(int amount) {
-		if (inventory[itemCardSlot] != null && !worldObj.isRemote) {
+		if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 			UniversalAccounts.getInstance().creditAccount(accountNumber, amount);
 		}

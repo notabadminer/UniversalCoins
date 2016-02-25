@@ -8,7 +8,7 @@ import universalcoins.UniversalCoins;
 
 public class UCWorldData extends WorldSavedData {
 
-	final static String key = UniversalCoins.modid;
+	final static String key = UniversalCoins.MODID;
 
 	public static UCWorldData get(World world) {
 		MapStorage storage = world.getMapStorage();

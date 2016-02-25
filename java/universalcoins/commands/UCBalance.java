@@ -9,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
+import universalcoins.Achievements;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UniversalAccounts;
 
@@ -55,6 +56,19 @@ public class UCBalance extends CommandBase {
 				sender.addChatMessage(
 						new ChatComponentText(StatCollector.translateToLocal("command.balance.result.customaccount")
 								+ formatter.format(custAccountBalance)));
+			}
+			// achievement stuff
+			if (playerCoins > 1000 || accountBalance > 1000) {
+				((EntityPlayerMP) sender).addStat(Achievements.achThousand, 1);
+			}
+			if (playerCoins > 1000000 || accountBalance > 1000000) {
+				((EntityPlayerMP) sender).addStat(Achievements.achMillion, 1);
+			}
+			if (playerCoins > 1000000000 || accountBalance > 1000000000) {
+				((EntityPlayerMP) sender).addStat(Achievements.achBillion, 1);
+			}
+			if (playerCoins == Integer.MAX_VALUE || accountBalance == Integer.MAX_VALUE) {
+				((EntityPlayerMP) sender).addStat(Achievements.achMaxed, 1);
 			}
 		}
 	}

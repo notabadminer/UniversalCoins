@@ -3,6 +3,7 @@ package universalcoins.proxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import universalcoins.Achievements;
 import universalcoins.blocks.BlockBase;
 import universalcoins.blocks.BlockCardStation;
 import universalcoins.blocks.BlockPackager;
@@ -103,6 +104,16 @@ public class CommonProxy {
 		GameRegistry.registerItem(itemUCSign, itemUCSign.getUnlocalizedName().substring(5));
 		GameRegistry.registerItem(itemLinkCard, itemLinkCard.getUnlocalizedName().substring(5));
 		GameRegistry.registerItem(itemPackage, itemPackage.getUnlocalizedName().substring(5));
+	}
+	
+
+	public void registerAchievements() {
+		Achievements.init();
+		Achievements.achCoin.registerStat();
+		Achievements.achThousand.registerStat();
+		Achievements.achMillion.registerStat();
+		Achievements.achBillion.registerStat();
+		Achievements.achMaxed.registerStat();
 	}
 
 	public void registerRenderers() {

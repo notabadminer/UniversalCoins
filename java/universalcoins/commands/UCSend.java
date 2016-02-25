@@ -70,12 +70,12 @@ public class UCSend extends CommandBase {
 					sender.addChatMessage(new ChatComponentText(
 							"§c" + StatCollector.translateToLocal("command.send.error.badentry")));
 				}
-				// get sender account, check balance, get coins
-				if (getPlayerCoins((EntityPlayerMP) sender) < requestedSendAmount) {
+				if (requestedSendAmount <= 0) {
 					sender.addChatMessage(new ChatComponentText(
-							"§c" + StatCollector.translateToLocal("command.send.error.insufficient")));
+							"�c" + StatCollector.translateToLocal("command.send.error.badentry")));
+					return;
 				}
-				// get coins from player inventory
+				// get coins from sender inventory
 				int coinsFromSender = 0;
 				EntityPlayerMP player = (EntityPlayerMP) sender;
 				for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
@@ -86,6 +86,13 @@ public class UCSend extends CommandBase {
 							player.inventory.setInventorySlotContents(i, null);
 						}
 					}
+				}
+				// if sender is short, cancel this transaction and return coins.
+				if (coinsFromSender < requestedSendAmount) {
+					sender.addChatMessage(new ChatComponentText(
+							"§c" + StatCollector.translateToLocal("command.send.error.insufficient")));
+					givePlayerCoins((EntityPlayerMP) sender, coinsFromSender);
+					return;
 				}
 				// subtract coins to send from player coins
 				coinsFromSender -= requestedSendAmount;

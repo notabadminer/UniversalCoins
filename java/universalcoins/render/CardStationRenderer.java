@@ -20,7 +20,7 @@ public class CardStationRenderer extends TileEntitySpecialRenderer {
 	public void renderTileEntityAt(TileEntity tileEntity, double posX, double posY, double posZ, float p_180535_8_,
 			int p_180535_9_) {
 
-		ResourceLocation textures = (new ResourceLocation(UniversalCoins.modid,
+		ResourceLocation textures = (new ResourceLocation(UniversalCoins.MODID,
 				"textures/blocks/blockCardStation.png"));
 		Minecraft.getMinecraft().renderEngine.bindTexture(textures);
 
