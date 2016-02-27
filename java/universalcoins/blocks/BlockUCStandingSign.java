@@ -4,11 +4,8 @@ import java.util.Random;
 
 import net.minecraft.block.BlockStandingSign;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
@@ -53,6 +50,16 @@ public class BlockUCStandingSign extends BlockStandingSign {
 			throw new RuntimeException(exception);
 		}
 	}
+	
+	@Override
+	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
+		String ownerName = ((TileUCSign) world.getTileEntity(pos)).blockOwner;
+		if (player.getDisplayName().equals(ownerName)) {
+			this.setHardness(1.0F);
+		} else {
+			this.setHardness(-1.0F);
+		}
+	}
 
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side,
@@ -73,13 +80,10 @@ public class BlockUCStandingSign extends BlockStandingSign {
 		String ownerName = ((TileUCSign) world.getTileEntity(pos)).blockOwner;
 		if (player.capabilities.isCreativeMode) {
 			super.removedByPlayer(world, pos, player, willHarvest);
-			return false;
 		}
 		if (player.getDisplayName().equals(ownerName) && !world.isRemote) {
-			ItemStack stack = new ItemStack(UniversalCoins.proxy.itemUCSign);
-			EntityItem entityItem = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), stack);
-			world.spawnEntityInWorld(entityItem);
 			super.removedByPlayer(world, pos, player, willHarvest);
+			return true;
 		}
 		return false;
 	}

@@ -1,6 +1,7 @@
 package universalcoins.blocks;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -23,16 +24,16 @@ public class BlockCardStation extends BlockRotatable {
 		setResistance(30.0F);
 		setLightLevel(8);
 	}
-
-	// @Override
-	// public int getRenderType() {
-	// return -1;
-	// }
-	//
-	// @Override
-	// public boolean isNormalCube(){
-	// return false;
-	// }
+	
+	@Override
+	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
+		String ownerName = ((TileCardStation) world.getTileEntity(pos)).blockOwner;
+		if (player.getDisplayName().equals(ownerName)) {
+			this.setHardness(1.0F);
+		} else {
+			this.setHardness(-1.0F);
+		}
+	}
 
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side,
@@ -51,6 +52,25 @@ public class BlockCardStation extends BlockRotatable {
 				((TileCardStation) tileEntity).inUse = true;
 				return true;
 			}
+		}
+		return false;
+	}
+	
+	@Override
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
+			ItemStack stack) {
+		((TileCardStation) world.getTileEntity(pos)).blockOwner = player.getName();
+	}
+	
+	@Override
+	public boolean removedByPlayer(World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+		String ownerName = ((TileCardStation) world.getTileEntity(pos)).blockOwner;
+		if (player.capabilities.isCreativeMode) {
+			super.removedByPlayer(world, pos, player, willHarvest);
+		}
+		if (player.getDisplayName().equals(ownerName) && !world.isRemote) {
+			super.removedByPlayer(world, pos, player, willHarvest);
+			return true;
 		}
 		return false;
 	}

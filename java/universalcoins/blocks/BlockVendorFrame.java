@@ -111,6 +111,16 @@ public class BlockVendorFrame extends BlockRotatable {
 			this.setBlockBounds(0.07f, 0.12f, 0.12f, 0f, 0.88f, 0.88f);
 		}
 	}
+	
+	@Override
+	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
+		String ownerName = ((TileVendorFrame) world.getTileEntity(pos)).blockOwner;
+		if (player.getDisplayName().equals(ownerName)) {
+			this.setHardness(1.0F);
+		} else {
+			this.setHardness(-1.0F);
+		}
+	}
 
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side,

@@ -28,6 +28,7 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 	private static final Item[] coins = new Item[] { UniversalCoins.proxy.itemCoin,
 			UniversalCoins.proxy.itemSmallCoinStack, UniversalCoins.proxy.itemLargeCoinStack,
 			UniversalCoins.proxy.itemSmallCoinBag, UniversalCoins.proxy.itemLargeCoinBag };
+	public String blockOwner = "";
 	public String playerName = "";
 	public String playerUID = "";
 	public boolean inUse = false;
@@ -182,6 +183,11 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			}
 		}
 		try {
+			blockOwner = tagCompound.getString("BlockOwner");
+		} catch (Throwable ex2) {
+			blockOwner = null;
+		}
+		try {
 			inUse = tagCompound.getBoolean("InUse");
 		} catch (Throwable ex2) {
 			inUse = false;
@@ -227,6 +233,7 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 			}
 		}
 		tagCompound.setTag("Inventory", itemList);
+		tagCompound.setString("BlockOwner", blockOwner);
 		tagCompound.setBoolean("InUse", inUse);
 		tagCompound.setBoolean("DepositCoins", depositCoins);
 		tagCompound.setBoolean("WithdrawCoins", withdrawCoins);

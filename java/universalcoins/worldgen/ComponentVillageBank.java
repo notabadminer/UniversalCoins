@@ -171,13 +171,4 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		}
 		return 5;
 	}
-
-	private boolean isReplaceableBlock(World world, int x, int y, int z) {
-		IBlockState state = world.getBlockState(new BlockPos(x, y, z));
-		if (state.getBlock().getMaterial() == Material.air || state.getBlock().getMaterial() == Material.water
-				|| state.getBlock().getMaterial() == Material.grass) {
-			return true;
-		}
-		return false;
-	}
 }

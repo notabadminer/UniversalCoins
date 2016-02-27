@@ -164,14 +164,6 @@ public class UniversalCoins {
 		dungeonCoinRate.comment = "Rate of coinbag spawning in dungeon chests. Higher value equals more common. Default is 20.";
 		dungeonCoinChance = Math.max(1, Math.min(dungeonCoinRate.getInt(20), 100));
 
-		// slot machine
-		Property fourMatch = config.get("Slot Machine", "Four of a kind payout", 100);
-		fourMatch.comment = "Set payout of slot machine when four of a kind is spun. Default: 100";
-		fourMatchPayout = Math.max(0, fourMatch.getInt(100));
-		Property fiveMatch = config.get("Slot Machine", "Five of a kind payout", 10000);
-		fiveMatch.comment = "Set payout of slot machine when five of a kind is spun. Default: 10000";
-		fiveMatchPayout = Math.max(0, fiveMatch.getInt(10000));
-
 		// trade station
 		Property autoMode = config.get("Trade Station", "Auto mode enabled", true);
 		autoMode.comment = "Set to false to disable the ability to automatically buy or sell items.";

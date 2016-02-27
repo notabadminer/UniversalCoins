@@ -26,6 +26,9 @@ import universalcoins.util.UCItemPricer;
 public class ComponentVillageShop extends StructureVillagePieces.Village {
 
 	private int averageGroundLevel = -1;
+	
+	public ComponentVillageShop() {
+	}
 
 	public ComponentVillageShop(Start startPiece, int p5, Random random, StructureBoundingBox box, EnumFacing facing) {
 		super(startPiece, p5);
@@ -211,14 +214,5 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 			return 5;
 		}
 		return 5;
-	}
-
-	private boolean isReplaceableBlock(World world, int x, int y, int z) {
-		IBlockState state = world.getBlockState(new BlockPos(x, y, z));
-		if (state.getBlock().getMaterial() == Material.air || state.getBlock().getMaterial() == Material.water
-				|| state.getBlock().getMaterial() == Material.grass) {
-			return true;
-		}
-		return false;
 	}
 }

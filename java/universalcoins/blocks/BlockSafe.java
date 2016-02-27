@@ -56,10 +56,10 @@ public class BlockSafe extends BlockRotatable {
 		String ownerName = ((TileSafe) world.getTileEntity(pos)).blockOwner;
 		if (player.capabilities.isCreativeMode) {
 			super.removedByPlayer(world, pos, player, willHarvest);
-			return false;
 		}
 		if (player.getDisplayName().equals(ownerName) && !world.isRemote) {
 			super.removedByPlayer(world, pos, player, willHarvest);
+			return true;
 		}
 		return false;
 	}

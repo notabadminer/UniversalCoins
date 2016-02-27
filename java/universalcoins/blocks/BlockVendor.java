@@ -55,6 +55,16 @@ public class BlockVendor extends BlockContainer {
 	public EnumWorldBlockLayer getBlockLayer() {
 		return EnumWorldBlockLayer.TRANSLUCENT;
 	}
+	
+	@Override
+	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
+		String ownerName = ((TileVendor) world.getTileEntity(pos)).blockOwner;
+		if (player.getDisplayName().equals(ownerName)) {
+			this.setHardness(1.0F);
+		} else {
+			this.setHardness(-1.0F);
+		}
+	}
 
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side,
@@ -138,7 +148,7 @@ public class BlockVendor extends BlockContainer {
 
 		} else {
 			// item has no owner so we'll set one and get out of here
-			((TileVendorBlock) world.getTileEntity(pos)).blockOwner = player.getCommandSenderEntity().getName();
+			((TileVendorBlock) world.getTileEntity(pos)).blockOwner = player.getName();
 		}
 		int meta = stack.getItemDamage();
 		// world.setBlockMetadataWithNotify(x, y, z, meta, 2);
