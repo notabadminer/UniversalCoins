@@ -55,7 +55,7 @@ public class BlockVendor extends BlockContainer {
 	public EnumWorldBlockLayer getBlockLayer() {
 		return EnumWorldBlockLayer.TRANSLUCENT;
 	}
-	
+
 	@Override
 	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
 		String ownerName = ((TileVendor) world.getTileEntity(pos)).blockOwner;

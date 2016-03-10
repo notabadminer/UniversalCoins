@@ -10,7 +10,6 @@ import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -34,7 +33,6 @@ import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCCardStationServerCustomNameMessage;
 import universalcoins.net.UCCardStationServerWithdrawalMessage;
 import universalcoins.net.UCPackagerServerMessage;
-import universalcoins.net.UCRecipeMessage;
 import universalcoins.net.UCSignServerMessage;
 import universalcoins.net.UCTileSignMessage;
 import universalcoins.net.UCVendorServerMessage;
@@ -49,7 +47,6 @@ import universalcoins.tile.TileVendorBlock;
 import universalcoins.tile.TileVendorFrame;
 import universalcoins.util.UCItemPricer;
 import universalcoins.util.UCMobDropEventHandler;
-import universalcoins.util.UCPlayerLoginEventHandler;
 import universalcoins.util.UCPlayerPickupEventHandler;
 import universalcoins.util.UCRecipeHelper;
 import universalcoins.worldgen.VillageGenBank;
@@ -208,7 +205,6 @@ public class UniversalCoins {
 		}
 
 		MinecraftForge.EVENT_BUS.register(new UCPlayerPickupEventHandler());
-		FMLCommonHandler.instance().bus().register(new UCPlayerLoginEventHandler());
 
 		// network packet handling
 		snw = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
@@ -220,16 +216,11 @@ public class UniversalCoins {
 				Side.SERVER);
 		snw.registerMessage(UCSignServerMessage.class, UCSignServerMessage.class, 4, Side.SERVER);
 		snw.registerMessage(UCTileSignMessage.class, UCTileSignMessage.class, 5, Side.CLIENT);
-		snw.registerMessage(UCRecipeMessage.class, UCRecipeMessage.class, 6, Side.CLIENT);
-		snw.registerMessage(UCPackagerServerMessage.class, UCPackagerServerMessage.class, 7, Side.SERVER);
+		snw.registerMessage(UCPackagerServerMessage.class, UCPackagerServerMessage.class, 6, Side.SERVER);
 
 		// update check using versionchecker
 		FMLInterModComms.sendRuntimeMessage(MODID, "VersionChecker", "addVersionCheck",
 				"https://raw.githubusercontent.com/notabadminer/UniversalCoins/master/version.json");
-	}
-
-	@EventHandler
-	public void postInitialise(FMLPostInitializationEvent event) {
 	}
 
 	@EventHandler

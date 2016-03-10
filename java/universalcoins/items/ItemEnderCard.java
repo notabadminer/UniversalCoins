@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
@@ -83,6 +84,7 @@ public class ItemEnderCard extends Item {
 	private void createNBT(ItemStack stack, World world, EntityPlayer entityPlayer) {
 		String accountNumber = UniversalAccounts.getInstance()
 				.getOrCreatePlayerAccount(entityPlayer.getPersistentID().toString());
+		stack.setTagCompound(new NBTTagCompound());
 		stack.getTagCompound().setString("Name", entityPlayer.getName());
 		stack.getTagCompound().setString("Owner", entityPlayer.getPersistentID().toString());
 		stack.getTagCompound().setString("Account", accountNumber);

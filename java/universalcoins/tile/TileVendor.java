@@ -83,7 +83,6 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	private int remoteZ = 0;
 
 	public void updateEntity() {
-		// super.updateEntity();
 		if (!worldObj.isRemote) {
 			activateRetrieveButtons();
 			activateUserRetrieveButtons();
@@ -603,8 +602,7 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 						updateCoinsForPurchase();
 					} else {
 						depositAmount = Math.min(stack.stackSize, (Integer.MAX_VALUE - userCoinSum) / itemValue);
-						if (inventory[itemUserCardSlot] != null
-								&& inventory[itemCardSlot].hasTagCompound() 
+						if (inventory[itemUserCardSlot] != null && inventory[itemUserCardSlot].hasTagCompound()
 								&& inventory[itemUserCardSlot].getItem() == UniversalCoins.proxy.itemEnderCard
 								&& getUserAccountBalance() != -1
 								&& getUserAccountBalance() + (depositAmount * itemValue) < Integer.MAX_VALUE) {
@@ -939,7 +937,7 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	}
 
 	public int getUserAccountBalance() {
-		if (inventory[itemUserCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
+		if (inventory[itemUserCardSlot] != null && inventory[itemUserCardSlot].hasTagCompound() && !worldObj.isRemote) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
 			return UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 		}
@@ -947,14 +945,14 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	}
 
 	public void debitUserAccount(int amount) {
-		if (inventory[itemUserCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
+		if (inventory[itemUserCardSlot] != null && inventory[itemUserCardSlot].hasTagCompound() && !worldObj.isRemote) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
 			UniversalAccounts.getInstance().debitAccount(accountNumber, amount);
 		}
 	}
 
 	public void creditUserAccount(int amount) {
-		if (inventory[itemUserCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
+		if (inventory[itemUserCardSlot] != null && inventory[itemUserCardSlot].hasTagCompound() && !worldObj.isRemote) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
 			UniversalAccounts.getInstance().creditAccount(accountNumber, amount);
 		}
@@ -1025,19 +1023,17 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
 		// TODO Auto-generated method stub
-		return null;
+		return inventory[index];
 	}
 
 	@Override
 	public void openInventory(EntityPlayer player) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
