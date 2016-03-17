@@ -1,0 +1,8 @@
+{
+	"parent": "block/orientable",
+    "textures": {
+        "top": "universalcoins:blocks/blockPowerReceiver",
+        "front": "universalcoins:blocks/blockPowerReceiver",
+        "side": "universalcoins:blocks/blockPowerReceiver"
+	}
+}

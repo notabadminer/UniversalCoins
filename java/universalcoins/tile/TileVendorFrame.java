@@ -7,6 +7,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
@@ -94,5 +95,10 @@ public class TileVendorFrame extends TileVendor {
 				tesign.markDirty();
 			}
 		}
+	}
+
+	@Override
+	public IChatComponent getDisplayName() {
+		return new ChatComponentText(UniversalCoins.proxy.blockVendorFrame.getLocalizedName());
 	}
 }

@@ -418,8 +418,7 @@ public class TilePackager extends TileEntity implements IInventory {
 
 	@Override
 	public IChatComponent getDisplayName() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ChatComponentText(UniversalCoins.proxy.blockPackager.getLocalizedName());
 	}
 
 	@Override

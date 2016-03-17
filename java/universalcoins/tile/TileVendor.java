@@ -13,6 +13,7 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.world.chunk.Chunk;
@@ -1016,8 +1017,7 @@ public class TileVendor extends TileEntity implements IInventory, ISidedInventor
 
 	@Override
 	public IChatComponent getDisplayName() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ChatComponentText(UniversalCoins.proxy.blockVendor.getLocalizedName());
 	}
 
 	@Override

@@ -7,6 +7,8 @@ import universalcoins.Achievements;
 import universalcoins.blocks.BlockBase;
 import universalcoins.blocks.BlockCardStation;
 import universalcoins.blocks.BlockPackager;
+import universalcoins.blocks.BlockPowerBase;
+import universalcoins.blocks.BlockPowerReceiver;
 import universalcoins.blocks.BlockSafe;
 import universalcoins.blocks.BlockSignal;
 import universalcoins.blocks.BlockTradeStation;
@@ -49,6 +51,8 @@ public class CommonProxy {
 	public static Block blockCardStation;
 	public static Block blockBase;
 	public static Block blockSafe;
+	public static Block blockPowerBase;
+	public static Block blockPowerReceiver;
 	public static Block standing_ucsign;
 	public static Block wall_ucsign;
 	public static Block blockSignal;
@@ -65,6 +69,8 @@ public class CommonProxy {
 		wall_ucsign = new BlockUCWallSign(TileUCSign.class).setUnlocalizedName("wall_ucsign");
 		blockSignal = new BlockSignal().setUnlocalizedName("blockSignal");
 		blockPackager = new BlockPackager().setUnlocalizedName("blockPackager");
+		blockPowerBase = new BlockPowerBase().setUnlocalizedName("blockPowerBase");
+		blockPowerReceiver = new BlockPowerReceiver().setUnlocalizedName("blockPowerReceiver");
 
 		GameRegistry.registerBlock(blockTradeStation, blockTradeStation.getUnlocalizedName().substring(5));
 		GameRegistry.registerBlock(blockVendor, ItemBlockVendor.class, blockVendor.getUnlocalizedName().substring(5));
@@ -76,6 +82,8 @@ public class CommonProxy {
 		GameRegistry.registerBlock(wall_ucsign, wall_ucsign.getUnlocalizedName().substring(5));
 		GameRegistry.registerBlock(blockSignal, blockSignal.getUnlocalizedName().substring(5));
 		GameRegistry.registerBlock(blockPackager, blockPackager.getUnlocalizedName().substring(5));
+		GameRegistry.registerBlock(blockPowerBase, blockPowerBase.getUnlocalizedName().substring(5));
+		GameRegistry.registerBlock(blockPowerReceiver, blockPowerReceiver.getUnlocalizedName().substring(5));
 	}
 
 	public void registerItems() {
@@ -105,7 +113,6 @@ public class CommonProxy {
 		GameRegistry.registerItem(itemLinkCard, itemLinkCard.getUnlocalizedName().substring(5));
 		GameRegistry.registerItem(itemPackage, itemPackage.getUnlocalizedName().substring(5));
 	}
-	
 
 	public void registerAchievements() {
 		Achievements.init();

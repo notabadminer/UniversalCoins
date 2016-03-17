@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "facing=north": { "model": "universalcoins:blockPowerBase" },
+        "facing=south": { "model": "universalcoins:blockPowerBase", "y": 180 },
+        "facing=west":  { "model": "universalcoins:blockPowerBase", "y": 270 },
+        "facing=east":  { "model": "universalcoins:blockPowerBase", "y": 90 }
+    }
+}

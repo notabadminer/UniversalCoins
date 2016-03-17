@@ -11,6 +11,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
@@ -406,8 +407,7 @@ public class TileCardStation extends TileEntity implements IInventory, ISidedInv
 
 	@Override
 	public IChatComponent getDisplayName() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ChatComponentText(UniversalCoins.proxy.blockCardStation.getLocalizedName());
 	}
 
 	@Override

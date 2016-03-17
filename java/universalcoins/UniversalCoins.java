@@ -39,6 +39,8 @@ import universalcoins.net.UCVendorServerMessage;
 import universalcoins.proxy.CommonProxy;
 import universalcoins.tile.TileCardStation;
 import universalcoins.tile.TilePackager;
+import universalcoins.tile.TilePowerBase;
+import universalcoins.tile.TilePowerReceiver;
 import universalcoins.tile.TileSafe;
 import universalcoins.tile.TileSignal;
 import universalcoins.tile.TileTradeStation;
@@ -80,22 +82,24 @@ public class UniversalCoins {
 	public static Boolean packagerRecipeEnabled;
 	public static Boolean mobsDropCoins;
 	public static Boolean coinsInMineshaft;
+	public static Boolean powerBaseRecipeEnabled;
+	public static Boolean powerReceiverRecipeEnabled;
+	public static Boolean coinsInDungeon;
 	public static Integer bankGenWeight;
 	public static Integer shopGenWeight;
 	public static Integer shopMinPrice;
 	public static Integer shopMaxPrice;
 	public static Integer mineshaftCoinChance;
-	public static Boolean coinsInDungeon;
 	public static Integer dungeonCoinChance;
 	public static Integer mobDropMax;
 	public static Integer mobDropChance;
 	public static Integer enderDragonMultiplier;
 	public static Double itemSellRatio;
-	public static Integer fourMatchPayout;
-	public static Integer fiveMatchPayout;
 	public static Integer smallPackagePrice;
 	public static Integer medPackagePrice;
 	public static Integer largePackagePrice;
+	public static Integer rfWholesaleRate;
+	public static Integer rfRetailRate;
 
 	public static SimpleNetworkWrapper snw;
 
@@ -183,6 +187,20 @@ public class UniversalCoins {
 		largePackage.comment = "Set the price of large package";
 		largePackagePrice = Math.max(1, Math.min(largePackage.getInt(40), 1000));
 
+		// rf utility (power company stuff)
+		Property rfBaseEnabled = config.get("RF Utility", "Power Base enabled", true);
+		rfBaseEnabled.comment = "Set to false to disable the power base block.";
+		powerBaseRecipeEnabled = rfBaseEnabled.getBoolean(true);
+		Property rfReceiverEnabled = config.get("RF Utility", "RF Blocks enabled", true);
+		rfReceiverEnabled.comment = "Set to false to disable the power receiver block.";
+		powerReceiverRecipeEnabled = rfReceiverEnabled.getBoolean(true);
+		Property rfWholesale = config.get("RF Utility", "Wholesale rate", 12);
+		rfWholesale.comment = "Set payment per 10 kRF of power sold. Default: 12";
+		rfWholesaleRate = Math.max(0, rfWholesale.getInt(12));
+		Property rfRetail = config.get("RF Utility", "Retail rate", 15);
+		rfRetail.comment = "Set payment per 10 kRF of power bought. Default: 15";
+		rfRetailRate = Math.max(0, rfRetail.getInt(15));
+
 		// world gen
 		Property bankGenProperty = config.get("world generation", "Village bank weight", 6);
 		bankGenProperty.comment = "Probability of adding bank to villages. min 0, max 20, default 6.";
@@ -246,9 +264,11 @@ public class UniversalCoins {
 		GameRegistry.registerTileEntity(TileVendorBlock.class, "TileVendorBlock");
 		GameRegistry.registerTileEntity(TileVendorFrame.class, "TileVendorFrame");
 		GameRegistry.registerTileEntity(TileUCSign.class, "TileUCSign");
+		GameRegistry.registerTileEntity(TilePowerBase.class, "TilePowerBase");
+		GameRegistry.registerTileEntity(TilePowerReceiver.class, "TilePowerReceiver");
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
-		
+
 		proxy.registerAchievements();
 
 		UCRecipeHelper.addCoinRecipes();
@@ -291,16 +311,7 @@ public class UniversalCoins {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		// auto pricing the items takes a while so we start a thread
-		// and let it work in the background.
-		Runnable r = new Runnable() {
-			public void run() {
 				UCItemPricer.getInstance().loadConfigs();
-			}
-		};
-
-		Thread t = new Thread(r);
-		t.start();
 	}
 
 	@EventHandler

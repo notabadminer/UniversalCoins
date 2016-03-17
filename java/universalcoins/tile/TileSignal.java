@@ -10,6 +10,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ITickable;
 import net.minecraftforge.common.util.Constants;
@@ -310,8 +311,7 @@ public class TileSignal extends TileEntity implements IInventory, ITickable {
 
 	@Override
 	public IChatComponent getDisplayName() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ChatComponentText(UniversalCoins.proxy.blockSignal.getLocalizedName());
 	}
 
 	@Override

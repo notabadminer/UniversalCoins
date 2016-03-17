@@ -64,6 +64,14 @@ public class ClientProxy extends CommonProxy {
 				UniversalCoins.MODID + ":" + blockVendor.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(Item.getItemFromBlock(blockVendorFrame), 0, new ModelResourceLocation(
 				UniversalCoins.MODID + ":" + blockVendorFrame.getUnlocalizedName().substring(5), "inventory"));
+		mesher.register(Item.getItemFromBlock(blockPowerBase), 0, new ModelResourceLocation(
+				UniversalCoins.MODID + ":" + blockPowerBase.getUnlocalizedName().substring(5), "inventory"));
+		mesher.register(Item.getItemFromBlock(blockPowerReceiver), 0, new ModelResourceLocation(
+				UniversalCoins.MODID + ":" + blockPowerReceiver.getUnlocalizedName().substring(5), "inventory"));
+
+		// this is to stop model definition errors for signs //TODO make this work
+		//mesher.getModelManager().getBlockModelShapes().registerBuiltInBlocks(wall_ucsign);
+		//mesher.getModelManager().getBlockModelShapes().registerBuiltInBlocks(standing_ucsign);
 
 		ClientRegistry.bindTileEntitySpecialRenderer(TileUCSign.class, new UCSignRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileSignal.class, new SignalRenderer());
