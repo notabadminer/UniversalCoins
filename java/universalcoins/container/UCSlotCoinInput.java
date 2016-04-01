@@ -18,9 +18,8 @@ public class UCSlotCoinInput extends Slot {
 			return true;
 		}
 		Item itemInStack = par1ItemStack.getItem();
-		return (itemInStack == UniversalCoins.proxy.itemCoin || itemInStack == UniversalCoins.proxy.itemSmallCoinStack
-				|| itemInStack == UniversalCoins.proxy.itemLargeCoinStack
-				|| itemInStack == UniversalCoins.proxy.itemSmallCoinBag
-				|| itemInStack == UniversalCoins.proxy.itemLargeCoinBag);
+		return (itemInStack == UniversalCoins.proxy.iron_coin || itemInStack == UniversalCoins.proxy.emerald_coin
+				|| itemInStack == UniversalCoins.proxy.gold_coin || itemInStack == UniversalCoins.proxy.diamond_coin
+				|| itemInStack == UniversalCoins.proxy.obsidian_coin);
 	}
 }

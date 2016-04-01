@@ -4,18 +4,14 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
-import universalcoins.tile.TileCardStation;
-import universalcoins.tile.TilePackager;
-import universalcoins.tile.TileSignal;
-import universalcoins.tile.TileTradeStation;
-import universalcoins.tile.TileVendor;
+import universalcoins.tileentity.TileTradeStation;
 
 public class UCButtonMessage implements IMessage, IMessageHandler<UCButtonMessage, IMessage> {
 	private int x, y, z, buttonId;
@@ -76,18 +72,6 @@ public class UCButtonMessage implements IMessage, IMessageHandler<UCButtonMessag
 		TileEntity tileEntity = world.getTileEntity(new BlockPos(message.x, message.y, message.z));
 		if (tileEntity instanceof TileTradeStation) {
 			((TileTradeStation) tileEntity).onButtonPressed(message.buttonId, message.shiftPressed);
-		}
-		if (tileEntity instanceof TileCardStation) {
-			((TileCardStation) tileEntity).onButtonPressed(message.buttonId);
-		}
-		if (tileEntity instanceof TileSignal) {
-			((TileSignal) tileEntity).onButtonPressed(message.buttonId, message.shiftPressed);
-		}
-		if (tileEntity instanceof TilePackager) {
-			((TilePackager) tileEntity).onButtonPressed(message.buttonId, message.shiftPressed);
-		}
-		if (tileEntity instanceof TileVendor) {
-			((TileVendor) tileEntity).onButtonPressed(message.buttonId, message.shiftPressed);
 		}
 	}
 }

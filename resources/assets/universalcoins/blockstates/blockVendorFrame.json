@@ -1,8 +1,0 @@
-{
-    "variants": {
-        "facing=north": { "model": "universalcoins:blockVendorFrame" },
-        "facing=south": { "model": "universalcoins:blockVendorFrame", "y": 180 },
-        "facing=west":  { "model": "universalcoins:blockVendorFrame", "y": 270 },
-        "facing=east":  { "model": "universalcoins:blockVendorFrame", "y": 90 }
-    }
-}

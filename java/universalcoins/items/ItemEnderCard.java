@@ -1,68 +1,69 @@
 package universalcoins.items;
 
 import java.text.DecimalFormat;
-import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UniversalAccounts;
 
-public class ItemEnderCard extends Item {
-
-	private static final int[] multiplier = new int[] { 1, 9, 81, 729, 6561 };
-
-	public ItemEnderCard() {
-		super();
-		this.maxStackSize = 1;
-	}
+public class ItemEnderCard extends ItemUCCard {
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
-		if (stack.hasTagCompound()) {
-			list.add(stack.getTagCompound().getString("Name"));
-			list.add(stack.getTagCompound().getString("Account"));
-		} else {
-			list.add(StatCollector.translateToLocal("item.itemUCCard.warning"));
-		}
-	}
-
-	@Override
-	public boolean onItemUse(ItemStack itemstack, EntityPlayer player, World world, BlockPos pos, EnumFacing side,
-			float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand,
+			EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (world.isRemote)
-			return true;
-		if (itemstack.getTagCompound() == null) {
-			createNBT(itemstack, world, player);
+			return EnumActionResult.FAIL;
+		if (stack.getTagCompound() == null) {
+			createNBT(stack, world, player);
 		}
-		int accountBalance = UniversalAccounts.getInstance()
-				.getAccountBalance(itemstack.getTagCompound().getString("Account"));
+		long accountBalance = UniversalAccounts.getInstance(world)
+				.getAccountBalance(stack.getTagCompound().getString("Account"));
 		DecimalFormat formatter = new DecimalFormat("#,###,###,###");
 		ItemStack[] inventory = player.inventory.mainInventory;
-		String accountNumber = itemstack.getTagCompound().getString("Account");
+		String accountNumber = stack.getTagCompound().getString("Account");
+		int coinValue = 0;
+		int depositAmount = 0;
 		int coinsDeposited = 0;
 		for (int i = 0; i < inventory.length; i++) {
-			if (inventory[i] != null && (inventory[i].getItem() == UniversalCoins.proxy.itemCoin
-					|| inventory[i].getItem() == UniversalCoins.proxy.itemSmallCoinStack
-					|| inventory[i].getItem() == UniversalCoins.proxy.itemLargeCoinStack
-					|| inventory[i].getItem() == UniversalCoins.proxy.itemSmallCoinBag
-					|| inventory[i].getItem() == UniversalCoins.proxy.itemLargeCoinBag)) {
+			ItemStack instack = player.inventory.getStackInSlot(i);
+			if (instack != null) {
+				switch (instack.getUnlocalizedName()) {
+				case "item.iron_coin":
+					coinValue = UniversalCoins.coinValues[0];
+					break;
+				case "item.gold_coin":
+					coinValue = UniversalCoins.coinValues[1];
+					break;
+				case "item.emerald_coin":
+					coinValue = UniversalCoins.coinValues[2];
+					break;
+				case "item.diamond_coin":
+					coinValue = UniversalCoins.coinValues[3];
+					break;
+				case "item.obsidian_coin":
+					coinValue = UniversalCoins.coinValues[4];
+					break;
+				}
 				if (accountBalance == -1)
-					return true; // get out of here if the card is invalid
-				int coinType = getCoinType(inventory[i].getItem());
-				if (coinType == -1)
-					return true; // something went wrong
-				int coinValue = multiplier[coinType];
-				int depositAmount = Math.min(inventory[i].stackSize, (Integer.MAX_VALUE - accountBalance) / coinValue);
-				UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue);
-				coinsDeposited += depositAmount * coinValue;
+					// get out of here if the card is invalid
+					return EnumActionResult.FAIL;
+				if (coinValue == 0)
+					continue;
+				if (Long.MAX_VALUE - accountBalance > coinValue * instack.stackSize) {
+					depositAmount = instack.stackSize;
+				} else {
+					depositAmount = (int) (Long.MAX_VALUE - accountBalance) / coinValue;
+				}
+				UniversalAccounts.getInstance(world).creditAccount(accountNumber, coinValue * depositAmount);
+				coinsDeposited += coinValue * depositAmount;
 				inventory[i].stackSize -= depositAmount;
 				if (inventory[i].stackSize == 0) {
 					player.inventory.setInventorySlotContents(i, null);
@@ -71,34 +72,13 @@ public class ItemEnderCard extends Item {
 			}
 		}
 		if (coinsDeposited > 0) {
-			player.addChatMessage(
-					new ChatComponentText(StatCollector.translateToLocal("item.itemEnderCard.message.deposit") + " "
-							+ formatter.format(coinsDeposited) + " "
-							+ StatCollector.translateToLocal("item.itemCoin.name")));
+			player.addChatMessage(new TextComponentString(I18n.translateToLocal("item.card.deposit") + " "
+					+ formatter.format(coinsDeposited) + " " + I18n.translateToLocal(
+							coinsDeposited > 1 ? "general.currency.multiple" : "general.currency.single")));
 		}
-		player.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("item.itemEnderCard.balance") + " "
-				+ formatter.format(UniversalAccounts.getInstance().getAccountBalance(accountNumber))));
-		return true;
+		player.addChatMessage(new TextComponentString(I18n.translateToLocal("item.card.balance") + " "
+				+ formatter.format(UniversalAccounts.getInstance(world).getAccountBalance(accountNumber))));
+		return EnumActionResult.FAIL;
 	}
 
-	private void createNBT(ItemStack stack, World world, EntityPlayer entityPlayer) {
-		String accountNumber = UniversalAccounts.getInstance()
-				.getOrCreatePlayerAccount(entityPlayer.getPersistentID().toString());
-		stack.setTagCompound(new NBTTagCompound());
-		stack.getTagCompound().setString("Name", entityPlayer.getName());
-		stack.getTagCompound().setString("Owner", entityPlayer.getPersistentID().toString());
-		stack.getTagCompound().setString("Account", accountNumber);
-	}
-
-	private int getCoinType(Item item) {
-		final Item[] coins = new Item[] { UniversalCoins.proxy.itemCoin, UniversalCoins.proxy.itemSmallCoinStack,
-				UniversalCoins.proxy.itemLargeCoinStack, UniversalCoins.proxy.itemSmallCoinBag,
-				UniversalCoins.proxy.itemLargeCoinBag };
-		for (int i = 0; i < 5; i++) {
-			if (item == coins[i]) {
-				return i;
-			}
-		}
-		return -1;
-	}
 }

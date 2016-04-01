@@ -3,59 +3,48 @@ package universalcoins.commands;
 import java.text.DecimalFormat;
 
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.StatCollector;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
 import universalcoins.Achievements;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UniversalAccounts;
 
-public class UCBalance extends CommandBase {
-	private static final int[] multiplier = new int[] { 1, 9, 81, 729, 6561 };
-	private static final Item[] coins = new Item[] { UniversalCoins.proxy.itemCoin,
-			UniversalCoins.proxy.itemSmallCoinStack, UniversalCoins.proxy.itemLargeCoinStack,
-			UniversalCoins.proxy.itemSmallCoinBag, UniversalCoins.proxy.itemLargeCoinBag };
+public class UCBalance extends CommandBase implements ICommand {
 
 	@Override
 	public String getCommandName() {
-		return StatCollector.translateToLocal("command.balance.name");
+		return I18n.translateToLocal("command.balance.name");
 	}
 
 	@Override
 	public String getCommandUsage(ICommandSender var1) {
-		return StatCollector.translateToLocal("command.balance.help");
+		return I18n.translateToLocal("command.balance.help");
 	}
 
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender par1ICommandSender) {
+	public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
 		return true;
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] astring) {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (sender instanceof EntityPlayerMP) {
 			int playerCoins = getPlayerCoins((EntityPlayerMP) sender);
 			String uuid = ((EntityPlayerMP) sender).getPersistentID().toString();
-			String playerAcct = UniversalAccounts.getInstance().getPlayerAccount(uuid);
-			String customAcct = UniversalAccounts.getInstance().getCustomAccount(uuid);
-			int accountBalance = UniversalAccounts.getInstance().getAccountBalance(playerAcct);
-			int custAccountBalance = UniversalAccounts.getInstance().getAccountBalance(customAcct);
-			DecimalFormat formatter = new DecimalFormat("#,###,###,###");
-			sender.addChatMessage(
-					new ChatComponentText(StatCollector.translateToLocal("command.balance.result.inventory")
-							+ formatter.format(playerCoins)));
+			String playerAcct = UniversalAccounts.getInstance(sender.getEntityWorld()).getPlayerAccount(uuid);
+			long accountBalance = UniversalAccounts.getInstance(sender.getEntityWorld()).getAccountBalance(playerAcct);
+			DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
+			sender.addChatMessage(new TextComponentString(
+					I18n.translateToLocal("command.balance.result.inventory") + formatter.format(playerCoins)));
 			if (accountBalance != -1) {
-				sender.addChatMessage(
-						new ChatComponentText(StatCollector.translateToLocal("command.balance.result.account")
-								+ formatter.format(accountBalance)));
-			}
-			if (custAccountBalance != -1) {
-				sender.addChatMessage(
-						new ChatComponentText(StatCollector.translateToLocal("command.balance.result.customaccount")
-								+ formatter.format(custAccountBalance)));
+				sender.addChatMessage(new TextComponentString(
+						I18n.translateToLocal("command.balance.result.account") + formatter.format(accountBalance)));
 			}
 			// achievement stuff
 			if (playerCoins > 1000 || accountBalance > 1000) {
@@ -77,9 +66,23 @@ public class UCBalance extends CommandBase {
 		int coinsFound = 0;
 		for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 			ItemStack stack = player.inventory.getStackInSlot(i);
-			for (int j = 0; j < coins.length; j++) {
-				if (stack != null && stack.getItem() == coins[j]) {
-					coinsFound += stack.stackSize * multiplier[j];
+			if (stack != null) {
+				switch (stack.getUnlocalizedName()) {
+				case "item.iron_coin":
+					coinsFound += stack.stackSize * UniversalCoins.coinValues[0];
+					break;
+				case "item.gold_coin":
+					coinsFound += stack.stackSize * UniversalCoins.coinValues[1];
+					break;
+				case "item.emerald_coin":
+					coinsFound += stack.stackSize * UniversalCoins.coinValues[2];
+					break;
+				case "item.diamond_coin":
+					coinsFound += stack.stackSize * UniversalCoins.coinValues[3];
+					break;
+				case "item.obsidian_coin":
+					coinsFound += stack.stackSize * UniversalCoins.coinValues[4];
+					break;
 				}
 			}
 		}

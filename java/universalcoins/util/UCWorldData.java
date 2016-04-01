@@ -20,6 +20,10 @@ public class UCWorldData extends WorldSavedData {
 		return result;
 	}
 
+	public UCWorldData() {
+		super(key);
+	}
+
 	private NBTTagCompound nbt = new NBTTagCompound();
 
 	public UCWorldData(String tagName) {

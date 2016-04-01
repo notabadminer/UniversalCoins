@@ -3,121 +3,127 @@ package universalcoins.commands;
 import java.util.Random;
 
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
 
-public class UCRebalance extends CommandBase {
-	private static final int[] multiplier = new int[] { 1, 9, 81, 729, 6561 };
-	private static final Item[] coins = new Item[] { UniversalCoins.proxy.itemCoin,
-			UniversalCoins.proxy.itemSmallCoinStack, UniversalCoins.proxy.itemLargeCoinStack,
-			UniversalCoins.proxy.itemSmallCoinBag, UniversalCoins.proxy.itemLargeCoinBag };
+public class UCRebalance extends CommandBase implements ICommand {
 
 	@Override
 	public String getCommandName() {
-		return StatCollector.translateToLocal("command.rebalance.name");
+		return I18n.translateToLocal("command.rebalance.name");
 	}
 
 	@Override
 	public String getCommandUsage(ICommandSender var1) {
-		return StatCollector.translateToLocal("command.rebalance.help");
+		return I18n.translateToLocal("command.rebalance.help");
 	}
 
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender par1ICommandSender) {
+	public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
 		return true;
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] astring) {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (sender instanceof EntityPlayerMP) {
-			if (astring.length == 0) {
+			if (args.length == 0) {
 				// get coins from player inventory
-				int coinTotal = 0;
+				int coinsFound = 0;
 				EntityPlayerMP player = (EntityPlayerMP) sender;
 				for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 					ItemStack stack = player.inventory.getStackInSlot(i);
-					for (int j = 0; j < coins.length; j++) {
-						if (stack != null && stack.getItem() == coins[j]) {
-							coinTotal += stack.stackSize * multiplier[j];
+					if (stack != null) {
+						switch (stack.getUnlocalizedName()) {
+						case "item.iron_coin":
+							coinsFound += stack.stackSize * UniversalCoins.coinValues[0];
 							player.inventory.setInventorySlotContents(i, null);
+							break;
+						case "item.gold_coin":
+							coinsFound += stack.stackSize * UniversalCoins.coinValues[1];
+							player.inventory.setInventorySlotContents(i, null);
+							break;
+						case "item.emerald_coin":
+							coinsFound += stack.stackSize * UniversalCoins.coinValues[2];
+							player.inventory.setInventorySlotContents(i, null);
+							break;
+						case "item.diamond_coin":
+							coinsFound += stack.stackSize * UniversalCoins.coinValues[3];
+							player.inventory.setInventorySlotContents(i, null);
+							break;
+						case "item.obsidian_coin":
+							coinsFound += stack.stackSize * UniversalCoins.coinValues[4];
+							player.inventory.setInventorySlotContents(i, null);
+							break;
 						}
 					}
 				}
-				// give sender back change
-				int leftOvers = givePlayerCoins(player, coinTotal);
-				if (leftOvers > 0) {
-					World world = ((EntityPlayerMP) sender).worldObj;
-					Random rand = new Random();
-					while (leftOvers > 0) {
-						float rx = rand.nextFloat() * 0.8F + 0.1F;
-						float ry = rand.nextFloat() * 0.8F + 0.1F;
-						float rz = rand.nextFloat() * 0.8F + 0.1F;
-						int logVal = Math.min((int) (Math.log(leftOvers) / Math.log(9)), 4);
-						int stackSize = Math.min((int) (leftOvers / Math.pow(9, logVal)), 64);
-						EntityItem entityItem = new EntityItem(world, ((EntityPlayerMP) sender).posX + rx,
-								((EntityPlayerMP) sender).posY + ry, ((EntityPlayerMP) sender).posZ + rz,
-								new ItemStack(coins[logVal], stackSize));
-						leftOvers -= Math.pow(9, logVal) * stackSize;
-					}
-				}
+				// give coins back to player
+				givePlayerCoins(player, coinsFound);
 			}
 		}
 	}
 
-	private int getCoinMultiplier(Item item) {
-		for (int i = 0; i < 5; i++) {
-			if (item == coins[i]) {
-				return multiplier[i];
-			}
-		}
-		return -1;
-	}
-
-	private int givePlayerCoins(EntityPlayer recipient, int coinsLeft) {
+	private void givePlayerCoins(EntityPlayer recipient, int coinsLeft) {
+		ItemStack stack = null;
 		while (coinsLeft > 0) {
-			// use logarithm to find largest cointype for coins being sent
-			int logVal = Math.min((int) (Math.log(coinsLeft) / Math.log(9)), 4);
-			int stackSize = Math.min((int) (coinsLeft / Math.pow(9, logVal)), 64);
+			if (coinsLeft > UniversalCoins.coinValues[4]) {
+				stack = new ItemStack(UniversalCoins.proxy.obsidian_coin, 1);
+				stack.stackSize = (int) Math.floor(coinsLeft / UniversalCoins.coinValues[4]);
+				coinsLeft -= stack.stackSize * UniversalCoins.coinValues[4];
+			} else if (coinsLeft > UniversalCoins.coinValues[3]) {
+				stack = new ItemStack(UniversalCoins.proxy.diamond_coin, 1);
+				stack.stackSize = (int) Math.floor(coinsLeft / UniversalCoins.coinValues[3]);
+				coinsLeft -= stack.stackSize * UniversalCoins.coinValues[3];
+			} else if (coinsLeft > UniversalCoins.coinValues[2]) {
+				stack = new ItemStack(UniversalCoins.proxy.emerald_coin, 1);
+				stack.stackSize = (int) Math.floor(coinsLeft / UniversalCoins.coinValues[2]);
+				coinsLeft -= stack.stackSize * UniversalCoins.coinValues[2];
+			} else if (coinsLeft > UniversalCoins.coinValues[1]) {
+				stack = new ItemStack(UniversalCoins.proxy.gold_coin, 1);
+				stack.stackSize = (int) Math.floor(coinsLeft / UniversalCoins.coinValues[1]);
+				coinsLeft -= stack.stackSize * UniversalCoins.coinValues[1];
+			} else if (coinsLeft > UniversalCoins.coinValues[0]) {
+				stack = new ItemStack(UniversalCoins.proxy.iron_coin, 1);
+				stack.stackSize = (int) Math.floor(coinsLeft / UniversalCoins.coinValues[0]);
+				coinsLeft -= stack.stackSize * UniversalCoins.coinValues[0];
+			}
+
+			if (stack == null)
+				return;
+
 			// add a stack to the recipients inventory
 			if (recipient.inventory.getFirstEmptyStack() != -1) {
-				recipient.inventory.addItemStackToInventory(new ItemStack(coins[logVal], stackSize));
-				coinsLeft -= (stackSize * Math.pow(9, logVal));
+				recipient.inventory.addItemStackToInventory(stack);
 			} else {
 				for (int i = 0; i < recipient.inventory.getSizeInventory(); i++) {
-					ItemStack stack = recipient.inventory.getStackInSlot(i);
-					for (int j = 0; j < coins.length; j++) {
-						if (stack != null && stack.getItem() == coins[j]) {
-							int amountToAdd = (int) Math.min(coinsLeft / Math.pow(9, j),
-									stack.getMaxStackSize() - stack.stackSize);
-							stack.stackSize += amountToAdd;
-							recipient.inventory.setInventorySlotContents(i, stack);
-							coinsLeft -= (amountToAdd * Math.pow(9, j));
-						}
+					ItemStack istack = recipient.inventory.getStackInSlot(i);
+					if (istack != null && istack.getItem() == stack.getItem()) {
+						int amountToAdd = (int) Math.min(stack.stackSize, istack.getMaxStackSize() - istack.stackSize);
+						istack.stackSize += amountToAdd;
+						stack.stackSize -= amountToAdd;
 					}
 				}
-				return coinsLeft; // return change
+				// at this point, we're going to throw extra to the world since
+				// the player inventory must be full.
+				World world = ((EntityPlayerMP) recipient).worldObj;
+				Random rand = new Random();
+				float rx = rand.nextFloat() * 0.8F + 0.1F;
+				float ry = rand.nextFloat() * 0.8F + 0.1F;
+				float rz = rand.nextFloat() * 0.8F + 0.1F;
+				EntityItem entityItem = new EntityItem(world, ((EntityPlayerMP) recipient).posX + rx,
+						((EntityPlayerMP) recipient).posY + ry, ((EntityPlayerMP) recipient).posZ + rz, stack);
+				world.spawnEntityInWorld(entityItem);
 			}
 		}
-		return 0;
-	}
-
-	private int getPlayerCoins(EntityPlayerMP player) {
-		int coinsFound = 0;
-		for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-			ItemStack stack = player.inventory.getStackInSlot(i);
-			for (int j = 0; j < coins.length; j++) {
-				if (stack != null && stack.getItem() == coins[j]) {
-					coinsFound += stack.stackSize * multiplier[j];
-				}
-			}
-		}
-		return coinsFound;
 	}
 }

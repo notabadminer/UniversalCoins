@@ -6,9 +6,10 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import universalcoins.tile.TileTradeStation;
+import universalcoins.tileentity.TileTradeStation;
 
 public class ContainerTradeStation extends Container {
 	private TileTradeStation tileEntity;

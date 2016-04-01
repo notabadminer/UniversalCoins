@@ -1,8 +1,0 @@
-{
-    "variants": {
-        "facing=north": { "model": "universalcoins:blockSafe" },
-        "facing=south": { "model": "universalcoins:blockSafe", "y": 180 },
-        "facing=west":  { "model": "universalcoins:blockSafe", "y": 270 },
-        "facing=east":  { "model": "universalcoins:blockSafe", "y": 90 }
-    }
-}

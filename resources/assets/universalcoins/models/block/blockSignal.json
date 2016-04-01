@@ -1,8 +1,0 @@
-{
-	"parent": "block/orientable",
-    "textures": {
-        "top": "universalcoins:blocks/blockSignalTop",
-        "front": "universalcoins:blocks/blockSignalFace",
-        "side": "universalcoins:blocks/blockSignal"
-	}
-}

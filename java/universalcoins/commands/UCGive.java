@@ -1,102 +1,135 @@
 package universalcoins.commands;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import universalcoins.UniversalCoins;
 
-public class UCGive extends CommandBase {
-	private static final Item[] coins = new Item[] { UniversalCoins.proxy.itemCoin,
-			UniversalCoins.proxy.itemSmallCoinStack, UniversalCoins.proxy.itemLargeCoinStack,
-			UniversalCoins.proxy.itemSmallCoinBag, UniversalCoins.proxy.itemLargeCoinBag };
+public class UCGive extends CommandBase implements ICommand {
 
 	@Override
 	public String getCommandName() {
-		return StatCollector.translateToLocal("command.givecoins.name");
+		return I18n.translateToLocal("command.givecoins.name");
 	}
 
 	@Override
 	public String getCommandUsage(ICommandSender var1) {
-		return StatCollector.translateToLocal("command.givecoins.help");
+		return I18n.translateToLocal("command.givecoins.help");
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] astring) {
-		if (astring.length == 2) {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+		if (args.length == 2) {
 			EntityPlayer recipient = null;
-			WorldServer[] ws = MinecraftServer.getServer().worldServers;
+			WorldServer[] ws = server.worldServers;
 			for (WorldServer w : ws) {
-				if (w.playerEntities.contains(w.getPlayerEntityByName(astring[0]))) {
-					recipient = (EntityPlayer) w.getPlayerEntityByName(astring[0]);
+				if (w.playerEntities.contains(w.getPlayerEntityByName(args[0]))) {
+					recipient = (EntityPlayer) w.getPlayerEntityByName(args[0]);
 				}
 			}
 			int coinsToSend = 0;
 			if (recipient == null) {
-				sender.addChatMessage(new ChatComponentText(
-						"Â§c" + StatCollector.translateToLocal("command.givecoins.error.notfound")));
+				sender.addChatMessage(
+						new TextComponentString("§c" + I18n.translateToLocal("command.givecoins.error.notfound")));
+				return;
 			}
 			try {
-				coinsToSend = Integer.parseInt(astring[1]);
+				coinsToSend = Integer.parseInt(args[1]);
 			} catch (NumberFormatException e) {
-				sender.addChatMessage(new ChatComponentText(
-						"Â§c" + StatCollector.translateToLocal("command.givecoins.error.badentry")));
+				sender.addChatMessage(
+						new TextComponentString("§c" + I18n.translateToLocal("command.givecoins.error.badentry")));
+				return;
 			}
 			if (coinsToSend <= 0) {
 				sender.addChatMessage(
-						new ChatComponentText("§c" + StatCollector.translateToLocal("command.send.error.badentry")));
+						new TextComponentString("§c" + I18n.translateToLocal("command.send.error.badentry")));
 				return;
 			}
-			int change = givePlayerCoins(recipient, coinsToSend);
-			sender.addChatMessage(new ChatComponentText("Gave " + astring[0] + " " + (coinsToSend - change) + " "
-					+ StatCollector.translateToLocal("item.itemCoin.name")));
-			recipient.addChatMessage(new ChatComponentText(
-					sender.getName() + " " + StatCollector.translateToLocal("command.givecoins.result") + " "
-							+ (coinsToSend - change) + " " + StatCollector.translateToLocal("item.itemCoin.name")));
+			// we made it through the exceptions, give the coins to the player
+			givePlayerCoins(recipient, coinsToSend);
+			DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
+			sender.addChatMessage(new TextComponentString(
+					"Gave " + args[0] + " " + formatter.format(coinsToSend) + " " + I18n.translateToLocal(
+							coinsToSend > 1 ? "general.currency.multiple" : "general.currency.single")));
+			recipient.addChatMessage(
+					new TextComponentString(sender.getName() + " " + I18n.translateToLocal("command.givecoins.result")
+							+ " " + (coinsToSend) + " " + I18n.translateToLocal(
+									coinsToSend > 1 ? "general.currency.multiple" : "general.currency.single")));
 		} else
 			sender.addChatMessage(
-					new ChatComponentText("Â§c" + StatCollector.translateToLocal("command.givecoins.error.noname")));
+					new TextComponentString("§c" + I18n.translateToLocal("command.givecoins.error.noname")));
 	}
 
-	private int givePlayerCoins(EntityPlayer recipient, int coinsLeft) {
+	private void givePlayerCoins(EntityPlayer recipient, int coinsLeft) {
+		ItemStack stack = null;
 		while (coinsLeft > 0) {
-			// use logarithm to find largest cointype for coins being sent
-			int logVal = Math.min((int) (Math.log(coinsLeft) / Math.log(9)), 4);
-			int stackSize = Math.min((int) (coinsLeft / Math.pow(9, logVal)), 64);
+			if (coinsLeft > UniversalCoins.coinValues[4]) {
+				stack = new ItemStack(UniversalCoins.proxy.obsidian_coin, 1);
+				stack.stackSize = (int) Math.floor(coinsLeft / UniversalCoins.coinValues[4]);
+				coinsLeft -= stack.stackSize * UniversalCoins.coinValues[4];
+			} else if (coinsLeft > UniversalCoins.coinValues[3]) {
+				stack = new ItemStack(UniversalCoins.proxy.diamond_coin, 1);
+				stack.stackSize = (int) Math.floor(coinsLeft / UniversalCoins.coinValues[3]);
+				coinsLeft -= stack.stackSize * UniversalCoins.coinValues[3];
+			} else if (coinsLeft > UniversalCoins.coinValues[2]) {
+				stack = new ItemStack(UniversalCoins.proxy.emerald_coin, 1);
+				stack.stackSize = (int) Math.floor(coinsLeft / UniversalCoins.coinValues[2]);
+				coinsLeft -= stack.stackSize * UniversalCoins.coinValues[2];
+			} else if (coinsLeft > UniversalCoins.coinValues[1]) {
+				stack = new ItemStack(UniversalCoins.proxy.gold_coin, 1);
+				stack.stackSize = (int) Math.floor(coinsLeft / UniversalCoins.coinValues[1]);
+				coinsLeft -= stack.stackSize * UniversalCoins.coinValues[1];
+			} else if (coinsLeft > UniversalCoins.coinValues[0]) {
+				stack = new ItemStack(UniversalCoins.proxy.iron_coin, 1);
+				stack.stackSize = (int) Math.floor(coinsLeft / UniversalCoins.coinValues[0]);
+				coinsLeft -= stack.stackSize * UniversalCoins.coinValues[0];
+			}
+
 			// add a stack to the recipients inventory
 			if (recipient.inventory.getFirstEmptyStack() != -1) {
-				recipient.inventory.addItemStackToInventory(new ItemStack(coins[logVal], stackSize));
-				coinsLeft -= (stackSize * Math.pow(9, logVal));
+				recipient.inventory.addItemStackToInventory(stack);
 			} else {
 				for (int i = 0; i < recipient.inventory.getSizeInventory(); i++) {
-					ItemStack stack = recipient.inventory.getStackInSlot(i);
-					for (int j = 0; j < coins.length; j++) {
-						if (stack != null && stack.getItem() == coins[j]) {
-							int amountToAdd = (int) Math.min(coinsLeft / Math.pow(9, j),
-									stack.getMaxStackSize() - stack.stackSize);
-							stack.stackSize += amountToAdd;
-							recipient.inventory.setInventorySlotContents(i, stack);
-							coinsLeft -= (amountToAdd * Math.pow(9, j));
-						}
+					ItemStack istack = recipient.inventory.getStackInSlot(i);
+					if (istack != null && istack.getItem() == stack.getItem()) {
+						int amountToAdd = (int) Math.min(stack.stackSize, istack.getMaxStackSize() - istack.stackSize);
+						istack.stackSize += amountToAdd;
+						stack.stackSize -= amountToAdd;
 					}
 				}
-				return coinsLeft; // return change
+				// at this point, we're going to throw extra to the world since
+				// the player inventory must be full.
+				World world = ((EntityPlayerMP) recipient).worldObj;
+				Random rand = new Random();
+				float rx = rand.nextFloat() * 0.8F + 0.1F;
+				float ry = rand.nextFloat() * 0.8F + 0.1F;
+				float rz = rand.nextFloat() * 0.8F + 0.1F;
+				EntityItem entityItem = new EntityItem(world, ((EntityPlayerMP) recipient).posX + rx,
+						((EntityPlayerMP) recipient).posY + ry, ((EntityPlayerMP) recipient).posZ + rz, stack);
+				world.spawnEntityInWorld(entityItem);
 			}
 		}
-		return 0;
 	}
 
 	@Override
-	public List addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args,
+			BlockPos pos) {
 		if (args.length == 1) {
 			List<String> players = new ArrayList<String>();
 			for (EntityPlayer p : (List<EntityPlayer>) sender.getEntityWorld().playerEntities) {

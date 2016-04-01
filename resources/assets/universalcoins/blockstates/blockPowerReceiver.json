@@ -1,8 +1,0 @@
-{
-    "variants": {
-        "facing=north": { "model": "universalcoins:blockPowerReceiver" },
-        "facing=south": { "model": "universalcoins:blockPowerReceiver", "y": 180 },
-        "facing=west":  { "model": "universalcoins:blockPowerReceiver", "y": 270 },
-        "facing=east":  { "model": "universalcoins:blockPowerReceiver", "y": 90 }
-    }
-}

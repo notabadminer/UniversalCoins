@@ -1,58 +1,46 @@
 #####
 # Main
 #####
-tile.blockTradeStation.name=Universal Trade Station
-tile.blockVendor.name=Vending Block
-tile.blockVendorFrame.name=Vending Frame
-tile.blockCardStation.name=Universal Bank ATM
-tile.blockBase.name=Base Block
-tile.blockSafe.name=Ender Safe
-tile.blockBandit.name=Slot Machine
-tile.blockSignal.name=Redstone Signal Generator
-tile.blockPackager.name=Packager
-tile.blockPowerBase.name=Power Base
-tile.blockPowerReceiver.name=Power Receiver
-item.itemCoin.name=Coin
-item.itemSmallCoinStack.name=Coin Stack
-item.itemLargeCoinStack.name=Large Coin Stack
-item.itemSmallCoinBag.name=Coin Bag
-item.itemLargeCoinBag.name=Large Coin Bag
-item.itemUCCard.name=Universal Card
-item.itemEnderCard.name=Ender Card
-item.itemSeller.name=Selling Catalog
-item.itemVendorWrench.name=Vendor Wrench
-item.itemVendorFrame.name=Vending Frame
-item.itemUCSign.name=Advanced Sign
-item.itemLinkCard.name=Remote Storage Linking Card
-item.itemPackage.name=Package
+item.iron_coin.name=Coin
+item.gold_coin.name=Gold Coin
+item.emerald_coin.name=Emerald Coin
+item.diamond_coin.name=Diamond Coin
+item.obsidian_coin.name=Obsidian Coin
+item.uc_card.name=UC Card
+item.ender_card.name=Ender Card
+tile.tradestation.name=Trade Station
 itemGroup.tabUniversalCoins=Universal Coins
-
-#####
-# Achievements
-#####
-achievement.AchievementCoin=Money!
-achievement.AchievementCoin.desc=Pick up some coins.
-achievement.AchievementThousand=Now were getting somewhere
-achievement.AchievementThousand.desc=Balance of 1,000 coins.
-achievement.AchievementMillion=Over a million
-achievement.AchievementMillion.desc=Balance of 1,000,000 coins.
-achievement.AchievementBillion=Over a billion
-achievement.AchievementBillion.desc=Balance of 1,000,000,000 coins.
-achievement.AchievementMaxed=Account balance at maximum
-achievement.AchievementMaxed.desc=Balance of 2,147,483,647 coins.
 
 #####
 # General
 #####
+general.currency.single=Coin
+general.currency.multiple=Coins
 general.button.buy=Buy
 general.button.sell=Sell
 general.button.edit=Edit
 general.button.save=Save
 general.button.send=Send
-general.button.spin=Spin
 general.button.coin=Coin
 general.label.balance=Balance: 
 general.label.price=Price: 
+
+#####
+# Card Messages
+#####
+item.card.balance=Account balance:
+item.card.warning=Card not activated. Right click to activate.
+item.card.deposit=Deposited
+
+#####
+# TradeStation GUI
+#####
+tradestation.gui.button.mode=Mode
+tradestation.gui.warning.noitem=No item
+tradestation.gui.label.autobuy=Auto Buy/Sell
+tradestation.gui.autolabel.off=Off
+tradestation.gui.autolabel.buy=Buy
+tradestation.gui.autolabel.sell=Sell
 
 #####
 # Commands
@@ -95,7 +83,7 @@ command.uccommand.warning.pricefound=The price for
 command.uccommand.warning.noitem=Please specify item
 command.givecoins.name=givecoins
 command.givecoins.help=/givecoins <playerName> <amount> : Give another player coins.
-command.givecoins.error.notfound=Player not found.
+command.givecoins.error.notfound=That player cannot be found.
 command.givecoins.error.badentry=Please specify a valid coin amount.
 command.givecoins.error.noname=Please include player name and amount to give.
 command.givecoins.result=gave you
@@ -111,258 +99,21 @@ command.send.result.sender=coins sent to
 command.send.result.receiver=coins received from
 
 #####
-# Chat Warnings
+# Achievements
 #####
-chat.warning.inuse=Block in use. Try again later.
-
-#####
-# Universal Card Messages
-#####
-item.itemUCCard.balance=Account balance:
-item.itemUCCard.warning=Card not activated. Right click to activate.
-
-#####
-# Ender Card Messages
-#####
-item.itemEnderCard.balance=Account balance:
-item.itemEnderCard.message.deposit=Deposited
-
-#####
-# Linking Card Messages
-#####
-item.linkCard.blank=Blank
-item.linkCard.stored=Location Stored
-item.linkCard.message.stored=Location stored: 
-item.linkCard.message.set=Remote storage location set.
-
-#####
-# Safe GUI
-#####
-safe.gui.balance=Balance:
-
-#####
-# TradeStation GUI
-#####
-tradestation.gui.button.mode=Mode
-tradestation.gui.warning.noitem=No item
-tradestation.gui.label.autobuy=Auto Buy/Sell
-tradestation.gui.autolabel.off=Off
-tradestation.gui.autolabel.buy=Buy
-tradestation.gui.autolabel.sell=Sell
-
-#####
-# Vending GUI
-#####
-vending.wrench.owner=Owner
-vending.wrench.infiniteon=Infinite: On
-vending.wrench.infiniteoff=Infinite: Off
-
-#####
-# Sign GUI
-#####
-sign.sellmode.sell=Selling
-sign.sellmode.buy=Buying
-sign.price=Price: 
-sign.warning.stock=Out Of Stock!
-sign.warning.coins=Out Of Coins!
-sign.warning.inventoryfull=Inventory is Full!
-
-#####
-# Signal Generator GUI
-#####
-signal.label.fee=Coins:
-signal.label.duration=Duration:
-signal.face.label.second=second
-signal.face.label.seconds=seconds
-signal.face.label.coin=coin
-signal.face.label.coins=coins
-signal.message.notenough=Not enough coins!
-signal.message.activated=Signal activated.
-
-#####
-# Slot Machine Gui
-#####
-bandit.label.payout=Payout:
-bandit.label.fee=Fee
-bandit.label.four=Match Four
-bandit.label.five=Match Five
-
-
-#####
-# Packager GUI
-#####
-packager.button.small=Small
-packager.button.medium=Medium
-packager.button.large=Large
-packager.button.mode.buy=Mode: Buy
-packager.button.mode.send=Mode: Send
-packager.message.sent= sent you a package
-
-#####
-# ATM GUI
-#####
-# NOTE: Gui screens consist on eight possible lines of text with a maximum of seventeen to eighteen characters 
-#####
-cardstation.welcome.one=C:Welcome to
-cardstation.welcome.two=C:Universal Bank
-cardstation.welcome.three=
-cardstation.welcome.four=
-cardstation.welcome.five=C:Insert card or
-cardstation.welcome.six=C:press any button
-cardstation.welcome.seven=C:to continue
-cardstation.welcome.eight=
-cardstation.main.one=
-cardstation.main.two=<-- Balance
-cardstation.main.three=
-cardstation.main.four=<-- Deposit
-cardstation.main.five=
-cardstation.main.six=<-- Withdraw
-cardstation.main.seven=
-cardstation.main.eight=<-- Additional Options
-cardstation.additional.one=
-cardstation.additional.two=<-- New Card
-cardstation.additional.three=
-cardstation.additional.four=<-- Account Transfer
-cardstation.additional.five=
-cardstation.additional.six=<-- Secondary Acct.
-cardstation.additional.seven=
-cardstation.additional.eight=<-- Previous Menu
-cardstation.auth.one=
-cardstation.auth.two=C:Scanning
-cardstation.auth.three=
-cardstation.auth.four=
-cardstation.auth.five=
-cardstation.auth.six=
-cardstation.auth.seven=
-cardstation.auth.eight=
-cardstation.auth.access=C:Retrieving account
-cardstation.auth.success=C:Account found
-cardstation.auth.fail=C:No account found
-cardstation.balance.one=
-cardstation.balance.two=
-cardstation.balance.three=Balance:
-cardstation.balance.four=
-cardstation.balance.five=
-cardstation.balance.six=
-cardstation.balance.seven=
-cardstation.balance.eight=<-- Previous Menu
-cardstation.deposit.one=Insert coins
-cardstation.deposit.two=
-cardstation.deposit.three=Balance:
-cardstation.deposit.four=
-cardstation.deposit.five=
-cardstation.deposit.six=
-cardstation.deposit.seven=
-cardstation.deposit.eight=<-- Previous Menu
-cardstation.withdraw.one=Available Balance:
-cardstation.withdraw.two=
-cardstation.withdraw.three=Amount to withdraw:
-cardstation.withdraw.four=
-cardstation.withdraw.five=
-cardstation.withdraw.six=<-- Withdraw
-cardstation.withdraw.seven=
-cardstation.withdraw.eight=<-- Previous Menu
-cardstation.newcard.one=
-cardstation.newcard.two=C:Additional cards are
-cardstation.newcard.three=C:available at no cost.
-cardstation.newcard.four=
-cardstation.newcard.five=
-cardstation.newcard.six=<-- New Card
-cardstation.newcard.seven=
-cardstation.newcard.eight=<-- Cancel
-cardstation.newaccount.one=
-cardstation.newaccount.two=C:Would you like
-cardstation.newaccount.three=C:to open an account?
-cardstation.newaccount.four=
-cardstation.newaccount.five=
-cardstation.newaccount.six=<-- Open Account
-cardstation.newaccount.seven=
-cardstation.newaccount.eight=<-- Cancel
-cardstation.transferaccount.one=
-cardstation.transferaccount.two=C:All coins will be
-cardstation.transferaccount.three=C:transferred to
-cardstation.transferaccount.four=C:new account
-cardstation.transferaccount.five=
-cardstation.transferaccount.six=<-- Open New Account
-cardstation.transferaccount.seven=
-cardstation.transferaccount.eight=<-- Cancel
-cardstation.customaccount.one=
-cardstation.customaccount.two=C:Enter name
-cardstation.customaccount.three=
-cardstation.customaccount.four=
-cardstation.customaccount.five=
-cardstation.customaccount.six=<-- Open Account
-cardstation.customaccount.seven=
-cardstation.customaccount.eight=<-- Cancel
-cardstation.customaccountoptions.one=
-cardstation.customaccountoptions.two=<-- New Card
-cardstation.customaccountoptions.three=
-cardstation.customaccountoptions.four=<-- Transfer Account
-cardstation.customaccountoptions.five=
-cardstation.customaccountoptions.six=
-cardstation.customaccountoptions.seven=
-cardstation.customaccountoptions.eight=<-- Cancel
-cardstation.takecard.one=
-cardstation.takecard.two=
-cardstation.takecard.three=
-cardstation.takecard.four=
-cardstation.takecard.five=Please take card -->
-cardstation.takecard.six=
-cardstation.takecard.seven=
-cardstation.takecard.eight=<-- Done
-cardstation.takecoins.one=
-cardstation.takecoins.two=
-cardstation.takecoins.three=Please take coins -->
-cardstation.takecoins.four=
-cardstation.takecoins.five=
-cardstation.takecoins.six=
-cardstation.takecoins.seven=
-cardstation.takecoins.eight=<-- Done
-cardstation.insufficient.one=
-cardstation.insufficient.two=
-cardstation.insufficient.three=C:ERROR
-cardstation.insufficient.four=
-cardstation.insufficient.five=C:insufficient funds
-cardstation.insufficient.six=
-cardstation.insufficient.seven=
-cardstation.insufficient.eight=<-- Previous Menu
-cardstation.invalid.one=
-cardstation.invalid.two=
-cardstation.invalid.three=C:ERROR
-cardstation.invalid.four=
-cardstation.invalid.five=C:invalid input
-cardstation.invalid.six=
-cardstation.invalid.seven=
-cardstation.invalid.eight=<-- Previous Menu
-cardstation.badcard.one=
-cardstation.badcard.two=
-cardstation.badcard.three=C:INVALID CARD
-cardstation.badcard.four=
-cardstation.badcard.five=C:Card has been
-cardstation.badcard.six=C:confiscated
-cardstation.badcard.seven=
-cardstation.badcard.eight=
-cardstation.unauthorized.one=
-cardstation.unauthorized.two=
-cardstation.unauthorized.three=C:UNAUTORIZED ACCESS
-cardstation.unauthorized.four=
-cardstation.unauthorized.five=C:Only the account
-cardstation.unauthorized.six=C:owner can do this
-cardstation.unauthorized.seven=
-cardstation.unauthorized.eight=
-cardstation.duplicateaccount.one=
-cardstation.duplicateaccount.two=
-cardstation.duplicateaccount.three=C:DUPLICATE ACCOUNT
-cardstation.duplicateaccount.four=
-cardstation.duplicateaccount.five=C:Please enter a
-cardstation.duplicateaccount.six=C:unique name
-cardstation.duplicateaccount.seven=
-cardstation.duplicateaccount.eight=
-cardstation.processing.one=
-cardstation.processing.two=
-cardstation.processing.three=
-cardstation.processing.four=C:Processing...
-cardstation.processing.five=
-cardstation.processing.six=
-cardstation.processing.seven=
-cardstation.processing.eight=
+achievement.AchievementCoin=Money!
+achievement.AchievementCoin.desc=Pick up some coins.
+achievement.AchievementThousand=Now were getting somewhere
+achievement.AchievementThousand.desc=Balance of 1,000 coins.
+achievement.AchievementMillion=Over a million
+achievement.AchievementMillion.desc=Balance of 1,000,000 coins.
+achievement.AchievementBillion=Over a billion
+achievement.AchievementBillion.desc=Balance of 1,000,000,000 coins.
+achievement.AchievementTrillion=Over a trillion
+achievement.AchievementTrillion.desc=Balance of 1,000,000,000,000 coins.
+achievement.AchievementQuadrillion=Over a quadrillion
+achievement.AchievementQuadrillion.desc=Balance of 1,000,000,000,000,000 coins.
+achievement.AchievementQuintillion=Over a quintillion
+achievement.AchievementQuintillion.desc=Balance of 1,000,000,000,000,000,000 coins.
+achievement.AchievementMaxed=Account balance at maximum
+achievement.AchievementMaxed.desc=Balance of 9,223,372,036,854,775,807 coins.

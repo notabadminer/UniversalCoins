@@ -7,10 +7,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UniversalAccounts;
@@ -29,24 +31,24 @@ public class ItemUCCard extends Item {
 			list.add(stack.getTagCompound().getString("Name"));
 			list.add(stack.getTagCompound().getString("Account"));
 		} else {
-			list.add(StatCollector.translateToLocal("item.itemUCCard.warning"));
+			list.add(I18n.translateToLocal("item.card.warning"));
 		}
 	}
 
 	@Override
-	public boolean onItemUse(ItemStack itemstack, EntityPlayer player, World world, BlockPos pos, EnumFacing side,
-			float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
+			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (world.isRemote)
-			return true;
-		if (itemstack.getTagCompound() == null) {
-			createNBT(itemstack, world, player);
+			return EnumActionResult.FAIL;
+		if (stack.getTagCompound() == null) {
+			createNBT(stack, world, player);
 		}
-		int accountCoins = UniversalAccounts.getInstance()
-				.getAccountBalance(itemstack.getTagCompound().getString("Account"));
-		DecimalFormat formatter = new DecimalFormat("#,###,###,###");
-		player.addChatMessage(new ChatComponentText(
-				StatCollector.translateToLocal("item.itemUCCard.balance") + " " + formatter.format(accountCoins)));
-		return true;
+		long accountCoins = UniversalAccounts.getInstance(world)
+				.getAccountBalance(stack.getTagCompound().getString("Account"));
+		DecimalFormat formatter = new DecimalFormat("###,###,###,###,###,###,###");
+		player.addChatMessage(new TextComponentString(
+				I18n.translateToLocal("item.card.balance") + " " + formatter.format(accountCoins)));
+		return EnumActionResult.SUCCESS;
 	}
 
 	@Override
@@ -54,8 +56,8 @@ public class ItemUCCard extends Item {
 		createNBT(stack, world, entityPlayer);
 	}
 
-	private void createNBT(ItemStack stack, World world, EntityPlayer entityPlayer) {
-		String accountNumber = UniversalAccounts.getInstance()
+	protected void createNBT(ItemStack stack, World world, EntityPlayer entityPlayer) {
+		String accountNumber = UniversalAccounts.getInstance(world)
 				.getOrCreatePlayerAccount(entityPlayer.getPersistentID().toString());
 		stack.setTagCompound(new NBTTagCompound());
 		stack.getTagCompound().setString("Name", entityPlayer.getName());
