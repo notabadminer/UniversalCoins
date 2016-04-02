@@ -24,6 +24,7 @@ general.button.send=Send
 general.button.coin=Coin
 general.label.balance=Balance: 
 general.label.price=Price: 
+chat.warning.inuse=Block is in use. Try again later.
 
 #####
 # Card Messages

@@ -14,9 +14,8 @@ import universalcoins.tileentity.TileTradeStation;
 public class ContainerTradeStation extends Container {
 	private TileTradeStation tileEntity;
 	private int lastCoinSum, lastItemPrice, lastAutoMode, lastCoinMode;
-	private String lastName;
-	private boolean lastBuyButtonActive, lastSellButtonActive, lastCoinButtonActive, lastSStackButtonActive,
-			lastLStackButtonActive, lastSBagButtonActive, lastLBagButtonActive, lastInUse;
+	private boolean lastBuyButtonActive, lastSellButtonActive, lastIronBtnActive, lastGoldBtnActive,
+			lastEmeraldBtnActive, lastDiamondBtnActive, lastObsidianBtnActive, lastInUse;
 
 	public ContainerTradeStation(InventoryPlayer inventoryPlayer, TileTradeStation tEntity) {
 		tileEntity = tEntity;
@@ -97,6 +96,7 @@ public class ContainerTradeStation extends Container {
 	/**
 	 * Looks for changes made in the container, sends them to every listener.
 	 */
+	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 
@@ -105,35 +105,35 @@ public class ContainerTradeStation extends Container {
 
 			if (this.lastAutoMode != this.tileEntity.autoMode) {
 				icrafting.sendProgressBarUpdate(this, 0, (int) this.tileEntity.autoMode);
+				this.lastAutoMode = this.tileEntity.autoMode;
+				FMLLog.info("container automode update");
 			}
 			if (this.lastCoinMode != this.tileEntity.coinMode) {
 				icrafting.sendProgressBarUpdate(this, 1, (int) this.tileEntity.coinMode);
+				this.lastCoinMode = this.tileEntity.coinMode;
+				FMLLog.info("container coinMode update");
 			}
 			if (this.lastCoinSum != this.tileEntity.coinSum || this.lastItemPrice != this.tileEntity.itemPrice
-					|| this.lastName != this.tileEntity.customName
 					|| this.lastBuyButtonActive != this.tileEntity.buyButtonActive
 					|| this.lastSellButtonActive != this.tileEntity.sellButtonActive
-					|| this.lastCoinButtonActive != this.tileEntity.coinButtonActive
-					|| this.lastSStackButtonActive != this.tileEntity.isSStackButtonActive
-					|| this.lastLStackButtonActive != this.tileEntity.isLStackButtonActive
-					|| this.lastSBagButtonActive != this.tileEntity.isSBagButtonActive
+					|| this.lastIronBtnActive != this.tileEntity.ironCoinBtnActive
+					|| this.lastGoldBtnActive != this.tileEntity.goldCoinBtnActive
+					|| this.lastEmeraldBtnActive != this.tileEntity.emeraldCoinBtnActive
+					|| this.lastDiamondBtnActive != this.tileEntity.diamondCoinBtnActive
 					|| this.lastInUse != this.tileEntity.inUse) {
+				FMLLog.info("container requesting update");
 				tileEntity.updateTE();
+				this.lastCoinSum = this.tileEntity.coinSum;
+				this.lastItemPrice = this.tileEntity.itemPrice;
+				this.lastBuyButtonActive = this.tileEntity.buyButtonActive;
+				this.lastSellButtonActive = this.tileEntity.sellButtonActive;
+				this.lastIronBtnActive = this.tileEntity.ironCoinBtnActive;
+				this.lastGoldBtnActive = this.tileEntity.goldCoinBtnActive;
+				this.lastEmeraldBtnActive = this.tileEntity.emeraldCoinBtnActive;
+				this.lastDiamondBtnActive = this.tileEntity.diamondCoinBtnActive;
+				this.lastObsidianBtnActive = this.tileEntity.obsidianCoinBtnActive;
+				this.lastInUse = this.tileEntity.inUse;
 			}
-
-			this.lastAutoMode = this.tileEntity.autoMode;
-			this.lastCoinMode = this.tileEntity.coinMode;
-			this.lastCoinSum = this.tileEntity.coinSum;
-			this.lastItemPrice = this.tileEntity.itemPrice;
-			this.lastName = this.tileEntity.customName;
-			this.lastBuyButtonActive = this.tileEntity.buyButtonActive;
-			this.lastSellButtonActive = this.tileEntity.sellButtonActive;
-			this.lastCoinButtonActive = this.tileEntity.coinButtonActive;
-			this.lastSStackButtonActive = this.tileEntity.isSStackButtonActive;
-			this.lastLStackButtonActive = this.tileEntity.isSStackButtonActive;
-			this.lastSBagButtonActive = this.tileEntity.isSBagButtonActive;
-			this.lastLBagButtonActive = this.tileEntity.isLBagButtonActive;
-			this.lastInUse = this.tileEntity.inUse;
 		}
 	}
 
@@ -144,6 +144,12 @@ public class ContainerTradeStation extends Container {
 		}
 		if (par1 == 1) {
 			this.tileEntity.coinMode = par2;
+		}
+		if (par1 == 2) {
+			this.tileEntity.coinSum = par2;
+		}
+		if (par1 == 3) {
+			this.tileEntity.itemPrice = par2;
 		}
 	}
 

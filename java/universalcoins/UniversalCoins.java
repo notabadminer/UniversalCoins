@@ -19,6 +19,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import universalcoins.commands.UCBalance;
+import universalcoins.commands.UCCommand;
 import universalcoins.commands.UCGive;
 import universalcoins.commands.UCRebalance;
 import universalcoins.commands.UCSend;
@@ -148,6 +149,7 @@ public class UniversalCoins {
 	public void serverStart(FMLServerStartingEvent event) {
 		ICommandManager command = event.getServer().getCommandManager();
 		ServerCommandManager manager = (ServerCommandManager) command;
+		manager.registerCommand(new UCCommand());
 		manager.registerCommand(new UCBalance());
 		manager.registerCommand(new UCRebalance());
 		manager.registerCommand(new UCGive());

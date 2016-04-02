@@ -109,11 +109,11 @@ public class TradeStationGUI extends GuiContainer {
 
 		buyButton.enabled = tileEntity.buyButtonActive;
 		sellButton.enabled = tileEntity.sellButtonActive;
-		retrCoinButton.enabled = tileEntity.coinButtonActive;
-		retrSStackButton.enabled = tileEntity.isSStackButtonActive;
-		retrLStackButton.enabled = tileEntity.isLStackButtonActive;
-		retrSBagButton.enabled = tileEntity.isSBagButtonActive;
-		retrLBagButton.enabled = tileEntity.isLBagButtonActive;
+		retrCoinButton.enabled = tileEntity.ironCoinBtnActive;
+		retrSStackButton.enabled = tileEntity.goldCoinBtnActive;
+		retrLStackButton.enabled = tileEntity.emeraldCoinBtnActive;
+		retrSBagButton.enabled = tileEntity.diamondCoinBtnActive;
+		retrLBagButton.enabled = tileEntity.obsidianCoinBtnActive;
 
 		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/tradeStation.png");
 		Minecraft.getMinecraft().renderEngine.bindTexture(texture);

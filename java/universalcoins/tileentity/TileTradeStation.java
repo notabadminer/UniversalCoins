@@ -1,6 +1,5 @@
 package universalcoins.tileentity;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -12,18 +11,17 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.TradeStationGUI;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.util.UCItemPricer;
 import universalcoins.util.UniversalAccounts;
 
-public class TileTradeStation extends TileProtected implements ITickable, IInventory, ISidedInventory {
+public class TileTradeStation extends TileProtected implements IInventory, ISidedInventory {
 
 	private ItemStack[] inventory = new ItemStack[4];
 	public static final int itemInputSlot = 0;
@@ -34,11 +32,11 @@ public class TileTradeStation extends TileProtected implements ITickable, IInven
 	public int itemPrice = 0;
 	public boolean buyButtonActive = false;
 	public boolean sellButtonActive = false;
-	public boolean coinButtonActive = false;
-	public boolean isSStackButtonActive = false;
-	public boolean isLStackButtonActive = false;
-	public boolean isSBagButtonActive = false;
-	public boolean isLBagButtonActive = false;
+	public boolean ironCoinBtnActive = false;
+	public boolean goldCoinBtnActive = false;
+	public boolean emeraldCoinBtnActive = false;
+	public boolean diamondCoinBtnActive = false;
+	public boolean obsidianCoinBtnActive = false;
 	public boolean autoModeButtonActive = UniversalCoins.autoModeEnabled;
 	private static final int[] slots_top = new int[] { 0, 1, 2, 3 };
 	private static final int[] slots_bottom = new int[] { 0, 1, 2, 3 };
@@ -53,10 +51,10 @@ public class TileTradeStation extends TileProtected implements ITickable, IInven
 	}
 
 	public void update() {
-		if (!worldObj.isRemote) {
 			runAutoMode();
 			runCoinMode();
-		}
+			activateRetrieveButtons();
+			activateBuySellButtons();
 	}
 
 	public void inUseCleanup() {
@@ -99,33 +97,33 @@ public class TileTradeStation extends TileProtected implements ITickable, IInven
 	}
 
 	private void activateRetrieveButtons() {
-		coinButtonActive = false;
-		isSStackButtonActive = false;
-		isLStackButtonActive = false;
-		isSBagButtonActive = false;
-		isLBagButtonActive = false;
+		ironCoinBtnActive = false;
+		goldCoinBtnActive = false;
+		emeraldCoinBtnActive = false;
+		diamondCoinBtnActive = false;
+		obsidianCoinBtnActive = false;
 		if (coinSum > 0) {
-			coinButtonActive = inventory[itemOutputSlot] == null
+			ironCoinBtnActive = inventory[itemOutputSlot] == null
 					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.iron_coin
 							&& inventory[itemOutputSlot].stackSize != 64);
 		}
 		if (coinSum >= UniversalCoins.coinValues[1]) {
-			isSStackButtonActive = inventory[itemOutputSlot] == null
+			goldCoinBtnActive = inventory[itemOutputSlot] == null
 					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.gold_coin
 							&& inventory[itemOutputSlot].stackSize != 64);
 		}
 		if (coinSum >= UniversalCoins.coinValues[2]) {
-			isLStackButtonActive = inventory[itemOutputSlot] == null
+			emeraldCoinBtnActive = inventory[itemOutputSlot] == null
 					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.emerald_coin
 							&& inventory[itemOutputSlot].stackSize != 64);
 		}
 		if (coinSum >= UniversalCoins.coinValues[3]) {
-			isSBagButtonActive = inventory[itemOutputSlot] == null
+			diamondCoinBtnActive = inventory[itemOutputSlot] == null
 					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.diamond_coin
 							&& inventory[itemOutputSlot].stackSize != 64);
 		}
 		if (coinSum >= UniversalCoins.coinValues[4]) {
-			isLBagButtonActive = inventory[itemOutputSlot] == null
+			obsidianCoinBtnActive = inventory[itemOutputSlot] == null
 					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.obsidian_coin
 							&& inventory[itemOutputSlot].stackSize != 64);
 		}
@@ -381,8 +379,7 @@ public class TileTradeStation extends TileProtected implements ITickable, IInven
 		} else if (buttonId <= TradeStationGUI.idLBagButton) {
 			onRetrieveButtonsPressed(buttonId, shiftPressed);
 		}
-		activateRetrieveButtons();
-		activateBuySellButtons();
+		update();
 	}
 
 	@Override
@@ -436,7 +433,31 @@ public class TileTradeStation extends TileProtected implements ITickable, IInven
 		} catch (Throwable ex2) {
 			sellButtonActive = false;
 		}
-		activateRetrieveButtons();
+		try {
+			ironCoinBtnActive = tagCompound.getBoolean("ironCoinBtnActive");
+		} catch (Throwable ex2) {
+			ironCoinBtnActive = false;
+		}
+		try {
+			goldCoinBtnActive = tagCompound.getBoolean("goldCoinBtnActive");
+		} catch (Throwable ex2) {
+			goldCoinBtnActive = false;
+		}
+		try {
+			emeraldCoinBtnActive = tagCompound.getBoolean("emeraldCoinBtnActive");
+		} catch (Throwable ex2) {
+			emeraldCoinBtnActive = false;
+		}
+		try {
+			diamondCoinBtnActive = tagCompound.getBoolean("diamondCoinBtnActive");
+		} catch (Throwable ex2) {
+			diamondCoinBtnActive = false;
+		}
+		try {
+			obsidianCoinBtnActive = tagCompound.getBoolean("obsidianCoinBtnActive");
+		} catch (Throwable ex2) {
+			obsidianCoinBtnActive = false;
+		}
 	}
 
 	@Override
@@ -462,6 +483,11 @@ public class TileTradeStation extends TileProtected implements ITickable, IInven
 		tagCompound.setBoolean("InUse", inUse);
 		tagCompound.setBoolean("buyButtonActive", buyButtonActive);
 		tagCompound.setBoolean("sellButtonActive", sellButtonActive);
+		tagCompound.setBoolean("ironCoinBtnActive", ironCoinBtnActive);
+		tagCompound.setBoolean("goldCoinBtnActive", goldCoinBtnActive);
+		tagCompound.setBoolean("emeraldCoinBtnActive", emeraldCoinBtnActive);
+		tagCompound.setBoolean("diamondCoinBtnActive", diamondCoinBtnActive);
+		tagCompound.setBoolean("obsidianCoinBtnActive", obsidianCoinBtnActive);
 	}
 
 	public void updateTE() {
@@ -478,6 +504,7 @@ public class TileTradeStation extends TileProtected implements ITickable, IInven
 
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+		FMLLog.info("packet recieved");
 		readFromNBT(pkt.getNbtCompound());
 	}
 
@@ -533,8 +560,6 @@ public class TileTradeStation extends TileProtected implements ITickable, IInven
 				}
 			}
 		}
-		activateBuySellButtons();
-		activateRetrieveButtons();
 		return stack;
 	}
 
@@ -582,8 +607,7 @@ public class TileTradeStation extends TileProtected implements ITickable, IInven
 				}
 			}
 		}
-		activateRetrieveButtons();
-		activateBuySellButtons();
+		update(); //TODO
 	}
 
 	@Override
