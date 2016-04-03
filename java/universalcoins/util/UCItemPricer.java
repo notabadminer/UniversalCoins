@@ -76,21 +76,18 @@ public class UCItemPricer {
 	}
 
 	private void loadDefaults() throws IOException {
-		String[] configList = { "pricelists/minecraft.cfg", "pricelists/BuildCraft.cfg",
-				"pricelists/universalcoins.cfg", "pricelists/ThermalExpansion.cfg", "pricelists/SolarFlux.cfg",
-				"pricelists/eplus.cfg", "pricelists/betterstorage.cfg", "pricelists/Backpack.cfg",
-				"pricelists/ThermalFoundation.cfg", "pricelists/cfm.cfg", "pricelists/BiblioCraft.cfg",
-				"pricelists/FLabsBF.cfg", "pricelists/oredictionary.cfg", };
-		InputStream priceResource;
-		// load those files into hashmap(ucPriceMap)
-		for (int i = 0; i < configList.length; i++) {
-			priceResource = UCItemPricer.class.getResourceAsStream(configList[i]);
-			if (priceResource == null) {
-				return;
-			}
-			String priceString = convertStreamToString(priceResource);
-			processDefaultConfigs(priceString);
-		}
+		 String[] configList = { "pricelists/minecraft.cfg"};
+		 InputStream priceResource;
+		 // load those files into hashmap(ucPriceMap)
+		 for (int i = 0; i < configList.length; i++) {
+		 priceResource =
+		 UCItemPricer.class.getResourceAsStream(configList[i]);
+		 if (priceResource == null) {
+		 return;
+		 }
+		 String priceString = convertStreamToString(priceResource);
+		 processDefaultConfigs(priceString);
+		 }
 	}
 
 	private String convertStreamToString(java.io.InputStream is) {
@@ -131,28 +128,38 @@ public class UCItemPricer {
 			// pass the first value as modname
 			String modName = tempModName[0];
 			if (item != null) {
-				Item test = (Item) Item.itemRegistry.getObject(new ResourceLocation(item)); // TODO
-																							// verify
-																							// this
-																							// works
+				Item test = (Item) Item.itemRegistry.getObject(new ResourceLocation(item));
 				// check for meta values so we catch all items
 				// Iterate through damage values and add them if unique
-				for (int i = 0; i < 16; i++) {
-					ItemStack value = new ItemStack(test, 1, i);
-					try {
-						// IIcon icon = test.getIconIndex(value);
-						String name = value.getUnlocalizedName();
-						if (name != null && !itemsDiscovered.contains(name)) {
-							itemsDiscovered.add(value);
-							continue;
+				ItemStack baseStack = new ItemStack(test, 1, 0);
+				ItemStack previousStack = new ItemStack(test, 1, 0);
+				boolean newItem = true;
+				int itemDamage = 0;
+				while (newItem == true) {
+					ItemStack testStack = new ItemStack(test, 1, itemDamage);
+					if (itemDamage == 0 || !baseStack.getDisplayName().equals(testStack.getDisplayName())
+							&& !previousStack.getDisplayName().equals(testStack.getDisplayName())) {
+						previousStack = testStack;
+						try {
+							String name = testStack.getUnlocalizedName() + "." + itemDamage;
+							if (name != null && !itemsDiscovered.contains(name)) {
+								itemsDiscovered.add(testStack);
+							}
+						} catch (Throwable ex) {
+							// set false to exit as something has gone wrong.
+							newItem = false;
 						}
-					} catch (Throwable ex) {
-						// fail quietly
+					} else {
+						newItem = false;
 					}
+					itemDamage++;
 				}
 			}
+
 			// parse oredictionary
-			for (String ore : OreDictionary.getOreNames()) {
+			for (
+
+			String ore : OreDictionary.getOreNames()) {
 				ucModnameMap.put(ore, "oredictionary");
 				if (!ucPriceMap.containsKey(ore)) {
 					// check ore to see if any of the types has a price, use it
@@ -172,15 +179,16 @@ public class UCItemPricer {
 			// iterate through the items and update the hashmaps
 			for (ItemStack itemstack : itemsDiscovered) {
 				// update ucModnameMap with items found
-				ucModnameMap.put(itemstack.getUnlocalizedName(), modName);
+				ucModnameMap.put(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage(), modName);
 				// update ucPriceMap with initial values
-				if (!ucPriceMap.containsKey(itemstack.getUnlocalizedName())) {
-					ucPriceMap.put(itemstack.getUnlocalizedName(), -1);
+				if (!ucPriceMap.containsKey(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage())) {
+					ucPriceMap.put(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage(), -1);
 				}
 			}
 			// clear this variable so we can use it next round
 			itemsDiscovered.clear();
 		}
+
 	}
 
 	private void loadPricelists() throws IOException {
@@ -262,7 +270,7 @@ public class UCItemPricer {
 		int ItemPrice = -1;
 		String itemName = null;
 		try {
-			itemName = itemStack.getUnlocalizedName();
+			itemName = itemStack.getUnlocalizedName() + "." + itemStack.getItemDamage();
 		} catch (Exception e) {
 			// fail silently
 		}
@@ -282,57 +290,25 @@ public class UCItemPricer {
 		return ItemPrice;
 	}
 
-	public int getItemPrice(String string) {
-		if (string.isEmpty()) {
-			return -1;
-		}
-		Integer ItemPrice = -1;
-		if (ucPriceMap.get(string) != null) {
-			ItemPrice = ucPriceMap.get(string);
-		}
-		return ItemPrice;
-	}
-
 	public boolean setItemPrice(ItemStack itemStack, int price) {
 		if (itemStack == null) {
 			return false;
 		}
-		if (itemStack.getHasSubtypes()) {
-			// we need to check for unique names here
-			// find item id and then get base itemname
-			int itemID = Item.getIdFromItem(itemStack.getItem());
-			Item baseItem = Item.getItemById(itemID);
-			if (baseItem.getUnlocalizedName().matches(itemStack.getUnlocalizedName())) {
-				// if name matches, we cannot set price
-				return false;
-			}
-		}
-		if (itemStack.isItemDamaged() && !itemStack.isItemStackDamageable()) {
-			return false;
+		int itemStackMeta = itemStack.getMetadata();
+		if (itemStack.isItemStackDamageable()) {
+			//override for damaged items
+			itemStackMeta = 0;
 		}
 		String itemName = itemStack.getUnlocalizedName();
 		// get modName to add to mapping
-		String itemRegistryKey = Item.itemRegistry.getNameForObject(itemStack.getItem()).toString(); // TODO
-																										// verify
-																										// this
+		String itemRegistryKey = Item.itemRegistry.getNameForObject(itemStack.getItem()).toString();
 		String[] tempModName = itemRegistryKey.split("\\W", 3);
 		// pass the first value as modname
 		String modName = tempModName[0];
-		ucModnameMap.put(itemName, modName);
+		ucModnameMap.put(itemName + "." + itemStackMeta, modName);
 		// update price
-		ucPriceMap.put(itemName, price);
+		ucPriceMap.put(itemName + "." + itemStackMeta, price);
 		return true;
-	}
-
-	public boolean setItemPrice(String string, int price) {
-		if (string.isEmpty()) {
-			return false;
-		}
-		if (ucPriceMap.containsKey(string)) {
-			ucPriceMap.put(string, price);
-			return true;
-		}
-		return false;
 	}
 
 	public void updatePriceLists() {
@@ -383,18 +359,21 @@ public class UCItemPricer {
 		List keys = new ArrayList(ucPriceMap.keySet());
 		ItemStack stack = null;
 		while (stack == null) {
-			String test = (String) keys.get(random.nextInt(keys.size()));
+			String keyName = keys.get(random.nextInt(keys.size())).toString();
 			int price = 0;
-			if (ucPriceMap.get(test) != null) {
-				price = ucPriceMap.get(test);
+			if (ucPriceMap.get(keyName) != null) {
+				price = ucPriceMap.get(keyName);
 			}
 			if (price > 0) {
-				if (test.startsWith("tile.") || test.startsWith("item.")) {
-					test = test.substring(5);
+				if (keyName.startsWith("tile.") || keyName.startsWith("item.")) {
+					keyName = keyName.substring(5);
 				}
-				Item item = (Item) Item.itemRegistry.getObject(new ResourceLocation(test));
+				//split string into item name and meta
+				String itemName = keyName.split("\\.")[0];
+				int itemMeta = Integer.valueOf(keyName.split("\\.")[1]);
+				Item item = (Item) Item.itemRegistry.getObject(new ResourceLocation(keyName));
 				if (item != null) {
-					stack = new ItemStack(item);
+					stack = new ItemStack(item, itemMeta);
 				}
 			}
 		}
@@ -525,11 +504,11 @@ public class UCItemPricer {
 		for (Entry<ItemStack, ItemStack> recipe : recipes.entrySet()) {
 			ItemStack input = recipe.getKey();
 			ItemStack output = recipe.getValue();
-			if (ucPriceMap.get(input.getUnlocalizedName()) != null) {
-				int inputValue = ucPriceMap.get(input.getUnlocalizedName());
-				int outputValue = ucPriceMap.get(output.getUnlocalizedName());
+			if (ucPriceMap.get(input.getUnlocalizedName() + "." + input.getItemDamage()) != null) {
+				int inputValue = ucPriceMap.get(input.getUnlocalizedName() + "." + input.getItemDamage());
+				int outputValue = ucPriceMap.get(output.getUnlocalizedName() + "." + output.getItemDamage());
 				if (inputValue != -1 && outputValue == -1) {
-					ucPriceMap.put(output.getUnlocalizedName(), inputValue + 2);
+					ucPriceMap.put(output.getUnlocalizedName() + "." + output.getItemDamage(), inputValue + 2);
 				}
 			}
 		}

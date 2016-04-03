@@ -14,7 +14,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.TradeStationGUI;
 import universalcoins.net.UCButtonMessage;
@@ -51,15 +50,15 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 	}
 
 	public void update() {
+		if (!worldObj.isRemote) {
 			runAutoMode();
 			runCoinMode();
 			activateRetrieveButtons();
 			activateBuySellButtons();
+		}
 	}
 
 	public void inUseCleanup() {
-		if (worldObj.isRemote)
-			return;
 		inUse = false;
 	}
 
@@ -504,7 +503,6 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		FMLLog.info("packet recieved");
 		readFromNBT(pkt.getNbtCompound());
 	}
 
@@ -607,7 +605,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 				}
 			}
 		}
-		update(); //TODO
+		update(); // TODO
 	}
 
 	@Override

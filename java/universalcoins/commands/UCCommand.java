@@ -1,5 +1,6 @@
 package universalcoins.commands;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import universalcoins.util.UCItemPricer;
 public class UCCommand extends CommandBase implements ICommand {
 
 	private boolean firstChange = true;
+	DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
 
 	@Override
 	public String getCommandName() {
@@ -67,19 +69,16 @@ public class UCCommand extends CommandBase implements ICommand {
 					ItemStack stack = getPlayerItem(sender);
 					if (stack != null) {
 						price = UCItemPricer.getInstance().getItemPrice(stack);
-						stackName = getPlayerItem(sender).getUnlocalizedName();
+						stackName = getPlayerItem(sender).getDisplayName();
 					}
-				} else {
-					price = UCItemPricer.getInstance().getItemPrice(args[1]);
-					stackName = args[1];
 				}
 				if (price == -1) {
 					sender.addChatMessage(new TextComponentString(
 							"§c" + I18n.translateToLocal("command.uccommand.warning.pricenotset") + " " + stackName));
 				} else
-					sender.addChatMessage(new TextComponentString(
-							"§a" + I18n.translateToLocal("command.uccommand.warning.pricefound") + " " + stackName
-									+ ": " + price));
+					sender.addChatMessage(
+							new TextComponentString("§a" + I18n.translateToLocal("command.uccommand.warning.pricefound")
+									+ " " + stackName + ": " + formatter.format(price)));
 			} else
 				sender.addChatMessage(
 						new TextComponentString("§c" + I18n.translateToLocal("command.uccommand.warning.noitem")));
@@ -100,12 +99,10 @@ public class UCCommand extends CommandBase implements ICommand {
 					if (stack != null) {
 						result = UCItemPricer.getInstance().setItemPrice(stack, price);
 					}
-				} else {
-					result = UCItemPricer.getInstance().setItemPrice(args[1], price);
 				}
 				if (result == true) {
 					sender.addChatMessage(new TextComponentString(
-							I18n.translateToLocal("command.uccommand.option.set.price") + " " + price));
+							I18n.translateToLocal("command.uccommand.option.set.price") + " " + formatter.format(price)));
 					if (firstChange) {
 						sender.addChatMessage(new TextComponentString(
 								I18n.translateToLocal("command.uccommand.option.set.price.firstuse.one")));
