@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import universalcoins.Achievements;
+import universalcoins.blocks.BlockSafe;
 import universalcoins.blocks.BlockTradeStation;
 import universalcoins.items.ItemCoin;
 import universalcoins.items.ItemEnderCard;
@@ -22,9 +23,11 @@ public class CommonProxy {
 	public static Item uc_card = new ItemUCCard().setUnlocalizedName("uc_card");
 	public static Item ender_card = new ItemEnderCard().setUnlocalizedName("ender_card");
 	public static Block tradestation = new BlockTradeStation().setUnlocalizedName("tradestation");
+	public static Block safe = new BlockSafe().setUnlocalizedName("safe");
 
 	public void registerBlocks() {
 		GameRegistry.registerBlock(tradestation, tradestation.getUnlocalizedName().substring(5));
+		GameRegistry.registerBlock(safe, safe.getUnlocalizedName().substring(5));
 	}
 
 	public void registerItems() {

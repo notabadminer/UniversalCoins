@@ -9,6 +9,7 @@ item.obsidian_coin.name=Obsidian Coin
 item.uc_card.name=UC Card
 item.ender_card.name=Ender Card
 tile.tradestation.name=Trade Station
+tile.safe.name=Ender Safe
 itemGroup.tabUniversalCoins=Universal Coins
 
 #####

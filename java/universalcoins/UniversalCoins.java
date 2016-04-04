@@ -26,6 +26,7 @@ import universalcoins.commands.UCSend;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.proxy.CommonProxy;
 import universalcoins.tileentity.TileProtected;
+import universalcoins.tileentity.TileSafe;
 import universalcoins.tileentity.TileTradeStation;
 import universalcoins.util.UCItemPricer;
 import universalcoins.util.UCMobDropEventHandler;
@@ -138,6 +139,7 @@ public class UniversalCoins {
 
 		GameRegistry.registerTileEntity(TileProtected.class, "TileProtected");
 		GameRegistry.registerTileEntity(TileTradeStation.class, "TileTradeStation");
+		GameRegistry.registerTileEntity(TileSafe.class, "TileSafe");
 	}
 
 	@EventHandler

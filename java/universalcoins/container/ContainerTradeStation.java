@@ -6,7 +6,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.tileentity.TileTradeStation;
@@ -106,12 +105,10 @@ public class ContainerTradeStation extends Container {
 			if (this.lastAutoMode != this.tileEntity.autoMode) {
 				icrafting.sendProgressBarUpdate(this, 0, (int) this.tileEntity.autoMode);
 				this.lastAutoMode = this.tileEntity.autoMode;
-				FMLLog.info("container automode update");
 			}
 			if (this.lastCoinMode != this.tileEntity.coinMode) {
 				icrafting.sendProgressBarUpdate(this, 1, (int) this.tileEntity.coinMode);
 				this.lastCoinMode = this.tileEntity.coinMode;
-				FMLLog.info("container coinMode update");
 			}
 			if (this.lastCoinSum != this.tileEntity.coinSum || this.lastItemPrice != this.tileEntity.itemPrice
 					|| this.lastBuyButtonActive != this.tileEntity.buyButtonActive
@@ -121,7 +118,6 @@ public class ContainerTradeStation extends Container {
 					|| this.lastEmeraldBtnActive != this.tileEntity.emeraldCoinBtnActive
 					|| this.lastDiamondBtnActive != this.tileEntity.diamondCoinBtnActive
 					|| this.lastInUse != this.tileEntity.inUse) {
-				FMLLog.info("container requesting update");
 				tileEntity.updateTE();
 				this.lastCoinSum = this.tileEntity.coinSum;
 				this.lastItemPrice = this.tileEntity.itemPrice;

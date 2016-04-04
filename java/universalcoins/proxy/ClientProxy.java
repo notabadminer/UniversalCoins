@@ -31,6 +31,8 @@ public class ClientProxy extends CommonProxy {
 		// Blocks
 		mesher.register(Item.getItemFromBlock(tradestation), 0, new ModelResourceLocation(
 				UniversalCoins.MODID + ":" + tradestation.getUnlocalizedName().substring(5), "inventory"));
+		mesher.register(Item.getItemFromBlock(safe), 0, new ModelResourceLocation(
+				UniversalCoins.MODID + ":" + safe.getUnlocalizedName().substring(5), "inventory"));
 
 	}
 }
