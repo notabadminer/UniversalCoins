@@ -40,6 +40,6 @@ public class SafeGUI extends GuiContainer {
 		// display player account balance
 		String formattedBalance = formatter.format(tEntity.accountBalance);
 		int balLength = fontRendererObj.getStringWidth(formattedBalance);
-		fontRendererObj.drawString(formattedBalance, 131 - balLength, 35, 4210752);
+		fontRendererObj.drawString(formattedBalance, 154 - balLength, 22, 4210752);
 	}
 }

@@ -10,6 +10,9 @@ item.uc_card.name=UC Card
 item.ender_card.name=Ender Card
 tile.tradestation.name=Trade Station
 tile.safe.name=Ender Safe
+tile.vendor.name=Vendor Block
+tile.vendor_frame.name=Vendor Frame
+tile.signalblock.name=Redstone Signal Generator
 itemGroup.tabUniversalCoins=Universal Coins
 
 #####
@@ -43,6 +46,18 @@ tradestation.gui.label.autobuy=Auto Buy/Sell
 tradestation.gui.autolabel.off=Off
 tradestation.gui.autolabel.buy=Buy
 tradestation.gui.autolabel.sell=Sell
+
+#####
+# Signal Generator GUI
+#####
+signal.label.fee=Coins:
+signal.label.duration=Duration:
+signal.face.label.second=second
+signal.face.label.seconds=seconds
+signal.face.label.coin=coin
+signal.face.label.coins=coins
+signal.message.notenough=Not enough coins!
+signal.message.activated=Signal activated.
 
 #####
 # Commands

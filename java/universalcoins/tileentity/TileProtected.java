@@ -1,7 +1,6 @@
 package universalcoins.tileentity;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -12,7 +11,7 @@ public class TileProtected extends TileEntity {
 	public String blockOwner = "none";
 	public String playerName = "";
 	public boolean inUse = false;
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
@@ -24,15 +23,15 @@ public class TileProtected extends TileEntity {
 		try {
 			playerName = tagCompound.getString("playerName");
 		} catch (Throwable ex2) {
-			playerName = "default";
+			playerName = "none";
 		}
 		try {
 			blockOwner = tagCompound.getString("blockOwner");
 		} catch (Throwable ex2) {
-			blockOwner = "default";
+			blockOwner = "none";
 		}
 	}
-	
+
 	@Override
 	public void writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
@@ -40,7 +39,7 @@ public class TileProtected extends TileEntity {
 		tagCompound.setString("playerName", playerName);
 		tagCompound.setString("blockOwner", blockOwner);
 	}
-	
+
 	@Override
 	public Packet getDescriptionPacket() {
 		NBTTagCompound nbt = new NBTTagCompound();

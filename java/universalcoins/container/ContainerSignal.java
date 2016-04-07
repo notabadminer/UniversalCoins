@@ -8,22 +8,20 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import universalcoins.tileentity.TileSafe;
+import universalcoins.tileentity.TileSignal;
 
-public class ContainerSafe extends Container {
-	private String lastOwner;
-	private long lastAccountBalance;
-	private TileSafe tEntity;
+public class ContainerSignal extends Container {
+	private TileSignal tEntity;
+	private int lastDuration;
+	private int lastFee;
+	private int lastCoinSum;
+	private boolean lastCanProvidePower;
 
-	public ContainerSafe(InventoryPlayer inventoryPlayer, TileSafe tileEntity) {
+	public ContainerSignal(InventoryPlayer inventoryPlayer, TileSignal tileEntity) {
 		tEntity = tileEntity;
 		// the Slot constructor takes the IInventory and the slot number in that
 		// it binds to and the x-y coordinates it resides on-screen
-		addSlotToContainer(new UCSlotCoinInput(tileEntity, tEntity.itemInputSlot, 27, 37));
-		addSlotToContainer(new UCSlotOutput(tileEntity, tEntity.itemOutputSlot, 134, 37));
-
-		// now that the slots are updated, fill the slots
-		tEntity.fillOutputSlot();
+		addSlotToContainer(new UCSlotOutput(tEntity, tEntity.itemOutputSlot, 148, 73));
 
 		// commonly used vanilla code that adds the player's inventory
 		bindPlayerInventory(inventoryPlayer);
@@ -37,12 +35,12 @@ public class ContainerSafe extends Container {
 	void bindPlayerInventory(InventoryPlayer inventoryPlayer) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 9; j++) {
-				addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9, 8 + j * 18, 70 + i * 18));
+				addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9, 8 + j * 18, 108 + i * 18));
 			}
 		}
 
 		for (int i = 0; i < 9; i++) {
-			addSlotToContainer(new Slot(inventoryPlayer, i, 8 + i * 18, 128));
+			addSlotToContainer(new Slot(inventoryPlayer, i, 8 + i * 18, 166));
 		}
 	}
 
@@ -56,18 +54,16 @@ public class ContainerSafe extends Container {
 			stack = stackInSlot.copy();
 
 			// merges the item into player inventory since its in the tileEntity
-			if (slot < 2) {
-				if (!this.mergeItemStack(stackInSlot, 2, 38, true)) {
+			if (slot < 3) {
+				if (!this.mergeItemStack(stackInSlot, 3, 39, true)) {
 					return null;
-				} else {
-					tEntity.coinsTaken(stack);
 				}
 			}
 			// places it into the tileEntity is possible since its in the player
 			// inventory
 			else {
 				boolean foundSlot = false;
-				for (int i = 0; i < 2; i++) {
+				for (int i = 0; i < 3; i++) {
 					if (((Slot) inventorySlots.get(i)).isItemValid(stackInSlot)
 							&& this.mergeItemStack(stackInSlot, i, i + 1, false)) {
 						foundSlot = true;
@@ -103,12 +99,15 @@ public class ContainerSafe extends Container {
 		for (int i = 0; i < this.crafters.size(); ++i) {
 			ICrafting icrafting = (ICrafting) this.crafters.get(i);
 
-			if (this.lastOwner != tEntity.blockOwner || this.lastAccountBalance != tEntity.accountBalance) {
+			if (this.lastCoinSum != tEntity.coinSum || this.lastDuration != tEntity.duration
+					|| this.lastFee != tEntity.fee || this.lastCanProvidePower != tEntity.canProvidePower) {
 				tEntity.updateTE();
 			}
 
-			this.lastOwner = tEntity.blockOwner;
-			this.lastAccountBalance = tEntity.accountBalance;
+			this.lastCoinSum = tEntity.coinSum;
+			this.lastDuration = tEntity.duration;
+			this.lastFee = tEntity.fee;
+			this.lastCanProvidePower = tEntity.canProvidePower;
 		}
 	}
 
@@ -118,5 +117,4 @@ public class ContainerSafe extends Container {
 			// this.tileEntity.autoMode = par2;
 		}
 	}
-
 }

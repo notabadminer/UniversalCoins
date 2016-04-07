@@ -113,16 +113,19 @@ public class UCRebalance extends CommandBase implements ICommand {
 						stack.stackSize -= amountToAdd;
 					}
 				}
-				// at this point, we're going to throw extra to the world since
-				// the player inventory must be full.
-				World world = ((EntityPlayerMP) recipient).worldObj;
-				Random rand = new Random();
-				float rx = rand.nextFloat() * 0.8F + 0.1F;
-				float ry = rand.nextFloat() * 0.8F + 0.1F;
-				float rz = rand.nextFloat() * 0.8F + 0.1F;
-				EntityItem entityItem = new EntityItem(world, ((EntityPlayerMP) recipient).posX + rx,
-						((EntityPlayerMP) recipient).posY + ry, ((EntityPlayerMP) recipient).posZ + rz, stack);
-				world.spawnEntityInWorld(entityItem);
+				if (stack.stackSize > 0) {
+					// at this point, we're going to throw extra to the world
+					// since
+					// the player inventory must be full.
+					World world = ((EntityPlayerMP) recipient).worldObj;
+					Random rand = new Random();
+					float rx = rand.nextFloat() * 0.8F + 0.1F;
+					float ry = rand.nextFloat() * 0.8F + 0.1F;
+					float rz = rand.nextFloat() * 0.8F + 0.1F;
+					EntityItem entityItem = new EntityItem(world, ((EntityPlayerMP) recipient).posX + rx,
+							((EntityPlayerMP) recipient).posY + ry, ((EntityPlayerMP) recipient).posZ + rz, stack);
+					world.spawnEntityInWorld(entityItem);
+				}
 			}
 		}
 	}

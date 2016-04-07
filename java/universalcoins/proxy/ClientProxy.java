@@ -4,7 +4,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import universalcoins.UniversalCoins;
+import universalcoins.render.SignalRenderer;
+import universalcoins.render.VendorBlockRenderer;
+import universalcoins.render.VendorFrameRenderer;
+import universalcoins.tileentity.TileSignal;
+import universalcoins.tileentity.TileVendorBlock;
+import universalcoins.tileentity.TileVendorFrame;
 
 public class ClientProxy extends CommonProxy {
 
@@ -33,6 +40,17 @@ public class ClientProxy extends CommonProxy {
 				UniversalCoins.MODID + ":" + tradestation.getUnlocalizedName().substring(5), "inventory"));
 		mesher.register(Item.getItemFromBlock(safe), 0, new ModelResourceLocation(
 				UniversalCoins.MODID + ":" + safe.getUnlocalizedName().substring(5), "inventory"));
+		mesher.register(Item.getItemFromBlock(signalblock), 0, new ModelResourceLocation(
+				UniversalCoins.MODID + ":" + signalblock.getUnlocalizedName().substring(5), "inventory"));
+		mesher.register(Item.getItemFromBlock(vendor), 0, new ModelResourceLocation(
+				UniversalCoins.MODID + ":" + vendor.getUnlocalizedName().substring(5), "inventory"));
+		mesher.register(Item.getItemFromBlock(vendor_frame), 0, new ModelResourceLocation(
+				UniversalCoins.MODID + ":" + vendor_frame.getUnlocalizedName().substring(5), "inventory"));
+		
+		//special
+		ClientRegistry.bindTileEntitySpecialRenderer(TileSignal.class, new SignalRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileVendorBlock.class, new VendorBlockRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileVendorFrame.class, new VendorFrameRenderer());
 
 	}
 }

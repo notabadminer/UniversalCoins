@@ -24,10 +24,15 @@ import universalcoins.commands.UCGive;
 import universalcoins.commands.UCRebalance;
 import universalcoins.commands.UCSend;
 import universalcoins.net.UCButtonMessage;
+import universalcoins.net.UCVendorServerMessage;
 import universalcoins.proxy.CommonProxy;
 import universalcoins.tileentity.TileProtected;
 import universalcoins.tileentity.TileSafe;
+import universalcoins.tileentity.TileSignal;
 import universalcoins.tileentity.TileTradeStation;
+import universalcoins.tileentity.TileVendor;
+import universalcoins.tileentity.TileVendorBlock;
+import universalcoins.tileentity.TileVendorFrame;
 import universalcoins.util.UCItemPricer;
 import universalcoins.util.UCMobDropEventHandler;
 import universalcoins.util.UCPlayerPickupEventHandler;
@@ -127,6 +132,7 @@ public class UniversalCoins {
 		// network packet handling
 		snw = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 		snw.registerMessage(UCButtonMessage.class, UCButtonMessage.class, 0, Side.SERVER);
+		snw.registerMessage(UCVendorServerMessage.class, UCVendorServerMessage.class, 1, Side.SERVER);
 	}
 
 	@EventHandler
@@ -134,12 +140,16 @@ public class UniversalCoins {
 		proxy.registerBlocks();
 		proxy.registerItems();
 		proxy.registerRenderers();
-		
+
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 
 		GameRegistry.registerTileEntity(TileProtected.class, "TileProtected");
 		GameRegistry.registerTileEntity(TileTradeStation.class, "TileTradeStation");
 		GameRegistry.registerTileEntity(TileSafe.class, "TileSafe");
+		GameRegistry.registerTileEntity(TileSignal.class, "TileSignal");
+		GameRegistry.registerTileEntity(TileVendor.class, "TileVendor");
+		GameRegistry.registerTileEntity(TileVendorBlock.class, "TileVendorBlock");
+		GameRegistry.registerTileEntity(TileVendorFrame.class, "TileVendorFrame");
 	}
 
 	@EventHandler
