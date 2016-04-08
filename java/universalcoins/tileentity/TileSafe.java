@@ -135,26 +135,39 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 					coinValue = UniversalCoins.coinValues[4];
 					break;
 				}
-			}
-			if (coinValue > 0) {
-				int accountCapacity = (int) (Long.MAX_VALUE - accountBalance > Integer.MAX_VALUE ? Integer.MAX_VALUE
-						: Long.MAX_VALUE - accountBalance);
-				int depositAmount = Math.min(accountCapacity / coinValue, stack.stackSize);
-				UniversalAccounts.getInstance(worldObj).creditAccount(accountNumber, depositAmount * coinValue);
-				inventory[slot].stackSize -= depositAmount;
-				if (inventory[slot].stackSize == 0) {
-					inventory[slot] = null;
+				if (coinValue > 0) {
+					int accountCapacity = (int) (Long.MAX_VALUE - accountBalance > Integer.MAX_VALUE ? Integer.MAX_VALUE
+							: Long.MAX_VALUE - accountBalance);
+					int depositAmount = Math.min(accountCapacity / coinValue, stack.stackSize);
+					UniversalAccounts.getInstance(worldObj).creditAccount(accountNumber, depositAmount * coinValue);
+					inventory[slot].stackSize -= depositAmount;
+					if (inventory[slot].stackSize == 0) {
+						inventory[slot] = null;
+					}
+					fillOutputSlot();
+					if (!worldObj.isRemote)
+						updateAccountBalance();
 				}
-				fillOutputSlot();
-				if (!worldObj.isRemote)
-					updateAccountBalance();
 			}
 		}
 	}
 
 	public void fillOutputSlot() {
-		if (accountBalance > 0) {
-
+		if (accountBalance > UniversalCoins.coinValues[4]) {
+			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.obsidian_coin);
+			inventory[itemOutputSlot].stackSize = (int) Math.min(accountBalance / UniversalCoins.coinValues[4], 64);
+		} else if (accountBalance > UniversalCoins.coinValues[3]) {
+			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.diamond_coin);
+			inventory[itemOutputSlot].stackSize = (int) Math.min(accountBalance / UniversalCoins.coinValues[3], 64);
+		} else if (accountBalance > UniversalCoins.coinValues[2]) {
+			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.emerald_coin);
+			inventory[itemOutputSlot].stackSize = (int) Math.min(accountBalance / UniversalCoins.coinValues[2], 64);
+		} else if (accountBalance > UniversalCoins.coinValues[1]) {
+			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.gold_coin);
+			inventory[itemOutputSlot].stackSize = (int) Math.min(accountBalance / UniversalCoins.coinValues[1], 64);
+		} else if (accountBalance > UniversalCoins.coinValues[0]) {
+			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.iron_coin);
+			inventory[itemOutputSlot].stackSize = (int) Math.min(accountBalance / UniversalCoins.coinValues[0], 64);
 		}
 	}
 

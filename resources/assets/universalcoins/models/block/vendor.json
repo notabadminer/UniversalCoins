@@ -1,4 +1,4 @@
-{
+{	"parent": "block/cube_all",
     "elements": [
 	    {   "from": [ 0, 0, 0 ],
             "to": [ 16, 2, 16 ],
@@ -24,18 +24,18 @@
         }
     ],
     "textures": {
-	    "particle": "universalcoins:blocks/blockCardStation",
-        "down": "universalcoins:blocks/blockCardStation",
-        "up": "universalcoins:blocks/blockCardStation",
-        "north": "universalcoins:blocks/blockCardStation",
-        "south": "universalcoins:blocks/blockCardStation",
-        "west": "universalcoins:blocks/blockCardStation",
-        "east": "universalcoins:blocks/blockCardStation",
-        "top_down": "universalcoins:blocks/blockVendorBottom",
-        "top_up": "universalcoins:blocks/blockVendorTop",
-        "top_north": "universalcoins:blocks/blockVendorSide",
-        "top_south": "universalcoins:blocks/blockVendorSide",
-        "top_west": "universalcoins:blocks/blockVendorSide",
-        "top_east": "universalcoins:blocks/blockVendorSide"
+	    "particle": "universalcoins:blocks/vendor_base",
+        "down": "universalcoins:blocks/vendor_base",
+        "up": "universalcoins:blocks/vendor_base",
+        "north": "universalcoins:blocks/vendor_base",
+        "south": "universalcoins:blocks/vendor_base",
+        "west": "universalcoins:blocks/vendor_base",
+        "east": "universalcoins:blocks/vendor_base",
+        "top_down": "universalcoins:blocks/vendor_bottom",
+        "top_up": "universalcoins:blocks/vendor_top",
+        "top_north": "universalcoins:blocks/vendor_side",
+        "top_south": "universalcoins:blocks/vendor_side",
+        "top_west": "universalcoins:blocks/vendor_side",
+        "top_east": "universalcoins:blocks/vendor_side"
 	}
 }

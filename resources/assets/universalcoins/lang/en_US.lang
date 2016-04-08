@@ -8,11 +8,19 @@ item.diamond_coin.name=Diamond Coin
 item.obsidian_coin.name=Obsidian Coin
 item.uc_card.name=UC Card
 item.ender_card.name=Ender Card
+item.link_card.name=Remote Storage Linking Card
+item.catalog.name=Selling Catalog
+item.vendor_wrench.name=Vendor Wrench
 tile.tradestation.name=Trade Station
+item.uc_sign.name=Advanced Sign
 tile.safe.name=Ender Safe
 tile.vendor.name=Vendor Block
 tile.vendor_frame.name=Vendor Frame
 tile.signalblock.name=Redstone Signal Generator
+tile.packager.name=Packager
+tile.power_transmitter.name=RF Transmitter
+tile.power_receiver.name=RF Receiver
+tile.atm.name=ATM
 itemGroup.tabUniversalCoins=Universal Coins
 
 #####
@@ -38,6 +46,14 @@ item.card.warning=Card not activated. Right click to activate.
 item.card.deposit=Deposited
 
 #####
+# Linking Card Messages
+#####
+item.link_card.blank=Blank
+item.link_card.stored=Location Stored
+item.link_card.message.stored=Location stored: 
+item.link_card.message.set=Remote storage location set.
+
+#####
 # TradeStation GUI
 #####
 tradestation.gui.button.mode=Mode
@@ -58,6 +74,33 @@ signal.face.label.coin=coin
 signal.face.label.coins=coins
 signal.message.notenough=Not enough coins!
 signal.message.activated=Signal activated.
+
+#####
+# Sign GUI
+#####
+sign.sellmode.sell=Selling
+sign.sellmode.buy=Buying
+sign.price=Price: 
+sign.warning.stock=Out Of Stock!
+sign.warning.coins=Out Of Coins!
+sign.warning.inventoryfull=Inventory is Full!
+
+#####
+# Vendor GUI
+#####
+vendor.wrench.owner=Owner
+vendor.wrench.infiniteon=Infinite: On
+vendor.wrench.infiniteoff=Infinite: Off
+
+#####
+# Packager GUI
+#####
+packager.button.small=Small
+packager.button.medium=Medium
+packager.button.large=Large
+packager.button.mode.buy=Mode: Buy
+packager.button.mode.send=Mode: Send
+packager.message.sent= sent you a package
 
 #####
 # Commands
@@ -133,3 +176,172 @@ achievement.AchievementQuintillion=Over a quintillion
 achievement.AchievementQuintillion.desc=Balance of 1,000,000,000,000,000,000 coins.
 achievement.AchievementMaxed=Account balance at maximum
 achievement.AchievementMaxed.desc=Balance of 9,223,372,036,854,775,807 coins.
+
+#####
+# ATM GUI
+#####
+# NOTE: Gui screens consist on eight possible lines of text with a maximum of seventeen to eighteen characters 
+#####
+atm.welcome.one=C:Welcome to
+atm.welcome.two=C:Universal Bank
+atm.welcome.three=
+atm.welcome.four=
+atm.welcome.five=C:Insert card or
+atm.welcome.six=C:press any button
+atm.welcome.seven=C:to continue
+atm.welcome.eight=
+atm.main.one=
+atm.main.two=<-- Balance
+atm.main.three=
+atm.main.four=<-- Deposit
+atm.main.five=
+atm.main.six=<-- Withdraw
+atm.main.seven=
+atm.main.eight=<-- Additional Options
+atm.additional.one=
+atm.additional.two=<-- New Card
+atm.additional.three=
+atm.additional.four=<-- Account Transfer
+atm.additional.five=
+atm.additional.six=<-- Secondary Acct.
+atm.additional.seven=
+atm.additional.eight=<-- Previous Menu
+atm.auth.one=
+atm.auth.two=C:Scanning
+atm.auth.three=
+atm.auth.four=
+atm.auth.five=
+atm.auth.six=
+atm.auth.seven=
+atm.auth.eight=
+atm.auth.access=C:Retrieving account
+atm.auth.success=C:Account found
+atm.auth.fail=C:No account found
+atm.balance.one=
+atm.balance.two=
+atm.balance.three=Balance:
+atm.balance.four=
+atm.balance.five=
+atm.balance.six=
+atm.balance.seven=
+atm.balance.eight=<-- Previous Menu
+atm.deposit.one=Insert coins
+atm.deposit.two=
+atm.deposit.three=Balance:
+atm.deposit.four=
+atm.deposit.five=
+atm.deposit.six=
+atm.deposit.seven=
+atm.deposit.eight=<-- Previous Menu
+atm.withdraw.one=Available Balance:
+atm.withdraw.two=
+atm.withdraw.three=Amount to withdraw:
+atm.withdraw.four=
+atm.withdraw.five=
+atm.withdraw.six=<-- Withdraw
+atm.withdraw.seven=
+atm.withdraw.eight=<-- Previous Menu
+atm.newcard.one=
+atm.newcard.two=C:Additional cards are
+atm.newcard.three=C:available at no cost.
+atm.newcard.four=
+atm.newcard.five=
+atm.newcard.six=<-- New Card
+atm.newcard.seven=
+atm.newcard.eight=<-- Cancel
+atm.newaccount.one=
+atm.newaccount.two=C:Would you like
+atm.newaccount.three=C:to open an account?
+atm.newaccount.four=
+atm.newaccount.five=
+atm.newaccount.six=<-- Open Account
+atm.newaccount.seven=
+atm.newaccount.eight=<-- Cancel
+atm.transferaccount.one=
+atm.transferaccount.two=C:All coins will be
+atm.transferaccount.three=C:transferred to
+atm.transferaccount.four=C:new account
+atm.transferaccount.five=
+atm.transferaccount.six=<-- Open New Account
+atm.transferaccount.seven=
+atm.transferaccount.eight=<-- Cancel
+atm.customaccount.one=
+atm.customaccount.two=C:Enter name
+atm.customaccount.three=
+atm.customaccount.four=
+atm.customaccount.five=
+atm.customaccount.six=<-- Open Account
+atm.customaccount.seven=
+atm.customaccount.eight=<-- Cancel
+atm.customaccountoptions.one=
+atm.customaccountoptions.two=<-- New Card
+atm.customaccountoptions.three=
+atm.customaccountoptions.four=<-- Transfer Account
+atm.customaccountoptions.five=
+atm.customaccountoptions.six=
+atm.customaccountoptions.seven=
+atm.customaccountoptions.eight=<-- Cancel
+atm.takecard.one=
+atm.takecard.two=
+atm.takecard.three=
+atm.takecard.four=
+atm.takecard.five=Please take card -->
+atm.takecard.six=
+atm.takecard.seven=
+atm.takecard.eight=<-- Done
+atm.takecoins.one=
+atm.takecoins.two=
+atm.takecoins.three=Please take coins -->
+atm.takecoins.four=
+atm.takecoins.five=
+atm.takecoins.six=
+atm.takecoins.seven=
+atm.takecoins.eight=<-- Done
+atm.insufficient.one=
+atm.insufficient.two=
+atm.insufficient.three=C:ERROR
+atm.insufficient.four=
+atm.insufficient.five=C:insufficient funds
+atm.insufficient.six=
+atm.insufficient.seven=
+atm.insufficient.eight=<-- Previous Menu
+atm.invalid.one=
+atm.invalid.two=
+atm.invalid.three=C:ERROR
+atm.invalid.four=
+atm.invalid.five=C:invalid input
+atm.invalid.six=
+atm.invalid.seven=
+atm.invalid.eight=<-- Previous Menu
+atm.badcard.one=
+atm.badcard.two=
+atm.badcard.three=C:INVALID CARD
+atm.badcard.four=
+atm.badcard.five=C:Card has been
+atm.badcard.six=C:confiscated
+atm.badcard.seven=
+atm.badcard.eight=
+atm.unauthorized.one=
+atm.unauthorized.two=
+atm.unauthorized.three=C:UNAUTORIZED ACCESS
+atm.unauthorized.four=
+atm.unauthorized.five=C:Only the account
+atm.unauthorized.six=C:owner can do this
+atm.unauthorized.seven=
+atm.unauthorized.eight=
+atm.duplicateaccount.one=
+atm.duplicateaccount.two=
+atm.duplicateaccount.three=C:DUPLICATE ACCOUNT
+atm.duplicateaccount.four=
+atm.duplicateaccount.five=C:Please enter a
+atm.duplicateaccount.six=C:unique name
+atm.duplicateaccount.seven=
+atm.duplicateaccount.eight=
+atm.processing.one=
+atm.processing.two=
+atm.processing.three=
+atm.processing.four=C:Processing...
+atm.processing.five=
+atm.processing.six=
+atm.processing.seven=
+atm.processing.eight=

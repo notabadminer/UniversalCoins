@@ -2,6 +2,7 @@
     "parent": "block/cube_column",
     "textures": {
         "end": "universalcoins:blocks/tradestation",
-        "side": "universalcoins:blocks/tradestation_face"
+        "side": "universalcoins:blocks/tradestation_face",
+		"particle": "universalcoins:blocks/tradestation"
     }
 }

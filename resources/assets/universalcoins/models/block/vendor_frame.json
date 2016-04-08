@@ -1,7 +1,8 @@
 {
     "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
     "textures": {
-        "0": "universalcoins:blocks/planks_birch"
+        "0": "universalcoins:blocks/planks_birch",
+		"particle": "universalcoins:blocks/planks_birch"
     },
     "elements": [
         {

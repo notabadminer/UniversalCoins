@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import universalcoins.tileentity.TileVendor;
 import universalcoins.tileentity.TileVendorBlock;
+import universalcoins.tileentity.TileVendorFrame;
 
 public class UCVendorServerMessage implements IMessage, IMessageHandler<UCVendorServerMessage, IMessage> {
 	private int x, y, z, itemPrice;
@@ -81,9 +82,9 @@ public class UCVendorServerMessage implements IMessage, IMessageHandler<UCVendor
 			tEntity.blockOwner = message.blockOwner;
 			tEntity.infiniteMode = message.infinite;
 		}
-//		if (tileEntity instanceof TileVendorFrame) {
-//			((TileVendorFrame) tileEntity).updateSigns();
-//		}
+		if (tileEntity instanceof TileVendorFrame) {
+			((TileVendorFrame) tileEntity).updateSigns();
+		}
 		if (tileEntity instanceof TileVendorBlock) {
 			((TileVendorBlock) tileEntity).updateSigns();
 		}

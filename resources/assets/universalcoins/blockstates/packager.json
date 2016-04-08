@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "facing=north": { "model": "universalcoins:packager" },
+        "facing=south": { "model": "universalcoins:packager", "y": 180 },
+        "facing=west":  { "model": "universalcoins:packager", "y": 270 },
+        "facing=east":  { "model": "universalcoins:packager", "y": 90 }
+    }
+}

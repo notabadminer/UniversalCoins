@@ -17,6 +17,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import universalcoins.commands.UCBalance;
 import universalcoins.commands.UCCommand;
@@ -24,18 +25,29 @@ import universalcoins.commands.UCGive;
 import universalcoins.commands.UCRebalance;
 import universalcoins.commands.UCSend;
 import universalcoins.net.UCButtonMessage;
+import universalcoins.net.UCPackagerServerMessage;
+import universalcoins.net.UCSignServerMessage;
+import universalcoins.net.UCTileSignMessage;
 import universalcoins.net.UCVendorServerMessage;
 import universalcoins.proxy.CommonProxy;
+import universalcoins.tileentity.TileATM;
+import universalcoins.tileentity.TilePackager;
+import universalcoins.tileentity.TilePowerReceiver;
+import universalcoins.tileentity.TilePowerTransmitter;
 import universalcoins.tileentity.TileProtected;
 import universalcoins.tileentity.TileSafe;
 import universalcoins.tileentity.TileSignal;
 import universalcoins.tileentity.TileTradeStation;
+import universalcoins.tileentity.TileUCSign;
 import universalcoins.tileentity.TileVendor;
 import universalcoins.tileentity.TileVendorBlock;
 import universalcoins.tileentity.TileVendorFrame;
 import universalcoins.util.UCItemPricer;
 import universalcoins.util.UCMobDropEventHandler;
 import universalcoins.util.UCPlayerPickupEventHandler;
+import universalcoins.util.UCRecipeHelper;
+import universalcoins.worldgen.VillageGenBank;
+import universalcoins.worldgen.VillageGenShop;
 
 /**
  * UniversalCoins, Sell all your extra blocks and buy more!!! Create a trading
@@ -59,16 +71,35 @@ public class UniversalCoins {
 	public static CommonProxy proxy;
 
 	public static int[] coinValues;
-	public static Boolean mobsDropCoins;
-	public static Boolean enderCardRecipeEnabled;
 	public static Boolean blockProtection;
+	public static Boolean autoModeEnabled;
+	public static Boolean tradeStationRecipesEnabled;
+	public static Boolean vendorRecipesEnabled;
+	public static Boolean vendorFrameRecipesEnabled;
+	public static Boolean atmRecipeEnabled;
+	public static Boolean enderCardRecipeEnabled;
+	public static Boolean signalRecipeEnabled;
+	public static Boolean linkCardRecipeEnabled;
+	public static Boolean tradeStationBuyEnabled;
+	public static Boolean packagerRecipeEnabled;
+	public static Boolean mobsDropCoins;
+	public static Boolean coinsInMineshaft;
+	public static Boolean powerBaseRecipeEnabled;
+	public static Boolean powerReceiverRecipeEnabled;
+	public static Boolean coinsInDungeon;
 	public static Integer mobDropMax;
 	public static Integer mobDropChance;
 	public static Integer enderDragonMultiplier;
-	public static Boolean autoModeEnabled;
-	public static Boolean tradeStationRecipesEnabled;
-	public static Boolean tradeStationBuyEnabled;
 	public static Double itemSellRatio;
+	public static Integer smallPackagePrice;
+	public static Integer medPackagePrice;
+	public static Integer largePackagePrice;
+	public static Integer rfWholesaleRate;
+	public static Integer rfRetailRate;
+	public static Integer bankGenWeight;
+	public static Integer shopGenWeight;
+	public static Integer shopMinPrice;
+	public static Integer shopMaxPrice;
 
 	public static SimpleNetworkWrapper snw;
 
@@ -89,12 +120,30 @@ public class UniversalCoins {
 		coinValues[0] = 1; // Override any user set values.
 
 		// recipes
-		Property stationRecipes = config.get("Recipes", "Trade Station Recipes", true,
-				"Set to false to disable crafting recipes for selling catalog and trade station.");
-		tradeStationRecipesEnabled = stationRecipes.getBoolean(true);
-		Property enderCardRecipe = config.get("Recipes", "Ender Card Recipe", true,
-				"Set to false to disable crafting recipes for Ender Card.");
+		Property recipes = config.get("Recipes", "Trade Station Recipes", true);
+		recipes.setComment("Set to false to disable crafting recipes for selling catalog and trade station.");
+		tradeStationRecipesEnabled = recipes.getBoolean(true);
+		Property vendorRecipes = config.get("Recipes", "Vending Block Recipes", true);
+		vendorRecipes.setComment("Set to false to disable crafting recipes for vending blocks.");
+		vendorRecipesEnabled = vendorRecipes.getBoolean(true);
+		Property vendorFrameRecipe = config.get("Recipes", "Vending Frame Recipe", true);
+		vendorFrameRecipe.setComment("Set to false to disable crafting recipes for Vending Frame.");
+		vendorFrameRecipesEnabled = vendorFrameRecipe.getBoolean(true);
+		Property atmRecipe = config.get("Recipes", "ATM Recipe", true);
+		atmRecipe.setComment("Set to false to disable crafting recipes for ATM.");
+		atmRecipeEnabled = atmRecipe.getBoolean(true);
+		Property enderCardRecipe = config.get("Recipes", "Ender Card Recipe", true);
+		enderCardRecipe.setComment("Set to false to disable crafting recipes for Ender Card and Safe.");
 		enderCardRecipeEnabled = enderCardRecipe.getBoolean(true);
+		Property signalRecipe = config.get("Recipes", "Redstone Signal Generator Recipe", true);
+		signalRecipe.setComment("Set to false to disable crafting recipes for Redstone Signal Generator.");
+		signalRecipeEnabled = signalRecipe.getBoolean(true);
+		Property linkCardRecipe = config.get("Recipes", "Remote Storage Linking Card Recipe", true);
+		linkCardRecipe.setComment("Set to false to disable crafting recipes for Linking Card.");
+		linkCardRecipeEnabled = linkCardRecipe.getBoolean(true);
+		Property packagerRecipe = config.get("Recipes", "Packager Recipe", true);
+		packagerRecipe.setComment("Set to false to disable crafting recipes for Packager.");
+		packagerRecipeEnabled = packagerRecipe.getBoolean(true);
 
 		// loot
 		Property mobDrops = config.get("Loot", "Mob Drops", true,
@@ -121,6 +170,48 @@ public class UniversalCoins {
 				"Set to false to disable buying items from trade station.");
 		tradeStationBuyEnabled = tsBuyEnabled.getBoolean(true);
 
+		// packager
+		Property smallPackage = config.get("Packager", "Small Package Price", 10);
+		smallPackage.setComment("Set the price of small package");
+		smallPackagePrice = Math.max(1, Math.min(smallPackage.getInt(10), 1000));
+		Property medPackage = config.get("Packager", "Medium Package Price", 20);
+		medPackage.setComment("Set the price of medium package");
+		medPackagePrice = Math.max(1, Math.min(medPackage.getInt(20), 1000));
+		Property largePackage = config.get("Packager", "Large Package Price", 40);
+		largePackage.setComment("Set the price of large package");
+		largePackagePrice = Math.max(1, Math.min(largePackage.getInt(40), 1000));
+
+		// rf utility (power company stuff)
+		Property rfBaseEnabled = config.get("RF Utility", "Power Base enabled", true);
+		rfBaseEnabled.setComment("Set to false to disable the power base block.");
+		powerBaseRecipeEnabled = rfBaseEnabled.getBoolean(true);
+		Property rfReceiverEnabled = config.get("RF Utility", "RF Blocks enabled", true);
+		rfReceiverEnabled.setComment("Set to false to disable the power receiver block.");
+		powerReceiverRecipeEnabled = rfReceiverEnabled.getBoolean(true);
+		Property rfWholesale = config.get("RF Utility", "Wholesale rate", 12);
+		rfWholesale.setComment("Set payment per 10 kRF of power sold. Default: 12");
+		rfWholesaleRate = Math.max(0, rfWholesale.getInt(12));
+		Property rfRetail = config.get("RF Utility", "Retail rate", 15);
+		rfRetail.setComment("Set payment per 10 kRF of power bought. Default: 15");
+		rfRetailRate = Math.max(0, rfRetail.getInt(15));
+
+		// world gen
+		Property bankGenProperty = config.get("world generation", "Village bank weight", 6);
+		bankGenProperty.setComment("Probability of adding bank to villages. min 0, max 20, default 6.");
+		bankGenWeight = Math.max(0, Math.min(bankGenProperty.getInt(6), 20));
+		Property shopGenProperty = config.get("world generation", "Village shop weight", 6);
+		shopGenProperty.setComment("Probably of adding shop to villages. min 0, max 20, default 6.");
+		shopGenWeight = Math.max(0, Math.min(shopGenProperty.getInt(6), 20));
+
+		Property shopMinPriceProperty = config.get("World Generation", "Minimum shop price", 80);
+		shopMinPriceProperty
+				.setComment("Set the minimum price of items for sale in shops as a percent (min=1,max=100,default=80)");
+		shopMinPrice = Math.max(1, Math.min(shopMinPriceProperty.getInt(80), 100));
+		Property shopMaxPriceProperty = config.get("World Generation", "Maximum shop price", 120);
+		shopMaxPriceProperty.setComment(
+				"Set the maximum price of items for sale in shops as a percent (min=80,max=300,default=120)");
+		shopMaxPrice = Math.max(80, Math.min(shopMaxPriceProperty.getInt(120), 300));
+
 		config.save();
 
 		if (mobsDropCoins) {
@@ -133,6 +224,9 @@ public class UniversalCoins {
 		snw = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 		snw.registerMessage(UCButtonMessage.class, UCButtonMessage.class, 0, Side.SERVER);
 		snw.registerMessage(UCVendorServerMessage.class, UCVendorServerMessage.class, 1, Side.SERVER);
+		snw.registerMessage(UCSignServerMessage.class, UCSignServerMessage.class, 2, Side.SERVER);
+		snw.registerMessage(UCTileSignMessage.class, UCTileSignMessage.class, 3, Side.CLIENT);
+		snw.registerMessage(UCPackagerServerMessage.class, UCPackagerServerMessage.class, 4, Side.SERVER);
 	}
 
 	@EventHandler
@@ -150,6 +244,48 @@ public class UniversalCoins {
 		GameRegistry.registerTileEntity(TileVendor.class, "TileVendor");
 		GameRegistry.registerTileEntity(TileVendorBlock.class, "TileVendorBlock");
 		GameRegistry.registerTileEntity(TileVendorFrame.class, "TileVendorFrame");
+		GameRegistry.registerTileEntity(TilePackager.class, "TilePackager");
+		GameRegistry.registerTileEntity(TileUCSign.class, "TileUCSign");
+		GameRegistry.registerTileEntity(TilePowerTransmitter.class, "TilePowerTransmitter");
+		GameRegistry.registerTileEntity(TilePowerReceiver.class, "TilePowerReceiver");
+		GameRegistry.registerTileEntity(TileATM.class, "TileATM");
+		
+		if (tradeStationRecipesEnabled) {
+			UCRecipeHelper.addTradeStationRecipe();
+		}
+		if (vendorRecipesEnabled) {
+			UCRecipeHelper.addVendingBlockRecipes();
+		}
+		if (vendorFrameRecipesEnabled) {
+			UCRecipeHelper.addVendingFrameRecipes();
+		}
+		if (atmRecipeEnabled) {
+			UCRecipeHelper.addCardStationRecipes();
+		}
+		if (enderCardRecipeEnabled) {
+			UCRecipeHelper.addEnderCardRecipes();
+			UCRecipeHelper.addBlockSafeRecipe();
+		}
+		if (signalRecipeEnabled) {
+			UCRecipeHelper.addSignalRecipes();
+		}
+		if (linkCardRecipeEnabled) {
+			UCRecipeHelper.addLinkCardRecipes();
+		}
+		if (packagerRecipeEnabled) {
+			UCRecipeHelper.addPackagerRecipes();
+		}
+		UCRecipeHelper.addSignRecipes();
+		// worldgen
+		if (bankGenWeight > 0) {
+			VillageGenBank villageHandler = new VillageGenBank();
+			VillagerRegistry.instance().registerVillageCreationHandler(villageHandler);
+		}
+		if (shopGenWeight > 0) {
+			VillageGenShop villageHandler2 = new VillageGenShop();
+			VillagerRegistry.instance().registerVillageCreationHandler(villageHandler2);
+		}
+
 	}
 
 	@EventHandler

@@ -18,6 +18,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.TradeStationGUI;
 import universalcoins.gui.VendorBuyGUI;
@@ -706,6 +707,7 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	}
 
 	public void sendServerUpdateMessage() {
+		FMLLog.info("sending server update");
 		UniversalCoins.snw.sendToServer(
 				new UCVendorServerMessage(pos.getX(), pos.getY(), pos.getZ(), itemPrice, blockOwner, infiniteMode));
 	}

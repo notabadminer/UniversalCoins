@@ -76,18 +76,17 @@ public class UCItemPricer {
 	}
 
 	private void loadDefaults() throws IOException {
-		 String[] configList = { "pricelists/minecraft.cfg"};
-		 InputStream priceResource;
-		 // load those files into hashmap(ucPriceMap)
-		 for (int i = 0; i < configList.length; i++) {
-		 priceResource =
-		 UCItemPricer.class.getResourceAsStream(configList[i]);
-		 if (priceResource == null) {
-		 return;
-		 }
-		 String priceString = convertStreamToString(priceResource);
-		 processDefaultConfigs(priceString);
-		 }
+		String[] configList = { "pricelists/minecraft.cfg" };
+		InputStream priceResource;
+		// load those files into hashmap(ucPriceMap)
+		for (int i = 0; i < configList.length; i++) {
+			priceResource = UCItemPricer.class.getResourceAsStream(configList[i]);
+			if (priceResource == null) {
+				return;
+			}
+			String priceString = convertStreamToString(priceResource);
+			processDefaultConfigs(priceString);
+		}
 	}
 
 	private String convertStreamToString(java.io.InputStream is) {
@@ -296,7 +295,7 @@ public class UCItemPricer {
 		}
 		int itemStackMeta = itemStack.getMetadata();
 		if (itemStack.isItemStackDamageable()) {
-			//override for damaged items
+			// override for damaged items
 			itemStackMeta = 0;
 		}
 		String itemName = itemStack.getUnlocalizedName();
@@ -368,10 +367,10 @@ public class UCItemPricer {
 				if (keyName.startsWith("tile.") || keyName.startsWith("item.")) {
 					keyName = keyName.substring(5);
 				}
-				//split string into item name and meta
-				String itemName = keyName.split("\\.")[0];
-				int itemMeta = Integer.valueOf(keyName.split("\\.")[1]);
-				Item item = (Item) Item.itemRegistry.getObject(new ResourceLocation(keyName));
+				// split string into item name and meta
+				String itemName = keyName.substring(0, keyName.length() - 2);
+				int itemMeta = Integer.valueOf(keyName.substring(keyName.length() - 1));
+				Item item = (Item) Item.itemRegistry.getObject(new ResourceLocation(itemName));
 				if (item != null) {
 					stack = new ItemStack(item, itemMeta);
 				}

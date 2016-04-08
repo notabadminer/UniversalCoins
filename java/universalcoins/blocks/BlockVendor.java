@@ -1,6 +1,5 @@
 package universalcoins.blocks;
 
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -33,12 +32,10 @@ public class BlockVendor extends BlockProtected {
 
 	public BlockVendor() {
 		super(Material.iron);
-
 		setStepSound(stepSound.GLASS);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setHardness(0.3F);
 		setResistance(6000.0F);
-		setLightOpacity(0);
 	}
 
 	@Override
@@ -57,28 +54,8 @@ public class BlockVendor extends BlockProtected {
 	}
 
 	@Override
-	public boolean isFullCube(IBlockState state) {
-		return false;
-	}
-
-	@SideOnly(Side.CLIENT)
-	public boolean isTranslucent(IBlockState state) {
-		return true;
-	}
-
-	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		return DEFAULT_AABB;
-	}
-
-	@Override
-	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
-		String ownerName = ((TileVendor) world.getTileEntity(pos)).blockOwner;
-		if (player.getDisplayName().equals(ownerName)) {
-			this.setHardness(1.0F);
-		} else {
-			this.setHardness(-1.0F);
-		}
 	}
 
 	@Override
@@ -159,15 +136,9 @@ public class BlockVendor extends BlockProtected {
 				tentity.infiniteMode = tagCompound.getBoolean("Infinite");
 			}
 		}
-		int meta = stack.getItemDamage();
-		// world.setBlockMetadataWithNotify(x, y, z, meta, 2);
 	}
 
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TileVendorBlock();
-	}
-
-	public int damageDropped(int meta) {
-		return meta;
 	}
 }

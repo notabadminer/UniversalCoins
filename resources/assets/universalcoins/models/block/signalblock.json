@@ -3,6 +3,7 @@
     "textures": {
         "top": "universalcoins:blocks/signalblock_top",
         "front": "universalcoins:blocks/signalblock_face",
-        "side": "universalcoins:blocks/signalblock"
+        "side": "universalcoins:blocks/signalblock",
+		"particle": "universalcoins:blocks/signalblock"
 	}
 }
