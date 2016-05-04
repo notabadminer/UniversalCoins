@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
@@ -47,6 +48,8 @@ public class ItemLinkCard extends Item {
 				player.addChatMessage(
 						new ChatComponentText(StatCollector.translateToLocal("item.linkCard.message.stored")
 								+ cursorPos.getX() + " " + cursorPos.getY() + " " + cursorPos.getZ()));
+				if (!itemstack.hasTagCompound())
+					itemstack.setTagCompound(new NBTTagCompound());
 				itemstack.getTagCompound().setIntArray("storageLocation",
 						new int[] { cursorPos.getX(), cursorPos.getY(), cursorPos.getZ() });
 			}

@@ -38,7 +38,7 @@ public class ItemUCCard extends Item {
 			float hitX, float hitY, float hitZ) {
 		if (world.isRemote)
 			return true;
-		if (itemstack.getTagCompound() == null) {
+		if (!itemstack.hasTagCompound()) {
 			createNBT(itemstack, world, player);
 		}
 		int accountCoins = UniversalAccounts.getInstance()

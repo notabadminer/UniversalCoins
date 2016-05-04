@@ -29,7 +29,7 @@ public class UCSignRenderer extends TileEntitySpecialRenderer<TileEntitySign> {
 		} else {
 			return;
 		}
-		ResourceLocation blockTexture = new ResourceLocation("textures/blocks/planks_birch.png");
+		ResourceLocation blockTexture = new ResourceLocation("universalcoins:textures/entity/uc_sign.png");
 		/** The ModelSign instance for use in this renderer */
 		final ModelSign model = new ModelSign();
 

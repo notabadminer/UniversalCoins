@@ -39,7 +39,7 @@ public class ItemEnderCard extends Item {
 			float hitX, float hitY, float hitZ) {
 		if (world.isRemote)
 			return true;
-		if (itemstack.getTagCompound() == null) {
+		if (!itemstack.hasTagCompound()) {
 			createNBT(itemstack, world, player);
 		}
 		int accountBalance = UniversalAccounts.getInstance()

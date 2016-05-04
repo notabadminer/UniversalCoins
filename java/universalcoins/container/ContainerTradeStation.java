@@ -129,7 +129,7 @@ public class ContainerTradeStation extends Container {
 			this.lastSellButtonActive = this.tileEntity.sellButtonActive;
 			this.lastCoinButtonActive = this.tileEntity.coinButtonActive;
 			this.lastSStackButtonActive = this.tileEntity.isSStackButtonActive;
-			this.lastLStackButtonActive = this.tileEntity.isSStackButtonActive;
+			this.lastLStackButtonActive = this.tileEntity.isLStackButtonActive;
 			this.lastSBagButtonActive = this.tileEntity.isSBagButtonActive;
 			this.lastLBagButtonActive = this.tileEntity.isLBagButtonActive;
 			this.lastInUse = this.tileEntity.inUse;

@@ -428,6 +428,31 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 		} catch (Throwable ex2) {
 			sellButtonActive = false;
 		}
+		try {
+			coinButtonActive = tagCompound.getBoolean("coinButtonActive");
+		} catch (Throwable ex2) {
+			coinButtonActive = false;
+		}
+		try {
+			isSStackButtonActive = tagCompound.getBoolean("isSStackButtonActive");
+		} catch (Throwable ex2) {
+			isSStackButtonActive = false;
+		}
+		try {
+			isLStackButtonActive = tagCompound.getBoolean("isLStackButtonActive");
+		} catch (Throwable ex2) {
+			isLStackButtonActive = false;
+		}
+		try {
+			isSBagButtonActive = tagCompound.getBoolean("isSBagButtonActive");
+		} catch (Throwable ex2) {
+			isSBagButtonActive = false;
+		}
+		try {
+			isLBagButtonActive = tagCompound.getBoolean("isLBagButtonActive");
+		} catch (Throwable ex2) {
+			isLBagButtonActive = false;
+		}
 		activateRetrieveButtons();
 	}
 
@@ -454,6 +479,11 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 		tagCompound.setBoolean("InUse", inUse);
 		tagCompound.setBoolean("buyButtonActive", buyButtonActive);
 		tagCompound.setBoolean("sellButtonActive", sellButtonActive);
+		tagCompound.setBoolean("coinButtonActive", coinButtonActive);
+		tagCompound.setBoolean("isSStackButtonActive", isSStackButtonActive);
+		tagCompound.setBoolean("isLStackButtonActive", isLStackButtonActive);
+		tagCompound.setBoolean("isSBagButtonActive", isSBagButtonActive);
+		tagCompound.setBoolean("isLBagButtonActive", isLBagButtonActive);
 	}
 
 	public void updateTE() {
