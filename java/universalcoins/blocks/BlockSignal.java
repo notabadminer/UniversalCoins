@@ -23,6 +23,7 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
+import universalcoins.tileentity.TileProtected;
 import universalcoins.tileentity.TileSignal;
 
 public class BlockSignal extends BlockProtected {
@@ -168,7 +169,7 @@ public class BlockSignal extends BlockProtected {
 			return;
 		TileEntity te = world.getTileEntity(pos);
 		if (te != null) {
-			((TileSignal) world.getTileEntity(pos)).blockOwner = player.getCommandSenderEntity().getName();
+			((TileProtected) world.getTileEntity(pos)).blockOwner = player.getCommandSenderEntity().getName();
 		}
 	}
 

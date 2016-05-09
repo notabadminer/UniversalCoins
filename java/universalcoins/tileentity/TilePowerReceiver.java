@@ -156,7 +156,7 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 		if (accountNumber == "") {
 			return 0;
 		}
-		return UniversalAccounts.getInstance(worldObj).getAccountBalance(accountNumber);
+		return UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 	}
 
 	private boolean creditAccount(int i) {
@@ -168,7 +168,7 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 		if (accountNumber == "") {
 			return false;
 		}
-		return UniversalAccounts.getInstance(worldObj).creditAccount(accountNumber, i);
+		return UniversalAccounts.getInstance().creditAccount(accountNumber, i);
 	}
 
 	private boolean debitAccount(int i) {
@@ -178,7 +178,7 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 		if (accountNumber == "") {
 			return false;
 		}
-		return UniversalAccounts.getInstance(worldObj).debitAccount(accountNumber, i);
+		return UniversalAccounts.getInstance().debitAccount(accountNumber, i);
 	}
 
 	public void sendPacket(int button, boolean shiftPressed) {
@@ -320,20 +320,20 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 					coinSum -= UniversalCoins.rfRetailRate;
 					rfLevel += 10000;
 			}
-			wrfLevel = UniversalPower.getInstance(worldObj).getRFLevel();
+			wrfLevel = UniversalPower.getInstance().getRFLevel();
 			return;
 		}
-		if (rfLevel == 0 && UniversalPower.getInstance(worldObj).extractEnergy(10, true) > 0
+		if (rfLevel == 0 && UniversalPower.getInstance().extractEnergy(10, true) > 0
 				&& debitAccount(UniversalCoins.rfRetailRate)) {
-			UniversalPower.getInstance(worldObj).extractEnergy(10, false);
+			UniversalPower.getInstance().extractEnergy(10, false);
 			rfLevel += 10000;
-		} else if (rfLevel == 0 && UniversalPower.getInstance(worldObj).extractEnergy(10, true) > 0 
+		} else if (rfLevel == 0 && UniversalPower.getInstance().extractEnergy(10, true) > 0 
 				&& coinSum - UniversalCoins.rfRetailRate >= 0) {
 				coinSum -= UniversalCoins.rfRetailRate;
-				UniversalPower.getInstance(worldObj).extractEnergy(10, false);
+				UniversalPower.getInstance().extractEnergy(10, false);
 				rfLevel += 10000;
 		}
-		wrfLevel = UniversalPower.getInstance(worldObj).getRFLevel();
+		wrfLevel = UniversalPower.getInstance().getRFLevel();
 	}
 
 	protected void sendPower() {

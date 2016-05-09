@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.BlockStairs;
+import net.minecraft.block.BlockTorch;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -29,6 +30,7 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 	public ComponentVillageBank(Start startPiece, int p5, Random random, StructureBoundingBox box, EnumFacing facing) {
 		super(startPiece, p5);
 		this.boundingBox = box;
+		this.func_186164_a(facing);
 		MapGenStructureIO.registerStructureComponent(ComponentVillageBank.class, "ViUB");
 	}
 
@@ -72,15 +74,15 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		fillWithAir(world, sbb, 2, 1, 1, 2, 2, 1);
 		// atm - meta, LR, TB, FB
 		this.setBlockState(world, UniversalCoins.proxy.atm.getDefaultState()
-				.withProperty(BlockATM.FACING, EnumFacing.NORTH), 1, 0, -1, sbb);
+				.withProperty(BlockATM.FACING, EnumFacing.SOUTH), 2, 2, 4, sbb);
 		// door
-		this.placeDoorCurrentPosition(world, sbb, random, 1, 1, 0, EnumFacing.NORTH);
+		this.placeDoorCurrentPosition(world, sbb, random, 2, 1, 1, EnumFacing.NORTH);
 		// torches
-		this.setBlockState(world, Blocks.torch.getDefaultState(), 1, 2, 2, boundingBox);
-		this.setBlockState(world, Blocks.torch.getDefaultState(), 3, 2, 2, boundingBox);
+		this.setBlockState(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 1, 2, 2, boundingBox);
+		this.setBlockState(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 3, 2, 2, boundingBox);
 		// sign
 		this.setBlockState(world, UniversalCoins.proxy.wall_ucsign.getDefaultState()
-				.withProperty(BlockUCWallSign.FACING, EnumFacing.NORTH), 1, 0, -1, sbb);
+				.withProperty(BlockUCWallSign.FACING, EnumFacing.SOUTH), 1, 2, 0, sbb);
 		addSignText(world, boundingBox, 1, 2, 0);
 
 		// add stairs if needed
@@ -105,8 +107,6 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		int i1 = this.getXWithOffset(par4, par6);
 		int j1 = this.getYWithOffset(par5);
 		int k1 = this.getZWithOffset(par4, par6);
-
-		FMLLog.info("new sign at: " + i1 + " " + k1);
 
 		if (world.getTileEntity(new BlockPos(i1, j1, k1)) instanceof TileUCSign) {
 			TileUCSign tileentitysign = (TileUCSign) world.getTileEntity(new BlockPos(i1, j1, k1));

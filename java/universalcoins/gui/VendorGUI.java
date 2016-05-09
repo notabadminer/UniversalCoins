@@ -16,15 +16,15 @@ public class VendorGUI extends GuiContainer {
 	private TileVendor tileEntity;
 	private GuiTextField itemPriceField;
 	private GuiButton modeButton, updateButton, setButton, tColorMinButton, tColorPlusButton;
-	private GuiCoinButton retrCoinButton, retrSStackButton, retrLStackButton, retrSBagButton, retrLBagButton;
+	private GuiCoinButton retrIronCoinBtn, retrGoldCoinBtn, retrEmeraldCoinBtn, retrDiamondCoinBtn, retrObsidianCoinBtn;
 	public static final int idModeButton = 0;
 	public static final int idUpdateButton = 1;
 	public static final int idSetButton = 2;
-	public static final int idCoinButton = 3;
-	private static final int idSStackButton = 4;
-	private static final int idLStackButton = 5;
-	public static final int idSBagButton = 6;
-	public static final int idLBagButton = 7;
+	public static final int idIronCoinBtn = 3;
+	private static final int idGoldCoinBtn = 4;
+	private static final int idEmeraldCoinBtn = 5;
+	public static final int idDiamondCoinBtn = 6;
+	public static final int idObsidianCoinBtn = 7;
 	public static final int idtcmButton = 8;
 	public static final int idtcpButton = 9;
 	private boolean textActive = false;
@@ -51,11 +51,11 @@ public class VendorGUI extends GuiContainer {
 				I18n.translateToLocal("general.button.edit"));
 		setButton = new GuiSlimButton(idSetButton, 124 + x, 35 + y, 44, 12,
 				I18n.translateToLocal("general.button.save"));
-		retrCoinButton = new GuiCoinButton(idCoinButton, 56 + x, 74 + y, 18, 18, "", 0);
-		retrSStackButton = new GuiCoinButton(idSStackButton, 74 + x, 74 + y, 18, 18, "", 1);
-		retrLStackButton = new GuiCoinButton(idLStackButton, 92 + x, 74 + y, 18, 18, "", 2);
-		retrSBagButton = new GuiCoinButton(idSBagButton, 110 + x, 74 + y, 18, 18, "", 3);
-		retrLBagButton = new GuiCoinButton(idLBagButton, 128 + x, 74 + y, 18, 18, "", 4);
+		retrIronCoinBtn = new GuiCoinButton(idIronCoinBtn, 56 + x, 74 + y, 18, 18, "", 0);
+		retrGoldCoinBtn = new GuiCoinButton(idGoldCoinBtn, 74 + x, 74 + y, 18, 18, "", 1);
+		retrEmeraldCoinBtn = new GuiCoinButton(idEmeraldCoinBtn, 92 + x, 74 + y, 18, 18, "", 2);
+		retrDiamondCoinBtn = new GuiCoinButton(idDiamondCoinBtn, 110 + x, 74 + y, 18, 18, "", 3);
+		retrObsidianCoinBtn = new GuiCoinButton(idObsidianCoinBtn, 128 + x, 74 + y, 18, 18, "", 4);
 		tColorMinButton = new GuiSlimButton(idtcmButton, 7 + x, 78 + y, 12, 12, "-");
 		tColorPlusButton = new GuiSlimButton(idtcpButton, 33 + x, 78 + y, 12, 12, "+");
 
@@ -63,11 +63,11 @@ public class VendorGUI extends GuiContainer {
 		buttonList.add(modeButton);
 		buttonList.add(updateButton);
 		buttonList.add(setButton);
-		buttonList.add(retrCoinButton);
-		buttonList.add(retrSStackButton);
-		buttonList.add(retrLStackButton);
-		buttonList.add(retrSBagButton);
-		buttonList.add(retrLBagButton);
+		buttonList.add(retrIronCoinBtn);
+		buttonList.add(retrGoldCoinBtn);
+		buttonList.add(retrEmeraldCoinBtn);
+		buttonList.add(retrDiamondCoinBtn);
+		buttonList.add(retrObsidianCoinBtn);
 		buttonList.add(tColorMinButton);
 		buttonList.add(tColorPlusButton);
 
@@ -95,11 +95,11 @@ public class VendorGUI extends GuiContainer {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
 		this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
 
-		retrCoinButton.enabled = tileEntity.ironCoinBtnActive;
-		retrSStackButton.enabled = tileEntity.goldCoinBtnActive;
-		retrLStackButton.enabled = tileEntity.emeraldCoinBtnActive;
-		retrSBagButton.enabled = tileEntity.diamondCoinBtnActive;
-		retrLBagButton.enabled = tileEntity.obsidianCoinBtnActive;
+		retrIronCoinBtn.enabled = tileEntity.ironCoinBtnActive;
+		retrGoldCoinBtn.enabled = tileEntity.goldCoinBtnActive;
+		retrEmeraldCoinBtn.enabled = tileEntity.emeraldCoinBtnActive;
+		retrDiamondCoinBtn.enabled = tileEntity.diamondCoinBtnActive;
+		retrObsidianCoinBtn.enabled = tileEntity.obsidianCoinBtnActive;
 
 		modeButton.displayString = (tileEntity.sellMode ? I18n.translateToLocal("general.button.sell")
 				: I18n.translateToLocal("general.button.buy"));

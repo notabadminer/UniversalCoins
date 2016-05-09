@@ -24,7 +24,7 @@ public class ItemEnderCard extends ItemUCCard {
 		if (stack.getTagCompound() == null) {
 			createNBT(stack, world, player);
 		}
-		long accountBalance = UniversalAccounts.getInstance(world)
+		long accountBalance = UniversalAccounts.getInstance()
 				.getAccountBalance(stack.getTagCompound().getString("Account"));
 		DecimalFormat formatter = new DecimalFormat("#,###,###,###");
 		ItemStack[] inventory = player.inventory.mainInventory;
@@ -62,7 +62,7 @@ public class ItemEnderCard extends ItemUCCard {
 				} else {
 					depositAmount = (int) (Long.MAX_VALUE - accountBalance) / coinValue;
 				}
-				UniversalAccounts.getInstance(world).creditAccount(accountNumber, coinValue * depositAmount);
+				UniversalAccounts.getInstance().creditAccount(accountNumber, coinValue * depositAmount);
 				coinsDeposited += coinValue * depositAmount;
 				inventory[i].stackSize -= depositAmount;
 				if (inventory[i].stackSize == 0) {
@@ -77,7 +77,7 @@ public class ItemEnderCard extends ItemUCCard {
 							coinsDeposited > 1 ? "general.currency.multiple" : "general.currency.single")));
 		}
 		player.addChatMessage(new TextComponentString(I18n.translateToLocal("item.card.balance") + " "
-				+ formatter.format(UniversalAccounts.getInstance(world).getAccountBalance(accountNumber))));
+				+ formatter.format(UniversalAccounts.getInstance().getAccountBalance(accountNumber))));
 		return EnumActionResult.FAIL;
 	}
 

@@ -12,13 +12,13 @@ import universalcoins.tileentity.TileVendor;
 public class VendorSellGUI extends GuiContainer {
 	private TileVendor tileEntity;
 	private GuiButton buyButton;
-	private GuiCoinButton retrCoinButton, retrSStackButton, retrLStackButton, retrSBagButton, retrLBagButton;
+	private GuiCoinButton retrIronCoinBtn, retrGoldCoinBtn, retrEmeraldCoinBtn, retrDiamondCoinBtn, retrObsidianCoinBtn;
 	public static final int idBuyButton = 11;
-	public static final int idCoinButton = 12;
-	private static final int idSStackButton = 13;
-	private static final int idLStackButton = 14;
-	public static final int idSBagButton = 15;
-	public static final int idLBagButton = 16;
+	public static final int idIronCoinBtn = 12;
+	private static final int idGoldCoinBtn = 13;
+	private static final int idEmeraldCoinBtn = 14;
+	public static final int idDiamondCoinBtn = 15;
+	public static final int idObsidianCoinBtn = 16;
 
 	public VendorSellGUI(InventoryPlayer inventoryPlayer, TileVendor tEntity) {
 		super(new ContainerVendorSell(inventoryPlayer, tEntity));
@@ -33,23 +33,23 @@ public class VendorSellGUI extends GuiContainer {
 		super.initGui();
 		buyButton = new GuiSlimButton(idBuyButton, 126 + (width - xSize) / 2, 42 + (height - ySize) / 2, 42, 12,
 				I18n.translateToLocal("general.button.buy"));
-		retrCoinButton = new GuiCoinButton(idCoinButton, 56 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18,
+		retrIronCoinBtn = new GuiCoinButton(idIronCoinBtn, 56 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18,
 				"", 0);
-		retrSStackButton = new GuiCoinButton(idSStackButton, 74 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18,
+		retrGoldCoinBtn = new GuiCoinButton(idGoldCoinBtn, 74 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18,
 				18, "", 1);
-		retrLStackButton = new GuiCoinButton(idLStackButton, 92 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18,
+		retrEmeraldCoinBtn = new GuiCoinButton(idEmeraldCoinBtn, 92 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18,
 				18, "", 2);
-		retrSBagButton = new GuiCoinButton(idSBagButton, 110 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18,
+		retrDiamondCoinBtn = new GuiCoinButton(idDiamondCoinBtn, 110 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18,
 				"", 3);
-		retrLBagButton = new GuiCoinButton(idLBagButton, 128 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18,
+		retrObsidianCoinBtn = new GuiCoinButton(idObsidianCoinBtn, 128 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18,
 				"", 4);
 		buttonList.clear();
 		buttonList.add(buyButton);
-		buttonList.add(retrCoinButton);
-		buttonList.add(retrSStackButton);
-		buttonList.add(retrLStackButton);
-		buttonList.add(retrSBagButton);
-		buttonList.add(retrLBagButton);
+		buttonList.add(retrIronCoinBtn);
+		buttonList.add(retrGoldCoinBtn);
+		buttonList.add(retrEmeraldCoinBtn);
+		buttonList.add(retrDiamondCoinBtn);
+		buttonList.add(retrObsidianCoinBtn);
 	}
 
 	@Override
@@ -61,11 +61,11 @@ public class VendorSellGUI extends GuiContainer {
 		this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
 
 		buyButton.enabled = tileEntity.buyButtonActive;
-		retrCoinButton.enabled = tileEntity.uironCoinBtnActive;
-		retrSStackButton.enabled = tileEntity.ugoldCoinBtnActive;
-		retrLStackButton.enabled = tileEntity.uemeraldCoinBtnActive;
-		retrSBagButton.enabled = tileEntity.udiamondCoinBtnActive;
-		retrLBagButton.enabled = tileEntity.uobsidianCoinBtnActive;
+		retrIronCoinBtn.enabled = tileEntity.uironCoinBtnActive;
+		retrGoldCoinBtn.enabled = tileEntity.ugoldCoinBtnActive;
+		retrEmeraldCoinBtn.enabled = tileEntity.uemeraldCoinBtnActive;
+		retrDiamondCoinBtn.enabled = tileEntity.udiamondCoinBtnActive;
+		retrObsidianCoinBtn.enabled = tileEntity.uobsidianCoinBtnActive;
 	}
 
 	@Override

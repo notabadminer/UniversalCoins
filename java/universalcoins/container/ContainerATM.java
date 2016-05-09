@@ -21,8 +21,6 @@ public class ContainerATM extends Container {
 	private String lastCardOwner;
 	private String lastAccountNumber;
 	private long lastAccountBalance;
-	private String lastGroupAccountName;
-	private String lastGroupAccountNumber;
 	private TileATM tEntity;
 
 	public ContainerATM(InventoryPlayer inventoryPlayer, TileATM tileEntity) {
@@ -114,9 +112,7 @@ public class ContainerATM extends Container {
 					|| this.lastWithdrawCoins != tEntity.withdrawCoins || this.lastAccountError != tEntity.accountError
 					|| this.lastCoinWithdrawalAmount != tEntity.coinWithdrawalAmount
 					|| this.lastCardOwner != tEntity.cardOwner || this.lastAccountNumber != tEntity.accountNumber
-					|| this.lastAccountBalance != tEntity.accountBalance
-					|| this.lastGroupAccountName != tEntity.customAccountName
-					|| this.lastGroupAccountNumber != tEntity.customAccountNumber) {
+					|| this.lastAccountBalance != tEntity.accountBalance) {
 				tEntity.updateTE();
 			}
 
@@ -130,8 +126,6 @@ public class ContainerATM extends Container {
 			this.lastCardOwner = tEntity.cardOwner;
 			this.lastAccountNumber = tEntity.accountNumber;
 			this.lastAccountBalance = tEntity.accountBalance;
-			this.lastGroupAccountName = tEntity.customAccountName;
-			this.lastGroupAccountNumber = tEntity.customAccountNumber;
 		}
 	}
 

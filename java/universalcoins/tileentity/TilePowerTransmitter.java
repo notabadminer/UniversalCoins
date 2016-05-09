@@ -113,13 +113,13 @@ public class TilePowerTransmitter extends TileEntity implements IInventory, IEne
 					playerCredited = creditAccount(UniversalCoins.rfWholesaleRate);
 					if (playerCredited) {
 						krfSold += 10;
-						UniversalPower.getInstance(worldObj).receiveEnergy(10, false);
+						UniversalPower.getInstance().receiveEnergy(10, false);
 					}
 				}
 				if (!playerCredited && coinSum + UniversalCoins.rfWholesaleRate < Integer.MAX_VALUE) {
 					coinSum += UniversalCoins.rfWholesaleRate;
 					krfSold += 10;
-					UniversalPower.getInstance(worldObj).receiveEnergy(10, false);
+					UniversalPower.getInstance().receiveEnergy(10, false);
 				}
 			}
 		}
@@ -145,7 +145,7 @@ public class TilePowerTransmitter extends TileEntity implements IInventory, IEne
 		if (accountNumber == "") {
 			return 0;
 		}
-		return UniversalAccounts.getInstance(worldObj).getAccountBalance(accountNumber);
+		return UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 	}
 
 	private boolean creditAccount(int i) {
@@ -157,7 +157,7 @@ public class TilePowerTransmitter extends TileEntity implements IInventory, IEne
 		if (accountNumber == "") {
 			return false;
 		}
-		return UniversalAccounts.getInstance(worldObj).creditAccount(accountNumber, i);
+		return UniversalAccounts.getInstance().creditAccount(accountNumber, i);
 	}
 
 	public void sendPacket(int button, boolean shiftPressed) {

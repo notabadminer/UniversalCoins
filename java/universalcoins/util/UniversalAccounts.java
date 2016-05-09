@@ -1,15 +1,12 @@
 package universalcoins.util;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
 
 public class UniversalAccounts {
 
 	private static final UniversalAccounts instance = new UniversalAccounts();
-	private static World world;
 
-	public static UniversalAccounts getInstance(World world) {
-		instance.world = world;
+	public static UniversalAccounts getInstance() {
 		return instance;
 	}
 
@@ -39,7 +36,7 @@ public class UniversalAccounts {
 	public boolean creditAccount(String accountNumber, long amount) {
 		if (hasKey(accountNumber)) {
 			long balance = getWorldLong(accountNumber);
-			if (Long.MAX_VALUE - balance >= amount) {
+			if (Long.MAX_VALUE - balance > amount) {
 				balance += amount;
 				setWorldData(accountNumber, balance);
 				return true;
@@ -69,15 +66,13 @@ public class UniversalAccounts {
 
 	public boolean addPlayerAccount(String playerUID) {
 		if (getWorldString(playerUID) == "") {
-			String accountNumber = "";
-			while (getWorldString(accountNumber) == "") {
+			String accountNumber;
+			do {
 				accountNumber = String.valueOf(generateAccountNumber());
-				if (getWorldString(accountNumber) == "") {
-					setWorldData(playerUID, accountNumber);
-					setWorldData(accountNumber, 0);
-					return true;
-				}
-			}
+			} while (hasKey(accountNumber));
+			setWorldData(playerUID, accountNumber);
+			setWorldData(accountNumber, 0);
+			return true;
 		}
 		return false;
 	}
@@ -86,17 +81,13 @@ public class UniversalAccounts {
 		String oldAccount = getWorldString(playerUID);
 		long oldBalance = getAccountBalance(oldAccount);
 		delWorldData(playerUID);
-		if (getWorldString(playerUID) == "") {
-			String accountNumber = "none";
-			while (getWorldString(accountNumber) == "") {
-				accountNumber = String.valueOf(generateAccountNumber());
-				if (getWorldString(accountNumber) == "") {
-					setWorldData(playerUID, accountNumber);
-					setWorldData(accountNumber, oldBalance);
-				}
-			}
-		}
 		delWorldData(oldAccount);
+		String accountNumber = oldAccount;
+		do {
+			accountNumber = String.valueOf(generateAccountNumber());
+		} while (hasKey(accountNumber));
+		setWorldData(playerUID, accountNumber);
+		setWorldData(accountNumber, oldBalance);
 	}
 
 	private int generateAccountNumber() {
@@ -104,41 +95,42 @@ public class UniversalAccounts {
 	}
 
 	private boolean hasKey(String tag) {
-		UCWorldData wData = UCWorldData.get(world);
+		UCWorldData wData = UCWorldData.getInstance();
 		NBTTagCompound wdTag = wData.getData();
 		return wdTag.hasKey(tag);
 	}
 
 	private void setWorldData(String tag, String data) {
-		UCWorldData wData = UCWorldData.get(world);
+		UCWorldData wData = UCWorldData.getInstance();
 		NBTTagCompound wdTag = wData.getData();
 		wdTag.setString(tag, data);
 		wData.markDirty();
 	}
 
 	private void setWorldData(String tag, long data) {
-		UCWorldData wData = UCWorldData.get(world);
+		UCWorldData wData = UCWorldData.getInstance();
 		NBTTagCompound wdTag = wData.getData();
 		wdTag.setLong(tag, data);
 		wData.markDirty();
 	}
 
 	private long getWorldLong(String tag) {
-		UCWorldData wData = UCWorldData.get(world);
+		UCWorldData wData = UCWorldData.getInstance();
 		NBTTagCompound wdTag = wData.getData();
 		return wdTag.getLong(tag);
 	}
 
 	private String getWorldString(String tag) {
-		UCWorldData wData = UCWorldData.get(world);
+		UCWorldData wData = UCWorldData.getInstance();
 		NBTTagCompound wdTag = wData.getData();
 		return wdTag.getString(tag);
 	}
 
 	private void delWorldData(String tag) {
-		UCWorldData wData = UCWorldData.get(world);
+		UCWorldData wData = UCWorldData.getInstance();
 		NBTTagCompound wdTag = wData.getData();
 		wdTag.removeTag(tag);
 		wData.markDirty();
 	}
+
 }

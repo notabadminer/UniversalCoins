@@ -666,7 +666,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 	public long getAccountBalance() {
 		if (inventory[itemCardSlot] != null) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			return UniversalAccounts.getInstance(worldObj).getAccountBalance(accountNumber);
+			return UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 		}
 		return -1;
 	}
@@ -674,14 +674,14 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 	public void debitAccount(int amount) {
 		if (inventory[itemCardSlot] != null) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			UniversalAccounts.getInstance(worldObj).debitAccount(accountNumber, amount);
+			UniversalAccounts.getInstance().debitAccount(accountNumber, amount);
 		}
 	}
 
 	public void creditAccount(int amount) {
 		if (inventory[itemCardSlot] != null) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			UniversalAccounts.getInstance(worldObj).creditAccount(accountNumber, amount);
+			UniversalAccounts.getInstance().creditAccount(accountNumber, amount);
 		}
 	}
 

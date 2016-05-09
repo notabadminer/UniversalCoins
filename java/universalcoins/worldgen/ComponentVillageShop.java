@@ -19,7 +19,6 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureComponent;
 import net.minecraft.world.gen.structure.StructureVillagePieces;
 import net.minecraft.world.gen.structure.StructureVillagePieces.Start;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.blocks.BlockUCWallSign;
 import universalcoins.tileentity.TileVendor;
@@ -35,6 +34,7 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 	public ComponentVillageShop(Start startPiece, int p5, Random random, StructureBoundingBox box, EnumFacing facing) {
 		super(startPiece, p5);
 		this.boundingBox = box;
+		this.func_186164_a(facing);
 		MapGenStructureIO.registerStructureComponent(ComponentVillageShop.class, "ViUS");
 	}
 
@@ -56,8 +56,6 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 
 			this.boundingBox.offset(0, this.averageGroundLevel - this.boundingBox.maxY + 5 - 1, 0);
 		}
-		
-		FMLLog.info("adding shop at: " + sbb.minX + " " + sbb.minZ);
 
 		// Clear area
 		fillWithAir(world, sbb, 0, 0, 0, 5, 6, 7);
@@ -89,22 +87,22 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 				4, 1, boundingBox);
 		this.setBlockState(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 4,
 				4, 1, boundingBox);
-		this.setBlockState(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 1,
+		this.setBlockState(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.SOUTH), 1,
 				4, 6, boundingBox);
-		this.setBlockState(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 4,
+		this.setBlockState(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.SOUTH), 4,
 				4, 6, boundingBox);
 		// signs
 		this.fillWithBlocks(world, sbb, 1, 1, 1, 1, 1, 6,
 				UniversalCoins.proxy.wall_ucsign.getDefaultState().withProperty(BlockUCWallSign.FACING,
-						EnumFacing.NORTH),
+						EnumFacing.EAST),
 				UniversalCoins.proxy.wall_ucsign.getDefaultState().withProperty(BlockUCWallSign.FACING,
-						EnumFacing.WEST),
+						EnumFacing.EAST),
 				false);
 		this.fillWithBlocks(world, sbb, 4, 1, 1, 4, 1, 6,
 				UniversalCoins.proxy.wall_ucsign.getDefaultState().withProperty(BlockUCWallSign.FACING,
-						EnumFacing.NORTH),
+						EnumFacing.WEST),
 				UniversalCoins.proxy.wall_ucsign.getDefaultState().withProperty(BlockUCWallSign.FACING,
-						EnumFacing.EAST),
+						EnumFacing.WEST),
 				false);
 		// vending blocks
 		this.fillWithBlocks(world, sbb, 0, 2, 1, 0, 2, 6, UniversalCoins.proxy.vendor.getDefaultState(),

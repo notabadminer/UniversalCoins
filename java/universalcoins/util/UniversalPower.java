@@ -7,10 +7,8 @@ import net.minecraft.world.World;
 public class UniversalPower {
 
 	private static final UniversalPower instance = new UniversalPower();
-	private static World world;
 
-	public static UniversalPower getInstance(World world) {
-		instance.world = world;
+	public static UniversalPower getInstance() {
 		return instance;
 	}
 
@@ -51,20 +49,20 @@ public class UniversalPower {
 	}
 
 	private boolean hasKey(String tag) {
-		UCWorldData wData = UCWorldData.get(world);
+		UCWorldData wData = UCWorldData.getInstance();
 		NBTTagCompound wdTag = wData.getData();
 		return wdTag.hasKey(tag);
 	}
 
 	private void setWorldLong(String tag, long data) {
-		UCWorldData wData = UCWorldData.get(world);
+		UCWorldData wData = UCWorldData.getInstance();
 		NBTTagCompound wdTag = wData.getData();
 		wdTag.setLong(tag, data);
 		wData.markDirty();
 	}
 
 	private long getWorldLong(String tag) {
-		UCWorldData wData = UCWorldData.get(world);
+		UCWorldData wData = UCWorldData.getInstance();
 		NBTTagCompound wdTag = wData.getData();
 		return wdTag.getLong(tag);
 	}

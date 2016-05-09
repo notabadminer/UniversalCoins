@@ -43,7 +43,7 @@ public class ItemUCCard extends Item {
 		if (stack.getTagCompound() == null) {
 			createNBT(stack, world, player);
 		}
-		long accountCoins = UniversalAccounts.getInstance(world)
+		long accountCoins = UniversalAccounts.getInstance()
 				.getAccountBalance(stack.getTagCompound().getString("Account"));
 		DecimalFormat formatter = new DecimalFormat("###,###,###,###,###,###,###");
 		player.addChatMessage(new TextComponentString(
@@ -57,7 +57,7 @@ public class ItemUCCard extends Item {
 	}
 
 	protected void createNBT(ItemStack stack, World world, EntityPlayer entityPlayer) {
-		String accountNumber = UniversalAccounts.getInstance(world)
+		String accountNumber = UniversalAccounts.getInstance()
 				.getOrCreatePlayerAccount(entityPlayer.getPersistentID().toString());
 		stack.setTagCompound(new NBTTagCompound());
 		stack.getTagCompound().setString("Name", entityPlayer.getName());

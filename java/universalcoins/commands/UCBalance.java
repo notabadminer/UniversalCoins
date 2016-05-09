@@ -37,8 +37,8 @@ public class UCBalance extends CommandBase implements ICommand {
 		if (sender instanceof EntityPlayerMP) {
 			int playerCoins = getPlayerCoins((EntityPlayerMP) sender);
 			String uuid = ((EntityPlayerMP) sender).getPersistentID().toString();
-			String playerAcct = UniversalAccounts.getInstance(sender.getEntityWorld()).getPlayerAccount(uuid);
-			long accountBalance = UniversalAccounts.getInstance(sender.getEntityWorld()).getAccountBalance(playerAcct);
+			String playerAcct = UniversalAccounts.getInstance().getPlayerAccount(uuid);
+			long accountBalance = UniversalAccounts.getInstance().getAccountBalance(playerAcct);
 			DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
 			sender.addChatMessage(new TextComponentString(
 					I18n.translateToLocal("command.balance.result.inventory") + formatter.format(playerCoins)));

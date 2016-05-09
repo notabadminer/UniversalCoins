@@ -24,9 +24,8 @@ public class ATMGUI extends GuiContainer {
 
 	public int menuState = 0;
 	private static final String[] menuStateName = new String[] { "welcome", "auth", "main", "additional", "balance",
-			"deposit", "withdraw", "newcard", "transferaccount", "customaccount", "takecard", "takecoins",
-			"insufficient", "invalid", "badcard", "unauthorized", "customaccountoptions", "newaccount",
-			"duplicateaccount", "processing" };
+			"deposit", "withdraw", "newcard", "transferaccount", "takecard", "takecoins", "insufficient", "invalid",
+			"badcard", "unauthorized", "newaccount", "processing" };
 	int barProgress = 0;
 	int counter = 0;
 
@@ -40,7 +39,7 @@ public class ATMGUI extends GuiContainer {
 
 	@Override
 	protected void keyTyped(char c, int i) {
-		if (menuState == 6 || menuState == 9) {
+		if (menuState == 6) {
 			textField.setFocused(true);
 			textField.textboxKeyTyped(c, i);
 			textField.setFocused(false);
@@ -114,7 +113,7 @@ public class ATMGUI extends GuiContainer {
 					int cx = width / 2 - stringLength / 2;
 					fontRendererObj.drawString(authString, cx, y + 72, 4210752);
 					if (barProgress > 160) {
-						menuState = 17;
+						menuState = 15;
 						barProgress = 0;
 					}
 				}
@@ -135,50 +134,30 @@ public class ATMGUI extends GuiContainer {
 			fontRendererObj.drawString(formatter.format(tEntity.accountBalance), x + 34, y + 32, 4210752);
 			fontRendererObj.drawString(textField.getText() + drawCursor(), x + 34, y + 52, 4210752);
 		}
-		if (menuState == 9) {
-			// display text field for custom name entry
-			if (textField.getText() == "0") { // textfield has not been
-												// initialized. do it now
-				textField.setMaxStringLength(20);
-				textField.setText(tEntity.customAccountName);
-			}
-			fontRendererObj.drawString(textField.getText() + drawCursor(), x + 34, y + 42, 4210752);
-		}
 		if (menuState == 10 && tEntity.accountError) {
 			barProgress++;
 			if (barProgress > 20) {
 				menuState = 18;
 			}
 		}
-		if (menuState == 14) {
+		if (menuState == 12) {
 			barProgress++;
 			if (barProgress > 100) {
-				menuState = 0;
+				menuState = 6;
 				barProgress = 0;
 			}
 		}
-		if (menuState == 15) {
+		if (menuState == 14) {
 			barProgress++;
 			if (barProgress > 100) {
 				menuState = 2;
 				barProgress = 0;
 			}
 		}
-		if (menuState == 18) {
+		if (menuState == 16) {
 			barProgress++;
 			if (barProgress > 100) {
 				menuState = 9;
-				barProgress = 0;
-			}
-		}
-		if (menuState == 19) {
-			if (tEntity.accountError) {
-				tEntity.sendButtonMessage(10, false);// send function code 10
-														// (reset accountError)
-				menuState = 18;
-			}
-			if (tEntity.getStackInSlot(tEntity.itemCardSlot) != null) {
-				menuState = 10;
 				barProgress = 0;
 			}
 		}
@@ -264,14 +243,6 @@ public class ATMGUI extends GuiContainer {
 				} else
 					menuState = 8;
 			}
-			if (button.id == idButtonThree) {
-				if (!tEntity.customAccountName.contentEquals("none")) {
-					menuState = 16;
-				} else if (!tEntity.cardOwner.contentEquals(tEntity.playerUID)) {
-					menuState = 15;
-				} else
-					menuState = 9;
-			}
 			if (button.id == idButtonFour) {
 				menuState = 2;
 			}
@@ -311,14 +282,12 @@ public class ATMGUI extends GuiContainer {
 				try {
 					coinWithdrawalAmount = Integer.parseInt(textField.getText());
 				} catch (NumberFormatException ex) {
-					menuState = 13;
-				} catch (Throwable ex2) {
-					menuState = 13;
-				}
-				if (coinWithdrawalAmount > tEntity.accountBalance) {
 					menuState = 12;
-				} else if (coinWithdrawalAmount <= 0) {
-					menuState = 13;
+				} catch (Throwable ex2) {
+					menuState = 12;
+				}
+				if (coinWithdrawalAmount > tEntity.accountBalance ||coinWithdrawalAmount <= 0) {
+					menuState = 12;
 				} else {
 					// send message to server with withdrawal amount
 					tEntity.sendServerUpdatePacket(coinWithdrawalAmount);
@@ -342,7 +311,7 @@ public class ATMGUI extends GuiContainer {
 					menuState = 15;
 				} else {
 					functionID = 1;
-					menuState = 10;
+					menuState = 9;
 				}
 			}
 			if (button.id == idButtonFour) {
@@ -357,37 +326,13 @@ public class ATMGUI extends GuiContainer {
 			}
 			if (button.id == idButtonThree) {
 				functionID = 2;
-				menuState = 10;
+				menuState = 9;
 			}
 			if (button.id == idButtonFour) {
 				menuState = 2;
 			}
 			break;
 		case 9:
-			// customaccount
-			if (button.id == idButtonOne) {
-			}
-			if (button.id == idButtonTwo) {
-			}
-			if (button.id == idButtonThree) {
-				if (!textField.getText().contentEquals("none")) {
-					String customName = textField.getText();
-					tEntity.sendServerUpdatePacket(customName);
-					if (tEntity.customAccountName.contentEquals("none")) {
-						functionID = 7;
-						menuState = 19;
-					} else {
-						functionID = 9;
-						menuState = 19;
-					}
-				}
-			}
-			if (button.id == idButtonFour) {
-				textField.setText("0");
-				menuState = 3;
-			}
-			break;
-		case 10:
 			// take card
 			if (button.id == idButtonOne) {
 			}
@@ -399,7 +344,7 @@ public class ATMGUI extends GuiContainer {
 				menuState = 0;
 			}
 			break;
-		case 11:
+		case 10:
 			// take coins
 			if (button.id == idButtonOne) {
 			}
@@ -412,7 +357,7 @@ public class ATMGUI extends GuiContainer {
 				menuState = 0;
 			}
 			break;
-		case 12:
+		case 11:
 			// Insufficient funds
 			if (button.id == idButtonOne) {
 			}
@@ -424,7 +369,7 @@ public class ATMGUI extends GuiContainer {
 				menuState = 6;
 			}
 			break;
-		case 13:
+		case 12:
 			// Invalid input
 			if (button.id == idButtonOne) {
 			}
@@ -436,7 +381,7 @@ public class ATMGUI extends GuiContainer {
 				menuState = 6;
 			}
 			break;
-		case 14:
+		case 13:
 			// Bad card - account not found
 			if (button.id == idButtonOne) {
 			}
@@ -447,7 +392,7 @@ public class ATMGUI extends GuiContainer {
 			if (button.id == idButtonFour) {
 			}
 			break;
-		case 15:
+		case 14:
 			// unauthorized access - card does not belong to player
 			if (button.id == idButtonOne) {
 			}
@@ -458,24 +403,7 @@ public class ATMGUI extends GuiContainer {
 			if (button.id == idButtonFour) {
 			}
 			break;
-		case 16:
-			// custom account options
-			if (button.id == idButtonOne) {
-				if (tEntity.getStackInSlot(tEntity.itemCardSlot) == null) {
-					functionID = 7;
-					menuState = 19;
-				}
-			}
-			if (button.id == idButtonTwo) {
-				menuState = 9;
-			}
-			if (button.id == idButtonThree) {
-			}
-			if (button.id == idButtonFour) {
-				menuState = 2;
-			}
-			break;
-		case 17:
+		case 15:
 			// new account
 			if (button.id == idButtonOne) {
 			}
@@ -483,24 +411,13 @@ public class ATMGUI extends GuiContainer {
 			}
 			if (button.id == idButtonThree) {
 				functionID = 1;
-				menuState = 10;
+				menuState = 9;
 			}
 			if (button.id == idButtonFour) {
 				menuState = 0;
 			}
 			break;
-		case 18:
-			// duplicate account
-			if (button.id == idButtonOne) {
-			}
-			if (button.id == idButtonTwo) {
-			}
-			if (button.id == idButtonThree) {
-			}
-			if (button.id == idButtonFour) {
-			}
-			break;
-		case 19:
+		case 16:
 			// processing
 			if (button.id == idButtonOne) {
 			}
@@ -531,9 +448,6 @@ public class ATMGUI extends GuiContainer {
 		// function5 - get account info
 		// function6 - destroy invalid card - called from
 		// drawGuiContainerBackgroundLayer
-		// function7 - new custom account
-		// function8 - new custom card
-		// function9 - transfer custom account
 		// we use function IDs as we don't have specific functions for each
 		// button
 		tEntity.sendButtonMessage(functionID, isShiftKeyDown());

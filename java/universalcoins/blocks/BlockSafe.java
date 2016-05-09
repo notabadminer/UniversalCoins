@@ -13,6 +13,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
@@ -62,7 +64,7 @@ public class BlockSafe extends BlockProtected {
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TileSafe();
 	}
-	
+
 	@Override
 	public EnumBlockRenderType getRenderType(IBlockState state) {
 		return EnumBlockRenderType.MODEL;
@@ -76,11 +78,7 @@ public class BlockSafe extends BlockProtected {
 		if (!world.isRemote)
 			world.spawnEntityInWorld(entityItem);
 	}
-	
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[] { FACING });
-	}
-	
+
 	/**
 	 * Convert the given metadata into a BlockState for this Block
 	 */
@@ -99,5 +97,25 @@ public class BlockSafe extends BlockProtected {
 	 */
 	public int getMetaFromState(IBlockState state) {
 		return ((EnumFacing) state.getValue(FACING)).getIndex();
+	}
+
+	/**
+	 * Returns the blockstate with the given rotation from the passed
+	 * blockstate. If inapplicable, returns the passed blockstate.
+	 */
+	public IBlockState withRotation(IBlockState state, Rotation rot) {
+		return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
+	}
+
+	/**
+	 * Returns the blockstate with the given mirror of the passed blockstate. If
+	 * inapplicable, returns the passed blockstate.
+	 */
+	public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
+		return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
+	}
+
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, new IProperty[] { FACING });
 	}
 }

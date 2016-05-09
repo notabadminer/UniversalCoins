@@ -101,7 +101,7 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 				: Long.MAX_VALUE - accountBalance);
 		debitAmount = Math.min(stack.stackSize, accountCapacity / coinValue);
 		if (!worldObj.isRemote) {
-			UniversalAccounts.getInstance(worldObj).debitAccount(accountNumber, debitAmount * coinValue);
+			UniversalAccounts.getInstance().debitAccount(accountNumber, debitAmount * coinValue);
 			updateAccountBalance();
 		}
 		fillOutputSlot();
@@ -139,7 +139,7 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 					int accountCapacity = (int) (Long.MAX_VALUE - accountBalance > Integer.MAX_VALUE ? Integer.MAX_VALUE
 							: Long.MAX_VALUE - accountBalance);
 					int depositAmount = Math.min(accountCapacity / coinValue, stack.stackSize);
-					UniversalAccounts.getInstance(worldObj).creditAccount(accountNumber, depositAmount * coinValue);
+					UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue);
 					inventory[slot].stackSize -= depositAmount;
 					if (inventory[slot].stackSize == 0) {
 						inventory[slot] = null;
@@ -172,7 +172,7 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 	}
 
 	public void updateAccountBalance() {
-		accountBalance = UniversalAccounts.getInstance(worldObj).getAccountBalance(accountNumber);
+		accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 	}
 
 	@Override
@@ -270,7 +270,7 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 	}
 
 	public void setSafeAccount(String playerName) {
-		accountNumber = UniversalAccounts.getInstance(worldObj).getOrCreatePlayerAccount(getPlayerUID(playerName));
+		accountNumber = UniversalAccounts.getInstance().getOrCreatePlayerAccount(getPlayerUID(playerName));
 	}
 
 	private String getPlayerUID(String playerName) {
