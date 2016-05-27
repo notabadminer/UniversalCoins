@@ -3,7 +3,6 @@ package universalcoins.container;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -104,40 +103,37 @@ public class ContainerVendor extends Container {
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 
-		for (int i = 0; i < this.crafters.size(); ++i) {
-			ICrafting icrafting = (ICrafting) this.crafters.get(i);
+		if (this.lastOoStock != this.tileEntity.ooStockWarning || this.lastOoCoins != this.tileEntity.ooCoinsWarning
+				|| this.lastInvFull != this.tileEntity.inventoryFullWarning
+				|| this.lastCoinSum != this.tileEntity.coinSum
+				|| this.lastUserCoinSum != this.tileEntity.userCoinSum
+				|| this.lastItemPrice != this.tileEntity.itemPrice || this.lastSellMode != this.tileEntity.sellMode
+				|| this.lastTextColor != this.tileEntity.textColor
+				|| this.lastCoinButtonActive != this.tileEntity.ironCoinBtnActive
+				|| this.lastSStackButtonActive != this.tileEntity.goldCoinBtnActive
+				|| this.lastLStackButtonActive != this.tileEntity.emeraldCoinBtnActive
+				|| this.lastSBagButtonActive != this.tileEntity.diamondCoinBtnActive
+				|| this.lastLBagButtonActive != this.tileEntity.obsidianCoinBtnActive
+				|| this.lastInUse != this.tileEntity.inUse) {
+			// update
+			tileEntity.updateTE();
 
-			if (this.lastOoStock != this.tileEntity.ooStockWarning || this.lastOoCoins != this.tileEntity.ooCoinsWarning
-					|| this.lastInvFull != this.tileEntity.inventoryFullWarning
-					|| this.lastCoinSum != this.tileEntity.coinSum
-					|| this.lastUserCoinSum != this.tileEntity.userCoinSum
-					|| this.lastItemPrice != this.tileEntity.itemPrice || this.lastSellMode != this.tileEntity.sellMode
-					|| this.lastTextColor != this.tileEntity.textColor
-					|| this.lastCoinButtonActive != this.tileEntity.ironCoinBtnActive
-					|| this.lastSStackButtonActive != this.tileEntity.goldCoinBtnActive
-					|| this.lastLStackButtonActive != this.tileEntity.emeraldCoinBtnActive
-					|| this.lastSBagButtonActive != this.tileEntity.diamondCoinBtnActive
-					|| this.lastLBagButtonActive != this.tileEntity.obsidianCoinBtnActive
-					|| this.lastInUse != this.tileEntity.inUse) {
-				// update
-				tileEntity.updateTE();
-
-				this.lastOoStock = this.tileEntity.ooStockWarning;
-				this.lastOoCoins = this.tileEntity.ooCoinsWarning;
-				this.lastInvFull = this.tileEntity.inventoryFullWarning;
-				this.lastCoinSum = this.tileEntity.coinSum;
-				this.lastUserCoinSum = this.tileEntity.userCoinSum;
-				this.lastItemPrice = this.tileEntity.itemPrice;
-				this.lastSellMode = this.tileEntity.sellMode;
-				this.lastTextColor = this.tileEntity.textColor;
-				this.lastCoinButtonActive = this.tileEntity.ironCoinBtnActive;
-				this.lastSStackButtonActive = this.tileEntity.goldCoinBtnActive;
-				this.lastLStackButtonActive = this.tileEntity.emeraldCoinBtnActive;
-				this.lastSBagButtonActive = this.tileEntity.diamondCoinBtnActive;
-				this.lastLBagButtonActive = this.tileEntity.obsidianCoinBtnActive;
-				this.lastInUse = this.tileEntity.inUse;
-			}
+			this.lastOoStock = this.tileEntity.ooStockWarning;
+			this.lastOoCoins = this.tileEntity.ooCoinsWarning;
+			this.lastInvFull = this.tileEntity.inventoryFullWarning;
+			this.lastCoinSum = this.tileEntity.coinSum;
+			this.lastUserCoinSum = this.tileEntity.userCoinSum;
+			this.lastItemPrice = this.tileEntity.itemPrice;
+			this.lastSellMode = this.tileEntity.sellMode;
+			this.lastTextColor = this.tileEntity.textColor;
+			this.lastCoinButtonActive = this.tileEntity.ironCoinBtnActive;
+			this.lastSStackButtonActive = this.tileEntity.goldCoinBtnActive;
+			this.lastLStackButtonActive = this.tileEntity.emeraldCoinBtnActive;
+			this.lastSBagButtonActive = this.tileEntity.diamondCoinBtnActive;
+			this.lastLBagButtonActive = this.tileEntity.obsidianCoinBtnActive;
+			this.lastInUse = this.tileEntity.inUse;
 		}
+
 	}
 
 	@SideOnly(Side.CLIENT)

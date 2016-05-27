@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -93,7 +92,7 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 		if (stack != null) {
 			if (slot == itemCoinSlot && depositCoins && !accountNumber.matches("none")) {
 				FMLLog.info("in setInventorySlotContents"); // TODO
-				switch (stack.getUnlocalizedName()) {
+				switch (stack.getItem().getUnlocalizedName()) {
 				case "item.iron_coin":
 					coinValue = UniversalCoins.coinValues[0];
 					break;
@@ -155,7 +154,7 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 	}
 
 	@Override
-	public Packet getDescriptionPacket() {
+	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
 		return new SPacketUpdateTileEntity(pos, 1, nbt);
@@ -230,7 +229,7 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
 		for (int i = 0; i < inventory.length; i++) {
@@ -251,6 +250,9 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 		tagCompound.setString("CardOwner", cardOwner);
 		tagCompound.setString("accountNumber", accountNumber);
 		tagCompound.setLong("accountBalance", accountBalance);
+
+		//TODO: Is this the right tag compound to return?
+		return tagCompound;
 	}
 
 	@Override

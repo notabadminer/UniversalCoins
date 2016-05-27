@@ -3,7 +3,6 @@ package universalcoins.container;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -104,29 +103,26 @@ public class ContainerATM extends Container {
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 
-		for (int i = 0; i < this.crafters.size(); ++i) {
-			ICrafting icrafting = (ICrafting) this.crafters.get(i);
-
-			if (this.lastPlayerName != tEntity.playerName || this.lastPlayerUID != tEntity.playerUID
-					|| this.lastInUse != tEntity.inUse || this.lastDepositCoins != tEntity.depositCoins
-					|| this.lastWithdrawCoins != tEntity.withdrawCoins || this.lastAccountError != tEntity.accountError
-					|| this.lastCoinWithdrawalAmount != tEntity.coinWithdrawalAmount
-					|| this.lastCardOwner != tEntity.cardOwner || this.lastAccountNumber != tEntity.accountNumber
-					|| this.lastAccountBalance != tEntity.accountBalance) {
-				tEntity.updateTE();
-			}
-
-			this.lastPlayerName = tEntity.playerName;
-			this.lastPlayerUID = tEntity.playerUID;
-			this.lastInUse = tEntity.inUse;
-			this.lastDepositCoins = tEntity.depositCoins;
-			this.lastWithdrawCoins = tEntity.withdrawCoins;
-			this.lastAccountError = tEntity.accountError;
-			this.lastCoinWithdrawalAmount = tEntity.coinWithdrawalAmount;
-			this.lastCardOwner = tEntity.cardOwner;
-			this.lastAccountNumber = tEntity.accountNumber;
-			this.lastAccountBalance = tEntity.accountBalance;
+		if (this.lastPlayerName != tEntity.playerName || this.lastPlayerUID != tEntity.playerUID
+				|| this.lastInUse != tEntity.inUse || this.lastDepositCoins != tEntity.depositCoins
+				|| this.lastWithdrawCoins != tEntity.withdrawCoins || this.lastAccountError != tEntity.accountError
+				|| this.lastCoinWithdrawalAmount != tEntity.coinWithdrawalAmount
+				|| this.lastCardOwner != tEntity.cardOwner || this.lastAccountNumber != tEntity.accountNumber
+				|| this.lastAccountBalance != tEntity.accountBalance) {
+			tEntity.updateTE();
 		}
+
+		this.lastPlayerName = tEntity.playerName;
+		this.lastPlayerUID = tEntity.playerUID;
+		this.lastInUse = tEntity.inUse;
+		this.lastDepositCoins = tEntity.depositCoins;
+		this.lastWithdrawCoins = tEntity.withdrawCoins;
+		this.lastAccountError = tEntity.accountError;
+		this.lastCoinWithdrawalAmount = tEntity.coinWithdrawalAmount;
+		this.lastCardOwner = tEntity.cardOwner;
+		this.lastAccountNumber = tEntity.accountNumber;
+		this.lastAccountBalance = tEntity.accountBalance;
+
 	}
 
 	@SideOnly(Side.CLIENT)

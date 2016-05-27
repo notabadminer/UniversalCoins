@@ -14,7 +14,7 @@ public class UCWorldData extends WorldSavedData {
 	public static UCWorldData getInstance() {
 		World world = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld();
 		MapStorage storage = world.getMapStorage();
-		UCWorldData result = (UCWorldData) storage.loadData(UCWorldData.class, key);
+		UCWorldData result = (UCWorldData) storage.getOrLoadData(UCWorldData.class, key);
 		if (result == null) {
 			result = new UCWorldData(key);
 			storage.setData(key, result);
@@ -34,9 +34,10 @@ public class UCWorldData extends WorldSavedData {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound compound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		compound.setTag(key, nbt);
 		this.markDirty();
+		return compound;
 	}
 
 	public NBTTagCompound getData() {

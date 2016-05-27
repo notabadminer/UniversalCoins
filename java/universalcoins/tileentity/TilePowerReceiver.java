@@ -4,12 +4,10 @@ import cofh.api.energy.IEnergyProvider;
 import cofh.api.energy.IEnergyReceiver;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -78,7 +76,7 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 		int coinValue = 0;
 		if (stack != null) {
 			if (slot == itemCoinSlot) {
-				switch (stack.getUnlocalizedName()) {
+				switch (stack.getItem().getUnlocalizedName()) {
 				case "item.iron_coin":
 					coinValue = UniversalCoins.coinValues[0];
 					break;
@@ -186,7 +184,7 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 	}
 
 	@Override
-	public Packet getDescriptionPacket() {
+	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
 		return new SPacketUpdateTileEntity(pos, 1, nbt);
@@ -203,7 +201,7 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
 		for (int i = 0; i < inventory.length; i++) {
@@ -223,6 +221,8 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 		if (orientation != null) {
 			tagCompound.setInteger("orientation", orientation.ordinal());
 		}
+
+		return tagCompound;
 	}
 
 	@Override

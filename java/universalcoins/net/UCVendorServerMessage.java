@@ -67,7 +67,7 @@ public class UCVendorServerMessage implements IMessage, IMessageHandler<UCVendor
 			if (playerEntity == null) {
 				return null;
 			}
-			playerEntity.getServerForPlayer().addScheduledTask(task);
+			playerEntity.getServerWorld().addScheduledTask(task);
 		}
 		return null;
 	}

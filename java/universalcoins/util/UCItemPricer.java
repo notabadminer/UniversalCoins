@@ -117,7 +117,7 @@ public class UCItemPricer {
 
 	private void buildPricelistHashMap() {
 		ArrayList<ItemStack> itemsDiscovered = new ArrayList<ItemStack>();
-		Object[] itemSet = Item.itemRegistry.getKeys().toArray();
+		Object[] itemSet = Item.REGISTRY.getKeys().toArray();
 
 		for (Object itemObject : itemSet) {
 			String item = itemObject.toString();
@@ -127,7 +127,7 @@ public class UCItemPricer {
 			// pass the first value as modname
 			String modName = tempModName[0];
 			if (item != null) {
-				Item test = (Item) Item.itemRegistry.getObject(new ResourceLocation(item));
+				Item test = (Item) Item.REGISTRY.getObject(new ResourceLocation(item));
 				// check for meta values so we catch all items
 				// Iterate through damage values and add them if unique
 				ItemStack baseStack = new ItemStack(test, 1, 0);
@@ -136,12 +136,25 @@ public class UCItemPricer {
 				int itemDamage = 0;
 				while (newItem == true) {
 					ItemStack testStack = new ItemStack(test, 1, itemDamage);
-					if (itemDamage == 0 || !baseStack.getDisplayName().equals(testStack.getDisplayName())
-							&& !previousStack.getDisplayName().equals(testStack.getDisplayName())) {
+					String baseName=null, testName=null, previousName=null;
+					try{
+						baseName = baseStack.getDisplayName();
+						previousName = previousStack.getDisplayName();
+						testName = testStack.getDisplayName();
+					}catch (java.lang.IndexOutOfBoundsException e){
+						// Some mods manage to throw an exception here.
+						// Lets try to be compatible
+						e.printStackTrace();
+						itemDamage++;
+						break;
+					}
+
+					if (itemDamage == 0 || !baseName.equals(testName)
+							&& !previousName.equals(testName)) {
 						previousStack = testStack;
 						try {
-							String name = testStack.getUnlocalizedName() + "." + itemDamage;
-							if (name != null && !itemsDiscovered.contains(name)) {
+							String name = testName + "." + itemDamage;
+							if (!itemsDiscovered.contains(name)) {
 								itemsDiscovered.add(testStack);
 							}
 						} catch (Throwable ex) {
@@ -151,14 +164,18 @@ public class UCItemPricer {
 					} else {
 						newItem = false;
 					}
+					// Botania will make infinite numbers of these if we try.
+					// botania:pavement1, botania:pavement2, botania:pavement3
+					if(testName.contains(""+itemDamage)){
+						newItem = false;
+					}
+
 					itemDamage++;
 				}
 			}
 
 			// parse oredictionary
-			for (
-
-			String ore : OreDictionary.getOreNames()) {
+			for (String ore : OreDictionary.getOreNames()) {
 				ucModnameMap.put(ore, "oredictionary");
 				if (!ucPriceMap.containsKey(ore)) {
 					// check ore to see if any of the types has a price, use it
@@ -177,11 +194,15 @@ public class UCItemPricer {
 
 			// iterate through the items and update the hashmaps
 			for (ItemStack itemstack : itemsDiscovered) {
-				// update ucModnameMap with items found
-				ucModnameMap.put(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage(), modName);
-				// update ucPriceMap with initial values
-				if (!ucPriceMap.containsKey(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage())) {
-					ucPriceMap.put(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage(), -1);
+				try {
+					// update ucModnameMap with items found
+					ucModnameMap.put(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage(), modName);
+					// update ucPriceMap with initial values
+					if (!ucPriceMap.containsKey(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage())) {
+						ucPriceMap.put(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage(), -1);
+					}
+				}catch(Exception e){
+					e.printStackTrace();
 				}
 			}
 			// clear this variable so we can use it next round
@@ -300,7 +321,7 @@ public class UCItemPricer {
 		}
 		String itemName = itemStack.getUnlocalizedName();
 		// get modName to add to mapping
-		String itemRegistryKey = Item.itemRegistry.getNameForObject(itemStack.getItem()).toString();
+		String itemRegistryKey = Item.REGISTRY.getNameForObject(itemStack.getItem()).toString();
 		String[] tempModName = itemRegistryKey.split("\\W", 3);
 		// pass the first value as modname
 		String modName = tempModName[0];
@@ -370,7 +391,7 @@ public class UCItemPricer {
 				// split string into item name and meta
 				String itemName = keyName.substring(0, keyName.length() - 2);
 				int itemMeta = Integer.valueOf(keyName.substring(keyName.length() - 1));
-				Item item = (Item) Item.itemRegistry.getObject(new ResourceLocation(itemName));
+				Item item = (Item) Item.REGISTRY.getObject(new ResourceLocation(itemName));
 				if (item != null) {
 					stack = new ItemStack(item, itemMeta);
 				}

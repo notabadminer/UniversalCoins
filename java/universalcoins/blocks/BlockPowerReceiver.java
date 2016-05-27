@@ -21,7 +21,7 @@ import universalcoins.tileentity.TilePowerReceiver;
 public class BlockPowerReceiver extends BlockProtected {
 
 	public BlockPowerReceiver() {
-		super(Material.iron);
+		super(Material.IRON);
 		setHardness(3.0F);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(30.0F);
@@ -77,8 +77,9 @@ public class BlockPowerReceiver extends BlockProtected {
 		return new TilePowerReceiver();
 	}
 
-	@Override
-	public void onNeighborBlockChange(World world, BlockPos pos, IBlockState state, Block neighborBlock) {
+	//TODO: super removed, move code to new method.
+	// @Override
+	public void neighborChanged(World world, BlockPos pos, IBlockState state, Block neighborBlock) {
 		TilePowerReceiver tileEntity = (TilePowerReceiver) world.getTileEntity(pos);
 		tileEntity.resetPowerDirection();
 	}

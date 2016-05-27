@@ -43,7 +43,7 @@ public class ItemUCSign extends ItemSign {
 
 			if (!playerIn.canPlayerEdit(pos, facing, stack)) {
 				return EnumActionResult.SUCCESS;
-			} else if (!Blocks.standing_sign.canPlaceBlockAt(worldIn, pos)) {
+			} else if (!Blocks.STANDING_SIGN.canPlaceBlockAt(worldIn, pos)) {
 				return EnumActionResult.SUCCESS;
 			} else {
 				if (facing == EnumFacing.UP) {

@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -203,7 +202,7 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
 		for (int i = 0; i < inventory.length; i++) {
@@ -219,6 +218,8 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 		tagCompound.setString("Owner", blockOwner);
 		tagCompound.setString("AccountNumber", accountNumber);
 		tagCompound.setLong("Balance", accountBalance);
+
+		return tagCompound;
 	}
 
 	@Override
@@ -251,7 +252,7 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 	}
 
 	@Override
-	public Packet getDescriptionPacket() {
+	public 	SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
 		return new SPacketUpdateTileEntity(pos, 1, nbt);

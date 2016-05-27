@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.ITextComponent;
@@ -460,7 +459,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
 		for (int i = 0; i < inventory.length; i++) {
@@ -487,6 +486,8 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 		tagCompound.setBoolean("emeraldCoinBtnActive", emeraldCoinBtnActive);
 		tagCompound.setBoolean("diamondCoinBtnActive", diamondCoinBtnActive);
 		tagCompound.setBoolean("obsidianCoinBtnActive", obsidianCoinBtnActive);
+
+		return tagCompound;
 	}
 
 	public void updateTE() {
@@ -495,7 +496,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 	}
 
 	@Override
-	public Packet getDescriptionPacket() {
+	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound tag = new NBTTagCompound();
 		writeToNBT(tag);
 		return new SPacketUpdateTileEntity(this.getPos(), this.getBlockMetadata(), tag);

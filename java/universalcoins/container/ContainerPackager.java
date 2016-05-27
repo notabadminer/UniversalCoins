@@ -3,7 +3,6 @@ package universalcoins.container;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -110,21 +109,18 @@ public class ContainerPackager extends Container {
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 
-		for (int i = 0; i < this.crafters.size(); ++i) {
-			ICrafting icrafting = (ICrafting) this.crafters.get(i);
-
-			if (this.lastCoinSum != tEntity.coinSum || this.lastPackageSize != tEntity.packageSize
-					|| this.lastCardAvailable != tEntity.cardAvailable || this.lastInUse != tEntity.inUse
-					|| this.lastPackageTarget != tEntity.packageTarget) {
-				tEntity.updateTE();
-			}
-
-			this.lastCoinSum = tEntity.coinSum;
-			this.lastPackageSize = tEntity.packageSize;
-			this.lastPackageTarget = tEntity.packageTarget;
-			this.lastCardAvailable = tEntity.cardAvailable;
-			this.lastInUse = tEntity.inUse;
+		if (this.lastCoinSum != tEntity.coinSum || this.lastPackageSize != tEntity.packageSize
+				|| this.lastCardAvailable != tEntity.cardAvailable || this.lastInUse != tEntity.inUse
+				|| this.lastPackageTarget != tEntity.packageTarget) {
+			tEntity.updateTE();
 		}
+
+		this.lastCoinSum = tEntity.coinSum;
+		this.lastPackageSize = tEntity.packageSize;
+		this.lastPackageTarget = tEntity.packageTarget;
+		this.lastCardAvailable = tEntity.cardAvailable;
+		this.lastInUse = tEntity.inUse;
+
 	}
 
 	@SideOnly(Side.CLIENT)

@@ -65,7 +65,7 @@ public class UCButtonMessage implements IMessage, IMessageHandler<UCButtonMessag
 				FMLLog.warning("onMessage-server: Player is null");
 				return null;
 			}
-			playerEntity.getServerForPlayer().addScheduledTask(task);
+			playerEntity.getServerWorld().addScheduledTask(task);
 		}
 		return null;
 	}

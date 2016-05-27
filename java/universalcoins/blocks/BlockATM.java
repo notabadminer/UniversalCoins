@@ -28,7 +28,7 @@ public class BlockATM extends BlockProtected {
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
 	public BlockATM() {
-		super(Material.iron);
+		super(Material.IRON);
 		setHardness(3.0F);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(30.0F);

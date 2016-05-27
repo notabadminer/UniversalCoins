@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
@@ -694,7 +693,8 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 			return true;
 	}
 
-	public Packet getDescriptionPacket() {
+	@Override
+	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
 		return new SPacketUpdateTileEntity(pos, 1, nbt);
@@ -852,7 +852,8 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 		}
 	}
 
-	public void writeToNBT(NBTTagCompound tagCompound) {
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
 		for (int i = 0; i < inventory.length; i++) {
@@ -889,6 +890,7 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 		tagCompound.setInteger("remoteX", remoteX);
 		tagCompound.setInteger("remoteY", remoteY);
 		tagCompound.setInteger("remoteZ", remoteZ);
+		return tagCompound;
 	}
 
 	public void updateSigns() {

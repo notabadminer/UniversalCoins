@@ -31,7 +31,7 @@ public class BlockSignal extends BlockProtected {
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
 	public BlockSignal() {
-		super(Material.iron);
+		super(Material.IRON);
 		setHardness(3.0F);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(30.0F);
@@ -57,7 +57,7 @@ public class BlockSignal extends BlockProtected {
 			for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 				ItemStack stack = player.inventory.getStackInSlot(i);
 				if (stack != null) {
-					switch (stack.getUnlocalizedName()) {
+					switch (stack.getItem().getUnlocalizedName()) {
 					case "item.iron_coin":
 						coinsFound += stack.stackSize * UniversalCoins.coinValues[0];
 						player.inventory.setInventorySlotContents(i, null);

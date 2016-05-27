@@ -95,7 +95,7 @@ public class BlockUCWallSign extends BlockWallSign {
 		return false;
 	}
 
-	@Override
+	//@Override
 	public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock) {
 		TileEntity tileEntity = worldIn.getTileEntity(pos);
 		if (neighborBlock.getLocalizedName().matches("Chest") && tileEntity != null
