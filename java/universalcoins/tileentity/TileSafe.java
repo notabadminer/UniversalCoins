@@ -14,6 +14,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UniversalAccounts;
 
@@ -138,7 +140,10 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 					int accountCapacity = (int) (Long.MAX_VALUE - accountBalance > Integer.MAX_VALUE ? Integer.MAX_VALUE
 							: Long.MAX_VALUE - accountBalance);
 					int depositAmount = Math.min(accountCapacity / coinValue, stack.stackSize);
-					UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue);
+					if(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
+						//Only deposit on server side, otherwise we deposit twice.
+						UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue);
+					}
 					inventory[slot].stackSize -= depositAmount;
 					if (inventory[slot].stackSize == 0) {
 						inventory[slot] = null;
