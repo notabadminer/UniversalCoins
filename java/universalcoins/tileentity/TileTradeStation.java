@@ -26,7 +26,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 	public static final int itemOutputSlot = 1;
 	public static final int itemCardSlot = 2;
 	public static final int itemCoinSlot = 3;
-	public int coinSum = 0;
+	public long coinSum = 0;
 	public int itemPrice = 0;
 	public boolean buyButtonActive = false;
 	public boolean sellButtonActive = false;
@@ -162,7 +162,12 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 	}
 
 	public void onSellMaxPressed() {
+		boolean useCard = false;
 		int amount = 0;
+		// use card if available
+		if (inventory[itemCardSlot] != null && Long.MAX_VALUE - getAccountBalance() > itemPrice) {
+			useCard = true;
+		}
 		if (inventory[itemInputSlot] == null) {
 			if (inventory[itemInputSlot] == null) {
 				sellButtonActive = false;
@@ -180,7 +185,17 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 			return;
 		}
 
-		amount = Math.min(inventory[itemInputSlot].stackSize, (Integer.MAX_VALUE - coinSum) / itemPrice);
+		if (useCard) {
+			if (Long.MAX_VALUE - getAccountBalance() > Integer.MAX_VALUE) {
+				amount = Math.min(inventory[itemInputSlot].stackSize, Integer.MAX_VALUE / itemPrice);
+			} else {
+				amount = Math.min(inventory[itemInputSlot].stackSize,
+						(int) (Long.MAX_VALUE - getAccountBalance() / itemPrice));
+			}
+
+		} else {
+			amount = (int) Math.min(inventory[itemInputSlot].stackSize, (Long.MAX_VALUE - coinSum) / itemPrice);
+		}
 
 		if (amount != 0) {
 			onSellPressed(amount);
@@ -331,7 +346,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 		}
 		if (shiftPressed) {
 			if (inventory[itemOutputSlot] == null) {
-				int amount = coinSum / UniversalCoins.coinValues[absoluteButton];
+				int amount = (int) (coinSum / UniversalCoins.coinValues[absoluteButton]);
 				if (amount >= 64) {
 					coinSum -= UniversalCoins.coinValues[absoluteButton] * 64;
 					inventory[itemOutputSlot] = new ItemStack(itemOnButton);
@@ -342,7 +357,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 					inventory[itemOutputSlot].stackSize = amount;
 				}
 			} else {
-				int amount = Math.min(coinSum / UniversalCoins.coinValues[absoluteButton],
+				int amount = (int) Math.min(coinSum / UniversalCoins.coinValues[absoluteButton],
 						inventory[itemOutputSlot].getMaxStackSize() - inventory[itemOutputSlot].stackSize);
 				inventory[itemOutputSlot].stackSize += amount;
 				coinSum -= UniversalCoins.coinValues[absoluteButton] * amount;
@@ -392,7 +407,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 			}
 		}
 		try {
-			coinSum = tagCompound.getInteger("CoinSum");
+			coinSum = tagCompound.getLong("CoinSum");
 		} catch (Throwable ex2) {
 			coinSum = 0;
 		}
@@ -473,7 +488,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 		}
 		tagCompound.removeTag("CoinSum");
 		tagCompound.setTag("Inventory", itemList);
-		tagCompound.setInteger("CoinSum", coinSum);
+		tagCompound.setLong("CoinSum", coinSum);
 		tagCompound.setInteger("AutoMode", autoMode);
 		tagCompound.setInteger("CoinMode", coinMode);
 		tagCompound.setInteger("ItemPrice", itemPrice);
@@ -593,7 +608,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 				}
 			}
 			if (coinValue > 0) {
-				int depositAmount = Math.min(Integer.MAX_VALUE - coinSum / coinValue, stack.stackSize);
+				int depositAmount = (int) Math.min(Long.MAX_VALUE - coinSum / coinValue, stack.stackSize);
 				if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound()
 						&& inventory[itemCardSlot].getItem() == UniversalCoins.proxy.ender_card) {
 					creditAccount(depositAmount * coinValue);
@@ -606,7 +621,6 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 				}
 			}
 		}
-		update();
 	}
 
 	@Override

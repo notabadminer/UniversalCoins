@@ -27,7 +27,7 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 	public static final int itemCardSlot = 0;
 	public static final int itemCoinSlot = 1;
 	public static final int itemOutputSlot = 2;
-	public int coinSum = 0;
+	public long coinSum = 0;
 	public int rfLevel = 0;
 	public long wrfLevel = 0;
 	public String blockOwner = "nobody";
@@ -94,13 +94,11 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 					break;
 				}
 			}
-			if (coinValue > 0) {
-				int depositAmount = Math.min(Integer.MAX_VALUE - coinSum / coinValue, stack.stackSize);
-				coinSum += depositAmount * coinValue;
-				inventory[slot].stackSize -= depositAmount;
-				if (inventory[slot].stackSize == 0) {
-					inventory[slot] = null;
-				}
+			long depositAmount = Math.min(stack.stackSize, (Long.MAX_VALUE - coinSum) / coinValue);
+			inventory[slot].stackSize -= depositAmount;
+			coinSum += depositAmount * coinValue;
+			if (inventory[slot].stackSize == 0) {
+				inventory[slot] = null;
 			}
 		}
 	}
@@ -214,7 +212,7 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 			}
 		}
 		tagCompound.setTag("Inventory", itemList);
-		tagCompound.setInteger("coinSum", coinSum);
+		tagCompound.setLong("coinSum", coinSum);
 		tagCompound.setInteger("rfLevel", rfLevel);
 		tagCompound.setLong("wrfLevel", wrfLevel);
 		tagCompound.setString("blockOwner", blockOwner);
@@ -238,7 +236,7 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 			}
 		}
 		try {
-			coinSum = tagCompound.getInteger("coinSum");
+			coinSum = tagCompound.getLong("coinSum");
 		} catch (Throwable ex2) {
 			coinSum = 0;
 		}

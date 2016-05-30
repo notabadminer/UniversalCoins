@@ -13,7 +13,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.net.ATMWithdrawalMessage;
 import universalcoins.net.UCButtonMessage;
@@ -42,6 +41,8 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 		withdrawCoins = false;
 		depositCoins = false;
 		accountNumber = "none";
+		accountBalance = 0;
+		updateTE();
 	}
 
 	@Override
@@ -91,8 +92,7 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 		int coinValue = 0;
 		if (stack != null) {
 			if (slot == itemCoinSlot && depositCoins && !accountNumber.matches("none")) {
-				FMLLog.info("in setInventorySlotContents"); // TODO
-				switch (stack.getItem().getUnlocalizedName()) {
+				switch (stack.getUnlocalizedName()) {
 				case "item.iron_coin":
 					coinValue = UniversalCoins.coinValues[0];
 					break;
@@ -123,13 +123,10 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 				if (!inventory[itemCardSlot].hasTagCompound()) {
 					return;
 				}
-				FMLLog.info("setting card info"); // TODO
 				accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 				cardOwner = inventory[itemCardSlot].getTagCompound().getString("Owner");
 				accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 			}
-			FMLLog.info("accountNumber: " + accountNumber); // TODO
-			FMLLog.info("depositCoins: " + depositCoins); // TODO
 		}
 	}
 
@@ -251,7 +248,6 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 		tagCompound.setString("accountNumber", accountNumber);
 		tagCompound.setLong("accountBalance", accountBalance);
 
-		//TODO: Is this the right tag compound to return?
 		return tagCompound;
 	}
 
@@ -307,7 +303,6 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 			withdrawCoins = false;
 			// set account number if not already set and we have a card present
 			if (accountNumber.matches("none") && inventory[itemCardSlot] != null) {
-				FMLLog.info("updating card info in function 3");// TODO
 				accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 			}
 		} else {
@@ -326,10 +321,17 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 				cardOwner = playerUID; // needed for new card auth
 				accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 			}
-		} else
-			accountNumber = "none";
+		}
 		if (functionId == 6) {
 			inventory[itemCardSlot] = null;
+			inUseCleanup();
+		}
+	}
+
+	public void startCoinWithdrawal(int amount) {
+		if (UniversalAccounts.getInstance().debitAccount(accountNumber, amount)) {
+			coinWithdrawalAmount = amount;
+			accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 		}
 	}
 
@@ -339,22 +341,27 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 				inventory[itemCoinSlot] = new ItemStack(UniversalCoins.proxy.obsidian_coin);
 				inventory[itemCoinSlot].stackSize = (int) Math.min(coinWithdrawalAmount / UniversalCoins.coinValues[4],
 						64);
+				coinWithdrawalAmount -= inventory[itemCoinSlot].stackSize * UniversalCoins.coinValues[4];
 			} else if (coinWithdrawalAmount > UniversalCoins.coinValues[3]) {
 				inventory[itemCoinSlot] = new ItemStack(UniversalCoins.proxy.diamond_coin);
 				inventory[itemCoinSlot].stackSize = (int) Math.min(coinWithdrawalAmount / UniversalCoins.coinValues[3],
 						64);
+				coinWithdrawalAmount -= inventory[itemCoinSlot].stackSize * UniversalCoins.coinValues[3];
 			} else if (coinWithdrawalAmount > UniversalCoins.coinValues[2]) {
 				inventory[itemCoinSlot] = new ItemStack(UniversalCoins.proxy.emerald_coin);
 				inventory[itemCoinSlot].stackSize = (int) Math.min(coinWithdrawalAmount / UniversalCoins.coinValues[2],
 						64);
+				coinWithdrawalAmount -= inventory[itemCoinSlot].stackSize * UniversalCoins.coinValues[2];
 			} else if (coinWithdrawalAmount > UniversalCoins.coinValues[1]) {
 				inventory[itemCoinSlot] = new ItemStack(UniversalCoins.proxy.gold_coin);
 				inventory[itemCoinSlot].stackSize = (int) Math.min(coinWithdrawalAmount / UniversalCoins.coinValues[1],
 						64);
+				coinWithdrawalAmount -= inventory[itemCoinSlot].stackSize * UniversalCoins.coinValues[1];
 			} else if (coinWithdrawalAmount > UniversalCoins.coinValues[0]) {
 				inventory[itemCoinSlot] = new ItemStack(UniversalCoins.proxy.iron_coin);
 				inventory[itemCoinSlot].stackSize = (int) Math.min(coinWithdrawalAmount / UniversalCoins.coinValues[0],
 						64);
+				coinWithdrawalAmount -= inventory[itemCoinSlot].stackSize * UniversalCoins.coinValues[0];
 			}
 		}
 		if (coinWithdrawalAmount <= 0) {

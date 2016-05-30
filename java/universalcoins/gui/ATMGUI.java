@@ -33,7 +33,7 @@ public class ATMGUI extends GuiContainer {
 		super(new ContainerATM(inventoryPlayer, tileEntity));
 		tEntity = tileEntity;
 
-		xSize = 176;
+		xSize = 196;
 		ySize = 201;
 	}
 
@@ -47,6 +47,7 @@ public class ATMGUI extends GuiContainer {
 			try {
 				super.keyTyped(c, i);
 			} catch (IOException e) {
+				// fail silently
 			}
 
 	}
@@ -77,15 +78,15 @@ public class ATMGUI extends GuiContainer {
 		int x = (width - xSize) / 2;
 		int y = (height - ySize) / 2;
 		this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
-		if (menuState == 0 && super.inventorySlots.getSlot(0).getStack() != null && tEntity.accountBalance >= 0) {
+		if (menuState == 0 && super.inventorySlots.getSlot(tEntity.itemCardSlot).getStack() != null) {
 			menuState = 2;
 		}
 		if (menuState == 1) {
 			// state 1 is auth - run eye scan
 			barProgress++;
-			this.drawTexturedModalRect(x + 151, y + 19, 176, 0, 18, 18);
-			this.drawTexturedModalRect(x + 34, y + 43, 0, 201, Math.min(barProgress, 104), 5);
-			if (barProgress > 105) {
+			this.drawTexturedModalRect(x + 171, y + 19, 196, 0, 18, 18);
+			this.drawTexturedModalRect(x + 34, y + 43, 0, 201, Math.min(barProgress, 128), 5);
+			if (barProgress > 129) {
 				String authString = I18n.translateToLocal("atm.auth.access");
 				if (authString.startsWith("C:"))
 					authString = authString.substring(2);
@@ -93,7 +94,7 @@ public class ATMGUI extends GuiContainer {
 				int cx = width / 2 - stringLength / 2;
 				fontRendererObj.drawString(authString, cx, y + 52, 4210752);
 			}
-			if (barProgress > 120) {
+			if (barProgress > 130) {
 				if (!tEntity.accountNumber.matches("none")) {
 					String authString = I18n.translateToLocal("atm.auth.success");
 					if (authString.startsWith("C:"))
@@ -101,7 +102,7 @@ public class ATMGUI extends GuiContainer {
 					int stringLength = fontRendererObj.getStringWidth(authString);
 					int cx = width / 2 - stringLength / 2;
 					fontRendererObj.drawString(authString, cx, y + 72, 4210752);
-					if (barProgress > 160) {
+					if (barProgress > 170) {
 						menuState = 2;
 						barProgress = 0;
 					}
@@ -112,20 +113,21 @@ public class ATMGUI extends GuiContainer {
 					int stringLength = fontRendererObj.getStringWidth(authString);
 					int cx = width / 2 - stringLength / 2;
 					fontRendererObj.drawString(authString, cx, y + 72, 4210752);
-					if (barProgress > 160) {
+					if (barProgress > 170) {
 						menuState = 15;
 						barProgress = 0;
 					}
 				}
 			}
 		}
-		if (menuState == 2 && (tEntity.accountBalance == -1 || (tEntity.getStackInSlot(tEntity.itemCardSlot) != null
-				&& !tEntity.getStackInSlot(tEntity.itemCardSlot).hasTagCompound()))) {
+
+		if (menuState == 2 && tEntity.getStackInSlot(tEntity.itemCardSlot) != null
+				&& (!tEntity.getStackInSlot(tEntity.itemCardSlot).hasTagCompound() || tEntity.accountBalance == -1)) {
 			tEntity.sendButtonMessage(6, false); // message to destroy card
-			menuState = 14;
+			menuState = 13;
 		}
 
-		DecimalFormat formatter = new DecimalFormat("#,###,###,###");
+		DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
 		if (menuState == 4 || menuState == 5) {
 			fontRendererObj.drawString(formatter.format(tEntity.accountBalance), x + 34, y + 52, 4210752);
 		}
@@ -144,6 +146,13 @@ public class ATMGUI extends GuiContainer {
 			barProgress++;
 			if (barProgress > 100) {
 				menuState = 6;
+				barProgress = 0;
+			}
+		}
+		if (menuState == 13) {
+			barProgress++;
+			if (barProgress > 100) {
+				menuState = 0;
 				barProgress = 0;
 			}
 		}
@@ -232,14 +241,16 @@ public class ATMGUI extends GuiContainer {
 		case 3:
 			// additional menu
 			if (button.id == idButtonOne) {
-				if (!tEntity.cardOwner.contentEquals(tEntity.playerUID)) {
-					menuState = 15;
-				} else
-					menuState = 7;
+				if (!tEntity.cardOwner.matches(tEntity.playerUID)) {
+					menuState = 14;
+				} else {
+					functionID = 1;
+					menuState = 9;
+				}
 			}
 			if (button.id == idButtonTwo) {
-				if (!tEntity.cardOwner.contentEquals(tEntity.playerUID)) {
-					menuState = 15;
+				if (!tEntity.cardOwner.matches(tEntity.playerUID)) {
+					menuState = 14;
 				} else
 					menuState = 8;
 			}
@@ -286,13 +297,13 @@ public class ATMGUI extends GuiContainer {
 				} catch (Throwable ex2) {
 					menuState = 12;
 				}
-				if (coinWithdrawalAmount > tEntity.accountBalance ||coinWithdrawalAmount <= 0) {
+				if (coinWithdrawalAmount > tEntity.accountBalance || coinWithdrawalAmount <= 0) {
 					menuState = 12;
 				} else {
 					// send message to server with withdrawal amount
 					tEntity.sendServerUpdatePacket(coinWithdrawalAmount);
 					functionID = 4;
-					menuState = 11;
+					menuState = 10;
 				}
 			}
 			if (button.id == idButtonFour) {
@@ -307,8 +318,8 @@ public class ATMGUI extends GuiContainer {
 			if (button.id == idButtonTwo) {
 			}
 			if (button.id == idButtonThree && tEntity.getStackInSlot(tEntity.itemCardSlot) == null) {
-				if (!tEntity.cardOwner.contentEquals(tEntity.playerUID)) {
-					menuState = 15;
+				if (!tEntity.cardOwner.matches(tEntity.playerUID)) {
+					menuState = 14;
 				} else {
 					functionID = 1;
 					menuState = 9;
@@ -476,7 +487,7 @@ public class ATMGUI extends GuiContainer {
 			counter = 0;
 		}
 		if (counter < 20) {
-			return "_";
+			return "|";
 		} else {
 			return "";
 		}

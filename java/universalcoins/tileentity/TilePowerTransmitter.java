@@ -23,7 +23,7 @@ public class TilePowerTransmitter extends TileEntity implements IInventory, IEne
 	private ItemStack[] inventory = new ItemStack[2];
 	public static final int itemCardSlot = 0;
 	public static final int itemOutputSlot = 1;
-	public int coinSum = 0;
+	public long coinSum = 0;
 	public int rfLevel = 0;
 	public int krfSold = 0;
 	public String blockOwner = "nobody";
@@ -146,7 +146,7 @@ public class TilePowerTransmitter extends TileEntity implements IInventory, IEne
 		return UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 	}
 
-	private boolean creditAccount(int i) {
+	private boolean creditAccount(long amount) {
 		if (worldObj.isRemote || inventory[itemCardSlot] == null
 				|| inventory[itemCardSlot].getItem() != UniversalCoins.proxy.ender_card
 				|| !inventory[itemCardSlot].hasTagCompound())
@@ -155,7 +155,7 @@ public class TilePowerTransmitter extends TileEntity implements IInventory, IEne
 		if (accountNumber == "") {
 			return false;
 		}
-		return UniversalAccounts.getInstance().creditAccount(accountNumber, i);
+		return UniversalAccounts.getInstance().creditAccount(accountNumber, amount);
 	}
 
 	public void sendPacket(int button, boolean shiftPressed) {
@@ -193,7 +193,7 @@ public class TilePowerTransmitter extends TileEntity implements IInventory, IEne
 			}
 		}
 		tagCompound.setTag("Inventory", itemList);
-		tagCompound.setInteger("coinSum", coinSum);
+		tagCompound.setLong("coinSum", coinSum);
 		tagCompound.setInteger("rfLevel", rfLevel);
 		tagCompound.setInteger("krfSold", krfSold);
 		tagCompound.setString("blockOwner", blockOwner);
@@ -213,7 +213,7 @@ public class TilePowerTransmitter extends TileEntity implements IInventory, IEne
 			}
 		}
 		try {
-			coinSum = tagCompound.getInteger("coinSum");
+			coinSum = tagCompound.getLong("coinSum");
 		} catch (Throwable ex2) {
 			coinSum = 0;
 		}

@@ -11,7 +11,8 @@ import universalcoins.tileentity.TileTradeStation;
 
 public class ContainerTradeStation extends Container {
 	private TileTradeStation tileEntity;
-	private int lastCoinSum, lastItemPrice, lastAutoMode, lastCoinMode;
+	private long lastCoinSum;
+	private int lastItemPrice, lastAutoMode, lastCoinMode;
 	private boolean lastBuyButtonActive, lastSellButtonActive, lastIronBtnActive, lastGoldBtnActive,
 			lastEmeraldBtnActive, lastDiamondBtnActive, lastObsidianBtnActive, lastInUse;
 

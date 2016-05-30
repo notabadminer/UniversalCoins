@@ -31,7 +31,7 @@ public class TilePackager extends TileEntity implements IInventory {
 	public static final int itemCoinSlot = 9;
 	public static final int itemOutputSlot = 10;
 	public static final int itemPackageInputSlot = 11;
-	public int coinSum = 0;
+	public long coinSum = 0;
 	public boolean cardAvailable = false;
 	public String customName = "";
 	public String playerName = "";
@@ -203,7 +203,7 @@ public class TilePackager extends TileEntity implements IInventory {
 			}
 		}
 		tagCompound.setTag("Inventory", itemList);
-		tagCompound.setInteger("coinSum", coinSum);
+		tagCompound.setLong("coinSum", coinSum);
 		tagCompound.setBoolean("cardAvailable", cardAvailable);
 		tagCompound.setString("customName", customName);
 		tagCompound.setBoolean("inUse", inUse);
@@ -229,7 +229,7 @@ public class TilePackager extends TileEntity implements IInventory {
 			}
 		}
 		try {
-			coinSum = tagCompound.getInteger("coinSum");
+			coinSum = tagCompound.getLong("coinSum");
 		} catch (Throwable ex2) {
 			coinSum = 0;
 		}
@@ -356,17 +356,15 @@ public class TilePackager extends TileEntity implements IInventory {
 					break;
 				}
 			}
-			if (coinValue > 0) {
-				int depositAmount = Math.min(Integer.MAX_VALUE - coinSum / coinValue, stack.stackSize);
-				coinSum += depositAmount * coinValue;
-				inventory[slot].stackSize -= depositAmount;
-				if (inventory[slot].stackSize == 0) {
-					inventory[slot] = null;
-				}
+			long depositAmount = Math.min(stack.stackSize, (Long.MAX_VALUE - coinSum) / coinValue);
+			inventory[slot].stackSize -= depositAmount;
+			coinSum += depositAmount * coinValue;
+			if (inventory[slot].stackSize == 0) {
+				inventory[slot] = null;
 			}
-			if (slot == itemCardSlot) {
-				checkCard();
-			}
+		}
+		if (slot == itemCardSlot && !worldObj.isRemote) {
+			checkCard();
 		}
 	}
 

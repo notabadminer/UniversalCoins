@@ -68,7 +68,7 @@ public class ATMWithdrawalMessage implements IMessage, IMessageHandler<ATMWithdr
 
 		TileEntity tileEntity = world.getTileEntity(new BlockPos(message.x, message.y, message.z));
 		if (tileEntity instanceof TileATM) {
-			((TileATM) tileEntity).coinWithdrawalAmount = message.withdrawalAmount;
+			((TileATM) tileEntity).startCoinWithdrawal(message.withdrawalAmount);
 		}
 	}
 }

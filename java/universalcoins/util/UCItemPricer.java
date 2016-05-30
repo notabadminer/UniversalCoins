@@ -393,7 +393,7 @@ public class UCItemPricer {
 				int itemMeta = Integer.valueOf(keyName.substring(keyName.length() - 1));
 				Item item = (Item) Item.REGISTRY.getObject(new ResourceLocation(itemName));
 				if (item != null) {
-					stack = new ItemStack(item, itemMeta);
+					stack = new ItemStack(item, 1, itemMeta);
 				}
 			}
 		}

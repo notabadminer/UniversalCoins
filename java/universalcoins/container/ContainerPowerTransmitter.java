@@ -11,7 +11,8 @@ import universalcoins.tileentity.TilePowerTransmitter;
 
 public class ContainerPowerTransmitter extends Container {
 	private String lastOwner;
-	private int lastCoinSum, lastrfLevel;
+	private long lastCoinSum;
+	private int lastrfLevel;
 	private TilePowerTransmitter tEntity;
 
 	public ContainerPowerTransmitter(InventoryPlayer inventoryPlayer, TilePowerTransmitter tileEntity) {
