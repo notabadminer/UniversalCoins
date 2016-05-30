@@ -26,7 +26,7 @@ public class BlockSafe extends BlockProtected {
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
 	public BlockSafe() {
-		super(Material.iron);
+		super(Material.IRON);
 		setHardness(3.0F);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(30.0F);

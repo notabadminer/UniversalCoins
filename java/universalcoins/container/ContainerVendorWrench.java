@@ -3,7 +3,6 @@ package universalcoins.container;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.tileentity.TileVendor;
@@ -34,18 +33,15 @@ public class ContainerVendorWrench extends Container {
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 
-		for (int i = 0; i < this.crafters.size(); ++i) {
-			ICrafting icrafting = (ICrafting) this.crafters.get(i);
-
-			if (this.lastBlockOwner != this.tileEntity.blockOwner
-					|| this.lastInfinite != this.tileEntity.infiniteMode) {
-				// update
-				tileEntity.updateTE();
-			}
-
-			this.lastBlockOwner = this.tileEntity.blockOwner;
-			this.lastInfinite = this.tileEntity.infiniteMode;
+		if (this.lastBlockOwner != this.tileEntity.blockOwner
+				|| this.lastInfinite != this.tileEntity.infiniteMode) {
+			// update
+			tileEntity.updateTE();
 		}
+
+		this.lastBlockOwner = this.tileEntity.blockOwner;
+		this.lastInfinite = this.tileEntity.infiniteMode;
+
 	}
 
 	@SideOnly(Side.CLIENT)

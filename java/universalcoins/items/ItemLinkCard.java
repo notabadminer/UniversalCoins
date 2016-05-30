@@ -39,7 +39,7 @@ public class ItemLinkCard extends Item {
 			EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (world.isRemote)
 			return EnumActionResult.FAIL;
-		RayTraceResult movingobjectposition = this.getMovingObjectPositionFromPlayer(world, player, true);
+		RayTraceResult movingobjectposition = this.rayTrace(world, player, true);
 
 		if (movingobjectposition != null
 				&& movingobjectposition.typeOfHit ==  RayTraceResult.Type.BLOCK) {

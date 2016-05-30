@@ -8,13 +8,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UniversalAccounts;
 
@@ -139,7 +140,10 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 					int accountCapacity = (int) (Long.MAX_VALUE - accountBalance > Integer.MAX_VALUE ? Integer.MAX_VALUE
 							: Long.MAX_VALUE - accountBalance);
 					int depositAmount = Math.min(accountCapacity / coinValue, stack.stackSize);
-					UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue);
+					if(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
+						//Only deposit on server side, otherwise we deposit twice.
+						UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue);
+					}
 					inventory[slot].stackSize -= depositAmount;
 					if (inventory[slot].stackSize == 0) {
 						inventory[slot] = null;
@@ -203,7 +207,7 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
 		for (int i = 0; i < inventory.length; i++) {
@@ -219,6 +223,8 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 		tagCompound.setString("Owner", blockOwner);
 		tagCompound.setString("AccountNumber", accountNumber);
 		tagCompound.setLong("Balance", accountBalance);
+
+		return tagCompound;
 	}
 
 	@Override
@@ -251,7 +257,7 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 	}
 
 	@Override
-	public Packet getDescriptionPacket() {
+	public 	SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
 		return new SPacketUpdateTileEntity(pos, 1, nbt);

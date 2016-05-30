@@ -3,7 +3,7 @@ package universalcoins.tileentity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntitySign;
@@ -33,13 +33,15 @@ public class TileUCSign extends TileEntitySign {
 		}
 	}
 
-	public void writeToNBT(NBTTagCompound tagCompound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		for (int i = 0; i < 4; ++i) {
 			String s = ITextComponent.Serializer.componentToJson(this.signText[i]);
 			tagCompound.setString("Text" + (i + 1), s);
 		}
 		tagCompound.setString("blockOwner", blockOwner);
+
+		return tagCompound;
 	}
 
 	public void updateSign() {
@@ -52,11 +54,11 @@ public class TileUCSign extends TileEntitySign {
 	}
 
 	@Override
-	public Packet getDescriptionPacket() {
+	public SPacketUpdateTileEntity getUpdatePacket() {
 		ITextComponent[] aITextComponent = new ITextComponent[4];
 		System.arraycopy(this.signText, 0, aITextComponent, 0, 4);
-		return UniversalCoins.snw
-				.getPacketFrom(new UCTileSignMessage(pos.getX(), pos.getY(), pos.getZ(), signText, blockOwner));
+		SPacketUpdateTileEntity p = new SPacketUpdateTileEntity(pos, getBlockMetadata(), getTileData());
+		return p;
 	}
 
 	public void scanChestContents() {

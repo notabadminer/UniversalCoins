@@ -3,7 +3,6 @@ package universalcoins.container;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -98,6 +97,9 @@ public class ContainerTradeStation extends Container {
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
+		/*
+		 * TODO: container.crafters were was removed by 1.9.4. Figure out what it was full of and what
+		 * this code is trying to do with them.
 
 		for (int i = 0; i < this.crafters.size(); ++i) {
 			ICrafting icrafting = (ICrafting) this.crafters.get(i);
@@ -110,26 +112,27 @@ public class ContainerTradeStation extends Container {
 				icrafting.sendProgressBarUpdate(this, 1, (int) this.tileEntity.coinMode);
 				this.lastCoinMode = this.tileEntity.coinMode;
 			}
-			if (this.lastCoinSum != this.tileEntity.coinSum || this.lastItemPrice != this.tileEntity.itemPrice
-					|| this.lastBuyButtonActive != this.tileEntity.buyButtonActive
-					|| this.lastSellButtonActive != this.tileEntity.sellButtonActive
-					|| this.lastIronBtnActive != this.tileEntity.ironCoinBtnActive
-					|| this.lastGoldBtnActive != this.tileEntity.goldCoinBtnActive
-					|| this.lastEmeraldBtnActive != this.tileEntity.emeraldCoinBtnActive
-					|| this.lastDiamondBtnActive != this.tileEntity.diamondCoinBtnActive
-					|| this.lastInUse != this.tileEntity.inUse) {
-				tileEntity.updateTE();
-				this.lastCoinSum = this.tileEntity.coinSum;
-				this.lastItemPrice = this.tileEntity.itemPrice;
-				this.lastBuyButtonActive = this.tileEntity.buyButtonActive;
-				this.lastSellButtonActive = this.tileEntity.sellButtonActive;
-				this.lastIronBtnActive = this.tileEntity.ironCoinBtnActive;
-				this.lastGoldBtnActive = this.tileEntity.goldCoinBtnActive;
-				this.lastEmeraldBtnActive = this.tileEntity.emeraldCoinBtnActive;
-				this.lastDiamondBtnActive = this.tileEntity.diamondCoinBtnActive;
-				this.lastObsidianBtnActive = this.tileEntity.obsidianCoinBtnActive;
-				this.lastInUse = this.tileEntity.inUse;
-			}
+		}
+		/**/
+		if (this.lastCoinSum != this.tileEntity.coinSum || this.lastItemPrice != this.tileEntity.itemPrice
+				|| this.lastBuyButtonActive != this.tileEntity.buyButtonActive
+				|| this.lastSellButtonActive != this.tileEntity.sellButtonActive
+				|| this.lastIronBtnActive != this.tileEntity.ironCoinBtnActive
+				|| this.lastGoldBtnActive != this.tileEntity.goldCoinBtnActive
+				|| this.lastEmeraldBtnActive != this.tileEntity.emeraldCoinBtnActive
+				|| this.lastDiamondBtnActive != this.tileEntity.diamondCoinBtnActive
+				|| this.lastInUse != this.tileEntity.inUse) {
+			tileEntity.updateTE();
+			this.lastCoinSum = this.tileEntity.coinSum;
+			this.lastItemPrice = this.tileEntity.itemPrice;
+			this.lastBuyButtonActive = this.tileEntity.buyButtonActive;
+			this.lastSellButtonActive = this.tileEntity.sellButtonActive;
+			this.lastIronBtnActive = this.tileEntity.ironCoinBtnActive;
+			this.lastGoldBtnActive = this.tileEntity.goldCoinBtnActive;
+			this.lastEmeraldBtnActive = this.tileEntity.emeraldCoinBtnActive;
+			this.lastDiamondBtnActive = this.tileEntity.diamondCoinBtnActive;
+			this.lastObsidianBtnActive = this.tileEntity.obsidianCoinBtnActive;
+			this.lastInUse = this.tileEntity.inUse;
 		}
 	}
 

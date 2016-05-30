@@ -3,7 +3,6 @@ package universalcoins.container;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -99,37 +98,36 @@ public class ContainerVendorSell extends Container {
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 
-		for (int i = 0; i < this.crafters.size(); ++i) {
-			ICrafting icrafting = (ICrafting) this.crafters.get(i);
 
-			if (this.lastUserCoinSum != this.tileEntity.userCoinSum || this.lastItemPrice != this.tileEntity.itemPrice
-					|| this.lastOoStock != this.tileEntity.ooStockWarning
-					|| this.lastOoCoins != this.tileEntity.ooCoinsWarning
-					|| this.lastInvFull != this.tileEntity.inventoryFullWarning
-					|| this.lastBuyButtonActive != this.tileEntity.buyButtonActive
-					|| this.lastUCoinButtonActive != this.tileEntity.uironCoinBtnActive
-					|| this.lastUSStackButtonActive != this.tileEntity.ugoldCoinBtnActive
-					|| this.lastULStackButtonActive != this.tileEntity.uemeraldCoinBtnActive
-					|| this.lastUSBagButtonActive != this.tileEntity.udiamondCoinBtnActive
-					|| this.lastULBagButtonActive != this.tileEntity.uobsidianCoinBtnActive
-					|| this.lastInUse != this.tileEntity.inUse) {
-				// update
-				tileEntity.updateTE();
 
-				this.lastUserCoinSum = this.tileEntity.userCoinSum;
-				this.lastItemPrice = this.tileEntity.itemPrice;
-				this.lastOoStock = this.tileEntity.ooStockWarning;
-				this.lastOoCoins = this.tileEntity.ooCoinsWarning;
-				this.lastInvFull = this.tileEntity.inventoryFullWarning;
-				this.lastBuyButtonActive = this.tileEntity.buyButtonActive;
-				this.lastUCoinButtonActive = this.tileEntity.uironCoinBtnActive;
-				this.lastUSStackButtonActive = this.tileEntity.ugoldCoinBtnActive;
-				this.lastULStackButtonActive = this.tileEntity.uemeraldCoinBtnActive;
-				this.lastUSBagButtonActive = this.tileEntity.udiamondCoinBtnActive;
-				this.lastULBagButtonActive = this.tileEntity.uobsidianCoinBtnActive;
-				this.lastInUse = this.tileEntity.inUse;
-			}
+		if (this.lastUserCoinSum != this.tileEntity.userCoinSum || this.lastItemPrice != this.tileEntity.itemPrice
+				|| this.lastOoStock != this.tileEntity.ooStockWarning
+				|| this.lastOoCoins != this.tileEntity.ooCoinsWarning
+				|| this.lastInvFull != this.tileEntity.inventoryFullWarning
+				|| this.lastBuyButtonActive != this.tileEntity.buyButtonActive
+				|| this.lastUCoinButtonActive != this.tileEntity.uironCoinBtnActive
+				|| this.lastUSStackButtonActive != this.tileEntity.ugoldCoinBtnActive
+				|| this.lastULStackButtonActive != this.tileEntity.uemeraldCoinBtnActive
+				|| this.lastUSBagButtonActive != this.tileEntity.udiamondCoinBtnActive
+				|| this.lastULBagButtonActive != this.tileEntity.uobsidianCoinBtnActive
+				|| this.lastInUse != this.tileEntity.inUse) {
+			// update
+			tileEntity.updateTE();
+
+			this.lastUserCoinSum = this.tileEntity.userCoinSum;
+			this.lastItemPrice = this.tileEntity.itemPrice;
+			this.lastOoStock = this.tileEntity.ooStockWarning;
+			this.lastOoCoins = this.tileEntity.ooCoinsWarning;
+			this.lastInvFull = this.tileEntity.inventoryFullWarning;
+			this.lastBuyButtonActive = this.tileEntity.buyButtonActive;
+			this.lastUCoinButtonActive = this.tileEntity.uironCoinBtnActive;
+			this.lastUSStackButtonActive = this.tileEntity.ugoldCoinBtnActive;
+			this.lastULStackButtonActive = this.tileEntity.uemeraldCoinBtnActive;
+			this.lastUSBagButtonActive = this.tileEntity.udiamondCoinBtnActive;
+			this.lastULBagButtonActive = this.tileEntity.uobsidianCoinBtnActive;
+			this.lastInUse = this.tileEntity.inUse;
 		}
+
 	}
 
 	@SideOnly(Side.CLIENT)

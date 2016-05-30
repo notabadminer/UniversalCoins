@@ -58,7 +58,7 @@ public class ATMWithdrawalMessage implements IMessage, IMessageHandler<ATMWithdr
 				FMLLog.warning("onMessage-server: Player is null");
 				return null;
 			}
-			playerEntity.getServerForPlayer().addScheduledTask(task);
+			playerEntity.getServerWorld().addScheduledTask(task);
 		}
 		return null;
 	}

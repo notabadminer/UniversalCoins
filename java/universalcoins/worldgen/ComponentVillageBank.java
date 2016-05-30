@@ -30,7 +30,7 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 	public ComponentVillageBank(Start startPiece, int p5, Random random, StructureBoundingBox box, EnumFacing facing) {
 		super(startPiece, p5);
 		this.boundingBox = box;
-		this.func_186164_a(facing);
+		this.setCoordBaseMode(facing);
 		MapGenStructureIO.registerStructureComponent(ComponentVillageBank.class, "ViUB");
 	}
 
@@ -56,16 +56,16 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		// Clear area in case of sand
 		fillWithAir(world, sbb, 0, 0, 0, 4, 4, 5);
 		// start with block
-		this.fillWithBlocks(world, sbb, 0, 0, 0, 4, 3, 5, Blocks.stone.getDefaultState(),
-				Blocks.stone.getDefaultState(), false);
+		this.fillWithBlocks(world, sbb, 0, 0, 0, 4, 3, 5, Blocks.STONE.getDefaultState(),
+				Blocks.STONE.getDefaultState(), false);
 		// windows
-		this.fillWithBlocks(world, sbb, 0, 2, 2, 4, 2, 3, Blocks.glass.getDefaultState(),
-				Blocks.glass.getDefaultState(), false);
+		this.fillWithBlocks(world, sbb, 0, 2, 2, 4, 2, 3, Blocks.GLASS.getDefaultState(),
+				Blocks.GLASS.getDefaultState(), false);
 		// roof
-		this.fillWithBlocks(world, sbb, 0, 4, 1, 4, 4, 5, Blocks.stone_slab.getDefaultState(),
-				Blocks.stone_slab.getDefaultState(), false);
-		this.fillWithBlocks(world, sbb, 1, 4, 2, 3, 4, 4, Blocks.double_stone_slab.getDefaultState(),
-				Blocks.double_stone_slab.getDefaultState(), false);
+		this.fillWithBlocks(world, sbb, 0, 4, 1, 4, 4, 5, Blocks.STONE_SLAB.getDefaultState(),
+				Blocks.STONE_SLAB.getDefaultState(), false);
+		this.fillWithBlocks(world, sbb, 1, 4, 2, 3, 4, 4, Blocks.DOUBLE_STONE_SLAB.getDefaultState(),
+				Blocks.DOUBLE_STONE_SLAB.getDefaultState(), false);
 		// clear inside
 		fillWithAir(world, sbb, 1, 1, 2, 3, 3, 3);
 		// clear front
@@ -78,18 +78,18 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		// door
 		this.placeDoorCurrentPosition(world, sbb, random, 2, 1, 1, EnumFacing.NORTH);
 		// torches
-		this.setBlockState(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 1, 2, 2, boundingBox);
-		this.setBlockState(world, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 3, 2, 2, boundingBox);
+		this.setBlockState(world, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 1, 2, 2, boundingBox);
+		this.setBlockState(world, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 3, 2, 2, boundingBox);
 		// sign
 		this.setBlockState(world, UniversalCoins.proxy.wall_ucsign.getDefaultState()
 				.withProperty(BlockUCWallSign.FACING, EnumFacing.SOUTH), 1, 2, 0, sbb);
 		addSignText(world, boundingBox, 1, 2, 0);
 
 		// add stairs if needed
-		if (this.getBlockStateFromPos(world, 1, 0, -1, sbb).getMaterial() == Material.air
-				&& this.getBlockStateFromPos(world, 1, -1, -1, sbb).getMaterial() != Material.air) {
+		if (this.getBlockStateFromPos(world, 1, 0, -1, sbb).getMaterial() == Material.AIR
+				&& this.getBlockStateFromPos(world, 1, -1, -1, sbb).getMaterial() != Material.AIR) {
 			this.setBlockState(world,
-					Blocks.oak_stairs.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH), 1, 0, -1,
+					Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH), 1, 0, -1,
 					sbb);
 		}
 
@@ -97,7 +97,7 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		for (int l = 0; l < 6; ++l) {
 			for (int k = 0; k < 5; ++k) {
 				this.clearCurrentPositionBlocksUpwards(world, k, 7, l, sbb);
-				this.replaceAirAndLiquidDownwards(world, Blocks.cobblestone.getDefaultState(), k, -1, l, sbb);
+				this.replaceAirAndLiquidDownwards(world, Blocks.COBBLESTONE.getDefaultState(), k, -1, l, sbb);
 			}
 		}
 		return true;

@@ -31,8 +31,8 @@ public class BlockVendor extends BlockProtected {
 			0.9375f);
 
 	public BlockVendor() {
-		super(Material.iron);
-		setStepSound(stepSound.GLASS);
+		super(Material.IRON);
+		//setStepSound(stepSound.GLASS);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setHardness(0.3F);
 		setResistance(6000.0F);

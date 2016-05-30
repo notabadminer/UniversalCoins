@@ -34,7 +34,7 @@ public class BlockVendorFrame extends BlockProtected {
 	protected static final AxisAlignedBB FRAME_WEST_AABB = new AxisAlignedBB(0.07f, 0.12f, 0.12f, 0f, 0.88f, 0.88f);
 
 	public BlockVendorFrame() {
-		super(Material.wood);
+		super(Material.WOOD);
 		setHardness(1.0f);
 		setResistance(6000.0F);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);

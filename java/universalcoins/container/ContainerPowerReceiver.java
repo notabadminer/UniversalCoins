@@ -3,7 +3,6 @@ package universalcoins.container;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -96,18 +95,15 @@ public class ContainerPowerReceiver extends Container {
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 
-		for (int i = 0; i < this.crafters.size(); ++i) {
-			ICrafting icrafting = (ICrafting) this.crafters.get(i);
-
-			if (this.lastOwner != tEntity.blockOwner || this.lastCoinSum != tEntity.coinSum
-					|| this.lastrfLevel != tEntity.rfLevel) {
-				tEntity.updateTE();
-			}
-
-			this.lastOwner = tEntity.blockOwner;
-			this.lastCoinSum = tEntity.coinSum;
-			this.lastrfLevel = tEntity.rfLevel;
+		if (this.lastOwner != tEntity.blockOwner || this.lastCoinSum != tEntity.coinSum
+				|| this.lastrfLevel != tEntity.rfLevel) {
+			tEntity.updateTE();
 		}
+
+		this.lastOwner = tEntity.blockOwner;
+		this.lastCoinSum = tEntity.coinSum;
+		this.lastrfLevel = tEntity.rfLevel;
+
 	}
 
 	@SideOnly(Side.CLIENT)

@@ -21,7 +21,7 @@ import universalcoins.tileentity.TileVendorBlock;
 public class BlockPowerTransmitter extends BlockProtected {
 
 	public BlockPowerTransmitter() {
-		super(Material.iron);
+		super(Material.IRON);
 		setHardness(3.0F);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(30.0F);

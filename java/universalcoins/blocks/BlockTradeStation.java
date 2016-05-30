@@ -20,7 +20,7 @@ import universalcoins.tileentity.TileTradeStation;
 public class BlockTradeStation extends BlockProtected {
 
 	public BlockTradeStation() {
-		super(Material.iron);
+		super(Material.IRON);
 		setHardness(3.0f);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(6000.0F);

@@ -8,12 +8,10 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.ITextComponent;
@@ -175,7 +173,7 @@ public class TilePackager extends TileEntity implements IInventory {
 	}
 
 	@Override
-	public Packet getDescriptionPacket() {
+	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
 		return new SPacketUpdateTileEntity(pos, 1, nbt);
@@ -192,7 +190,7 @@ public class TilePackager extends TileEntity implements IInventory {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
 		for (int i = 0; i < inventory.length; i++) {
@@ -214,6 +212,8 @@ public class TilePackager extends TileEntity implements IInventory {
 		tagCompound.setInteger("smallPrice", packageCost[0]);
 		tagCompound.setInteger("medPrice", packageCost[1]);
 		tagCompound.setInteger("largePrice", packageCost[2]);
+
+		return tagCompound;
 	}
 
 	@Override
@@ -387,7 +387,7 @@ public class TilePackager extends TileEntity implements IInventory {
 				worldObj.spawnEntityInWorld(entityItem);
 			}
 			player.addChatMessage(
-					new TextComponentString("§c" + playerName + I18n.translateToLocal("packager.message.sent")));
+					new TextComponentString("ï¿½c" + playerName + I18n.translateToLocal("packager.message.sent")));
 			inventory[itemPackageInputSlot] = null;
 		}
 	}
