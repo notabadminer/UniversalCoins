@@ -36,7 +36,10 @@ general.button.send=Send
 general.button.coin=Coin
 general.label.balance=Balance: 
 general.label.price=Price: 
+general.label.public=Public
+general.label.private=Private
 chat.warning.inuse=Block is in use. Try again later.
+chat.warning.private=Block is private. Owner access only.
 
 #####
 # Card Messages

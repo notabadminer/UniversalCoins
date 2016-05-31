@@ -17,7 +17,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.TradeStationGUI;
 import universalcoins.gui.VendorBuyGUI;
@@ -189,34 +188,34 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 		if (itemOnButton == null)
 			return coinField;
 		if (coinField < UniversalCoins.coinValues[absoluteButton]
-				|| (inventory[itemOutputSlot] != null && inventory[itemOutputSlot].getItem() != itemOnButton)
-				|| (inventory[itemOutputSlot] != null && inventory[itemOutputSlot].stackSize == 64)) {
+				|| (inventory[itemCoinOutputSlot] != null && inventory[itemCoinOutputSlot].getItem() != itemOnButton)
+				|| (inventory[itemCoinOutputSlot] != null && inventory[itemCoinOutputSlot].stackSize == 64)) {
 			return coinField;
 		}
 		if (shiftPressed) {
-			if (inventory[itemOutputSlot] == null) {
+			if (inventory[itemCoinOutputSlot] == null) {
 				int amount = coinField / UniversalCoins.coinValues[absoluteButton];
 				if (amount >= 64) {
 					coinField -= UniversalCoins.coinValues[absoluteButton] * 64;
-					inventory[itemOutputSlot] = new ItemStack(itemOnButton);
-					inventory[itemOutputSlot].stackSize = 64;
+					inventory[itemCoinOutputSlot] = new ItemStack(itemOnButton);
+					inventory[itemCoinOutputSlot].stackSize = 64;
 				} else {
 					coinField -= UniversalCoins.coinValues[absoluteButton] * amount;
-					inventory[itemOutputSlot] = new ItemStack(itemOnButton);
-					inventory[itemOutputSlot].stackSize = amount;
+					inventory[itemCoinOutputSlot] = new ItemStack(itemOnButton);
+					inventory[itemCoinOutputSlot].stackSize = amount;
 				}
 			} else {
 				int amount = Math.min(coinSum / UniversalCoins.coinValues[absoluteButton],
-						inventory[itemOutputSlot].getMaxStackSize() - inventory[itemOutputSlot].stackSize);
-				inventory[itemOutputSlot].stackSize += amount;
+						inventory[itemCoinOutputSlot].getMaxStackSize() - inventory[itemCoinOutputSlot].stackSize);
+				inventory[itemCoinOutputSlot].stackSize += amount;
 				coinField -= UniversalCoins.coinValues[absoluteButton] * amount;
 			}
 		} else {
 			coinField -= UniversalCoins.coinValues[absoluteButton];
-			if (inventory[itemOutputSlot] == null) {
-				inventory[itemOutputSlot] = new ItemStack(itemOnButton);
+			if (inventory[itemCoinOutputSlot] == null) {
+				inventory[itemCoinOutputSlot] = new ItemStack(itemOnButton);
 			} else {
-				inventory[itemOutputSlot].stackSize++;
+				inventory[itemCoinOutputSlot].stackSize++;
 			}
 		}
 		return coinField;
@@ -229,29 +228,29 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 		udiamondCoinBtnActive = false;
 		uobsidianCoinBtnActive = false;
 		if (userCoinSum > 0) {
-			uironCoinBtnActive = inventory[itemOutputSlot] == null
-					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.iron_coin
-							&& inventory[itemOutputSlot].stackSize != 64);
+			uironCoinBtnActive = inventory[itemCoinOutputSlot] == null
+					|| (inventory[itemCoinOutputSlot].getItem() == UniversalCoins.proxy.iron_coin
+							&& inventory[itemCoinOutputSlot].stackSize != 64);
 		}
 		if (userCoinSum >= UniversalCoins.coinValues[1]) {
-			ugoldCoinBtnActive = inventory[itemOutputSlot] == null
-					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.gold_coin
-							&& inventory[itemOutputSlot].stackSize != 64);
+			ugoldCoinBtnActive = inventory[itemCoinOutputSlot] == null
+					|| (inventory[itemCoinOutputSlot].getItem() == UniversalCoins.proxy.gold_coin
+							&& inventory[itemCoinOutputSlot].stackSize != 64);
 		}
 		if (userCoinSum >= UniversalCoins.coinValues[2]) {
-			uemeraldCoinBtnActive = inventory[itemOutputSlot] == null
-					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.emerald_coin
-							&& inventory[itemOutputSlot].stackSize != 64);
+			uemeraldCoinBtnActive = inventory[itemCoinOutputSlot] == null
+					|| (inventory[itemCoinOutputSlot].getItem() == UniversalCoins.proxy.emerald_coin
+							&& inventory[itemCoinOutputSlot].stackSize != 64);
 		}
 		if (userCoinSum >= UniversalCoins.coinValues[3]) {
-			udiamondCoinBtnActive = inventory[itemOutputSlot] == null
-					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.diamond_coin
-							&& inventory[itemOutputSlot].stackSize != 64);
+			udiamondCoinBtnActive = inventory[itemCoinOutputSlot] == null
+					|| (inventory[itemCoinOutputSlot].getItem() == UniversalCoins.proxy.diamond_coin
+							&& inventory[itemCoinOutputSlot].stackSize != 64);
 		}
 		if (userCoinSum >= UniversalCoins.coinValues[4]) {
-			uobsidianCoinBtnActive = inventory[itemOutputSlot] == null
-					|| (inventory[itemOutputSlot].getItem() == UniversalCoins.proxy.obsidian_coin
-							&& inventory[itemOutputSlot].stackSize != 64);
+			uobsidianCoinBtnActive = inventory[itemCoinOutputSlot] == null
+					|| (inventory[itemCoinOutputSlot].getItem() == UniversalCoins.proxy.obsidian_coin
+							&& inventory[itemCoinOutputSlot].stackSize != 64);
 		}
 	}
 
@@ -695,9 +694,14 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
+		return new SPacketUpdateTileEntity(this.pos, getBlockMetadata(), getUpdateTag());
+	}
+
+	// required for sync on chunk load
+	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
-		return new SPacketUpdateTileEntity(pos, 1, nbt);
+		return nbt;
 	}
 
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
@@ -705,7 +709,7 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	}
 
 	public void updateTE() {
-		markDirty();
+		this.markDirty();
 		worldObj.notifyBlockUpdate(getPos(), worldObj.getBlockState(pos), worldObj.getBlockState(pos), 3);
 	}
 
@@ -714,7 +718,6 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	}
 
 	public void sendServerUpdateMessage() {
-		FMLLog.info("sending server update");
 		UniversalCoins.snw.sendToServer(
 				new UCVendorServerMessage(pos.getX(), pos.getY(), pos.getZ(), itemPrice, blockOwner, infiniteMode));
 	}

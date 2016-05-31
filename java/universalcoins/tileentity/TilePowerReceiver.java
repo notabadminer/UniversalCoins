@@ -183,12 +183,16 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
-		NBTTagCompound nbt = new NBTTagCompound();
-		writeToNBT(nbt);
-		return new SPacketUpdateTileEntity(pos, 1, nbt);
+		return new SPacketUpdateTileEntity(this.pos, getBlockMetadata(), getUpdateTag());
 	}
 
-	@Override
+	// required for sync on chunk load
+	public NBTTagCompound getUpdateTag() {
+		NBTTagCompound nbt = new NBTTagCompound();
+		writeToNBT(nbt);
+		return nbt;
+	}
+
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		readFromNBT(pkt.getNbtCompound());
 	}

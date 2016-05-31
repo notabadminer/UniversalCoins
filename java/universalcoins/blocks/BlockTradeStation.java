@@ -36,11 +36,22 @@ public class BlockTradeStation extends BlockProtected {
 					player.addChatMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
 				}
 				return true;
-			} else {
+			}
+			if (((TileTradeStation) tileEntity).publicAccess) {
 				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
 				((TileTradeStation) tileEntity).playerName = player.getName();
 				((TileTradeStation) tileEntity).inUse = true;
 				return true;
+			} else {
+				if (((TileTradeStation) tileEntity).blockOwner.matches(player.getName())) {
+					player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
+					((TileTradeStation) tileEntity).playerName = player.getName();
+					((TileTradeStation) tileEntity).inUse = true;
+					return true;
+				}
+				if (!world.isRemote) {
+					player.addChatMessage(new TextComponentString(I18n.translateToLocal("chat.warning.private")));
+				}
 			}
 		}
 		return false;

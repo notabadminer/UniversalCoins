@@ -50,22 +50,51 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 			if (this.averageGroundLevel < 0)
 				return true;
 
-			this.boundingBox.offset(0, this.averageGroundLevel - this.boundingBox.maxY + 5 - 1, 0);
+			this.boundingBox.offset(0, this.averageGroundLevel - this.boundingBox.minY, 0);
 		}
 
 		// Clear area in case of sand
 		fillWithAir(world, sbb, 0, 0, 0, 4, 4, 5);
 		// start with block
-		this.fillWithBlocks(world, sbb, 0, 0, 0, 4, 3, 5, Blocks.STONE.getDefaultState(),
-				Blocks.STONE.getDefaultState(), false);
+		this.fillWithBlocks(world, sbb, 0, 0, 0, 4, 3, 5, Blocks.COBBLESTONE.getDefaultState(),
+				Blocks.COBBLESTONE.getDefaultState(), false);
 		// windows
 		this.fillWithBlocks(world, sbb, 0, 2, 2, 4, 2, 3, Blocks.GLASS.getDefaultState(),
 				Blocks.GLASS.getDefaultState(), false);
-		// roof
-		this.fillWithBlocks(world, sbb, 0, 4, 1, 4, 4, 5, Blocks.STONE_SLAB.getDefaultState(),
-				Blocks.STONE_SLAB.getDefaultState(), false);
-		this.fillWithBlocks(world, sbb, 1, 4, 2, 3, 4, 4, Blocks.DOUBLE_STONE_SLAB.getDefaultState(),
-				Blocks.DOUBLE_STONE_SLAB.getDefaultState(), false);
+		// top
+		fillWithBlocks(world, sbb, 0, 4, 1, 4, 4, 5, Blocks.PLANKS.getDefaultState(), Blocks.PLANKS.getDefaultState(),
+				false);
+		// top front
+		IBlockState iblockstate = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
+				EnumFacing.NORTH);
+		this.setBlockState(world, iblockstate, 1, 4, 1, sbb);
+		this.setBlockState(world, iblockstate, 2, 4, 1, sbb);
+		this.setBlockState(world, iblockstate, 3, 4, 1, sbb);
+		// top back
+		IBlockState iblockstate2 = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
+				EnumFacing.SOUTH);
+		this.setBlockState(world, iblockstate2, 1, 4, 5, sbb);
+		this.setBlockState(world, iblockstate2, 2, 4, 5, sbb);
+		this.setBlockState(world, iblockstate2, 3, 4, 5, sbb);
+		// top right
+		IBlockState iblockstate3 = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
+				EnumFacing.WEST);
+		this.setBlockState(world, iblockstate3, 4, 4, 0, sbb);
+		this.setBlockState(world, iblockstate3, 4, 4, 1, sbb);
+		this.setBlockState(world, iblockstate3, 4, 4, 2, sbb);
+		this.setBlockState(world, iblockstate3, 4, 4, 3, sbb);
+		this.setBlockState(world, iblockstate3, 4, 4, 4, sbb);
+		this.setBlockState(world, iblockstate3, 4, 4, 5, sbb);
+		// top left
+		IBlockState iblockstate4 = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
+				EnumFacing.EAST);
+		this.setBlockState(world, iblockstate4, 0, 4, 0, sbb);
+		this.setBlockState(world, iblockstate4, 0, 4, 1, sbb);
+		this.setBlockState(world, iblockstate4, 0, 4, 2, sbb);
+		this.setBlockState(world, iblockstate4, 0, 4, 3, sbb);
+		this.setBlockState(world, iblockstate4, 0, 4, 4, sbb);
+		this.setBlockState(world, iblockstate4, 0, 4, 5, sbb);
+
 		// clear inside
 		fillWithAir(world, sbb, 1, 1, 2, 3, 3, 3);
 		// clear front
@@ -73,13 +102,16 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		// door opening
 		fillWithAir(world, sbb, 2, 1, 1, 2, 2, 1);
 		// atm - meta, LR, TB, FB
-		this.setBlockState(world, UniversalCoins.proxy.atm.getDefaultState()
-				.withProperty(BlockATM.FACING, EnumFacing.SOUTH), 2, 2, 4, sbb);
+		this.setBlockState(world,
+				UniversalCoins.proxy.atm.getDefaultState().withProperty(BlockATM.FACING, EnumFacing.SOUTH), 2, 2, 4,
+				sbb);
 		// door
 		this.placeDoorCurrentPosition(world, sbb, random, 2, 1, 1, EnumFacing.NORTH);
 		// torches
-		this.setBlockState(world, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 1, 2, 2, boundingBox);
-		this.setBlockState(world, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 3, 2, 2, boundingBox);
+		this.setBlockState(world, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 1,
+				2, 2, boundingBox);
+		this.setBlockState(world, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 3,
+				2, 2, boundingBox);
 		// sign
 		this.setBlockState(world, UniversalCoins.proxy.wall_ucsign.getDefaultState()
 				.withProperty(BlockUCWallSign.FACING, EnumFacing.SOUTH), 1, 2, 0, sbb);

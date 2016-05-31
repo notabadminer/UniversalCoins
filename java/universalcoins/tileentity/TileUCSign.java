@@ -3,6 +3,7 @@ package universalcoins.tileentity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
@@ -59,6 +60,13 @@ public class TileUCSign extends TileEntitySign {
 		System.arraycopy(this.signText, 0, aITextComponent, 0, 4);
 		SPacketUpdateTileEntity p = new SPacketUpdateTileEntity(pos, getBlockMetadata(), getTileData());
 		return p;
+	}
+
+	// required for sync on chunk load
+	public NBTTagCompound getUpdateTag() {
+		NBTTagCompound nbt = new NBTTagCompound();
+		writeToNBT(nbt);
+		return nbt;
 	}
 
 	public void scanChestContents() {

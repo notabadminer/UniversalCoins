@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.BlockStairs;
-import net.minecraft.block.BlockTorch;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,6 +19,7 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureComponent;
 import net.minecraft.world.gen.structure.StructureVillagePieces;
 import net.minecraft.world.gen.structure.StructureVillagePieces.Start;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.blocks.BlockUCWallSign;
 import universalcoins.tileentity.TileVendor;
@@ -34,7 +35,6 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 	public ComponentVillageShop(Start startPiece, int p5, Random random, StructureBoundingBox box, EnumFacing facing) {
 		super(startPiece, p5);
 		this.boundingBox = box;
-		//TODO:Following line is suspect. Changed from obfuscated name based on signature.
 		this.setCoordBaseMode(facing);
 		MapGenStructureIO.registerStructureComponent(ComponentVillageShop.class, "ViUS");
 	}
@@ -55,43 +55,74 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 			if (this.averageGroundLevel < 0)
 				return true;
 
-			this.boundingBox.offset(0, this.averageGroundLevel - this.boundingBox.maxY + 5 - 1, 0);
+			this.boundingBox.offset(0, this.averageGroundLevel - this.boundingBox.minY, 0);
 		}
 
 		// Clear area
 		fillWithAir(world, sbb, 0, 0, 0, 5, 6, 7);
 		// start with block
-		this.fillWithBlocks(world, sbb, 0, 0, 0, 5, 0, 7, Blocks.DOUBLE_STONE_SLAB.getDefaultState(),
-				Blocks.DOUBLE_STONE_SLAB.getDefaultState(), false);
+		fillWithBlocks(world, sbb, 0, 0, 0, 5, 0, 7, Blocks.COBBLESTONE.getDefaultState(),
+				Blocks.COBBLESTONE.getDefaultState(), false);
 		// main wall
-		this.fillWithBlocks(world, sbb, 0, 1, 0, 5, 1, 7, Blocks.PLANKS.getDefaultState(),
-				Blocks.PLANKS.getDefaultState(), false);
-		// front
-		this.fillWithBlocks(world, sbb, 0, 2, 0, 5, 3, 0, Blocks.OAK_FENCE.getDefaultState(),
+		fillWithBlocks(world, sbb, 0, 1, 0, 5, 1, 7, Blocks.PLANKS.getDefaultState(), Blocks.PLANKS.getDefaultState(),
+				false);
+		// fence front
+		fillWithBlocks(world, sbb, 0, 2, 0, 5, 4, 0, Blocks.OAK_FENCE.getDefaultState(),
 				Blocks.OAK_FENCE.getDefaultState(), false);
-		// back
-		this.fillWithBlocks(world, sbb, 0, 2, 7, 5, 3, 7, Blocks.OAK_FENCE.getDefaultState(),
+		fillWithAir(world, sbb, 1, 2, 0, 4, 3, 0);
+		// fence back
+		fillWithBlocks(world, sbb, 0, 2, 7, 5, 4, 7, Blocks.OAK_FENCE.getDefaultState(),
 				Blocks.OAK_FENCE.getDefaultState(), false);
+		fillWithAir(world, sbb, 1, 2, 7, 4, 3, 7);
+		// fence left
+		fillWithBlocks(world, sbb, 0, 3, 0, 0, 4, 7, Blocks.OAK_FENCE.getDefaultState(),
+				Blocks.OAK_FENCE.getDefaultState(), false);
+		fillWithAir(world, sbb, 0, 3, 1, 0, 3, 6);
+		// fence right
+		fillWithBlocks(world, sbb, 5, 3, 0, 5, 4, 7, Blocks.OAK_FENCE.getDefaultState(),
+				Blocks.OAK_FENCE.getDefaultState(), false);
+		fillWithAir(world, sbb, 5, 3, 1, 5, 3, 6);
+		// clear doorway and path
+		fillWithAir(world, sbb, 2, 1, 0, 3, 1, 7);
 		// top
-		this.fillWithBlocks(world, sbb, 0, 4, 0, 5, 4, 7, Blocks.PLANKS.getDefaultState(),
-				Blocks.PLANKS.getDefaultState(), false);
-		this.fillWithBlocks(world, sbb, 1, 5, 1, 4, 5, 6, Blocks.PLANKS.getDefaultState(),
-				Blocks.PLANKS.getDefaultState(), false);
-		// clear main
-		fillWithAir(world, sbb, 1, 1, 1, 4, 4, 6);
-		// clear door
-		fillWithAir(world, sbb, 2, 1, 0, 3, 2, 0);
-		// clear back
-		fillWithAir(world, sbb, 1, 2, 7, 4, 2, 7);
-		// torches
-		this.setBlockState(world, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 1,
-				4, 1, boundingBox);
-		this.setBlockState(world, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 4,
-				4, 1, boundingBox);
-		this.setBlockState(world, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.SOUTH), 1,
-				4, 6, boundingBox);
-		this.setBlockState(world, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.SOUTH), 4,
-				4, 6, boundingBox);
+		fillWithBlocks(world, sbb, 1, 5, 1, 4, 5, 6, Blocks.GLASS.getDefaultState(), Blocks.GLASS.getDefaultState(),
+				false);
+		// top front
+		IBlockState iblockstate = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
+				EnumFacing.NORTH);
+		this.setBlockState(world, iblockstate, 1, 5, 0, sbb);
+		this.setBlockState(world, iblockstate, 2, 5, 0, sbb);
+		this.setBlockState(world, iblockstate, 3, 5, 0, sbb);
+		this.setBlockState(world, iblockstate, 4, 5, 0, sbb);
+		// top back
+		IBlockState iblockstate2 = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
+				EnumFacing.SOUTH);
+		this.setBlockState(world, iblockstate2, 1, 5, 7, sbb);
+		this.setBlockState(world, iblockstate2, 2, 5, 7, sbb);
+		this.setBlockState(world, iblockstate2, 3, 5, 7, sbb);
+		this.setBlockState(world, iblockstate2, 4, 5, 7, sbb);
+		// top right
+		IBlockState iblockstate3 = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
+				EnumFacing.WEST);
+		this.setBlockState(world, iblockstate3, 5, 5, 0, sbb);
+		this.setBlockState(world, iblockstate3, 5, 5, 1, sbb);
+		this.setBlockState(world, iblockstate3, 5, 5, 2, sbb);
+		this.setBlockState(world, iblockstate3, 5, 5, 3, sbb);
+		this.setBlockState(world, iblockstate3, 5, 5, 4, sbb);
+		this.setBlockState(world, iblockstate3, 5, 5, 5, sbb);
+		this.setBlockState(world, iblockstate3, 5, 5, 6, sbb);
+		this.setBlockState(world, iblockstate3, 5, 5, 7, sbb);
+		// top left
+		IBlockState iblockstate4 = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
+				EnumFacing.EAST);
+		this.setBlockState(world, iblockstate4, 0, 5, 0, sbb);
+		this.setBlockState(world, iblockstate4, 0, 5, 1, sbb);
+		this.setBlockState(world, iblockstate4, 0, 5, 2, sbb);
+		this.setBlockState(world, iblockstate4, 0, 5, 3, sbb);
+		this.setBlockState(world, iblockstate4, 0, 5, 4, sbb);
+		this.setBlockState(world, iblockstate4, 0, 5, 5, sbb);
+		this.setBlockState(world, iblockstate4, 0, 5, 6, sbb);
+		this.setBlockState(world, iblockstate4, 0, 5, 7, sbb);
 		// signs
 		this.fillWithBlocks(world, sbb, 1, 1, 1, 1, 1, 6,
 				UniversalCoins.proxy.wall_ucsign.getDefaultState().withProperty(BlockUCWallSign.FACING,
@@ -143,7 +174,16 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 		if (this.getBlockStateFromPos(world, 1, 0, -1, sbb).getMaterial() == Material.AIR
 				&& this.getBlockStateFromPos(world, 1, -1, -1, sbb).getMaterial() != Material.AIR) {
 			this.setBlockState(world,
-					Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH), 1, 0, -1,
+					Blocks.STONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH), 2, 0, -1,
+					sbb);
+			this.setBlockState(world,
+					Blocks.STONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH), 3, 0, -1,
+					sbb);
+			this.setBlockState(world,
+					Blocks.STONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.SOUTH), 2, 0, 8,
+					sbb);
+			this.setBlockState(world,
+					Blocks.STONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.SOUTH), 3, 0, 8,
 					sbb);
 		}
 
@@ -154,6 +194,7 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 				this.replaceAirAndLiquidDownwards(world, Blocks.COBBLESTONE.getDefaultState(), k, -1, l, sbb);
 			}
 		}
+
 		return true;
 	}
 

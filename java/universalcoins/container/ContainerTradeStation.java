@@ -5,6 +5,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.tileentity.TileTradeStation;
@@ -98,23 +99,7 @@ public class ContainerTradeStation extends Container {
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
-		/*
-		 * TODO: container.crafters were was removed by 1.9.4. Figure out what it was full of and what
-		 * this code is trying to do with them.
 
-		for (int i = 0; i < this.crafters.size(); ++i) {
-			ICrafting icrafting = (ICrafting) this.crafters.get(i);
-
-			if (this.lastAutoMode != this.tileEntity.autoMode) {
-				icrafting.sendProgressBarUpdate(this, 0, (int) this.tileEntity.autoMode);
-				this.lastAutoMode = this.tileEntity.autoMode;
-			}
-			if (this.lastCoinMode != this.tileEntity.coinMode) {
-				icrafting.sendProgressBarUpdate(this, 1, (int) this.tileEntity.coinMode);
-				this.lastCoinMode = this.tileEntity.coinMode;
-			}
-		}
-		/**/
 		if (this.lastCoinSum != this.tileEntity.coinSum || this.lastItemPrice != this.tileEntity.itemPrice
 				|| this.lastBuyButtonActive != this.tileEntity.buyButtonActive
 				|| this.lastSellButtonActive != this.tileEntity.sellButtonActive
@@ -122,7 +107,8 @@ public class ContainerTradeStation extends Container {
 				|| this.lastGoldBtnActive != this.tileEntity.goldCoinBtnActive
 				|| this.lastEmeraldBtnActive != this.tileEntity.emeraldCoinBtnActive
 				|| this.lastDiamondBtnActive != this.tileEntity.diamondCoinBtnActive
-				|| this.lastInUse != this.tileEntity.inUse) {
+				|| this.lastInUse != this.tileEntity.inUse || this.lastAutoMode != this.tileEntity.autoMode
+				|| this.lastCoinMode != this.tileEntity.coinMode) {
 			tileEntity.updateTE();
 			this.lastCoinSum = this.tileEntity.coinSum;
 			this.lastItemPrice = this.tileEntity.itemPrice;
@@ -134,23 +120,13 @@ public class ContainerTradeStation extends Container {
 			this.lastDiamondBtnActive = this.tileEntity.diamondCoinBtnActive;
 			this.lastObsidianBtnActive = this.tileEntity.obsidianCoinBtnActive;
 			this.lastInUse = this.tileEntity.inUse;
+			this.lastAutoMode = this.tileEntity.autoMode;
+			this.lastCoinMode = this.tileEntity.coinMode;
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
 	public void updateProgressBar(int par1, int par2) {
-		if (par1 == 0) {
-			this.tileEntity.autoMode = par2;
-		}
-		if (par1 == 1) {
-			this.tileEntity.coinMode = par2;
-		}
-		if (par1 == 2) {
-			this.tileEntity.coinSum = par2;
-		}
-		if (par1 == 3) {
-			this.tileEntity.itemPrice = par2;
-		}
 	}
 
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {

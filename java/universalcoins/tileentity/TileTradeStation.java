@@ -36,6 +36,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 	public boolean diamondCoinBtnActive = false;
 	public boolean obsidianCoinBtnActive = false;
 	public boolean autoModeButtonActive = UniversalCoins.autoModeEnabled;
+	public boolean publicAccess = true;
 	private static final int[] slots_top = new int[] { 0, 1, 2, 3 };
 	private static final int[] slots_bottom = new int[] { 0, 1, 2, 3 };
 	private static final int[] slots_sides = new int[] { 0, 1, 2, 3 };
@@ -391,6 +392,8 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 			onCoinModeButtonPressed();
 		} else if (buttonId <= TradeStationGUI.idLBagButton) {
 			onRetrieveButtonsPressed(buttonId, shiftPressed);
+		} else if (buttonId == TradeStationGUI.idAccessModeButton && blockOwner.matches(playerName)) {
+			publicAccess ^= true;
 		}
 		update();
 	}
@@ -435,6 +438,11 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 			inUse = tagCompound.getBoolean("InUse");
 		} catch (Throwable ex2) {
 			inUse = false;
+		}
+		try {
+			publicAccess = tagCompound.getBoolean("publicAccess");
+		} catch (Throwable ex2) {
+			publicAccess = true;
 		}
 		try {
 			buyButtonActive = tagCompound.getBoolean("buyButtonActive");
@@ -494,6 +502,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 		tagCompound.setInteger("ItemPrice", itemPrice);
 		tagCompound.setString("CustomName", getName());
 		tagCompound.setBoolean("InUse", inUse);
+		tagCompound.setBoolean("publicAccess", publicAccess);
 		tagCompound.setBoolean("buyButtonActive", buyButtonActive);
 		tagCompound.setBoolean("sellButtonActive", sellButtonActive);
 		tagCompound.setBoolean("ironCoinBtnActive", ironCoinBtnActive);
@@ -512,12 +521,16 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
-		NBTTagCompound tag = new NBTTagCompound();
-		writeToNBT(tag);
-		return new SPacketUpdateTileEntity(this.getPos(), this.getBlockMetadata(), tag);
+		return new SPacketUpdateTileEntity(this.pos, getBlockMetadata(), getUpdateTag());
 	}
 
-	@Override
+	// required for sync on chunk load
+	public NBTTagCompound getUpdateTag() {
+		NBTTagCompound nbt = new NBTTagCompound();
+		writeToNBT(nbt);
+		return nbt;
+	}
+
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		readFromNBT(pkt.getNbtCompound());
 	}
@@ -574,6 +587,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 				}
 			}
 		}
+		update();
 		return stack;
 	}
 

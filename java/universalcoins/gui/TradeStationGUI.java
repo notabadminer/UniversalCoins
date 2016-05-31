@@ -15,7 +15,7 @@ import universalcoins.tileentity.TileTradeStation;
 public class TradeStationGUI extends GuiContainer {
 
 	private TileTradeStation tileEntity;
-	private GuiButton buyButton, sellButton, coinModeButton, autoModeButton;
+	private GuiButton buyButton, sellButton, coinModeButton, autoModeButton, accessModeButton;
 	private GuiCoinButton retrCoinButton, retrSStackButton, retrLStackButton, retrSBagButton, retrLBagButton;
 	public static final int idBuyButton = 0;
 	public static final int idSellButton = 1;
@@ -26,6 +26,7 @@ public class TradeStationGUI extends GuiContainer {
 	public static final int idLBagButton = 6;
 	public static final int idCoinModeButton = 7;
 	public static final int idAutoModeButton = 8;
+	public static final int idAccessModeButton = 9;
 
 	public String[] autoLabels = { I18n.translateToLocal("tradestation.gui.autolabel.off"),
 			I18n.translateToLocal("tradestation.gui.autolabel.buy"),
@@ -57,6 +58,8 @@ public class TradeStationGUI extends GuiContainer {
 				"", 4);
 		coinModeButton = new GuiSlimButton(idCoinModeButton, 110 + (width - xSize) / 2, 98 + (height - ySize) / 2, 46,
 				12, I18n.translateToLocal("general.button.coin"));
+		accessModeButton = new GuiSlimButton(idAccessModeButton, 127 + (width - xSize) / 2, 4 + (height - ySize) / 2,
+				52, 12, I18n.translateToLocal("general.label.public"));
 		buttonList.clear();
 		if (UniversalCoins.tradeStationBuyEnabled)
 			buttonList.add(buyButton);
@@ -67,6 +70,7 @@ public class TradeStationGUI extends GuiContainer {
 		buttonList.add(retrSBagButton);
 		buttonList.add(retrLBagButton);
 		buttonList.add(coinModeButton);
+		buttonList.add(accessModeButton);
 
 		// display only if auto buy/sell enabled?
 		if (tileEntity.autoModeButtonActive) {
@@ -131,6 +135,12 @@ public class TradeStationGUI extends GuiContainer {
 		int xHighlight[] = { 0, 89, 107, 125, 143, 161 };
 		if (tileEntity.coinMode > 0) {
 			this.drawTexturedModalRect(x + xHighlight[tileEntity.coinMode], y + 94, 184, 15, 16, 2);
+		}
+		
+		if (tileEntity.publicAccess) {
+			accessModeButton.displayString = I18n.translateToLocal("general.label.public");
+		} else {
+			accessModeButton.displayString = I18n.translateToLocal("general.label.private");
 		}
 	}
 
