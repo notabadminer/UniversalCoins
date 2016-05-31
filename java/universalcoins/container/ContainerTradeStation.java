@@ -67,7 +67,7 @@ public class ContainerTradeStation extends Container {
 			else {
 				boolean foundSlot = false;
 				for (int i = 0; i < 3; i++) {
-					if (((Slot) inventorySlots.get(i)).isItemValid(stackInSlot)
+					if ((inventorySlots.get(i)).isItemValid(stackInSlot)
 							&& this.mergeItemStack(stackInSlot, i, i + 1, false)) {
 						foundSlot = true;
 						break;

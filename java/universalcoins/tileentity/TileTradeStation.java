@@ -635,6 +635,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 				}
 			}
 		}
+		update();
 	}
 
 	@Override
