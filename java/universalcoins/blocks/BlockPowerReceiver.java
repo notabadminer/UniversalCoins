@@ -13,6 +13,7 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
@@ -77,9 +78,8 @@ public class BlockPowerReceiver extends BlockProtected {
 		return new TilePowerReceiver();
 	}
 
-	//TODO: super removed, move code to new method.
-	// @Override
-	public void neighborChanged(World world, BlockPos pos, IBlockState state, Block neighborBlock) {
+	@Override
+	public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor) {
 		TilePowerReceiver tileEntity = (TilePowerReceiver) world.getTileEntity(pos);
 		tileEntity.resetPowerDirection();
 	}

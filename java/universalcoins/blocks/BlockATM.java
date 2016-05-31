@@ -91,6 +91,8 @@ public class BlockATM extends BlockProtected {
 	/**
 	 * Convert the given metadata into a BlockState for this Block
 	 */
+	@Override
+	@Deprecated
 	public IBlockState getStateFromMeta(int meta) {
 		EnumFacing enumfacing = EnumFacing.getFront(meta);
 
@@ -112,6 +114,8 @@ public class BlockATM extends BlockProtected {
 	 * Returns the blockstate with the given rotation from the passed
 	 * blockstate. If inapplicable, returns the passed blockstate.
 	 */
+	@Override
+	@Deprecated
 	public IBlockState withRotation(IBlockState state, Rotation rot) {
 		return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
 	}
@@ -120,6 +124,8 @@ public class BlockATM extends BlockProtected {
 	 * Returns the blockstate with the given mirror of the passed blockstate. If
 	 * inapplicable, returns the passed blockstate.
 	 */
+	@Override
+	@Deprecated
 	public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
 		return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
 	}
