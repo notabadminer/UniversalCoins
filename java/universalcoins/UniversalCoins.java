@@ -43,10 +43,7 @@ import universalcoins.tileentity.TileUCSign;
 import universalcoins.tileentity.TileVendor;
 import universalcoins.tileentity.TileVendorBlock;
 import universalcoins.tileentity.TileVendorFrame;
-import universalcoins.util.UCItemPricer;
-import universalcoins.util.UCMobDropEventHandler;
-import universalcoins.util.UCPlayerPickupEventHandler;
-import universalcoins.util.UCRecipeHelper;
+import universalcoins.util.*;
 import universalcoins.worldgen.VillageGenBank;
 import universalcoins.worldgen.VillageGenShop;
 import universalcoins.worldgen.VillageGenTrade;
@@ -68,6 +65,8 @@ public class UniversalCoins {
 	public static final String VERSION = "@VERSION@";
 
 	public static CreativeTabs tabUniversalCoins = new UCTab("tabUniversalCoins");
+
+	public static UCItemPricer itemPricer;
 
 	@SidedProxy(clientSide = "universalcoins.proxy.ClientProxy", serverSide = "universalcoins.proxy.CommonProxy")
 	public static CommonProxy proxy;
@@ -103,6 +102,8 @@ public class UniversalCoins {
 	public static Integer tradeGenWeight;
 	public static Integer shopMinPrice;
 	public static Integer shopMaxPrice;
+	public static String pricerType;
+	public static int pricerThreshold;
 
 	public static SimpleNetworkWrapper snw;
 
@@ -147,6 +148,18 @@ public class UniversalCoins {
 		Property packagerRecipe = config.get("Recipes", "Packager Recipe", true);
 		packagerRecipe.setComment("Set to false to disable crafting recipes for Packager.");
 		packagerRecipeEnabled = packagerRecipe.getBoolean(true);
+
+		//Pricer
+		//TODO better comment, explain what an Item Pricer matters.
+		//TODO change default to static for release.
+		Property itemPricer = config.get("Pricer", "PricerType", "economic", "Type of pricer to use" );
+		String[] validPricers =  {"static", "economic"};
+		itemPricer.setValidValues(validPricers);
+		pricerType = itemPricer.getString();
+
+		Property threshold = config.get("Pricer", "PricerThreshold", 128);
+		threshold.setComment("Number of items sold after witch an Item is worthless to the market. Used to determine demand curve slope");
+		pricerThreshold = threshold.getInt();
 
 		// loot
 		Property mobDrops = config.get("Loot", "Mob Drops", true,
@@ -301,7 +314,18 @@ public class UniversalCoins {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		UCItemPricer.getInstance().loadConfigs();
+		switch(pricerType){
+			case "static":
+				itemPricer = new UCStaticItemPricer();
+				break;
+			case "economic":
+				itemPricer = new UCEconomicItemPricer();
+				break;
+			default:
+				throw new Error("Invalid Pricer Type in universalcoins.cfg");
+		}
+
+		itemPricer.loadConfigs();
 	}
 
 	@EventHandler

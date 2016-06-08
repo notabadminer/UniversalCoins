@@ -19,11 +19,10 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureComponent;
 import net.minecraft.world.gen.structure.StructureVillagePieces;
 import net.minecraft.world.gen.structure.StructureVillagePieces.Start;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.blocks.BlockUCWallSign;
 import universalcoins.tileentity.TileVendor;
-import universalcoins.util.UCItemPricer;
+import universalcoins.util.UCStaticItemPricer;
 
 public class ComponentVillageShop extends StructureVillagePieces.Village {
 
@@ -149,11 +148,11 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 		for (int i = 0; i < 6; i++) {
 			int priceModifier = random.nextInt(UniversalCoins.shopMaxPrice - UniversalCoins.shopMinPrice)
 					+ UniversalCoins.shopMinPrice;
-			ItemStack stack = UCItemPricer.getInstance().getRandomPricedStack();
+			ItemStack stack = UniversalCoins.itemPricer.getRandomPricedStack();
 			while (saleItems.contains(stack.getItem())) {
-				stack = UCItemPricer.getInstance().getRandomPricedStack();
+				stack = UniversalCoins.itemPricer.getRandomPricedStack();
 			}
-			int price = UCItemPricer.getInstance().getItemPrice(stack);
+			int price = UniversalCoins.itemPricer.getItemPrice(stack);
 			addVendorItems(world, 0, 2, i + 1, stack, price * priceModifier / 100);
 			saleItems.add(stack.getItem());
 		}
@@ -161,11 +160,11 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 		for (int i = 0; i < 6; i++) {
 			int priceModifier = random.nextInt(UniversalCoins.shopMaxPrice - UniversalCoins.shopMinPrice)
 					+ UniversalCoins.shopMinPrice;
-			ItemStack stack = UCItemPricer.getInstance().getRandomPricedStack();
+			ItemStack stack = UniversalCoins.itemPricer.getRandomPricedStack();
 			while (saleItems.contains(stack.getItem())) {
-				stack = UCItemPricer.getInstance().getRandomPricedStack();
+				stack = UniversalCoins.itemPricer.getRandomPricedStack();
 			}
-			int price = UCItemPricer.getInstance().getItemPrice(stack);
+			int price = UniversalCoins.itemPricer.getItemPrice(stack);
 			addVendorItems(world, 5, 2, i + 1, stack, price * priceModifier / 100);
 			saleItems.add(stack.getItem());
 		}
