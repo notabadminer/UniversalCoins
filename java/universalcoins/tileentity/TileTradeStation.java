@@ -16,7 +16,7 @@ import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.TradeStationGUI;
 import universalcoins.net.UCButtonMessage;
-import universalcoins.util.UCItemPricer;
+import universalcoins.util.UCStaticItemPricer;
 import universalcoins.util.UniversalAccounts;
 
 public class TileTradeStation extends TileProtected implements IInventory, ISidedInventory {
@@ -68,7 +68,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 			buyButtonActive = false;
 			sellButtonActive = false;
 		} else {
-			itemPrice = UCItemPricer.getInstance().getItemPrice(inventory[itemInputSlot]);
+			itemPrice = UniversalCoins.itemPricer.getItemPrice(inventory[itemInputSlot]);
 			if (itemPrice <= -1 || itemPrice == 0) {
 				itemPrice = 0;
 				buyButtonActive = false;
@@ -140,7 +140,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 		if (amount > inventory[itemInputSlot].stackSize) {
 			return;
 		}
-		itemPrice = UCItemPricer.getInstance().getItemPrice(inventory[itemInputSlot]);
+		itemPrice = UniversalCoins.itemPricer.getItemPrice(inventory[itemInputSlot]);
 		if (itemPrice == -1) {
 			sellButtonActive = false;
 			return;
@@ -150,15 +150,16 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 			itemPrice = itemPrice * (inventory[itemInputSlot].getMaxDamage() - inventory[itemInputSlot].getItemDamage())
 					/ inventory[itemInputSlot].getMaxDamage();
 		}
-		inventory[itemInputSlot].stackSize -= amount;
-		if (inventory[itemInputSlot].stackSize <= 0) {
-			inventory[itemInputSlot] = null;
-		}
 		if (inventory[itemCardSlot] != null && inventory[itemCardSlot].getItem() == UniversalCoins.proxy.ender_card
 				&& getAccountBalance() + (itemPrice * amount * UniversalCoins.itemSellRatio) < Integer.MAX_VALUE) {
 			creditAccount((int) (itemPrice * amount * UniversalCoins.itemSellRatio));
 		} else {
 			coinSum += itemPrice * amount * UniversalCoins.itemSellRatio;
+		}
+		UniversalCoins.itemPricer.reportAddToMarket(inventory[itemInputSlot], 1 * amount);
+		inventory[itemInputSlot].stackSize -= amount;
+		if (inventory[itemInputSlot].stackSize <= 0) {
+			inventory[itemInputSlot] = null;
 		}
 	}
 
@@ -180,7 +181,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 			sellButtonActive = false;
 			return;
 		}
-		itemPrice = UCItemPricer.getInstance().getItemPrice(inventory[itemInputSlot]);
+		itemPrice = UniversalCoins.itemPricer.getItemPrice(inventory[itemInputSlot]);
 		if (itemPrice == -1 || itemPrice == 0) {
 			sellButtonActive = false;
 			return;
@@ -203,7 +204,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 		}
 	}
 
-	public void onBuyPressed() {
+	public void  onBuyPressed() {
 		onBuyPressed(1);
 	}
 
@@ -213,7 +214,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 			buyButtonActive = false;
 			return;
 		}
-		itemPrice = UCItemPricer.getInstance().getItemPrice(inventory[itemInputSlot]);
+		itemPrice = UniversalCoins.itemPricer.getItemPrice(inventory[itemInputSlot]);
 		// use the card if we have it
 		if (inventory[itemCardSlot] != null && getAccountBalance() > itemPrice * amount) {
 			useCard = true;
@@ -240,44 +241,32 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 				coinSum -= itemPrice * amount;
 			}
 			inventory[itemOutputSlot].stackSize += amount;
+			UniversalCoins.itemPricer.reportAddToMarket(inventory[itemOutputSlot], -1 * amount);
 		} else {
 			buyButtonActive = false;
 		}
 	}
 
 	public void onBuyMaxPressed() {
-		boolean useCard = false;
-		int amount = 0;
-		itemPrice = UCItemPricer.getInstance().getItemPrice(inventory[itemInputSlot]);
-		// use the card if we have it
-		if (inventory[itemCardSlot] != null && getAccountBalance() > itemPrice) {
-			useCard = true;
-		}
-		if (itemPrice == -1 || (coinSum < itemPrice && !useCard)) {
-			buyButtonActive = false;
-			return;
-		}
-		if (inventory[itemOutputSlot] == null) { // empty stack
-			if (inventory[itemInputSlot].getMaxStackSize() * itemPrice <= (useCard ? getAccountBalance() : coinSum)) {
-				amount = inventory[itemInputSlot].getMaxStackSize(); // buy one
-																		// stack
-			} else {
-				amount = (int) ((useCard ? getAccountBalance() : coinSum) / itemPrice);
-			}
-		} else if (inventory[itemOutputSlot].getItem() == inventory[itemInputSlot].getItem()
-				&& inventory[itemOutputSlot].getItemDamage() == inventory[itemInputSlot].getItemDamage()
-				&& inventory[itemOutputSlot].stackSize < inventory[itemInputSlot].getMaxStackSize()) {
 
-			if ((inventory[itemOutputSlot].getMaxStackSize() - inventory[itemOutputSlot].stackSize)
-					* itemPrice <= (useCard ? getAccountBalance() : coinSum)) {
-				amount = inventory[itemOutputSlot].getMaxStackSize() - inventory[itemOutputSlot].stackSize;
-				// buy as much as i can fit in a stack
+		int outputCount = 0;
+		if(inventory[itemOutputSlot] != null){
+			if(inventory[itemOutputSlot].getItem() == inventory[itemInputSlot].getItem()){
+				outputCount = inventory[itemInputSlot].stackSize;
 			} else {
-				amount = (int) ((useCard ? getAccountBalance() : coinSum) / itemPrice);
+				//incompatible item in output slot
+				buyButtonActive = false;
+				return;
 			}
-		} else {
-			buyButtonActive = false;
 		}
+
+		long funds = coinSum;
+		if (inventory[itemCardSlot] != null) {
+			funds += getAccountBalance();
+		}
+
+		int amount = UniversalCoins.itemPricer.getAffordable(inventory[itemInputSlot], funds);
+		amount = Math.min(amount, inventory[itemInputSlot].getMaxStackSize() - outputCount);
 		onBuyPressed(amount);
 	}
 

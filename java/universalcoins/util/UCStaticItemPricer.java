@@ -274,36 +274,37 @@ public class UCStaticItemPricer implements UCItemPricer {
 
 	@Override
 	public int getItemPrice(ItemStack itemStack, int q) {
-		if (itemStack == null) {
-			// FMLLog.warning("itemstack is null");
-			return -1;
-		}
-		int ItemPrice = -1;
-		String itemName = null;
-		try {
-			itemName = itemStack.getUnlocalizedName() + "." + itemStack.getItemDamage();
-		} catch (Exception e) {
-			// fail silently
-		}
-		if (ucPriceMap.get(itemName) != null) {
-			ItemPrice = ucPriceMap.get(itemName);
-		}
-		// lookup item in oreDictionary if not priced
-		if (ItemPrice == -1) {
-			int[] id = OreDictionary.getOreIDs(itemStack);
-			if (id.length > 0) {
-				itemName = OreDictionary.getOreName(id[0]);
-				if (ucPriceMap.get(itemName) != null) {
-					ItemPrice = ucPriceMap.get(itemName);
-				}
-			}
-		}
-		return ItemPrice * q;
+    return getItemPrice(itemStack) * Math.abs(q);
 	}
 
   @Override
   public int getItemPrice(ItemStack itemStack) {
-    return getItemPrice(itemStack, 1);
+
+    if (itemStack == null) {
+      // FMLLog.warning("itemstack is null");
+      return -1;
+    }
+    int ItemPrice = -1;
+    String itemName = null;
+    try {
+      itemName = itemStack.getUnlocalizedName() + "." + itemStack.getItemDamage();
+    } catch (Exception e) {
+      // fail silently
+    }
+    if (ucPriceMap.get(itemName) != null) {
+      ItemPrice = ucPriceMap.get(itemName);
+    }
+    // lookup item in oreDictionary if not priced
+    if (ItemPrice == -1) {
+      int[] id = OreDictionary.getOreIDs(itemStack);
+      if (id.length > 0) {
+        itemName = OreDictionary.getOreName(id[0]);
+        if (ucPriceMap.get(itemName) != null) {
+          ItemPrice = ucPriceMap.get(itemName);
+        }
+      }
+    }
+    return ItemPrice;
   }
 
   @Override
@@ -408,7 +409,7 @@ public class UCStaticItemPricer implements UCItemPricer {
 
 	@Override
 	public int getAffordable(ItemStack itemStack, long availableCoins) {
-		int p = getItemPrice(itemStack, 1);
+		int p = getItemPrice(itemStack);
 		return (int) availableCoins/p;
 	}
 
