@@ -152,12 +152,16 @@ public class UniversalCoins {
 		//Pricer
 		//TODO better comment, explain what an Item Pricer matters.
 		//TODO change default to static for release.
-		Property itemPricer = config.get("Pricer", "PricerType", "economic", "Type of pricer to use" );
+		Property itemPricer = config.get("Pricer", "PricerType", "static");
+		itemPricer.setComment("How the prices for Items in the Trade Station are determined. \n" +
+						"'static' uses the configured price all the time.\n" +
+						"'economic' starts at the configured price and scales it up or down based on how much is bought and sold.\n" +
+						"economic pricer should be considered to be in Alpha and is almost certainly illogical and abuseable around edge cases. use with caution.");
 		String[] validPricers =  {"static", "economic"};
 		itemPricer.setValidValues(validPricers);
 		pricerType = itemPricer.getString();
 
-		Property threshold = config.get("Pricer", "PricerThreshold", 128);
+		Property threshold = config.get("Pricer", "PricerThreshold", 256);
 		threshold.setComment("Number of items sold after witch an Item is worthless to the market. Used to determine demand curve slope");
 		pricerThreshold = threshold.getInt();
 

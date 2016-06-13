@@ -24,6 +24,7 @@ public class UCWorldData extends WorldSavedData {
 
 	private NBTTagCompound nbt = new NBTTagCompound();;
 
+	//This needs to be public so MapStorage can instanciate UCWorldData.
 	public UCWorldData(String tagName) {
 		super(tagName);
 	}
