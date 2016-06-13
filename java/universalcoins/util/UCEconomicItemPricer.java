@@ -2,6 +2,8 @@ package universalcoins.util;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.oredict.OreDictionary;
 import universalcoins.UniversalCoins;
 
 import java.util.HashMap;
@@ -12,14 +14,16 @@ import java.util.Map;
  */
 public class UCEconomicItemPricer extends UCStaticItemPricer implements UCItemPricer {
 
-  //Quantity is market surplus, number sold - number bought. It can be negative.
-  private Map<String, Integer> ucQuantityMap = new HashMap<String, Integer>();
 
-  private int qMarket(ItemStack itemStack){
-    Integer qi = ucQuantityMap.get(itemStack.getUnlocalizedName());
-    return qi == null ? 0 : qi.intValue();
+  private String getKey(ItemStack itemStack){
+    return itemStack.getUnlocalizedName() + "." + itemStack.getItemDamage();
   }
 
+  //Quantity is market surplus, number sold - number bought. It can be negative.
+  private int qMarket(ItemStack itemStack){
+    NBTTagCompound wd = UCWorldData.getInstance().getData();
+    return wd.getInteger(getKey(itemStack));
+  }
 
   @Override
   public int getItemPrice(ItemStack itemStack) {
@@ -50,11 +54,27 @@ public class UCEconomicItemPricer extends UCStaticItemPricer implements UCItemPr
     return 0;
   }
 
+  //TODO: Race condition? 2 TradeStations buying or selling at once may result in q being recorded wrong. This is probably abuseable.
+  //TODO: Quantity and ItemPrice entries aren't guaranteed to be 1:1
+  //TODO: Quantity should address oreDictionary.
   @Override
   public void reportAddToMarket(ItemStack itemStack, int q) {
+    UCWorldData wd = UCWorldData.getInstance();
+    NBTTagCompound wdTag = wd.getData();
+
     int qMarket = qMarket(itemStack);
     qMarket += q;
-    ucQuantityMap.put(itemStack.getUnlocalizedName(), qMarket);
+    wdTag.setInteger(getKey(itemStack), qMarket);
+    wd.markDirty();
   }
 
+  @Override
+  public void loadConfigs() {
+    super.loadConfigs();
+  }
+
+  @Override
+  public void savePriceLists() {
+    super.savePriceLists();
+  }
 }
