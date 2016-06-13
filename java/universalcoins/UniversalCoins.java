@@ -150,8 +150,6 @@ public class UniversalCoins {
 		packagerRecipeEnabled = packagerRecipe.getBoolean(true);
 
 		//Pricer
-		//TODO better comment, explain what an Item Pricer matters.
-		//TODO change default to static for release.
 		Property itemPricer = config.get("Pricer", "PricerType", "static");
 		itemPricer.setComment("How the prices for Items in the Trade Station are determined. \n" +
 						"'static' uses the configured price all the time.\n" +
