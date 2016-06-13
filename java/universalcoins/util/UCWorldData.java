@@ -24,7 +24,7 @@ public class UCWorldData extends WorldSavedData {
 
 	private NBTTagCompound nbt = new NBTTagCompound();;
 
-	private UCWorldData(String tagName) {
+	public UCWorldData(String tagName) {
 		super(tagName);
 	}
 
