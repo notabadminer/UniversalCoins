@@ -21,7 +21,7 @@ public class UCEconomicItemPricer extends UCStaticItemPricer implements UCItemPr
 
   //Quantity is market surplus, number sold - number bought. It can be negative.
   private int qMarket(ItemStack itemStack){
-    NBTTagCompound wd = UCWorldData.getInstance().getData();
+    UCWorldData wd = UCWorldData.getInstance();
     return wd.getInteger(getKey(itemStack));
   }
 
@@ -60,12 +60,11 @@ public class UCEconomicItemPricer extends UCStaticItemPricer implements UCItemPr
   @Override
   public void reportAddToMarket(ItemStack itemStack, int q) {
     UCWorldData wd = UCWorldData.getInstance();
-    NBTTagCompound wdTag = wd.getData();
 
     int qMarket = qMarket(itemStack);
     qMarket += q;
-    wdTag.setInteger(getKey(itemStack), qMarket);
-    wd.markDirty();
+    wd.setData(getKey(itemStack), qMarket);
+
   }
 
   @Override

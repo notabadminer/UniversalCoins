@@ -6,6 +6,7 @@ public class UniversalAccounts {
 
 	private static final UniversalAccounts instance = new UniversalAccounts();
 
+
 	public static UniversalAccounts getInstance() {
 		return instance;
 	}
@@ -15,18 +16,21 @@ public class UniversalAccounts {
 	}
 
 	public long getAccountBalance(String accountNumber) {
-		if (hasKey(accountNumber)) {
-			return getWorldLong(accountNumber);
+		UCWorldData WD = UCWorldData.getInstance();
+		if (WD.hasKey(accountNumber)) {
+			return WD.getLong(accountNumber);
 		} else
 			return -1;
 	}
 
+	//TODO: Possible race condition, check if abuseable.
 	public boolean debitAccount(String accountNumber, long amount) {
-		if (hasKey(accountNumber)) {
-			long balance = getWorldLong(accountNumber);
+		UCWorldData WD = UCWorldData.getInstance();
+		if (WD.hasKey(accountNumber)) {
+			long balance = WD.getLong(accountNumber);
 			if (amount <= balance) {
 				balance -= amount;
-				setWorldData(accountNumber, balance);
+				WD.setData(accountNumber, balance);
 				return true;
 			}
 		}
@@ -34,11 +38,12 @@ public class UniversalAccounts {
 	}
 
 	public boolean creditAccount(String accountNumber, long amount) {
-		if (hasKey(accountNumber)) {
-			long balance = getWorldLong(accountNumber);
+		UCWorldData WD = UCWorldData.getInstance();
+		if (WD.hasKey(accountNumber)) {
+			long balance = WD.getLong(accountNumber);
 			if (Long.MAX_VALUE - balance > amount) {
 				balance += amount;
-				setWorldData(accountNumber, balance);
+				WD.setData(accountNumber, balance);
 				return true;
 			}
 		}
@@ -47,17 +52,19 @@ public class UniversalAccounts {
 
 	public String getPlayerAccount(String playerUID) {
 		// returns an empty string if no account found
-		return getWorldString(playerUID);
+		UCWorldData WD = UCWorldData.getInstance();
+		return WD.getString(playerUID);
 	}
 
 	public String getOrCreatePlayerAccount(String playerUID) {
-		String accountNumber = getWorldString(playerUID);
+		UCWorldData WD = UCWorldData.getInstance();
+		String accountNumber = WD.getString(playerUID);
 		if (accountNumber == "") {
-			while (!hasKey(playerUID)) {
+			while (!WD.hasKey(playerUID)) {
 				accountNumber = String.valueOf(generateAccountNumber());
-				if (getWorldString(accountNumber) == "") {
-					setWorldData(playerUID, accountNumber);
-					setWorldData(accountNumber, 0);
+				if (WD.getString(accountNumber) == "") {
+					WD.setData(playerUID, accountNumber);
+					WD.setData(accountNumber, 0);
 				}
 			}
 		}
@@ -65,72 +72,36 @@ public class UniversalAccounts {
 	}
 
 	public boolean addPlayerAccount(String playerUID) {
-		if (getWorldString(playerUID) == "") {
+		UCWorldData WD = UCWorldData.getInstance();
+		if (WD.getString(playerUID) == "") {
 			String accountNumber;
 			do {
 				accountNumber = String.valueOf(generateAccountNumber());
-			} while (hasKey(accountNumber));
-			setWorldData(playerUID, accountNumber);
-			setWorldData(accountNumber, 0);
+			} while (WD.hasKey(accountNumber));
+			WD.setData(playerUID, accountNumber);
+			WD.setData(accountNumber, 0);
 			return true;
 		}
 		return false;
 	}
 
 	public void transferPlayerAccount(String playerUID) {
-		String oldAccount = getWorldString(playerUID);
+		UCWorldData WD = UCWorldData.getInstance();
+		String oldAccount = WD.getString(playerUID);
 		long oldBalance = getAccountBalance(oldAccount);
-		delWorldData(playerUID);
-		delWorldData(oldAccount);
+		WD.delData(playerUID);
+		WD.delData(oldAccount);
 		String accountNumber = oldAccount;
 		do {
 			accountNumber = String.valueOf(generateAccountNumber());
-		} while (hasKey(accountNumber));
-		setWorldData(playerUID, accountNumber);
-		setWorldData(accountNumber, oldBalance);
+		} while (WD.hasKey(accountNumber));
+		WD.setData(playerUID, accountNumber);
+		WD.setData(accountNumber, oldBalance);
 	}
 
 	private int generateAccountNumber() {
 		return (int) (Math.floor(Math.random() * 99999999) + 11111111);
 	}
 
-	private boolean hasKey(String tag) {
-		UCWorldData wData = UCWorldData.getInstance();
-		NBTTagCompound wdTag = wData.getData();
-		return wdTag.hasKey(tag);
-	}
-
-	private void setWorldData(String tag, String data) {
-		UCWorldData wData = UCWorldData.getInstance();
-		NBTTagCompound wdTag = wData.getData();
-		wdTag.setString(tag, data);
-		wData.markDirty();
-	}
-
-	private void setWorldData(String tag, long data) {
-		UCWorldData wData = UCWorldData.getInstance();
-		NBTTagCompound wdTag = wData.getData();
-		wdTag.setLong(tag, data);
-		wData.markDirty();
-	}
-
-	private long getWorldLong(String tag) {
-		UCWorldData wData = UCWorldData.getInstance();
-		NBTTagCompound wdTag = wData.getData();
-		return wdTag.getLong(tag);
-	}
-
-	private String getWorldString(String tag) {
-		UCWorldData wData = UCWorldData.getInstance();
-		NBTTagCompound wdTag = wData.getData();
-		return wdTag.getString(tag);
-	}
-
-	private void delWorldData(String tag) {
-		UCWorldData wData = UCWorldData.getInstance();
-		NBTTagCompound wdTag = wData.getData();
-		wdTag.removeTag(tag);
-		wData.markDirty();
-	}
-
+	
 }

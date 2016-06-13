@@ -22,7 +22,7 @@ public class UCWorldData extends WorldSavedData {
 		return result;
 	}
 
-	private NBTTagCompound nbt = new NBTTagCompound();
+	private NBTTagCompound nbt = new NBTTagCompound();;
 
 	private UCWorldData(String tagName) {
 		super(tagName);
@@ -40,7 +40,39 @@ public class UCWorldData extends WorldSavedData {
 		return compound;
 	}
 
-	public NBTTagCompound getData() {
-		return nbt;
+	public boolean hasKey(String tag) {
+		return nbt.hasKey(tag);
+	}
+
+	public void setData(String tag, String data) {
+		nbt.setString(tag, data);
+		markDirty();
+	}
+
+	public void setData(String tag, long data) {
+		nbt.setLong(tag, data);
+		markDirty();
+	}
+
+	public long getLong(String tag) {
+		return nbt.getLong(tag);
+	}
+
+	public String getString(String tag) {
+		return nbt.getString(tag);
+	}
+
+	public void delData(String tag) {
+		nbt.removeTag(tag);
+		markDirty();
+	}
+
+	public int getInteger(String key) {
+		return nbt.getInteger(key);
+	}
+
+	public void setData(String tag, int data) {
+		nbt.setInteger(tag, data);
+		markDirty();
 	}
 }
