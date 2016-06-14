@@ -29,10 +29,16 @@ public class UCEconomicItemPricer extends UCStaticItemPricer implements UCItemPr
   public int getItemPrice(ItemStack itemStack) {
     int basePrice = super.getItemPrice(itemStack);
 
+    //some items are not for sale
+    if(basePrice < 0){
+      return -1;
+    }
+
     double slope = (basePrice+0.0) / UniversalCoins.pricerThreshold;
     double price = basePrice - slope * qMarket(itemStack);
 
-    return (int) price;
+    //don't let scaleing bring item into unmarketable range.
+    return (int) Math.max(price, 1);
   }
 
   @Override
