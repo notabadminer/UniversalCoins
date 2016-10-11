@@ -524,7 +524,8 @@ public class UCItemPricer {
 		for (Entry<ItemStack, ItemStack> recipe : recipes.entrySet()) {
 			ItemStack input = recipe.getKey();
 			ItemStack output = recipe.getValue();
-			if (ucPriceMap.get(input.getUnlocalizedName() + "." + input.getItemDamage()) != null) {
+			if (ucPriceMap.get(input.getUnlocalizedName() + "." + input.getItemDamage()) != null 
+			        && ucPriceMap.get(output.getUnlocalizedName() + "." + output.getItemDamage())!=null) {
 				int inputValue = ucPriceMap.get(input.getUnlocalizedName() + "." + input.getItemDamage());
 				int outputValue = ucPriceMap.get(output.getUnlocalizedName() + "." + output.getItemDamage());
 				if (inputValue != -1 && outputValue == -1) {

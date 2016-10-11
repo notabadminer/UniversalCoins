@@ -3,6 +3,7 @@ package universalcoins.worldgen;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.material.Material;
@@ -106,7 +107,7 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 				UniversalCoins.proxy.atm.getDefaultState().withProperty(BlockATM.FACING, EnumFacing.SOUTH), 2, 2, 4,
 				sbb);
 		// door
-		this.placeDoorCurrentPosition(world, sbb, random, 2, 1, 1, EnumFacing.NORTH);
+		this.placeDoor(world, sbb, random, 2, 1, 1, EnumFacing.NORTH);
 		// torches
 		this.setBlockState(world, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 1,
 				2, 2, boundingBox);
@@ -150,4 +151,13 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 			}
 		}
 	}
+	
+    /**
+     * Places door on given position
+     */
+    protected void placeDoor(World worldIn, StructureBoundingBox boundingBoxIn, Random rand, int x, int y, int z, EnumFacing facing)
+    {
+        this.setBlockState(worldIn, Blocks.OAK_DOOR.getDefaultState().withProperty(BlockDoor.FACING, facing), x, y, z, boundingBoxIn);
+        this.setBlockState(worldIn, Blocks.OAK_DOOR.getDefaultState().withProperty(BlockDoor.FACING, facing).withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.UPPER), x, y + 1, z, boundingBoxIn);
+    }
 }
