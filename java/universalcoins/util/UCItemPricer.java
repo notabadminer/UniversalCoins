@@ -136,7 +136,7 @@ public class UCItemPricer {
 						baseName = baseStack.getDisplayName();
 						previousName = previousStack.getDisplayName();
 						testName = testStack.getDisplayName();
-					}catch (java.lang.IndexOutOfBoundsException e){
+					} catch (RuntimeException e){
 						// Some mods manage to throw an exception here.
 						// Lets try to be compatible
 						e.printStackTrace();
