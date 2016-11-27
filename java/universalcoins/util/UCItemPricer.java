@@ -11,15 +11,8 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -116,7 +109,8 @@ public class UCItemPricer {
 	}
 
 	private void buildPricelistHashMap() {
-		ArrayList<ItemStack> itemsDiscovered = new ArrayList<ItemStack>();
+		HashSet<ItemStack> itemsDiscovered = new HashSet<ItemStack>();
+		HashSet<String> itemNames = new HashSet<String>();
 		Object[] itemSet = Item.REGISTRY.getKeys().toArray();
 
 		for (Object itemObject : itemSet) {
@@ -134,6 +128,7 @@ public class UCItemPricer {
 				ItemStack previousStack = new ItemStack(test, 1, 0);
 				boolean newItem = true;
 				int itemDamage = 0;
+				int lastSuccess = 0;
 				while (newItem == true) {
 					ItemStack testStack = new ItemStack(test, 1, itemDamage);
 					String baseName=null, testName=null, previousName=null;
@@ -153,15 +148,20 @@ public class UCItemPricer {
 							&& !previousName.equals(testName)) {
 						previousStack = testStack;
 						try {
-							String name = testName + "." + itemDamage;
-							if (!itemsDiscovered.contains(name)) {
-								itemsDiscovered.add(testStack);
+							if (itemsDiscovered.add(testStack) && itemNames.add(testName)) {
+								lastSuccess = 0;
+							} else {
+								lastSuccess--;
 							}
 						} catch (Throwable ex) {
 							// set false to exit as something has gone wrong.
 							newItem = false;
 						}
 					} else {
+						newItem = false;
+					}
+					// No new name in the last 1000 items, the mod might be generating them on the fly
+					if (lastSuccess < -1000) {
 						newItem = false;
 					}
 					// Botania will make infinite numbers of these if we try.
