@@ -1,130 +1,118 @@
 package universalcoins.blocks;
 
-import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.StatCollector;
+import net.minecraft.world.Explosion;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
-import universalcoins.tileentity.TileATM;
-import universalcoins.tileentity.TileProtected;
+import universalcoins.tile.TileATM;
+import universalcoins.tile.TileTradeStation;
 
-public class BlockATM extends BlockProtected {
+public class BlockATM extends BlockContainer {
 
-	public static final PropertyDirection FACING = BlockHorizontal.FACING;
+	IIcon blockIcon;
 
 	public BlockATM() {
-		super(Material.IRON);
+		super(new Material(MapColor.stoneColor));
 		setHardness(3.0F);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
+		setBlockTextureName("universalcoins:atm");
 		setResistance(30.0F);
-		setLightLevel(8);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 	}
 
 	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.MODEL;
+	public boolean shouldSideBeRendered(IBlockAccess par1IBlockAccess, int par2, int par3, int par4, int par5) {
+		return false;
 	}
 
 	@Override
-	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
-		String ownerName = ((TileATM) world.getTileEntity(pos)).blockOwner;
-		if (player.getDisplayName().equals(ownerName)) {
-			this.setHardness(1.0F);
-		} else {
-			this.setHardness(-1.0F);
-		}
+	public boolean isOpaqueCube() {
+		return false;
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
-			ItemStack stack) {
-		world.setBlockState(pos, state.withProperty(FACING, player.getHorizontalFacing().getOpposite()), 2);
-		if (world.isRemote)
-			return;
-		TileEntity te = world.getTileEntity(pos);
-		if (te != null) {
-			((TileProtected) world.getTileEntity(pos)).blockOwner = player.getCommandSenderEntity().getName();
-		}
+	public int getRenderType() {
+		return -1;
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
-			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		TileEntity tileEntity = world.getTileEntity(pos);
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7,
+			float par8, float par9) {
+		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity != null && tileEntity instanceof TileATM) {
-			if (((TileATM) tileEntity).inUse) {
+			TileATM tileCardStation = (TileATM) world.getTileEntity(x, y, z);
+			EntityPlayer playerTest = world.getPlayerEntityByName(tileCardStation.playerName);
+			if (playerTest == null || !tileCardStation.isUseableByPlayer(playerTest)) {
+				tileCardStation.inUse = false;
+			}
+			if (tileCardStation.inUse && !player.getDisplayName().contentEquals(tileCardStation.playerName)) {
 				if (!world.isRemote) {
-					player.addChatMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
+					player.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("chat.warning.inuse")));
 				}
 				return true;
 			} else {
-				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
-				((TileATM) tileEntity).playerName = player.getName();
-				((TileATM) tileEntity).playerUID = player.getUniqueID().toString();
-				((TileATM) tileEntity).inUse = true;
+				player.openGui(UniversalCoins.instance, 0, world, x, y, z);
+				tileCardStation.playerName = player.getDisplayName();
+				tileCardStation.playerUID = player.getUniqueID().toString();
+				tileCardStation.inUse = true;
 				return true;
 			}
 		}
 		return false;
 	}
 
+	@Override
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack stack) {
+		if (world.isRemote)
+			return;
+		int rotation = MathHelper.floor_double((double) ((player.rotationYaw * 4.0f) / 360F) + 2.5D) & 3;
+		world.setBlockMetadataWithNotify(x, y, z, rotation, 2);
+		TileEntity te = world.getTileEntity(x, y, z);
+		if (te instanceof TileATM) {
+			TileATM tentity = (TileATM) te;
+			tentity.blockOwner = player.getCommandSenderName();
+			if (!stack.getDisplayName().matches(StatCollector.translateToLocal("tile.atm.name"))) {
+				tentity.customName = stack.getDisplayName();
+			}
+		}
+	}
+	
+	@Override
+	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z) {
+		String ownerName = ((TileATM) world.getTileEntity(x, y, z)).blockOwner;
+		if (player.capabilities.isCreativeMode) {
+			super.removedByPlayer(world, player, x, y, z);
+			return true;
+		}
+		if (player.getDisplayName().matches(ownerName) && !world.isRemote) {
+			super.removedByPlayer(world, player, x, y, z);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TileATM();
 	}
 
-	/**
-	 * Convert the given metadata into a BlockState for this Block
-	 */
-	public IBlockState getStateFromMeta(int meta) {
-		EnumFacing enumfacing = EnumFacing.getFront(meta);
-
-		if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
-			enumfacing = EnumFacing.NORTH;
-		}
-
-		return this.getDefaultState().withProperty(FACING, enumfacing);
-	}
-
-	/**
-	 * Convert the BlockState into the correct metadata value
-	 */
-	public int getMetaFromState(IBlockState state) {
-		return ((EnumFacing) state.getValue(FACING)).getIndex();
-	}
-
-	/**
-	 * Returns the blockstate with the given rotation from the passed
-	 * blockstate. If inapplicable, returns the passed blockstate.
-	 */
-	public IBlockState withRotation(IBlockState state, Rotation rot) {
-		return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
-	}
-
-	/**
-	 * Returns the blockstate with the given mirror of the passed blockstate. If
-	 * inapplicable, returns the passed blockstate.
-	 */
-	public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
-		return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
-	}
-
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[] { FACING });
+	@Override
+	public void onBlockExploded(World world, int x, int y, int z, Explosion explosion) {
+		world.setBlockToAir(x, y, z);
+		onBlockDestroyedByExplosion(world, x, y, z, explosion);
+		EntityItem entityItem = new EntityItem(world, x, y, z, new ItemStack(UniversalCoins.proxy.atm, 1));
+		if (!world.isRemote)
+			world.spawnEntityInWorld(entityItem);
 	}
 }

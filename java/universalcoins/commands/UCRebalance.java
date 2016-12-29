@@ -3,38 +3,35 @@ package universalcoins.commands;
 import java.util.Random;
 
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
 
-public class UCRebalance extends CommandBase implements ICommand {
+public class UCRebalance extends CommandBase {
 
 	@Override
 	public String getCommandName() {
-		return I18n.translateToLocal("command.rebalance.name");
+		return StatCollector.translateToLocal("command.rebalance.name");
 	}
 
 	@Override
 	public String getCommandUsage(ICommandSender var1) {
-		return I18n.translateToLocal("command.rebalance.help");
+		return StatCollector.translateToLocal("command.rebalance.help");
 	}
 
 	@Override
-	public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+	public boolean canCommandSenderUseCommand(ICommandSender par1ICommandSender) {
 		return true;
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void processCommand(ICommandSender sender, String[] args) {
 		if (sender instanceof EntityPlayerMP) {
 			if (args.length == 0) {
 				// get coins from player inventory

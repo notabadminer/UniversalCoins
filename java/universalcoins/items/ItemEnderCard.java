@@ -1,34 +1,56 @@
 package universalcoins.items;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UniversalAccounts;
 
 public class ItemEnderCard extends ItemUCCard {
 
+	public ItemEnderCard() {
+		super();
+		this.maxStackSize = 1;
+		setCreativeTab(UniversalCoins.tabUniversalCoins);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister par1IconRegister) {
+		this.itemIcon = par1IconRegister
+				.registerIcon(UniversalCoins.MODID + ":" + this.getUnlocalizedName().substring(5));
+	}
+
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand,
-			EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
+		if (stack.stackTagCompound != null) {
+			list.add(stack.stackTagCompound.getString("Name"));
+			list.add(stack.stackTagCompound.getString("Account"));
+		} else {
+			list.add(StatCollector.translateToLocal("item.card.warning"));
+		}
+	}
+
+	@Override
+	public boolean onItemUse(ItemStack itemstack, EntityPlayer player, World world, int x, int y, int z, int side,
+			float px, float py, float pz) {
 		if (world.isRemote)
-			return EnumActionResult.FAIL;
-		if (stack.getTagCompound() == null) {
-			createNBT(stack, world, player);
+			return false;
+		if (itemstack.getTagCompound() == null) {
+			createNBT(itemstack, world, player);
 		}
 		long accountBalance = UniversalAccounts.getInstance()
-				.getAccountBalance(stack.getTagCompound().getString("Account"));
+				.getAccountBalance(itemstack.getTagCompound().getString("Account"));
 		DecimalFormat formatter = new DecimalFormat("#,###,###,###");
 		ItemStack[] inventory = player.inventory.mainInventory;
-		String accountNumber = stack.getTagCompound().getString("Account");
+		String accountNumber = itemstack.getTagCompound().getString("Account");
 		int coinValue = 0;
 		int depositAmount = 0;
 		int coinsDeposited = 0;
@@ -51,10 +73,12 @@ public class ItemEnderCard extends ItemUCCard {
 				case "item.obsidian_coin":
 					coinValue = UniversalCoins.coinValues[4];
 					break;
+				default:
+					coinValue = 0;
 				}
 				if (accountBalance == -1)
 					// get out of here if the card is invalid
-					return EnumActionResult.FAIL;
+					return false;
 				if (coinValue == 0)
 					continue;
 				if (Long.MAX_VALUE - accountBalance > coinValue * instack.stackSize) {
@@ -72,13 +96,12 @@ public class ItemEnderCard extends ItemUCCard {
 			}
 		}
 		if (coinsDeposited > 0) {
-			player.addChatMessage(new TextComponentString(I18n.translateToLocal("item.card.deposit") + " "
-					+ formatter.format(coinsDeposited) + " " + I18n.translateToLocal(
+			player.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("item.card.deposit")
+					+ " " + formatter.format(coinsDeposited) + " " + StatCollector.translateToLocal(
 							coinsDeposited > 1 ? "general.currency.multiple" : "general.currency.single")));
 		}
-		player.addChatMessage(new TextComponentString(I18n.translateToLocal("item.card.balance") + " "
+		player.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("item.card.balance") + " "
 				+ formatter.format(UniversalAccounts.getInstance().getAccountBalance(accountNumber))));
-		return EnumActionResult.FAIL;
+		return false;
 	}
-
 }

@@ -1,7 +1,5 @@
 package universalcoins.gui;
 
-import java.io.IOException;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -11,8 +9,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextComponentString;
-import universalcoins.tileentity.TileUCSign;
+import universalcoins.tile.TileUCSign;
 
 public class UCSignEditGUI extends GuiScreen {
 
@@ -44,7 +41,7 @@ public class UCSignEditGUI extends GuiScreen {
 	public void onGuiClosed() {
 		if (mc.thePlayer != null) {
 			Keyboard.enableRepeatEvents(false);
-			tileSign.blockOwner = this.mc.thePlayer.getName();
+			tileSign.blockOwner = this.mc.thePlayer.getCommandSenderName();
 			tileSign.sendServerUpdateMessage();
 			this.tileSign.setEditable(true);
 		}
@@ -70,29 +67,25 @@ public class UCSignEditGUI extends GuiScreen {
 	 * Fired when a key is typed. This is the equivalent of
 	 * KeyListener.keyTyped(KeyEvent e).
 	 */
-	protected void keyTyped(char typedChar, int keyCode) throws IOException {
-		if (keyCode == 200) {
+	protected void keyTyped(char par1, int par2) {
+		if (par2 == 200) {
 			this.editLine = this.editLine - 1 & 3;
 		}
 
-		if (keyCode == 208 || keyCode == 28 || keyCode == 156) {
+		if (par2 == 208 || par2 == 28 || par2 == 156) {
 			this.editLine = this.editLine + 1 & 3;
 		}
 
-		String s = this.tileSign.signText[this.editLine].getUnformattedText();
-
-		if (keyCode == 14 && s.length() > 0) {
-			s = s.substring(0, s.length() - 1);
+		if (par2 == 14 && this.tileSign.signText[this.editLine].length() > 0) {
+			this.tileSign.signText[this.editLine] = this.tileSign.signText[this.editLine].substring(0,
+					this.tileSign.signText[this.editLine].length() - 1);
 		}
 
-		if (ChatAllowedCharacters.isAllowedCharacter(typedChar)
-				&& this.fontRendererObj.getStringWidth(s + typedChar) <= 180) {
-			s = s + typedChar;
+		if (ChatAllowedCharacters.isAllowedCharacter(par1) && this.tileSign.signText[this.editLine].length() < 40) {
+			this.tileSign.signText[this.editLine] = this.tileSign.signText[this.editLine] + par1;
 		}
 
-		this.tileSign.signText[this.editLine] = new TextComponentString(s);
-
-		if (keyCode == 1) {
+		if (par2 == 1) {
 			this.actionPerformed(this.doneBtn);
 		}
 	}
@@ -119,14 +112,13 @@ public class UCSignEditGUI extends GuiScreen {
 
 		// draw active line indicator
 		if (tileSign.lineBeingEdited != -1) {
-			if (tileSign.signText[tileSign.lineBeingEdited].getUnformattedText().length() > 15) {
+			if (tileSign.signText[tileSign.lineBeingEdited].length() > 15) {
 				fontRendererObj.drawString("> ", (this.width - 90) / 2 - 8,
 						this.height / 2 + lineOffset[tileSign.lineBeingEdited], 0x000000);
 				fontRendererObj.drawString(" <", (this.width + 90) / 2,
 						this.height / 2 + lineOffset[tileSign.lineBeingEdited], 0x000000);
 			} else {
-				int stringLength = fontRendererObj
-						.getStringWidth(tileSign.signText[tileSign.lineBeingEdited].getUnformattedText());
+				int stringLength = fontRendererObj.getStringWidth(tileSign.signText[tileSign.lineBeingEdited]);
 				fontRendererObj.drawString("> ", (this.width - stringLength) / 2 - 8,
 						this.height / 2 + lineOffset[tileSign.lineBeingEdited], 0x000000);
 				fontRendererObj.drawString(" <", (this.width + stringLength) / 2,
@@ -136,11 +128,10 @@ public class UCSignEditGUI extends GuiScreen {
 		// draw sign text
 		String displayString;
 		for (int i = 0; i < tileSign.signText.length; i++) {
-			if (tileSign.signText[i].getUnformattedText().length() > 15) {
-				displayString = tileSign.signText[i].getUnformattedText()
-						.substring(tileSign.signText[i].getUnformattedText().length() - 15);
+			if (tileSign.signText[i].length() > 15) {
+				displayString = tileSign.signText[i].substring(tileSign.signText[i].length() - 15);
 			} else {
-				displayString = tileSign.signText[i].getUnformattedText();
+				displayString = tileSign.signText[i];
 			}
 			int stringLength = fontRendererObj.getStringWidth(displayString);
 			fontRendererObj.drawString(displayString, (this.width - stringLength) / 2, this.height / 2 + lineOffset[i],

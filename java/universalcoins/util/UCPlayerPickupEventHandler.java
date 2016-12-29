@@ -2,13 +2,13 @@ package universalcoins.util;
 
 import java.text.DecimalFormat;
 
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import universalcoins.Achievements;
 import universalcoins.UniversalCoins;
 
@@ -16,17 +16,18 @@ public class UCPlayerPickupEventHandler {
 
 	private World world;
 	private String accountNumber;
+	private static final int[] multiplier = new int[] { 1, 9, 81, 729, 6561 };
 
 	@SubscribeEvent
 	public void onItemPickup(EntityItemPickupEvent event) {
-		if (event.getItem().getEntityItem().getItem() == UniversalCoins.proxy.iron_coin
-				|| event.getItem().getEntityItem().getItem() == UniversalCoins.proxy.gold_coin
-				|| event.getItem().getEntityItem().getItem() == UniversalCoins.proxy.emerald_coin
-				|| event.getItem().getEntityItem().getItem() == UniversalCoins.proxy.diamond_coin
-				|| event.getItem().getEntityItem().getItem() == UniversalCoins.proxy.obsidian_coin) {
-			event.getEntityPlayer().addStat(Achievements.achCoin, 1);
-			world = event.getEntityPlayer().worldObj;
-			EntityPlayer player = event.getEntityPlayer();
+		if (event.item.getEntityItem().getItem() == UniversalCoins.proxy.iron_coin
+				|| event.item.getEntityItem().getItem() == UniversalCoins.proxy.gold_coin
+				|| event.item.getEntityItem().getItem() == UniversalCoins.proxy.emerald_coin
+				|| event.item.getEntityItem().getItem() == UniversalCoins.proxy.diamond_coin
+				|| event.item.getEntityItem().getItem() == UniversalCoins.proxy.obsidian_coin) {
+			event.entityPlayer.addStat(Achievements.achCoin, 1);
+			world = event.entityPlayer.worldObj;
+			EntityPlayer player = event.entityPlayer;
 			ItemStack[] inventory = player.inventory.mainInventory;
 			DecimalFormat formatter = new DecimalFormat("#,###,###,###");
 			for (int i = 0; i < inventory.length; i++) {
@@ -38,36 +39,35 @@ public class UCPlayerPickupEventHandler {
 					long accountBalance = getAccountBalance(accountNumber);
 					if (accountBalance == -1)
 						return; // get out of here if the card is invalid
-					if (event.getItem().getEntityItem().stackSize == 0)
+					if (event.item.getEntityItem().stackSize == 0)
 						return; // no need to notify on zero size stack
 					int coinsFound = 0;
-					switch (event.getItem().getEntityItem().getUnlocalizedName()) {
+					switch (event.item.getEntityItem().getUnlocalizedName()) {
 					case "item.iron_coin":
-						coinsFound += event.getItem().getEntityItem().stackSize * UniversalCoins.coinValues[0];
+						coinsFound += event.item.getEntityItem().stackSize * UniversalCoins.coinValues[0];
 						break;
 					case "item.gold_coin":
-						coinsFound += event.getItem().getEntityItem().stackSize * UniversalCoins.coinValues[1];
+						coinsFound += event.item.getEntityItem().stackSize * UniversalCoins.coinValues[1];
 						break;
 					case "item.emerald_coin":
-						coinsFound += event.getItem().getEntityItem().stackSize * UniversalCoins.coinValues[2];
+						coinsFound += event.item.getEntityItem().stackSize * UniversalCoins.coinValues[2];
 						break;
 					case "item.diamond_coin":
-						coinsFound += event.getItem().getEntityItem().stackSize * UniversalCoins.coinValues[3];
+						coinsFound += event.item.getEntityItem().stackSize * UniversalCoins.coinValues[3];
 						break;
 					case "item.obsidian_coin":
-						coinsFound += event.getItem().getEntityItem().stackSize * UniversalCoins.coinValues[4];
+						coinsFound += event.item.getEntityItem().stackSize * UniversalCoins.coinValues[4];
 						break;
 					}
 					long depositAmount = Math.min(Long.MAX_VALUE - accountBalance, coinsFound);
 					if (depositAmount > 0) {
 						creditAccount(accountNumber, depositAmount);
-						player.addChatMessage(new TextComponentString(I18n
-								.translateToLocal("item.card.deposit") + " "
-								+ formatter.format(depositAmount) + " " + I18n.translateToLocal(
+						player.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("item.card.deposit")
+								+ " " + formatter.format(depositAmount) + " " + StatCollector.translateToLocal(
 										depositAmount > 1 ? "general.currency.multiple" : "general.currency.single")));
-						event.getItem().getEntityItem().stackSize -= depositAmount;
+						event.item.getEntityItem().stackSize -= depositAmount;
 					}
-					if (event.getItem().getEntityItem().stackSize == 0) {
+					if (event.item.getEntityItem().stackSize == 0) {
 						event.setCanceled(true);
 					}
 					break; // no need to continue. We are done here

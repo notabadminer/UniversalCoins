@@ -2,6 +2,7 @@ package universalcoins.util;
 
 import java.util.Random;
 
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
@@ -10,7 +11,6 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import universalcoins.UniversalCoins;
 
 public class UCMobDropEventHandler {
@@ -19,26 +19,24 @@ public class UCMobDropEventHandler {
 
 	@SubscribeEvent
 	public void onEntityDrop(LivingDropsEvent event) {
-		if (event.getSource().getEntity() != null
-				&& event.getSource().getEntity().toString().contains("EntityPlayerMP")) {
+		if (event.source.getEntity() != null && event.source.getEntity().toString().contains("EntityPlayerMP")) {
 			int chance = UniversalCoins.mobDropChance == 0 ? 0 : random.nextInt(UniversalCoins.mobDropChance);
 			int randomDropValue = random.nextInt(UniversalCoins.mobDropMax) + 1;
 
 			// get mob max health and adjust drop value
-			float health = ((EntityLivingBase) event.getEntity()).getMaxHealth();
+			float health = ((EntityLivingBase) event.entity).getMaxHealth();
 			if (health == 0)
 				health = 10;
-			int dropped = (int) (randomDropValue * health / 20 * (event.getLootingLevel() + 1));
+			int dropped = (int) (randomDropValue * health / 20 * (event.lootingLevel + 1));
 
 			// multiply drop if ender dragon
-			if (event.getEntity() instanceof EntityDragon) {
+			if (event.entity instanceof EntityDragon) {
 				dropped = dropped * UniversalCoins.enderDragonMultiplier;
 			}
 
 			// drop coins
-			if ((event.getEntity() instanceof EntityMob || event.getEntity() instanceof EntityWither
-					|| event.getEntity() instanceof EntityDragon) && !event.getEntity().worldObj.isRemote
-					&& chance == 0) {
+			if ((event.entity instanceof EntityMob || event.entity instanceof EntityWither
+					|| event.entity instanceof EntityDragon) && !event.entity.worldObj.isRemote && chance == 0) {
 				while (dropped > 0) {
 					ItemStack stack = null;
 					if (dropped > UniversalCoins.coinValues[4]) {
@@ -66,13 +64,13 @@ public class UCMobDropEventHandler {
 					if (stack == null)
 						return;
 
-					World world = event.getEntity().worldObj;
+					World world = event.entity.worldObj;
 					Random rand = new Random();
 					float rx = rand.nextFloat() * 0.8F + 0.1F;
 					float ry = rand.nextFloat() * 0.8F + 0.1F;
 					float rz = rand.nextFloat() * 0.8F + 0.1F;
-					EntityItem entityItem = new EntityItem(world, (event.getEntity()).posX + rx,
-							(event.getEntity()).posY + ry, (event.getEntity()).posZ + rz, stack);
+					EntityItem entityItem = new EntityItem(world, event.entity.posX + rx, event.entity.posY + ry,
+							event.entity.posZ + rz, stack);
 					world.spawnEntityInWorld(entityItem);
 				}
 			}

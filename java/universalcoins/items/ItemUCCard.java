@@ -3,16 +3,15 @@ package universalcoins.items;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UniversalAccounts;
@@ -25,43 +24,51 @@ public class ItemUCCard extends Item {
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 	}
 
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister par1IconRegister) {
+		this.itemIcon = par1IconRegister
+				.registerIcon(UniversalCoins.MODID + ":" + this.getUnlocalizedName().substring(5));
+	}
+
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
-		if (stack.getTagCompound() != null) {
-			list.add(stack.getTagCompound().getString("Name"));
-			list.add(stack.getTagCompound().getString("Account"));
+		if (stack.stackTagCompound != null) {
+			list.add(stack.stackTagCompound.getString("Name"));
+			list.add(stack.stackTagCompound.getString("Account"));
 		} else {
-			list.add(I18n.translateToLocal("item.card.warning"));
+			list.add(StatCollector.translateToLocal("item.card.warning"));
 		}
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean onItemUse(ItemStack itemstack, EntityPlayer player, World world, int x, int y, int z, int side,
+			float px, float py, float pz) {
 		if (world.isRemote)
-			return EnumActionResult.FAIL;
-		if (stack.getTagCompound() == null) {
-			createNBT(stack, world, player);
+			return true;
+		if (itemstack.stackTagCompound == null) {
+			createNBT(itemstack, world, player);
 		}
 		long accountCoins = UniversalAccounts.getInstance()
-				.getAccountBalance(stack.getTagCompound().getString("Account"));
-		DecimalFormat formatter = new DecimalFormat("###,###,###,###,###,###,###");
-		player.addChatMessage(new TextComponentString(
-				I18n.translateToLocal("item.card.balance") + " " + formatter.format(accountCoins)));
-		return EnumActionResult.SUCCESS;
+				.getAccountBalance(itemstack.stackTagCompound.getString("Account"));
+		DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
+		player.addChatMessage(new ChatComponentText(
+				StatCollector.translateToLocal("item.card.balance") + " " + formatter.format(accountCoins)));
+		return true;
 	}
 
 	@Override
 	public void onCreated(ItemStack stack, World world, EntityPlayer entityPlayer) {
+		if (world.isRemote)
+			return;
 		createNBT(stack, world, entityPlayer);
 	}
 
 	protected void createNBT(ItemStack stack, World world, EntityPlayer entityPlayer) {
 		String accountNumber = UniversalAccounts.getInstance()
 				.getOrCreatePlayerAccount(entityPlayer.getPersistentID().toString());
-		stack.setTagCompound(new NBTTagCompound());
-		stack.getTagCompound().setString("Name", entityPlayer.getName());
-		stack.getTagCompound().setString("Owner", entityPlayer.getPersistentID().toString());
-		stack.getTagCompound().setString("Account", accountNumber);
+		stack.stackTagCompound = new NBTTagCompound();
+		stack.stackTagCompound.setString("Name", entityPlayer.getDisplayName());
+		stack.stackTagCompound.setString("Owner", entityPlayer.getPersistentID().toString());
+		stack.stackTagCompound.setString("Account", accountNumber);
 	}
 }

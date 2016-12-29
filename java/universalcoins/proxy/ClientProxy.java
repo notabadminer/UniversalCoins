@@ -1,78 +1,49 @@
 package universalcoins.proxy;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.client.registry.RenderingRegistry;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.Item;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.client.MinecraftForgeClient;
 import universalcoins.UniversalCoins;
-import universalcoins.render.SignalRenderer;
-import universalcoins.render.UCSignRenderer;
-import universalcoins.render.VendorBlockRenderer;
+import universalcoins.render.BlockVendorRenderer;
+import universalcoins.render.ItemCardStationRenderer;
+import universalcoins.render.ItemSignalRenderer;
+import universalcoins.render.ItemVendorFrameRenderer;
+import universalcoins.render.TileEntityCardStationRenderer;
+import universalcoins.render.TileEntitySignalRenderer;
+import universalcoins.render.TileEntityUCSignRenderer;
+import universalcoins.render.TileEntityVendorRenderer;
 import universalcoins.render.VendorFrameRenderer;
-import universalcoins.tileentity.TileSignal;
-import universalcoins.tileentity.TileUCSign;
-import universalcoins.tileentity.TileVendorBlock;
-import universalcoins.tileentity.TileVendorFrame;
+import universalcoins.tile.TileATM;
+import universalcoins.tile.TileUCSignal;
+import universalcoins.tile.TileUCSign;
+import universalcoins.tile.TileVendor;
+import universalcoins.tile.TileVendorFrame;
 
 public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void registerRenderers() {
-		ItemModelMesher mesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+		ClientRegistry.bindTileEntitySpecialRenderer(TileVendor.class, new TileEntityVendorRenderer());
+		RenderingRegistry.registerBlockHandler(new BlockVendorRenderer(RenderingRegistry.getNextAvailableRenderId()));
 
-		// Items
-		mesher.register(iron_coin, 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + iron_coin.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(gold_coin, 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + gold_coin.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(emerald_coin, 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + emerald_coin.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(diamond_coin, 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + diamond_coin.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(obsidian_coin, 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + obsidian_coin.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(uc_card, 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + uc_card.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(ender_card, 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + ender_card.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(uc_sign, 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + uc_sign.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(vendor_wrench, 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + vendor_wrench.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(catalog, 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + catalog.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(link_card, 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + link_card.getUnlocalizedName().substring(5), "inventory"));
+		TileEntitySpecialRenderer render = new TileEntityCardStationRenderer();
+		ClientRegistry.bindTileEntitySpecialRenderer(TileATM.class, render);
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(UniversalCoins.proxy.atm),
+				new ItemCardStationRenderer(render, new TileATM()));
 
-		// Blocks
-		mesher.register(Item.getItemFromBlock(tradestation), 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + tradestation.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(Item.getItemFromBlock(safe), 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + safe.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(Item.getItemFromBlock(signalblock), 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + signalblock.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(Item.getItemFromBlock(vendor), 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + vendor.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(Item.getItemFromBlock(vendor_frame), 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + vendor_frame.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(Item.getItemFromBlock(packager), 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + packager.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(Item.getItemFromBlock(power_transmitter), 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + power_transmitter.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(Item.getItemFromBlock(power_receiver), 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + power_receiver.getUnlocalizedName().substring(5), "inventory"));
-		mesher.register(Item.getItemFromBlock(atm), 0, new ModelResourceLocation(
-				UniversalCoins.MODID + ":" + atm.getUnlocalizedName().substring(5), "inventory"));
+		TileEntitySpecialRenderer render2 = new VendorFrameRenderer();
+		ClientRegistry.bindTileEntitySpecialRenderer(TileVendorFrame.class, render2);
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(UniversalCoins.proxy.vendor_frame),
+				new ItemVendorFrameRenderer(render2, new TileVendorFrame()));
 
-		// special
-		ClientRegistry.bindTileEntitySpecialRenderer(TileSignal.class, new SignalRenderer());
-		ClientRegistry.bindTileEntitySpecialRenderer(TileVendorBlock.class, new VendorBlockRenderer());
-		ClientRegistry.bindTileEntitySpecialRenderer(TileVendorFrame.class, new VendorFrameRenderer());
-		ClientRegistry.bindTileEntitySpecialRenderer(TileUCSign.class, new UCSignRenderer());
+		TileEntitySpecialRenderer render3 = new TileEntityUCSignRenderer();
+		ClientRegistry.bindTileEntitySpecialRenderer(TileUCSign.class, render3);
 
-		// this is to stop model definition errors for signs
-		mesher.getModelManager().getBlockModelShapes().registerBuiltInBlocks(wall_ucsign);
-		mesher.getModelManager().getBlockModelShapes().registerBuiltInBlocks(standing_ucsign);
+		TileEntitySpecialRenderer render4 = new TileEntitySignalRenderer();
+		ClientRegistry.bindTileEntitySpecialRenderer(TileUCSignal.class, render4);
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(UniversalCoins.proxy.signal_block),
+				new ItemSignalRenderer(render4, new TileUCSignal()));
 	}
 }

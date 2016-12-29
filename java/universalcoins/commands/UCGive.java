@@ -1,79 +1,74 @@
 package universalcoins.commands;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.ibm.icu.text.DecimalFormat;
+
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import universalcoins.UniversalCoins;
 
-public class UCGive extends CommandBase implements ICommand {
+public class UCGive extends CommandBase {
 
 	@Override
 	public String getCommandName() {
-		return I18n.translateToLocal("command.givecoins.name");
+		return StatCollector.translateToLocal("command.givecoins.name");
 	}
 
 	@Override
 	public String getCommandUsage(ICommandSender var1) {
-		return I18n.translateToLocal("command.givecoins.help");
+		return StatCollector.translateToLocal("command.givecoins.help");
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (args.length == 2) {
+	public void processCommand(ICommandSender sender, String[] astring) {
+		if (astring.length == 2) {
 			EntityPlayer recipient = null;
-			WorldServer[] ws = server.worldServers;
+			WorldServer[] ws = MinecraftServer.getServer().worldServers;
 			for (WorldServer w : ws) {
-				if (w.playerEntities.contains(w.getPlayerEntityByName(args[0]))) {
-					recipient = (EntityPlayer) w.getPlayerEntityByName(args[0]);
+				if (w.playerEntities.contains(w.getPlayerEntityByName(astring[0]))) {
+					recipient = (EntityPlayer) w.getPlayerEntityByName(astring[0]);
 				}
 			}
 			int coinsToSend = 0;
 			if (recipient == null) {
-				sender.addChatMessage(
-						new TextComponentString("§c" + I18n.translateToLocal("command.givecoins.error.notfound")));
-				return;
+				sender.addChatMessage(new ChatComponentText(
+						"§c" + StatCollector.translateToLocal("command.givecoins.error.notfound")));
 			}
 			try {
-				coinsToSend = Integer.parseInt(args[1]);
+				coinsToSend = Integer.parseInt(astring[1]);
 			} catch (NumberFormatException e) {
-				sender.addChatMessage(
-						new TextComponentString("§c" + I18n.translateToLocal("command.givecoins.error.badentry")));
-				return;
+				sender.addChatMessage(new ChatComponentText(
+						"§c" + StatCollector.translateToLocal("command.givecoins.error.badentry")));
 			}
 			if (coinsToSend <= 0) {
 				sender.addChatMessage(
-						new TextComponentString("§c" + I18n.translateToLocal("command.send.error.badentry")));
+						new ChatComponentText("§c" + StatCollector.translateToLocal("command.send.error.badentry")));
 				return;
 			}
-			// we made it through the exceptions, give the coins to the player
 			givePlayerCoins(recipient, coinsToSend);
 			DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
-			sender.addChatMessage(new TextComponentString(
-					"Gave " + args[0] + " " + formatter.format(coinsToSend) + " " + I18n.translateToLocal(
+			sender.addChatMessage(new ChatComponentText(
+					"Gave " + astring[0] + " " + formatter.format(coinsToSend) + " " + StatCollector.translateToLocal(
 							coinsToSend > 1 ? "general.currency.multiple" : "general.currency.single")));
-			recipient.addChatMessage(
-					new TextComponentString(sender.getName() + " " + I18n.translateToLocal("command.givecoins.result")
-							+ " " + (coinsToSend) + " " + I18n.translateToLocal(
+			recipient.addChatMessage(new ChatComponentText(
+					sender.getCommandSenderName() + " " + StatCollector.translateToLocal("command.givecoins.result")
+							+ " " + (coinsToSend) + " " + StatCollector.translateToLocal(
 									coinsToSend > 1 ? "general.currency.multiple" : "general.currency.single")));
 		} else
 			sender.addChatMessage(
-					new TextComponentString("§c" + I18n.translateToLocal("command.givecoins.error.noname")));
+					new ChatComponentText("§c" + StatCollector.translateToLocal("command.givecoins.error.noname")));
 	}
 
 	private void givePlayerCoins(EntityPlayer recipient, int coinsLeft) {
@@ -95,7 +90,7 @@ public class UCGive extends CommandBase implements ICommand {
 				stack = new ItemStack(UniversalCoins.proxy.gold_coin, 1);
 				stack.stackSize = (int) Math.floor(coinsLeft / UniversalCoins.coinValues[1]);
 				coinsLeft -= stack.stackSize * UniversalCoins.coinValues[1];
-			} else if (coinsLeft > UniversalCoins.coinValues[0]) {
+			} else if (coinsLeft >= UniversalCoins.coinValues[0]) {
 				stack = new ItemStack(UniversalCoins.proxy.iron_coin, 1);
 				stack.stackSize = (int) Math.floor(coinsLeft / UniversalCoins.coinValues[0]);
 				coinsLeft -= stack.stackSize * UniversalCoins.coinValues[0];
@@ -128,15 +123,8 @@ public class UCGive extends CommandBase implements ICommand {
 	}
 
 	@Override
-	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args,
-			BlockPos pos) {
-		if (args.length == 1) {
-			List<String> players = new ArrayList<String>();
-			for (EntityPlayer p : (List<EntityPlayer>) sender.getEntityWorld().playerEntities) {
-				players.add(p.getName());
-			}
-			return getListOfStringsMatchingLastWord(args, players);
-		}
-		return null;
+	public List addTabCompletionOptions(ICommandSender sender, String[] args) {
+		return args.length != 1 && args.length != 2 ? null
+				: getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames());
 	}
 }

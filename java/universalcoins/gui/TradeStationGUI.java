@@ -7,10 +7,10 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.StatCollector;
 import universalcoins.UniversalCoins;
-import universalcoins.container.ContainerTradeStation;
-import universalcoins.tileentity.TileTradeStation;
+import universalcoins.inventory.ContainerTradeStation;
+import universalcoins.tile.TileTradeStation;
 
 public class TradeStationGUI extends GuiContainer {
 
@@ -28,9 +28,9 @@ public class TradeStationGUI extends GuiContainer {
 	public static final int idAutoModeButton = 8;
 	public static final int idAccessModeButton = 9;
 
-	public String[] autoLabels = { I18n.translateToLocal("tradestation.gui.autolabel.off"),
-			I18n.translateToLocal("tradestation.gui.autolabel.buy"),
-			I18n.translateToLocal("tradestation.gui.autolabel.sell") };
+	public String[] autoLabels = { StatCollector.translateToLocal("tradestation.gui.autolabel.off"),
+			StatCollector.translateToLocal("tradestation.gui.autolabel.buy"),
+			StatCollector.translateToLocal("tradestation.gui.autolabel.sell") };
 
 	public TradeStationGUI(InventoryPlayer inventoryPlayer, TileTradeStation parTileEntity) {
 		super(new ContainerTradeStation(inventoryPlayer, parTileEntity));
@@ -43,9 +43,9 @@ public class TradeStationGUI extends GuiContainer {
 	public void initGui() {
 		super.initGui();
 		buyButton = new GuiSlimButton(idBuyButton, 50 + (width - xSize) / 2, 21 + (height - ySize) / 2, 48, 12,
-				I18n.translateToLocal("general.button.buy"));
+				StatCollector.translateToLocal("general.button.buy"));
 		sellButton = new GuiSlimButton(idSellButton, 50 + (width - xSize) / 2, 38 + (height - ySize) / 2, 48, 12,
-				I18n.translateToLocal("general.button.sell"));
+				StatCollector.translateToLocal("general.button.sell"));
 		retrCoinButton = new GuiCoinButton(idCoinButton, 88 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18,
 				"", 0);
 		retrSStackButton = new GuiCoinButton(idSStackButton, 106 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18,
@@ -57,9 +57,9 @@ public class TradeStationGUI extends GuiContainer {
 		retrLBagButton = new GuiCoinButton(idLBagButton, 160 + (width - xSize) / 2, 74 + (height - ySize) / 2, 18, 18,
 				"", 4);
 		coinModeButton = new GuiSlimButton(idCoinModeButton, 110 + (width - xSize) / 2, 98 + (height - ySize) / 2, 46,
-				12, I18n.translateToLocal("general.button.coin"));
+				12, StatCollector.translateToLocal("general.button.coin"));
 		accessModeButton = new GuiSlimButton(idAccessModeButton, 127 + (width - xSize) / 2, 4 + (height - ySize) / 2,
-				52, 12, I18n.translateToLocal("general.label.public"));
+				52, 12, StatCollector.translateToLocal("general.label.public"));
 		buttonList.clear();
 		if (UniversalCoins.tradeStationBuyEnabled)
 			buttonList.add(buyButton);
@@ -75,7 +75,7 @@ public class TradeStationGUI extends GuiContainer {
 		// display only if auto buy/sell enabled?
 		if (tileEntity.autoModeButtonActive) {
 			autoModeButton = new GuiSlimButton(idAutoModeButton, 6 + (width - xSize) / 2, 84 + (height - ySize) / 2, 28,
-					12, I18n.translateToLocal("tradestation.gui.button.mode"));
+					12, StatCollector.translateToLocal("tradestation.gui.button.mode"));
 			buttonList.add(autoModeButton);
 		}
 	}
@@ -84,26 +84,29 @@ public class TradeStationGUI extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(tileEntity.getName(), 6, 5, 4210752);
+		fontRendererObj.drawString(tileEntity.getInventoryName(), 6, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
-		fontRendererObj.drawString(I18n.translateToLocal("container.inventory"), 6, ySize - 96 + 2, 4210752);
+		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 6, ySize - 96 + 2, 4210752);
 		fontRendererObj.drawString(String.valueOf(tileEntity.coinSum), 114, 57, 4210752);
-		String priceInLocal = I18n.translateToLocal("general.label.price");
+		String priceInLocal = StatCollector.translateToLocal("general.label.price");
 		int stringWidth = fontRendererObj.getStringWidth(priceInLocal);
 		fontRendererObj.drawString(priceInLocal, 48 - stringWidth, 57, 4210752);
 		if (tileEntity.itemPrice > 0) {
-			if (sellButton.isMouseOver() || !UniversalCoins.tradeStationBuyEnabled) {
+			if (sellButton.func_146115_a() || !UniversalCoins.tradeStationBuyEnabled) {
+				// player hovering over sell button or buy button disabled
 				int sellPrice = (int) (tileEntity.itemPrice * UniversalCoins.itemSellRatio);
 				fontRendererObj.drawString(String.valueOf(sellPrice), 48, 57, 4210752);
 			} else {
 				fontRendererObj.drawString(String.valueOf(tileEntity.itemPrice), 48, 57, 4210752);
 			}
 		} else {
-			fontRendererObj.drawString(I18n.translateToLocal("tradestation.gui.warning.noitem"), 48, 57, 4210752);
+			fontRendererObj.drawString(StatCollector.translateToLocal("tradestation.gui.warning.noitem"), 48, 57,
+					4210752);
 		}
 		// display only if auto buy/sell enabled
 		if (tileEntity.autoModeButtonActive) {
-			fontRendererObj.drawString(I18n.translateToLocal("tradestation.gui.label.autobuy"), 6, 74, 4210752);
+			fontRendererObj.drawString(StatCollector.translateToLocal("tradestation.gui.label.autobuy"), 6, 74,
+					4210752);
 			fontRendererObj.drawString(autoLabels[tileEntity.autoMode], 38, 87, 4210752);
 		}
 	}
@@ -119,7 +122,7 @@ public class TradeStationGUI extends GuiContainer {
 		retrSBagButton.enabled = tileEntity.diamondCoinBtnActive;
 		retrLBagButton.enabled = tileEntity.obsidianCoinBtnActive;
 
-		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/tradeStation.png");
+		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/trade_station.png");
 		Minecraft.getMinecraft().renderEngine.bindTexture(texture);
 		int x = (width - xSize) / 2;
 		int y = (height - ySize) / 2;
@@ -136,11 +139,11 @@ public class TradeStationGUI extends GuiContainer {
 		if (tileEntity.coinMode > 0) {
 			this.drawTexturedModalRect(x + xHighlight[tileEntity.coinMode], y + 94, 184, 15, 16, 2);
 		}
-		
+
 		if (tileEntity.publicAccess) {
-			accessModeButton.displayString = I18n.translateToLocal("general.label.public");
+			accessModeButton.displayString = StatCollector.translateToLocal("general.label.public");
 		} else {
-			accessModeButton.displayString = I18n.translateToLocal("general.label.private");
+			accessModeButton.displayString = StatCollector.translateToLocal("general.label.private");
 		}
 	}
 

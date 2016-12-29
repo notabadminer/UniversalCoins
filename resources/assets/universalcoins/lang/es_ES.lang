@@ -1,0 +1,296 @@
+#####
+# es_ES Translation by DanNetwalker
+#####
+
+
+#####
+# Main
+#####
+tile.blockTradeStation.name=Estación de Comercio Universal
+tile.blockVendor.name=Máquina Expendedora
+tile.blockVendorFrame.name=Marco Expendedor
+tile.blockCardStation.name=Cajero Automático UC
+tile.blockBase.name=Bloque Base
+tile.blockSafe.name=Caja Fuerte Ender
+tile.blockBase.name=Bloque de Metal Pulido
+item.itemCoin.name=Moneda
+item.itemSmallCoinStack.name=Taco de Monedas
+item.itemLargeCoinStack.name=Taco Grande de Monedas
+item.itemSmallCoinBag.name=Bolsa de Monedas
+item.itemLargeCoinBag.name=Bolsa Grande de Monedas
+item.itemUCCard.name=Tarjeta UC
+item.itemSeller.name=Catálogo de Venta
+item.itemWrench.name=Llave Inglesa
+item.itemVendorWrench.name=Llave Inglesa de Vendedor
+itemGroup.tabUniversalCoins=Universal Coins
+
+
+#####
+# General
+#####
+general.button.buy=Comprar
+general.button.sell=Vender
+general.button.edit=Editar
+general.button.save=Guardar
+
+#####
+# Commands
+#####
+command.balance.name=balance
+command.balance.help=/balance : Recuperar balance económico.
+command.balance.result.inventory=Balance en Inventario: 
+command.balance.result.account=Balance en cuenta: 
+command.balance.result.customaccount=Balance Segunda Cuenta: 
+command.uccommand.name=universalcoins
+command.uccommand.help=/universalcoins help
+command.uccommand.option.help.name=ayuda
+command.uccommand.usage=Uso: universalcoins <comando> <argumentos>
+command.uccommand.commandheader=Comandos disponibles:
+command.uccommand.option.get.name=get
+command.uccommand.option.get.help=- get <nombre del objeto> : Obtiene el precio de un objeto.
+command.uccommand.option.reload.name=reload
+command.uccommand.option.reload.help=- reload : Recarga listas de precios. Esto reiniciará todo cambio pendiente de guardar.
+command.uccommand.option.set.name=set
+command.uccommand.option.set.itemheld=this
+command.uccommand.option.set.help=- set <nombre del objeto> <precio> : Define el precio de un objeto.
+command.uccommand.option.set.price.invalid=Por favor, especifique un precio valido
+command.uccommand.option.set.price=precio definido como 
+command.uccommand.option.set.price.firstuse.one=Los cambios no serán guardados
+command.uccommand.option.set.price.firstuse.two=Ejecute "universalcoins save" para guardar cambios
+command.uccommand.option.set.price.firstuse.three=Ejecute "universalcoins reload" para deshacer los cambios
+command.uccommand.option.set.price.fail.one=Fallo al definir precio.
+command.uccommand.option.set.price.error=Por favor especifique un objeto y un precio
+command.uccommand.option.reload=reload
+command.uccommand.option.reload.confirm=Todos los cambios desde el ultimo guardado se perderán
+command.uccommand.option.reset.name=reset
+command.uccommand.option.reset.confirm=UC: precios por defecto recargados
+command.uccommand.option.reset.help=- reset : Reiniciar todos los precios a los valores de fabrica. No reemplazara precios no definidos por defecto
+command.uccommand.option.save.name=save
+command.uccommand.option.save.confirm=guardar los cambios
+command.uccommand.option.save.help=- save : guardar lista de precios.
+command.uccommand.usage.hint=Consejo: Usa "this" en vez de un nombre de objeto para recuperar o definir el precio del objeto en la mano.
+command.uccommand.warning.pricenotset=No hay precio definido para 
+command.uccommand.warning.pricefound=El precio para
+command.uccommand.warning.noitem=Por favor, indique el objeto
+command.givecoins.name=givecoins
+command.givecoins.help=/givecoins <nombre de jugador> <cantidad> : Dar monedas a otro jugador.
+command.givecoins.error.notfound=Jugador no encontrado.
+command.givecoins.error.badentry=Por favor, especifique una cantidad valida de monedas.
+command.givecoins.error.noname=Por favor, indique jugador y cantidad de monedas a entregar.
+command.givecoins.result=te dio
+command.rebalance.name=rebalance
+command.rebalance.help=/rebalance : agrupar monedas en el inventario en su denominador mas compacto posible.
+command.send.name=send
+command.send.help=/send <nombre de jugador> <cantidad> : Enviar monedas a otro jugador.
+command.send.error.notfound=Jugador no encontrado.
+command.send.error.badentry=Por favor, especifique una cantidad valida de monedas.
+command.send.error.insufficient=Fondos Insuficientes.
+command.send.error.incomplete=Por favor, indique un nombre y una cantidad a enviar.
+command.send.result.sender=monedas enviadas a
+command.send.result.receiver=monedas recibidas de
+
+#####
+# Chat Warnings
+#####
+chat.warning.inuse=Bloque en uso. Inténtelo más tarde.
+
+#####
+# Universal Card Messages
+#####
+item.itemUCCard.balance=Balance en Cuenta:
+item.itemUCCard.warning=Tarjeta inactiva. Click derecho para activar.
+
+#####
+# Ender Card Messages
+#####
+item.itemEnderCard.balance=Balance en Cuenta:
+item.itemEnderCard.message.deposit=Deposito
+
+#####
+# Safe GUI
+#####
+safe.gui.balance=Balance:
+
+#####
+# TradeStation GUI
+#####
+tradestation.gui.button.coin=Moneda
+tradestation.gui.button.mode=Modo
+tradestation.gui.warning.noitem=Sin objeto
+tradestation.gui.label.autobuy=Modo Auto
+tradestation.gui.autolabel.off=Apagado
+tradestation.gui.autolabel.buy=Comprar
+tradestation.gui.autolabel.sell=Vender
+tradestation.gui.price=Precio: 
+
+
+#####
+# Vending GUI
+#####
+vending.wrench.owner=Propietario
+vending.wrench.infiniteon=Infinito: On
+vending.wrench.infiniteoff=Infinito: Off
+vending.gui.button.mode.sell=Vender
+vending.gui.button.mode.buy=Comprar
+vending.gui.price=Precio: 
+
+#####
+# Hint GUI
+#####
+hintgui.sellmode.sell=Vendiendo
+hintgui.sellmode.buy=Comprando
+hintgui.price=Precio: 
+hintgui.warning.stock=¡Sin Stock!
+hintgui.warning.coins=¡Sin Monedas!
+hintgui.warning.inventoryfull=¡Inventario lleno!
+
+#####
+# ATM GUI
+#####
+cardstation.welcome.one=C:Bienvenido a
+cardstation.welcome.two=C:Banco Universal
+cardstation.welcome.three=
+cardstation.welcome.four=
+cardstation.welcome.five=C:Inserte su tarjeta o
+cardstation.welcome.six=C:pulse cualquier botón
+cardstation.welcome.seven=C:para continuar
+cardstation.welcome.eight=
+cardstation.main.one=
+cardstation.main.two=<-- Balance
+cardstation.main.three=
+cardstation.main.four=<-- Depositar Fondos
+cardstation.main.five=
+cardstation.main.six=<-- Retirar Fondos
+cardstation.main.seven=
+cardstation.main.eight=<-- Otras Opciones
+cardstation.additional.one=
+cardstation.additional.two=<-- Nueva Tarjeta
+cardstation.additional.three=
+cardstation.additional.four=<-- Transferir Fondos
+cardstation.additional.five=
+cardstation.additional.six=
+cardstation.additional.seven=
+cardstation.additional.eight=<-- Menú Anterior
+cardstation.auth.one=
+cardstation.auth.two=C:Escaneando
+cardstation.auth.three=
+cardstation.auth.four=
+cardstation.auth.five=
+cardstation.auth.six=
+cardstation.auth.seven=
+cardstation.auth.eight=
+cardstation.auth.access=C:Recuperando cuenta
+cardstation.auth.success=C:Cuenta encontrada
+cardstation.auth.fail=C:Cuenta NO encontrada
+cardstation.balance.one=
+cardstation.balance.two=
+cardstation.balance.three=Balance:
+cardstation.balance.four=
+cardstation.balance.five=
+cardstation.balance.six=
+cardstation.balance.seven=
+cardstation.balance.eight=<-- Menú Anterior
+cardstation.deposit.one=Inserte monedas
+cardstation.deposit.two=
+cardstation.deposit.three=Balance:
+cardstation.deposit.four=
+cardstation.deposit.five=
+cardstation.deposit.six=
+cardstation.deposit.seven=
+cardstation.deposit.eight=<-- Menú Anterior
+cardstation.withdraw.one=Balance disponible:
+cardstation.withdraw.two=
+cardstation.withdraw.three=Cantidad a retirar:
+cardstation.withdraw.four=
+cardstation.withdraw.five=
+cardstation.withdraw.six=<-- Retirar
+cardstation.withdraw.seven=
+cardstation.withdraw.eight=<-- Menú Anterior
+cardstation.newcard.one=
+cardstation.newcard.two=C:Estan disponibles
+cardstation.newcard.three=C:tarjetas adicionales
+cardstation.newcard.four=C:sin coste extra.
+cardstation.newcard.five=
+cardstation.newcard.six=<-- Nueva Tarjeta
+cardstation.newcard.seven=
+cardstation.newcard.eight=<-- Cancelar
+cardstation.newaccount.one=
+cardstation.newaccount.two=C:¿Desea abrir una
+cardstation.newaccount.three=C:cuenta nueva?
+cardstation.newaccount.four=
+cardstation.newaccount.five=
+cardstation.newaccount.six=<-- Abrir Cuenta
+cardstation.newaccount.seven=
+cardstation.newaccount.eight=<-- Cancelar
+cardstation.transferaccount.one=
+cardstation.transferaccount.two=C:Se transferirán todas
+cardstation.transferaccount.three=C:las monedas a la
+cardstation.transferaccount.four=C:nueva cuenta
+cardstation.transferaccount.five=
+cardstation.transferaccount.six=<-- Abrir nueva cuenta
+cardstation.transferaccount.seven=
+cardstation.transferaccount.eight=<-- Cancelar
+cardstation.takecard.one=
+cardstation.takecard.two=
+cardstation.takecard.three=
+cardstation.takecard.four=
+cardstation.takecard.five=Por favor, retire
+cardstation.takecard.six=su tarjeta. -->
+cardstation.takecard.seven=
+cardstation.takecard.eight=<-- Hecho
+cardstation.takecoins.one=
+cardstation.takecoins.two=
+cardstation.takecoins.three=Por favor, retire 
+cardstation.takecoins.four=las monedas -->
+cardstation.takecoins.five=
+cardstation.takecoins.six=
+cardstation.takecoins.seven=
+cardstation.takecoins.eight=<-- Hecho
+cardstation.insufficient.one=
+cardstation.insufficient.two=
+cardstation.insufficient.three=C:ERROR
+cardstation.insufficient.four=
+cardstation.insufficient.five=C:fondos insuficientes
+cardstation.insufficient.six=
+cardstation.insufficient.seven=
+cardstation.insufficient.eight=<-- Menú Anterior
+cardstation.invalid.one=
+cardstation.invalid.two=
+cardstation.invalid.three=C:ERROR
+cardstation.invalid.four=
+cardstation.invalid.five=C:entrada no valida
+cardstation.invalid.six=
+cardstation.invalid.seven=
+cardstation.invalid.eight=<-- Menú Anterior
+cardstation.badcard.one=
+cardstation.badcard.two=
+cardstation.badcard.three=C:TARJETA INVALIDA
+cardstation.badcard.four=
+cardstation.badcard.five=C:La tarjeta ha
+cardstation.badcard.six=C:sido confiscada
+cardstation.badcard.seven=
+cardstation.badcard.eight=
+cardstation.unauthorized.one=
+cardstation.unauthorized.two=
+cardstation.unauthorized.three=C:ACCESO NO AUTORIZADO
+cardstation.unauthorized.four=
+cardstation.unauthorized.five=C:Solo el propietario de
+cardstation.unauthorized.six=C:la cuenta puede hacer
+cardstation.unauthorized.seven=C:esa operación
+cardstation.unauthorized.eight=
+cardstation.duplicateaccount.one=
+cardstation.duplicateaccount.two=
+cardstation.duplicateaccount.three=C:CUENTA DUPLICADA
+cardstation.duplicateaccount.four=
+cardstation.duplicateaccount.five=C:Por favor, introduzca
+cardstation.duplicateaccount.six=C:un nombre único.
+cardstation.duplicateaccount.seven=
+cardstation.duplicateaccount.eight=
+cardstation.processing.one=
+cardstation.processing.two=
+cardstation.processing.three=
+cardstation.processing.four=C:Procesando...
+cardstation.processing.five=
+cardstation.processing.six=
+cardstation.processing.seven=
+cardstation.processing.eight=

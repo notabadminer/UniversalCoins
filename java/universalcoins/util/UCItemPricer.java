@@ -21,6 +21,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.relauncher.FMLInjectionData;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -28,9 +30,6 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.relauncher.FMLInjectionData;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -41,7 +40,7 @@ public class UCItemPricer {
 
 	private static Map<String, Integer> ucPriceMap = new HashMap<String, Integer>(0);
 	private static Map<String, String> ucModnameMap = new HashMap<String, String>(0);
-	private static String configPath = FMLInjectionData.data()[6] + "/config/universalcoins/";
+	private static String configDir = FMLInjectionData.data()[6] + "/config/universalcoins/";
 	private Random random = new Random();
 
 	public static UCItemPricer getInstance() {
@@ -53,7 +52,7 @@ public class UCItemPricer {
 	}
 
 	public void loadConfigs() {
-		if (!new File(configPath).exists()) {
+		if (!new File(configDir).exists()) {
 			// FMLLog.info("Universal Coins: Loading default prices");
 			buildPricelistHashMap();
 			try {
@@ -62,6 +61,7 @@ public class UCItemPricer {
 				FMLLog.warning("Universal Coins: Failed to load default configs");
 				e.printStackTrace();
 			}
+			updateOreDictionaryPrices();
 			autoPriceCraftedItems();
 			autoPriceSmeltedItems();
 			writePriceLists();
@@ -76,7 +76,7 @@ public class UCItemPricer {
 	}
 
 	private void loadDefaults() throws IOException {
-		String[] configList = { "pricelists/minecraft.cfg" };
+		String[] configList = { "pricelists/minecraft.cfg", "pricelists/universalcoins.cfg" };
 		InputStream priceResource;
 		// load those files into hashmap(ucPriceMap)
 		for (int i = 0; i < configList.length; i++) {
@@ -103,12 +103,6 @@ public class UCItemPricer {
 		while (tokenizer.hasMoreElements()) {
 			String token = tokenizer.nextToken();
 			String[] tempData = token.split("=");
-			// FMLLog.info("Universal Coins: Updating UCPricelist: " +
-			// tempData[0] + "=" +
-			// Integer.valueOf(tempData[1]));
-			// We'll update the prices of all the items and not add all the
-			// default prices to the config folder if the
-			// mods are not present
 			if (ucPriceMap.get(tempData[0]) != null && tempData.length == 2) {
 				ucPriceMap.put(tempData[0], Integer.valueOf(tempData[1]));
 			}
@@ -116,93 +110,52 @@ public class UCItemPricer {
 	}
 
 	private void buildPricelistHashMap() {
-		ArrayList<ItemStack> itemsDiscovered = new ArrayList<ItemStack>();
-		Object[] itemSet = Item.REGISTRY.getKeys().toArray();
+		ArrayList<String> itemsDiscovered = new ArrayList();
+		Iterable<String> list = (Iterable<String>) Item.itemRegistry.getKeys();
 
-		for (Object itemObject : itemSet) {
-			String item = itemObject.toString();
-			// pass the itemkey to a temp variable after splitting on
-			// non-alphanumeric values
-			String[] tempModName = item.split("\\W", 3);
+		for (String itemKey : list) {
+			String[] tempModName = itemKey.split("\\W", 3);
 			// pass the first value as modname
 			String modName = tempModName[0];
-			if (item != null) {
-				Item test = (Item) Item.REGISTRY.getObject(new ResourceLocation(item));
-				// check for meta values so we catch all items
-				// Iterate through damage values and add them if unique
-				ItemStack baseStack = new ItemStack(test, 1, 0);
-				ItemStack previousStack = new ItemStack(test, 1, 0);
-				boolean newItem = true;
-				int itemDamage = 0;
-				while (newItem == true) {
-					ItemStack testStack = new ItemStack(test, 1, itemDamage);
-					String baseName=null, testName=null, previousName=null;
-					try{
+			Item testItem = (Item) Item.itemRegistry.getObject(itemKey);
+			if (testItem != null && testItem.getHasSubtypes()) {
+				ItemStack testStack = new ItemStack(testItem, 1, 0);
+				ItemStack baseStack = new ItemStack(testItem, 1, 0);
+				ItemStack previousStack = new ItemStack(testItem, 1, 0);
+				for (int itemDamage = 0; itemDamage < 16; itemDamage++) {
+					testStack = new ItemStack(testItem, 1, itemDamage);
+					String testName = "";
+					String baseName = "";
+					String previousName = "";
+					try {
+						testName = testStack.getDisplayName();
 						baseName = baseStack.getDisplayName();
 						previousName = previousStack.getDisplayName();
-						testName = testStack.getDisplayName();
-					}catch (java.lang.IndexOutOfBoundsException e){
-						// Some mods manage to throw an exception here.
-						// Lets try to be compatible
-						e.printStackTrace();
-						itemDamage++;
+					} catch (Exception e) {
 						break;
 					}
-
-					if (itemDamage == 0 || !baseName.equals(testName)
+					if (itemDamage == 0 || testName != null && !testName.matches("") && !baseName.equals(testName)
 							&& !previousName.equals(testName)) {
 						previousStack = testStack;
-						try {
-							String name = testName + "." + itemDamage;
-							if (!itemsDiscovered.contains(name)) {
-								itemsDiscovered.add(testStack);
-							}
-						} catch (Throwable ex) {
-							// set false to exit as something has gone wrong.
-							newItem = false;
-						}
+						itemsDiscovered.add(testStack.getUnlocalizedName() + "." + itemDamage);
+						continue;
 					} else {
-						newItem = false;
+						break;
 					}
-					// Botania will make infinite numbers of these if we try.
-					// botania:pavement1, botania:pavement2, botania:pavement3
-					if(testName.contains(""+itemDamage)){
-						newItem = false;
-					}
-
-					itemDamage++;
 				}
-			}
-
-			// parse oredictionary
-			for (String ore : OreDictionary.getOreNames()) {
-				ucModnameMap.put(ore, "oredictionary");
-				if (!ucPriceMap.containsKey(ore)) {
-					// check ore to see if any of the types has a price, use it
-					// if true
-					List<ItemStack> test = OreDictionary.getOres(ore);
-					int itemValue = -1;
-					for (int j = 0; j < test.size(); j++) {
-						int subItemValue = UCItemPricer.getInstance().getItemPrice((ItemStack) test.get(j));
-						if (subItemValue > 0) {
-							itemValue = subItemValue;
-						}
-					}
-					ucPriceMap.put(ore, itemValue);
+			} else {
+				if (!itemsDiscovered.contains(testItem.getUnlocalizedName() + ".0")) {
+					itemsDiscovered.add(testItem.getUnlocalizedName() + ".0");
 				}
 			}
 
 			// iterate through the items and update the hashmaps
-			for (ItemStack itemstack : itemsDiscovered) {
-				try {
-					// update ucModnameMap with items found
-					ucModnameMap.put(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage(), modName);
-					// update ucPriceMap with initial values
-					if (!ucPriceMap.containsKey(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage())) {
-						ucPriceMap.put(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage(), -1);
-					}
-				}catch(Exception e){
-					e.printStackTrace();
+			for (String name1 : itemsDiscovered) {
+				// update ucModnameMap with items found
+				ucModnameMap.put(name1, modName);
+				// update ucPriceMap with initial values
+				if (!ucPriceMap.containsKey(name1)) {
+					ucPriceMap.put(name1, -1);
 				}
 			}
 			// clear this variable so we can use it next round
@@ -211,9 +164,29 @@ public class UCItemPricer {
 
 	}
 
+	private void updateOreDictionaryPrices() {
+		// parse oredictionary
+		for (String ore : OreDictionary.getOreNames()) {
+			ucModnameMap.put(ore, "oredictionary");
+			if (!ucPriceMap.containsKey(ore)) {
+				// check ore to see if any of the types has a price, use it
+				// if true
+				ArrayList test = OreDictionary.getOres(ore);
+				int itemValue = -1;
+				for (int j = 0; j < test.size(); j++) {
+					int subItemValue = getItemPrice((ItemStack) test.get(j));
+					if (subItemValue > 0) {
+						itemValue = subItemValue;
+					}
+				}
+				ucPriceMap.put(ore, itemValue);
+			}
+		}
+	}
+
 	private void loadPricelists() throws IOException {
 		// search config file folder for files
-		File folder = new File(configPath);
+		File folder = new File(configDir);
 		File[] configList = folder.listFiles();
 		// load those files into hashmap(UCPriceMap)
 		for (int i = 0; i < configList.length; i++) {
@@ -250,6 +223,19 @@ public class UCItemPricer {
 	}
 
 	private void writePriceLists() {
+		// writing pricelists takes a while so we start a thread and let it work
+		// in the background.
+		Runnable r = new Runnable() {
+			public void run() {
+				priceListWriter();
+			}
+		};
+
+		Thread t = new Thread(r);
+		t.start();
+	}
+
+	private void priceListWriter() {
 		// write config set from item hashmap
 		Set set = ucPriceMap.entrySet();
 		Iterator i = set.iterator();
@@ -257,18 +243,18 @@ public class UCItemPricer {
 			Map.Entry me = (Map.Entry) i.next();
 			String keyname = (String) me.getKey();
 			String modname = ucModnameMap.get(keyname) + ".cfg";
-			Path pathToFile = Paths.get(configPath + modname);
+			Path pathToFile = Paths.get(configDir + modname);
 			try {
 				Files.createDirectories(pathToFile.getParent());
 			} catch (IOException e) {
-				FMLLog.warning("Universal Coins: Failed to create config file folders");
+				FMLLog.warning("Universal Coins: Failed to create pricelist folder");
 			}
-			File modconfigfile = new File(configPath + modname);
+			File modconfigfile = new File(configDir + modname);
 			if (!modconfigfile.exists()) {
 				try {
 					modconfigfile.createNewFile();
 				} catch (IOException e) {
-					FMLLog.warning("Universal Coins: Failed to create config file");
+					FMLLog.warning("Universal Coins: Failed to create pricelist file: " + modconfigfile);
 				}
 			}
 			try {
@@ -276,18 +262,16 @@ public class UCItemPricer {
 				out.println(me.getKey() + "=" + me.getValue());
 				out.close();
 			} catch (IOException e) {
-				FMLLog.warning("Universal Coins: Failed to append to config file");
+				FMLLog.warning("Universal Coins: Failed to append to pricelist file: " + modconfigfile);
 			}
-
 		}
 	}
 
 	public int getItemPrice(ItemStack itemStack) {
 		if (itemStack == null) {
-			// FMLLog.warning("itemstack is null");
 			return -1;
 		}
-		int ItemPrice = -1;
+		int itemPrice = -1;
 		String itemName = null;
 		try {
 			itemName = itemStack.getUnlocalizedName() + "." + itemStack.getItemDamage();
@@ -295,45 +279,40 @@ public class UCItemPricer {
 			// fail silently
 		}
 		if (ucPriceMap.get(itemName) != null) {
-			ItemPrice = ucPriceMap.get(itemName);
+			itemPrice = ucPriceMap.get(itemName);
 		}
 		// lookup item in oreDictionary if not priced
-		if (ItemPrice == -1) {
+		if (itemPrice == -1) {
 			int[] id = OreDictionary.getOreIDs(itemStack);
 			if (id.length > 0) {
 				itemName = OreDictionary.getOreName(id[0]);
 				if (ucPriceMap.get(itemName) != null) {
-					ItemPrice = ucPriceMap.get(itemName);
+					itemPrice = ucPriceMap.get(itemName);
 				}
 			}
 		}
-		return ItemPrice;
+		return itemPrice;
 	}
 
 	public boolean setItemPrice(ItemStack itemStack, int price) {
 		if (itemStack == null) {
 			return false;
 		}
-		int itemStackMeta = itemStack.getMetadata();
-		if (itemStack.isItemStackDamageable()) {
-			// override for damaged items
-			itemStackMeta = 0;
-		}
-		String itemName = itemStack.getUnlocalizedName();
+		String itemName = itemStack.getUnlocalizedName() + "." + itemStack.getItemDamage();
 		// get modName to add to mapping
-		String itemRegistryKey = Item.REGISTRY.getNameForObject(itemStack.getItem()).toString();
+		String itemRegistryKey = Item.itemRegistry.getNameForObject(itemStack.getItem());
 		String[] tempModName = itemRegistryKey.split("\\W", 3);
 		// pass the first value as modname
 		String modName = tempModName[0];
-		ucModnameMap.put(itemName + "." + itemStackMeta, modName);
+		ucModnameMap.put(itemName, modName);
 		// update price
-		ucPriceMap.put(itemName + "." + itemStackMeta, price);
+		ucPriceMap.put(itemName, price);
 		return true;
 	}
 
 	public void updatePriceLists() {
 		// delete old configs
-		File folder = new File(configPath);
+		File folder = new File(configDir);
 		// cleanup
 		if (folder.exists()) {
 			File[] files = folder.listFiles();
@@ -346,14 +325,16 @@ public class UCItemPricer {
 		// update mod itemlist
 		buildPricelistHashMap();
 		// update prices
+		updateOreDictionaryPrices();
 		autoPriceCraftedItems();
+		autoPriceSmeltedItems();
 		// write new configs
 		writePriceLists();
 	}
 
 	public void savePriceLists() {
 		// delete old configs
-		File folder = new File(configPath);
+		File folder = new File(configDir);
 		// cleanup
 		if (folder.exists()) {
 			File[] files = folder.listFiles();
@@ -388,12 +369,27 @@ public class UCItemPricer {
 				if (keyName.startsWith("tile.") || keyName.startsWith("item.")) {
 					keyName = keyName.substring(5);
 				}
-				// split string into item name and meta
-				String itemName = keyName.substring(0, keyName.length() - 2);
-				int itemMeta = Integer.valueOf(keyName.substring(keyName.length() - 1));
-				Item item = (Item) Item.REGISTRY.getObject(new ResourceLocation(itemName));
-				if (item != null) {
-					stack = new ItemStack(item, 1, itemMeta);
+				// oredictionary entries do not include metadata value
+				// we need to check for this
+				if (!Character.isDigit(keyName.charAt(keyName.length() - 1))) {
+					ArrayList test = OreDictionary.getOres(keyName);
+					int itemValue = -1;
+					for (int j = 0; j < test.size(); j++) {
+						ItemStack oreDictionaryStack = (ItemStack) test.get(j);
+						int subItemValue = getItemPrice(oreDictionaryStack);
+						if (subItemValue > 0) {
+							itemValue = subItemValue;
+							return oreDictionaryStack;
+						}
+					}
+				} else {
+					// split string into item name and meta
+					String itemName = keyName.substring(0, keyName.length() - 2);
+					int itemMeta = Integer.valueOf(keyName.substring(keyName.length() - 1));
+					Item item = (Item) Item.itemRegistry.getObject(itemName);
+					if (item != null) {
+						stack = new ItemStack(item, 1, itemMeta);
+					}
 				}
 			}
 		}
@@ -402,8 +398,10 @@ public class UCItemPricer {
 
 	private void autoPriceCraftedItems() {
 		List<IRecipe> allrecipes = new ArrayList<IRecipe>(CraftingManager.getInstance().getRecipeList());
-		boolean priceUpdate = false;
+		boolean priceUpdate = true;
 
+		// we rerun multiple times if needed since recipe components might be
+		// priced in previous runs
 		while (priceUpdate == true) {
 			priceUpdate = false;
 			for (IRecipe irecipe : allrecipes) {
@@ -413,16 +411,17 @@ public class UCItemPricer {
 				if (output == null) {
 					continue;
 				}
-				if (UCItemPricer.getInstance().getItemPrice(output) != -1) {
+				if (getItemPrice(output) != -1) {
 					continue;
 				}
 				List recipeItems = getRecipeInputs(irecipe);
 				for (int i = 0; i < recipeItems.size(); i++) {
 					ItemStack stack = (ItemStack) recipeItems.get(i);
-					if (UCItemPricer.getInstance().getItemPrice(stack) != -1) {
-						itemCost += UCItemPricer.getInstance().getItemPrice(stack);
+					if (getItemPrice(stack) != -1) {
+						itemCost += getItemPrice(stack);
 					} else {
 						validRecipe = false;
+						break;
 					}
 				}
 				if (validRecipe && itemCost > 0) {
@@ -431,7 +430,7 @@ public class UCItemPricer {
 						itemCost = itemCost / output.stackSize;
 					}
 					try {
-						UCItemPricer.getInstance().setItemPrice(output, itemCost);
+						setItemPrice(output, itemCost);
 					} catch (Exception e) {
 						FMLLog.warning("Universal Coins Autopricer: Failed to set item price.");
 					}
@@ -520,15 +519,24 @@ public class UCItemPricer {
 	}
 
 	private void autoPriceSmeltedItems() {
-		Map<ItemStack, ItemStack> recipes = (Map<ItemStack, ItemStack>) FurnaceRecipes.instance().getSmeltingList();
+		Map<ItemStack, ItemStack> recipes = (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
 		for (Entry<ItemStack, ItemStack> recipe : recipes.entrySet()) {
 			ItemStack input = recipe.getKey();
 			ItemStack output = recipe.getValue();
-			if (ucPriceMap.get(input.getUnlocalizedName() + "." + input.getItemDamage()) != null) {
-				int inputValue = ucPriceMap.get(input.getUnlocalizedName() + "." + input.getItemDamage());
-				int outputValue = ucPriceMap.get(output.getUnlocalizedName() + "." + output.getItemDamage());
+			String inputName = "";
+			String outputName = "";
+			try {
+				inputName = input.getUnlocalizedName();
+				outputName = output.getUnlocalizedName();
+			} catch (Exception e) {
+				continue;
+			}
+			if (ucPriceMap.get(inputName + "." + input.getItemDamage()) != null
+					&& ucPriceMap.get(outputName + "." + input.getItemDamage()) != null) {
+				int inputValue = ucPriceMap.get(inputName + "." + input.getItemDamage());
+				int outputValue = ucPriceMap.get(outputName + "." + input.getItemDamage());
 				if (inputValue != -1 && outputValue == -1) {
-					ucPriceMap.put(output.getUnlocalizedName() + "." + output.getItemDamage(), inputValue + 2);
+					ucPriceMap.put(outputName + "." + input.getItemDamage(), inputValue + 2);
 				}
 			}
 		}

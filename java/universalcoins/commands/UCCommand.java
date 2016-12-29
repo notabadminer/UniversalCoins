@@ -1,36 +1,29 @@
 package universalcoins.commands;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.StatCollector;
 import universalcoins.util.UCItemPricer;
 
-public class UCCommand extends CommandBase implements ICommand {
+public class UCCommand extends CommandBase {
 
 	private boolean firstChange = true;
-	DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
 
 	@Override
 	public String getCommandName() {
-		return I18n.translateToLocal("command.uccommand.name");
+		return StatCollector.translateToLocal("command.uccommand.name");
 	}
 
 	@Override
 	public String getCommandUsage(ICommandSender icommandsender) {
-		return I18n.translateToLocal("command.uccommand.help");
+		return StatCollector.translateToLocal("command.uccommand.help");
 	}
 
 	@Override
@@ -42,134 +35,128 @@ public class UCCommand extends CommandBase implements ICommand {
 
 	// Method called when the command is typed in
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (args.length <= 0) {
+	public void processCommand(ICommandSender sender, String[] astring) {
+		if (astring.length <= 0) {
 			throw new WrongUsageException(this.getCommandUsage(sender));
-		} else if (args[0].matches(I18n.translateToLocal("command.uccommand.option.help.name"))) {
-			sender.addChatMessage(new TextComponentString(I18n.translateToLocal("command.uccommand.usage")));
-			sender.addChatMessage(new TextComponentString(I18n.translateToLocal("command.uccommand.commandheader")));
-			sender.addChatMessage(new TextComponentString(I18n.translateToLocal("command.uccommand.option.get.help")));
-			sender.addChatMessage(new TextComponentString(I18n.translateToLocal("command.uccommand.option.set.help")));
+		} else if (astring[0].matches(StatCollector.translateToLocal("command.uccommand.option.help.name"))) {
+			sender.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("command.uccommand.usage")));
 			sender.addChatMessage(
-					new TextComponentString(I18n.translateToLocal("command.uccommand.option.reload.help")));
+					new ChatComponentText(StatCollector.translateToLocal("command.uccommand.commandheader")));
 			sender.addChatMessage(
-					new TextComponentString(I18n.translateToLocal("command.uccommand.option.reset.help")));
-			sender.addChatMessage(new TextComponentString(I18n.translateToLocal("command.uccommand.option.save.help")));
+					new ChatComponentText(StatCollector.translateToLocal("command.uccommand.option.get.help")));
 			sender.addChatMessage(
-					new TextComponentString(I18n.translateToLocal("command.uccommand.option.update.help")));
-			sender.addChatMessage(new TextComponentString(I18n.translateToLocal("command.uccommand.usage.hint")));
-		} else if (args[0].matches(I18n.translateToLocal("command.uccommand.option.reload.name"))) {
+					new ChatComponentText(StatCollector.translateToLocal("command.uccommand.option.set.help")));
+			sender.addChatMessage(
+					new ChatComponentText(StatCollector.translateToLocal("command.uccommand.option.reload.help")));
+			sender.addChatMessage(
+					new ChatComponentText(StatCollector.translateToLocal("command.uccommand.option.reset.help")));
+			sender.addChatMessage(
+					new ChatComponentText(StatCollector.translateToLocal("command.uccommand.option.save.help")));
+			sender.addChatMessage(
+					new ChatComponentText(StatCollector.translateToLocal("command.uccommand.option.update.help")));
+		} else if (astring[0].matches(StatCollector.translateToLocal("command.uccommand.option.reload.name"))) {
 			UCItemPricer.getInstance().loadConfigs();
-		} else if (args[0].matches(I18n.translateToLocal("command.uccommand.option.get.name"))) {
+		} else if (astring[0].matches(StatCollector.translateToLocal("command.uccommand.option.get.name"))) {
 			// get item price
-			if (args.length > 1) {
-				int price = -1;
-				String stackName = "";
-				if (args[1].matches(I18n.translateToLocal("command.uccommand.option.set.itemheld"))) {
-					ItemStack stack = getPlayerItem(sender);
-					if (stack != null) {
-						price = UCItemPricer.getInstance().getItemPrice(stack);
-						stackName = getPlayerItem(sender).getDisplayName();
-					}
-				}
-				if (price == -1) {
-					sender.addChatMessage(new TextComponentString(
-							"§c" + I18n.translateToLocal("command.uccommand.warning.pricenotset") + " " + stackName));
-				} else
-					sender.addChatMessage(
-							new TextComponentString("§a" + I18n.translateToLocal("command.uccommand.warning.pricefound")
-									+ " " + stackName + ": " + formatter.format(price)));
+			int price = -1;
+			String stackName = "";
+			ItemStack stack = getPlayerItem(sender);
+			if (stack != null) {
+				price = UCItemPricer.getInstance().getItemPrice(stack);
+				stackName = getPlayerItem(sender).getDisplayName();
+			}
+			if (price == -1) {
+				sender.addChatMessage(new ChatComponentText("§c"
+						+ StatCollector.translateToLocal("command.uccommand.warning.pricenotset") + " " + stackName));
 			} else
-				sender.addChatMessage(
-						new TextComponentString("§c" + I18n.translateToLocal("command.uccommand.warning.noitem")));
-		} else if (args[0].matches(I18n.translateToLocal("command.uccommand.option.set.name"))) {
+				sender.addChatMessage(new ChatComponentText(
+						"§a" + StatCollector.translateToLocal("command.uccommand.warning.pricefound") + " " + stackName
+								+ ": " + price));
+		} else if (astring[0].matches(StatCollector.translateToLocal("command.uccommand.option.set.name"))) {
 			// set item price
-			if (args.length > 2) {
+			if (astring.length > 1) {
 				boolean result = false;
 				int price = -1;
 				try {
-					price = Integer.parseInt(args[2]);
+					price = Integer.parseInt(astring[1]);
 				} catch (NumberFormatException e) {
-					sender.addChatMessage(new TextComponentString(
-							"§c" + I18n.translateToLocal("command.uccommand.option.set.price.invalid")));
+					sender.addChatMessage(new ChatComponentText(
+							"§c" + StatCollector.translateToLocal("command.uccommand.option.set.price.invalid")));
 					return;
 				}
-				if (args[1].matches(I18n.translateToLocal("command.uccommand.option.set.itemheld"))) {
-					ItemStack stack = getPlayerItem(sender);
-					if (stack != null) {
-						result = UCItemPricer.getInstance().setItemPrice(stack, price);
-					}
+				ItemStack stack = getPlayerItem(sender);
+				if (stack != null) {
+					result = UCItemPricer.getInstance().setItemPrice(stack, price);
 				}
 				if (result == true) {
-					sender.addChatMessage(new TextComponentString(
-							I18n.translateToLocal("command.uccommand.option.set.price") + " " + formatter.format(price)));
+					sender.addChatMessage(new ChatComponentText(
+							StatCollector.translateToLocal("command.uccommand.option.set.price") + " " + price));
 					if (firstChange) {
-						sender.addChatMessage(new TextComponentString(
-								I18n.translateToLocal("command.uccommand.option.set.price.firstuse.one")));
-						sender.addChatMessage(new TextComponentString(
-								I18n.translateToLocal("command.uccommand.option.set.price.firstuse.two")));
-						sender.addChatMessage(new TextComponentString(
-								I18n.translateToLocal("command.uccommand.option.set.price.firstuse.three")));
+						sender.addChatMessage(new ChatComponentText(
+								StatCollector.translateToLocal("command.uccommand.option.set.price.firstuse.one")));
+						sender.addChatMessage(new ChatComponentText(
+								StatCollector.translateToLocal("command.uccommand.option.set.price.firstuse.two")));
+						sender.addChatMessage(new ChatComponentText(
+								StatCollector.translateToLocal("command.uccommand.option.set.price.firstuse.three")));
 						firstChange = false;
 					}
 				} else {
-					sender.addChatMessage(new TextComponentString(
-							"§c" + I18n.translateToLocal("command.uccommand.option.set.price.fail.one")));
+					sender.addChatMessage(new ChatComponentText(
+							"§c" + StatCollector.translateToLocal("command.uccommand.option.set.price.fail.one")));
 				}
 			} else
-				sender.addChatMessage(new TextComponentString(
-						"§c" + I18n.translateToLocal("command.uccommand.option.set.price.error")));
-		} else if (args[0].matches(I18n.translateToLocal("command.uccommand.option.reload"))) {
+				sender.addChatMessage(new ChatComponentText(
+						"§c" + StatCollector.translateToLocal("command.uccommand.option.set.price.error")));
+		} else if (astring[0].matches(StatCollector.translateToLocal("command.uccommand.option.reload"))) {
 			UCItemPricer.getInstance().loadConfigs();
-			sender.addChatMessage(
-					new TextComponentString("§a" + I18n.translateToLocal("command.uccommand.option.reload.confirm")));
-		} else if (args[0].matches(I18n.translateToLocal("command.uccommand.option.reset.name"))) {
+			sender.addChatMessage(new ChatComponentText(
+					"§a" + StatCollector.translateToLocal("command.uccommand.option.reload.confirm")));
+		} else if (astring[0].matches(StatCollector.translateToLocal("command.uccommand.option.reset.name"))) {
 			UCItemPricer.getInstance().resetDefaults();
-			sender.addChatMessage(
-					new TextComponentString("§a" + I18n.translateToLocal("command.uccommand.option.reset.confirm")));
-		} else if (args[0].matches(I18n.translateToLocal("command.uccommand.option.save.name"))) {
+			sender.addChatMessage(new ChatComponentText(
+					"§a" + StatCollector.translateToLocal("command.uccommand.option.reset.confirm")));
+		} else if (astring[0].matches(StatCollector.translateToLocal("command.uccommand.option.save.name"))) {
 			UCItemPricer.getInstance().savePriceLists();
-			sender.addChatMessage(
-					new TextComponentString("§a" + I18n.translateToLocal("command.uccommand.option.save.confirm")));
-		} else if (args[0].matches(I18n.translateToLocal("command.uccommand.option.update.name"))) {
+			sender.addChatMessage(new ChatComponentText(
+					"§a" + StatCollector.translateToLocal("command.uccommand.option.save.confirm")));
+		} else if (astring[0].matches(StatCollector.translateToLocal("command.uccommand.option.update.name"))) {
 			UCItemPricer.getInstance().updatePriceLists();
-			sender.addChatMessage(
-					new TextComponentString("§a" + I18n.translateToLocal("command.uccommand.option.update.confirm")));
+			sender.addChatMessage(new ChatComponentText(
+					"§a" + StatCollector.translateToLocal("command.uccommand.option.update.confirm")));
 		}
 	}
 
 	private ItemStack getPlayerItem(ICommandSender sender) {
 		EntityPlayer player = (EntityPlayer) sender;
-		if (player.getHeldItemMainhand() != null) {
-			ItemStack stack = player.getHeldItemMainhand();
+		if (player.getHeldItem() != null) {
+			ItemStack stack = player.getHeldItem();
 			return stack;
 		}
 		return null;
 	}
 
 	@Override
-	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args,
-			BlockPos pos) {
+	public List addTabCompletionOptions(ICommandSender sender, String[] args) {
 		if (args.length == 1) {
 			List<String> options = new ArrayList<String>();
-			options.add(I18n.translateToLocal("command.uccommand.option.help.name"));
-			options.add(I18n.translateToLocal("command.uccommand.option.get.name"));
-			options.add(I18n.translateToLocal("command.uccommand.option.set.name"));
-			options.add(I18n.translateToLocal("command.uccommand.option.reload.name"));
-			options.add(I18n.translateToLocal("command.uccommand.option.reset.name"));
-			options.add(I18n.translateToLocal("command.uccommand.option.save.name"));
-			options.add(I18n.translateToLocal("command.uccommand.option.update.name"));
-			return getListOfStringsMatchingLastWord(args, options);
+			options.add(StatCollector.translateToLocal("command.uccommand.option.help.name"));
+			options.add(StatCollector.translateToLocal("command.uccommand.option.get.name"));
+			options.add(StatCollector.translateToLocal("command.uccommand.option.set.name"));
+			options.add(StatCollector.translateToLocal("command.uccommand.option.reload.name"));
+			options.add(StatCollector.translateToLocal("command.uccommand.option.reset.name"));
+			options.add(StatCollector.translateToLocal("command.uccommand.option.save.name"));
+			options.add(StatCollector.translateToLocal("command.uccommand.option.update.name"));
+			return getListOfStringsFromIterableMatchingLastWord(args, options);
 		}
 		if (args.length == 2) {
-			if (args[0].matches(I18n.translateToLocal("command.uccommand.option.get.name"))
-					|| args[0].matches(I18n.translateToLocal("command.uccommand.option.set.name"))) {
+			if (args[0].matches(StatCollector.translateToLocal("command.uccommand.option.get.name"))
+					|| args[0].matches(StatCollector.translateToLocal("command.uccommand.option.set.name"))) {
 				List<String> options = new ArrayList<String>();
-				options.add(I18n.translateToLocal("command.uccommand.option.set.itemheld"));
+				options.add(StatCollector.translateToLocal("command.uccommand.option.set.itemheld"));
 				for (String item : UCItemPricer.getInstance().getUcPriceMap().keySet()) {
 					options.add(item);
 				}
-				return getListOfStringsMatchingLastWord(args, options);
+				return getListOfStringsFromIterableMatchingLastWord(args, options);
 			}
 		}
 		return null;

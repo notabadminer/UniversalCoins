@@ -1,6 +1,0 @@
-{
-    "parent": "universalcoins:item/resized",
-    "textures": {
-        "layer0": "universalcoins:items/iron_coin"
-    }
-}

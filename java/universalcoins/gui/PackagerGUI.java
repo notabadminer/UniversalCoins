@@ -1,7 +1,6 @@
 package universalcoins.gui;
 
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 import java.text.DecimalFormat;
 
 import org.lwjgl.opengl.GL11;
@@ -13,9 +12,10 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
-import universalcoins.container.ContainerPackager;
-import universalcoins.tileentity.TilePackager;
+import net.minecraft.util.StatCollector;
+import universalcoins.UniversalCoins;
+import universalcoins.inventory.ContainerPackager;
+import universalcoins.tile.TilePackager;
 
 public class PackagerGUI extends GuiContainer {
 
@@ -27,7 +27,7 @@ public class PackagerGUI extends GuiContainer {
 	public static final int idMedButton = 3;
 	public static final int idLargeButton = 4;
 	public static final int idModeButton = 5;
-	private int[] defaultSlotCoord = { 8, 26, 44, 62 };
+	private int[] defaultSlotCoord = { 62, 44, 26, 8 };
 	private int hideCoord = Integer.MAX_VALUE;
 	private boolean buttonHover = false;
 	private boolean sendMode = false;
@@ -45,18 +45,18 @@ public class PackagerGUI extends GuiContainer {
 	public void initGui() {
 		super.initGui();
 		modeButton = new GuiSlimButton(idModeButton, 110 + (width - xSize) / 2, 4 + (height - ySize) / 2, 60, 12,
-				I18n.translateToLocal("packager.button.mode.buy"));
+				StatCollector.translateToLocal("packager.button.mode.buy"));
 		smallButton = new GuiSlimButton(idSmallButton, 87 + (width - xSize) / 2, 20 + (height - ySize) / 2, 50, 12,
-				I18n.translateToLocal("packager.button.small"));
+				StatCollector.translateToLocal("packager.button.small"));
 		medButton = new GuiSlimButton(idMedButton, 87 + (width - xSize) / 2, 32 + (height - ySize) / 2, 50, 12,
-				I18n.translateToLocal("packager.button.medium"));
+				StatCollector.translateToLocal("packager.button.medium"));
 		largeButton = new GuiSlimButton(idLargeButton, 87 + (width - xSize) / 2, 44 + (height - ySize) / 2, 50, 12,
-				I18n.translateToLocal("packager.button.large"));
+				StatCollector.translateToLocal("packager.button.large"));
 
 		buyButton = new GuiSlimButton(idBuyButton, 123 + (width - xSize) / 2, 58 + (height - ySize) / 2, 46, 12,
-				I18n.translateToLocal("general.button.buy"));
+				StatCollector.translateToLocal("general.button.buy"));
 		coinButton = new GuiSlimButton(idCoinButton, 123 + (width - xSize) / 2, 91 + (height - ySize) / 2, 46, 12,
-				I18n.translateToLocal("general.button.coin"));
+				StatCollector.translateToLocal("general.button.coin"));
 		buttonList.clear();
 		buttonList.add(modeButton);
 		buttonList.add(smallButton);
@@ -68,7 +68,7 @@ public class PackagerGUI extends GuiContainer {
 		// update slots to current mode
 		updateSlots(tEntity.packageSize);
 
-		packageReceiverField = new GuiTextField(0, this.fontRendererObj, Integer.MAX_VALUE, 20, 138, 13);
+		packageReceiverField = new GuiTextField(this.fontRendererObj, Integer.MAX_VALUE, 20, 138, 13);
 		packageReceiverField.setFocused(false);
 		packageReceiverField.setMaxStringLength(24);
 		packageReceiverField.setText("Enter Player Name");
@@ -78,25 +78,25 @@ public class PackagerGUI extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(tEntity.getName(), 8, 5, 4210752);
+		fontRendererObj.drawString(tEntity.getInventoryName(), 8, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
-		fontRendererObj.drawString(I18n.translateToLocal("container.inventory"), 8, 96, 4210752);
+		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, 96, 4210752);
 
 		// draw package price if button hover true
 		buttonHover = false;
-		if (smallButton.isMouseOver()) {
+		if (smallButton.func_146115_a()) {
 			String cost = "Cost: " + tEntity.packageCost[0];
 			int stringWidth = fontRendererObj.getStringWidth(cost);
 			fontRendererObj.drawString(cost, 144 - stringWidth, 78, 4210752);
 			buttonHover = true;
 		}
-		if (medButton.isMouseOver()) {
+		if (medButton.func_146115_a()) {
 			String cost = "Cost: " + tEntity.packageCost[1];
 			int stringWidth = fontRendererObj.getStringWidth(cost);
 			fontRendererObj.drawString(cost, 144 - stringWidth, 78, 4210752);
 			buttonHover = true;
 		}
-		if (largeButton.isMouseOver()) {
+		if (largeButton.func_146115_a()) {
 			String cost = "Cost: " + tEntity.packageCost[2];
 			int stringWidth = fontRendererObj.getStringWidth(cost);
 			fontRendererObj.drawString(cost, 144 - stringWidth, 78, 4210752);
@@ -109,11 +109,20 @@ public class PackagerGUI extends GuiContainer {
 			int stringWidth = fontRendererObj.getStringWidth(coinSumString);
 			fontRendererObj.drawString(coinSumString, 144 - stringWidth, 78, 4210752);
 		}
-
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float par1, int mouseX, int mouseY) {
+	protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
+		// disable if player has no money
+		if (sendMode) {
+			buyButton.displayString = StatCollector.translateToLocal("general.button.send");
+			buyButton.enabled = canSend();
+		} else {
+			buyButton.displayString = StatCollector.translateToLocal("general.button.buy");
+			buyButton.enabled = tEntity.coinSum >= tEntity.packageCost[tEntity.packageSize] || tEntity.cardAvailable;
+		}
+		coinButton.enabled = tEntity.coinSum > 0;
+
 		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/packager.png");
 		Minecraft.getMinecraft().renderEngine.bindTexture(texture);
 		int x = (width - xSize) / 2;
@@ -121,112 +130,101 @@ public class PackagerGUI extends GuiContainer {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
 
+		// draw highlight over currently selected package mode
+		int yHighlight[] = { 24, 36, 48 };
+		// check tileEntity for mode and highlight proper mode
+		this.drawTexturedModalRect(x + 80, y + yHighlight[tEntity.packageSize], 176, 0, 6, 6);
+
+		// draw background for slots
+		if (tEntity.packageSize == 1) {
+			this.drawTexturedModalRect(x + 25, y + 21, 176, 6, 18, 36);
+		}
+		if (tEntity.packageSize == 2) {
+			this.drawTexturedModalRect(x + 7, y + 21, 176, 6, 36, 36);
+		}
 		if (sendMode) {
 			this.drawTexturedModalRect(x + 3, y + 20, 0, 190, 169, 40);
-			if (tEntity.packageTarget != "")
+			if (!tEntity.packageTarget.contentEquals(""))
 				packageReceiverField.setText(tEntity.packageTarget);
 			fontRendererObj.drawString(packageReceiverField.getText(), x + 30, y + 30, 4210752);
-			buyButton.displayString = I18n.translateToLocal("general.button.send");
-			buyButton.enabled = canSend();
-		} else {
-			buyButton.displayString = I18n.translateToLocal("general.button.buy");
-			buyButton.enabled = tEntity.coinSum >= tEntity.packageCost[tEntity.packageSize] || tEntity.cardAvailable;
-
-			// draw highlight over currently selected package mode
-			int yHighlight[] = { 24, 36, 48 };
-			// check tileEntity for mode and highlight proper mode
-			this.drawTexturedModalRect(x + 80, y + yHighlight[tEntity.packageSize], 176, 0, 6, 6);
-
-			// draw background for slots
-			if (tEntity.packageSize == 1) {
-				this.drawTexturedModalRect(x + 25, y + 21, 176, 6, 18, 36);
-			}
-			if (tEntity.packageSize == 2) {
-				this.drawTexturedModalRect(x + 7, y + 21, 176, 6, 36, 36);
-			}
+			coinButton.enabled = false;
 		}
-		// disable if player has no money
-		coinButton.enabled = tEntity.coinSum > 0;
 	}
 
 	private void updateSlots(int mode) {
 		if (mode == 0) {
-			// hide slot 0-3
-			Slot slot0 = super.inventorySlots.getSlot(0);
-			slot0.xDisplayPosition = hideCoord;
-			Slot slot1 = super.inventorySlots.getSlot(1);
-			slot1.xDisplayPosition = hideCoord;
+			// package input slot
 			Slot slot2 = super.inventorySlots.getSlot(2);
 			slot2.xDisplayPosition = hideCoord;
-			Slot slot3 = super.inventorySlots.getSlot(3);
-			slot3.xDisplayPosition = hideCoord;
+			// package inventory slots
 			Slot slot4 = super.inventorySlots.getSlot(4);
-			slot4.xDisplayPosition = defaultSlotCoord[2];
+			slot4.xDisplayPosition = defaultSlotCoord[0];
 			Slot slot5 = super.inventorySlots.getSlot(5);
-			slot5.xDisplayPosition = defaultSlotCoord[2];
+			slot5.xDisplayPosition = defaultSlotCoord[0];
 			Slot slot6 = super.inventorySlots.getSlot(6);
-			slot6.xDisplayPosition = defaultSlotCoord[3];
+			slot6.xDisplayPosition = defaultSlotCoord[1];
 			Slot slot7 = super.inventorySlots.getSlot(7);
-			slot7.xDisplayPosition = defaultSlotCoord[3];
-			// package input slot
+			slot7.xDisplayPosition = defaultSlotCoord[1];
+			// hide slot 8-11
+			Slot slot8 = super.inventorySlots.getSlot(8);
+			slot8.xDisplayPosition = hideCoord;
+			Slot slot9 = super.inventorySlots.getSlot(9);
+			slot9.xDisplayPosition = hideCoord;
+			Slot slot10 = super.inventorySlots.getSlot(10);
+			slot10.xDisplayPosition = hideCoord;
 			Slot slot11 = super.inventorySlots.getSlot(11);
 			slot11.xDisplayPosition = hideCoord;
 		}
 		if (mode == 1) {
-			// hide slot 0-1 , show 2-3
-			Slot slot0 = super.inventorySlots.getSlot(0);
-			slot0.xDisplayPosition = hideCoord;
-			Slot slot1 = super.inventorySlots.getSlot(1);
-			slot1.xDisplayPosition = hideCoord;
-			Slot slot2 = super.inventorySlots.getSlot(2);
-			slot2.xDisplayPosition = defaultSlotCoord[1];
-			Slot slot3 = super.inventorySlots.getSlot(3);
-			slot3.xDisplayPosition = defaultSlotCoord[1];
-			slot3.xDisplayPosition = defaultSlotCoord[1];
-			Slot slot4 = super.inventorySlots.getSlot(4);
-			slot4.xDisplayPosition = defaultSlotCoord[2];
-			Slot slot5 = super.inventorySlots.getSlot(5);
-			slot5.xDisplayPosition = defaultSlotCoord[2];
-			Slot slot6 = super.inventorySlots.getSlot(6);
-			slot6.xDisplayPosition = defaultSlotCoord[3];
-			Slot slot7 = super.inventorySlots.getSlot(7);
-			slot7.xDisplayPosition = defaultSlotCoord[3];
 			// package input slot
+			Slot slot2 = super.inventorySlots.getSlot(2);
+			slot2.xDisplayPosition = hideCoord;
+			// package inventory slots
+			Slot slot4 = super.inventorySlots.getSlot(4);
+			slot4.xDisplayPosition = defaultSlotCoord[0];
+			Slot slot5 = super.inventorySlots.getSlot(5);
+			slot5.xDisplayPosition = defaultSlotCoord[0];
+			Slot slot6 = super.inventorySlots.getSlot(6);
+			slot6.xDisplayPosition = defaultSlotCoord[1];
+			Slot slot7 = super.inventorySlots.getSlot(7);
+			slot7.xDisplayPosition = defaultSlotCoord[1];
+			Slot slot8 = super.inventorySlots.getSlot(8);
+			slot8.xDisplayPosition = defaultSlotCoord[2];
+			Slot slot9 = super.inventorySlots.getSlot(9);
+			slot9.xDisplayPosition = defaultSlotCoord[2];
+			// hide slot 10-11
+			Slot slot10 = super.inventorySlots.getSlot(10);
+			slot10.xDisplayPosition = hideCoord;
 			Slot slot11 = super.inventorySlots.getSlot(11);
 			slot11.xDisplayPosition = hideCoord;
 		}
 		if (mode == 2) {
-			// show slot 0-3
-			Slot slot0 = super.inventorySlots.getSlot(0);
-			slot0.xDisplayPosition = defaultSlotCoord[0];
-			Slot slot1 = super.inventorySlots.getSlot(1);
-			slot1.xDisplayPosition = defaultSlotCoord[0];
-			Slot slot2 = super.inventorySlots.getSlot(2);
-			slot2.xDisplayPosition = defaultSlotCoord[1];
-			Slot slot3 = super.inventorySlots.getSlot(3);
-			slot3.xDisplayPosition = defaultSlotCoord[1];
-			Slot slot4 = super.inventorySlots.getSlot(4);
-			slot4.xDisplayPosition = defaultSlotCoord[2];
-			Slot slot5 = super.inventorySlots.getSlot(5);
-			slot5.xDisplayPosition = defaultSlotCoord[2];
-			Slot slot6 = super.inventorySlots.getSlot(6);
-			slot6.xDisplayPosition = defaultSlotCoord[3];
-			Slot slot7 = super.inventorySlots.getSlot(7);
-			slot7.xDisplayPosition = defaultSlotCoord[3];
 			// package input slot
-			Slot slot11 = super.inventorySlots.getSlot(11);
-			slot11.xDisplayPosition = hideCoord;
-		}
-		if (mode == 3) {
-			// hide all slots
-			Slot slot0 = super.inventorySlots.getSlot(0);
-			slot0.xDisplayPosition = hideCoord;
-			Slot slot1 = super.inventorySlots.getSlot(1);
-			slot1.xDisplayPosition = hideCoord;
 			Slot slot2 = super.inventorySlots.getSlot(2);
 			slot2.xDisplayPosition = hideCoord;
-			Slot slot3 = super.inventorySlots.getSlot(3);
-			slot3.xDisplayPosition = hideCoord;
+			// package inventory slots
+			Slot slot4 = super.inventorySlots.getSlot(4);
+			slot4.xDisplayPosition = defaultSlotCoord[0];
+			Slot slot5 = super.inventorySlots.getSlot(5);
+			slot5.xDisplayPosition = defaultSlotCoord[0];
+			Slot slot6 = super.inventorySlots.getSlot(6);
+			slot6.xDisplayPosition = defaultSlotCoord[1];
+			Slot slot7 = super.inventorySlots.getSlot(7);
+			slot7.xDisplayPosition = defaultSlotCoord[1];
+			Slot slot8 = super.inventorySlots.getSlot(8);
+			slot8.xDisplayPosition = defaultSlotCoord[2];
+			Slot slot9 = super.inventorySlots.getSlot(9);
+			slot9.xDisplayPosition = defaultSlotCoord[2];
+			Slot slot10 = super.inventorySlots.getSlot(10);
+			slot10.xDisplayPosition = defaultSlotCoord[3];
+			Slot slot11 = super.inventorySlots.getSlot(11);
+			slot11.xDisplayPosition = defaultSlotCoord[3];
+		}
+		if (mode == 3) {
+			// package input slot
+			Slot slot2 = super.inventorySlots.getSlot(2);
+			slot2.xDisplayPosition = 8;
+			// package inventory slots
 			Slot slot4 = super.inventorySlots.getSlot(4);
 			slot4.xDisplayPosition = hideCoord;
 			Slot slot5 = super.inventorySlots.getSlot(5);
@@ -235,9 +233,14 @@ public class PackagerGUI extends GuiContainer {
 			slot6.xDisplayPosition = hideCoord;
 			Slot slot7 = super.inventorySlots.getSlot(7);
 			slot7.xDisplayPosition = hideCoord;
-			// package input slot
+			Slot slot8 = super.inventorySlots.getSlot(8);
+			slot8.xDisplayPosition = hideCoord;
+			Slot slot9 = super.inventorySlots.getSlot(9);
+			slot9.xDisplayPosition = hideCoord;
+			Slot slot10 = super.inventorySlots.getSlot(10);
+			slot10.xDisplayPosition = hideCoord;
 			Slot slot11 = super.inventorySlots.getSlot(11);
-			slot11.xDisplayPosition = 8;
+			slot11.xDisplayPosition = hideCoord;
 		}
 	}
 
@@ -245,7 +248,7 @@ public class PackagerGUI extends GuiContainer {
 		if (button.id == idModeButton) {
 			sendMode = !sendMode;
 			if (sendMode) {
-				modeButton.displayString = I18n.translateToLocal("packager.button.mode.send");
+				modeButton.displayString = StatCollector.translateToLocal("packager.button.mode.send");
 				// move package size buttons
 				smallButton.xPosition = hideCoord;
 				medButton.xPosition = hideCoord;
@@ -254,7 +257,7 @@ public class PackagerGUI extends GuiContainer {
 				updateSlots(3);
 				packageReceiverField.setFocused(true);
 			} else {
-				modeButton.displayString = I18n.translateToLocal("packager.button.mode.buy");
+				modeButton.displayString = StatCollector.translateToLocal("packager.button.mode.buy");
 				// move package size buttons
 				smallButton.xPosition = 87 + (width - xSize) / 2;
 				medButton.xPosition = 87 + (width - xSize) / 2;
@@ -276,14 +279,20 @@ public class PackagerGUI extends GuiContainer {
 		if (button.id == idBuyButton && sendMode) {
 			// we send a modified packet so the tileentity function handles
 			tEntity.sendPacket(button.id, true);
-			return; // we exit here so
+			return; // message sent, exit
+		}
+		if (button.id == idModeButton) {
+			if (!sendMode) {
+				tEntity.sendPacket(button.id, true);
+				return; // message sent, exit
+			}
 		}
 
-		tEntity.sendPacket(button.id, isShiftKeyDown());
+		tEntity.sendPacket(button.id, false);
 	}
 
 	@Override
-	protected void keyTyped(char c, int i) throws IOException {
+	protected void keyTyped(char c, int i) {
 		if (packageReceiverField.isFocused()) {
 			if (packageReceiverField.getText().contains("Enter ")) {
 				packageReceiverField.setText("");

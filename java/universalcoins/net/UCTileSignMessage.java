@@ -1,40 +1,32 @@
 package universalcoins.net;
 
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import universalcoins.tileentity.TileUCSign;
+import universalcoins.tile.TileUCSign;
 
 public class UCTileSignMessage implements IMessage, IMessageHandler<UCTileSignMessage, IMessage> {
 	private int xCoord;
 	private int yCoord;
 	private int zCoord;
-	private ITextComponent signText0, signText1, signText2, signText3;
+	private String[] signText;
 	private String blockOwner;
+	private String blockIcon;
 
 	public UCTileSignMessage() {
 	}
 
-	public UCTileSignMessage(int x, int y, int z, ITextComponent[] signText, String blockOwner) {
+	public UCTileSignMessage(int x, int y, int z, String[] signText, String blockOwner, String blockIcon) {
 		this.xCoord = x;
 		this.yCoord = y;
 		this.zCoord = z;
-		this.signText0 = signText[0];
-		this.signText1 = signText[1];
-		this.signText2 = signText[2];
-		this.signText3 = signText[3];
+		this.signText = new String[] { signText[0], signText[1], signText[2], signText[3] };
 		this.blockOwner = blockOwner;
+		this.blockIcon = blockIcon;
 	}
 
 	@Override
@@ -42,11 +34,12 @@ public class UCTileSignMessage implements IMessage, IMessageHandler<UCTileSignMe
 		this.xCoord = buf.readInt();
 		this.yCoord = buf.readShort();
 		this.zCoord = buf.readInt();
-		this.signText0 = new TextComponentString(ByteBufUtils.readUTF8String(buf));
-		this.signText1 = new TextComponentString(ByteBufUtils.readUTF8String(buf));
-		this.signText2 = new TextComponentString(ByteBufUtils.readUTF8String(buf));
-		this.signText3 = new TextComponentString(ByteBufUtils.readUTF8String(buf));
+		this.signText = new String[4];
+		for (int i = 0; i < 4; ++i) {
+			this.signText[i] = ByteBufUtils.readUTF8String(buf);
+		}
 		this.blockOwner = ByteBufUtils.readUTF8String(buf);
+		this.blockIcon = ByteBufUtils.readUTF8String(buf);
 	}
 
 	@Override
@@ -54,45 +47,24 @@ public class UCTileSignMessage implements IMessage, IMessageHandler<UCTileSignMe
 		buf.writeInt(this.xCoord);
 		buf.writeShort(this.yCoord);
 		buf.writeInt(this.zCoord);
-		ByteBufUtils.writeUTF8String(buf, signText0.getUnformattedText());
-		ByteBufUtils.writeUTF8String(buf, signText1.getUnformattedText());
-		ByteBufUtils.writeUTF8String(buf, signText2.getUnformattedText());
-		ByteBufUtils.writeUTF8String(buf, signText3.getUnformattedText());
+
+		for (int i = 0; i < 4; ++i) {
+			ByteBufUtils.writeUTF8String(buf, this.signText[i]);
+		}
 		ByteBufUtils.writeUTF8String(buf, this.blockOwner);
+		ByteBufUtils.writeUTF8String(buf, this.blockIcon);
 	}
 
 	@Override
-	public IMessage onMessage(final UCTileSignMessage message, final MessageContext ctx) {
-		Runnable task = new Runnable() {
-			@Override
-			public void run() {
-				processMessage(message, ctx);
-			}
-		};
-		if (ctx.side == Side.CLIENT) {
-			Minecraft.getMinecraft().addScheduledTask(task);
-		} else if (ctx.side == Side.SERVER) {
-			EntityPlayerMP playerEntity = ctx.getServerHandler().playerEntity;
-			if (playerEntity == null) {
-				FMLLog.warning("onMessage-server: Player is null");
-				return null;
-			}
-			playerEntity.getServerWorld().addScheduledTask(task);
-		}
-		return null;
-	}
-
-	private void processMessage(UCTileSignMessage message, final MessageContext ctx) {
-		TileEntity tileEntity = FMLClientHandler.instance().getClient().theWorld
-				.getTileEntity(new BlockPos(message.xCoord, message.yCoord, message.zCoord));
+	public IMessage onMessage(UCTileSignMessage message, MessageContext ctx) {
+		TileEntity tileEntity = FMLClientHandler.instance().getClient().theWorld.getTileEntity(message.xCoord,
+				message.yCoord, message.zCoord);
 
 		if (tileEntity != null && tileEntity instanceof TileUCSign) {
-			TileUCSign tentity = (TileUCSign) tileEntity;
-			tentity.signText[0] = message.signText0;
-			tentity.signText[1] = message.signText1;
-			tentity.signText[2] = message.signText2;
-			tentity.signText[3] = message.signText3;
-			tentity.blockOwner = message.blockOwner;
+			((TileUCSign) tileEntity).signText = message.signText;
+			((TileUCSign) tileEntity).blockOwner = message.blockOwner;
+			((TileUCSign) tileEntity).blockIcon = message.blockIcon;
 		}
+		return null;
 	}
 }

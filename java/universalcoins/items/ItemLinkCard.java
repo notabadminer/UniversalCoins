@@ -2,20 +2,20 @@ package universalcoins.items;
 
 import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
-import universalcoins.tileentity.TileVendor;
+import universalcoins.tile.TileVendor;
 
 public class ItemLinkCard extends Item {
 
@@ -25,44 +25,51 @@ public class ItemLinkCard extends Item {
 		this.maxStackSize = 1;
 	}
 
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister par1IconRegister) {
+		this.itemIcon = par1IconRegister
+				.registerIcon(UniversalCoins.MODID + ":" + this.getUnlocalizedName().substring(5));
+	}
+
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
-		if (stack.hasTagCompound()) {
-			list.add(I18n.translateToLocal("item.link_card.stored"));
+		if (stack.stackTagCompound != null) {
+			list.add(StatCollector.translateToLocal("item.linkCard.stored"));
 		} else {
-			list.add(I18n.translateToLocal("item.link_card.blank"));
+			list.add(StatCollector.translateToLocal("item.linkCard.blank"));
 		}
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand,
-			EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean onItemUse(ItemStack itemstack, EntityPlayer player, World world, int x, int y, int z, int side,
+			float px, float py, float pz) {
 		if (world.isRemote)
-			return EnumActionResult.FAIL;
-		RayTraceResult movingobjectposition = this.rayTrace(world, player, true);
+			return true;
+		MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(world, player, true);
 
 		if (movingobjectposition != null
-				&& movingobjectposition.typeOfHit ==  RayTraceResult.Type.BLOCK) {
-			BlockPos cursorPos = movingobjectposition.getBlockPos();
-			if (world.getTileEntity(cursorPos) instanceof TileEntityChest) {
+				&& movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+			int i = movingobjectposition.blockX;
+			int j = movingobjectposition.blockY;
+			int k = movingobjectposition.blockZ;
+			if (world.getTileEntity(i, j, k) instanceof TileEntityChest) {
 				// notify player we have a chest
-				player.addChatMessage(
-						new TextComponentString(I18n.translateToLocal("item.link_card.message.stored")
-								+ cursorPos.getX() + " " + cursorPos.getY() + " " + cursorPos.getZ()));
-				stack.getTagCompound().setIntArray("storageLocation",
-						new int[] { cursorPos.getX(), cursorPos.getY(), cursorPos.getZ() });
+				player.addChatMessage(new ChatComponentText(
+						StatCollector.translateToLocal("item.linkCard.message.stored") + i + " " + j + " " + k));
+				itemstack.stackTagCompound = new NBTTagCompound();
+				itemstack.stackTagCompound.setIntArray("storageLocation", new int[] { i, j, k });
 			}
-			if (world.getTileEntity(cursorPos) instanceof TileVendor) {
-				TileVendor te = (TileVendor) world.getTileEntity(cursorPos);
-				if (stack.hasTagCompound()) {
-					int[] storageLocation = stack.getTagCompound().getIntArray("storageLocation");
+			if (world.getTileEntity(i, j, k) instanceof TileVendor) {
+				TileVendor te = (TileVendor) world.getTileEntity(i, j, k);
+				if (itemstack.hasTagCompound()) {
+					int[] storageLocation = itemstack.stackTagCompound.getIntArray("storageLocation");
 					player.addChatMessage(
-							new TextComponentString(I18n.translateToLocal("item.link_card.message.set")));
+							new ChatComponentText(StatCollector.translateToLocal("item.linkCard.message.set")));
 					te.setRemoteStorage(storageLocation);
 					player.inventory.decrStackSize(player.inventory.currentItem, 1);
 				}
 			}
 		}
-		return EnumActionResult.SUCCESS;
+		return true;
 	}
 }

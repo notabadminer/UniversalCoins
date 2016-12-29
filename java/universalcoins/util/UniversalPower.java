@@ -1,5 +1,6 @@
 package universalcoins.util;
 
+import cpw.mods.fml.common.FMLLog;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
@@ -46,6 +47,10 @@ public class UniversalPower {
 			setWorldLong("power", powerLevel);
 		}
 		return maxReceive;
+	}
+
+	private World getWorld() {
+		return MinecraftServer.getServer().worldServers[0];
 	}
 
 	private boolean hasKey(String tag) {

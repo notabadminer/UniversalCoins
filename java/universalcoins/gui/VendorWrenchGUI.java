@@ -1,16 +1,14 @@
 package universalcoins.gui;
 
-import java.io.IOException;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
-import universalcoins.container.ContainerVendorWrench;
-import universalcoins.tileentity.TileVendor;
+import net.minecraft.util.StatCollector;
+import universalcoins.inventory.ContainerVendorWrench;
+import universalcoins.tile.TileVendor;
 
 public class VendorWrenchGUI extends GuiContainer {
 	private TileVendor tileEntity;
@@ -35,18 +33,18 @@ public class VendorWrenchGUI extends GuiContainer {
 		super.initGui();
 		infinite = tileEntity.infiniteMode;
 		infiniteButton = new GuiSlimButton(idInfiniteButton, 9 + (width - xSize) / 2, 54 + (height - ySize) / 2, 148,
-				12, infinite ? I18n.translateToLocal("vendor.wrench.infiniteon")
-						: I18n.translateToLocal("vendor.wrench.infiniteoff"));
+				12, infinite ? StatCollector.translateToLocal("vending.wrench.infiniteon")
+						: StatCollector.translateToLocal("vending.wrench.infiniteoff"));
 		editButton = new GuiSlimButton(idEditButton, 68 + (width - xSize) / 2, 34 + (height - ySize) / 2, 40, 12,
-				I18n.translateToLocal("general.button.edit"));
+				StatCollector.translateToLocal("general.button.edit"));
 		applyButton = new GuiSlimButton(idApplyButton, 110 + (width - xSize) / 2, 34 + (height - ySize) / 2, 40, 12,
-				I18n.translateToLocal("general.button.save"));
+				StatCollector.translateToLocal("general.button.save"));
 		buttonList.clear();
 		buttonList.add(editButton);
 		buttonList.add(applyButton);
 		buttonList.add(infiniteButton);
 
-		blockOwnerField = new GuiTextField(0, this.fontRendererObj, 12, 20, 138, 13);
+		blockOwnerField = new GuiTextField(this.fontRendererObj, 12, 20, 138, 13);
 		blockOwnerField.setFocused(false);
 		blockOwnerField.setMaxStringLength(100);
 		blockOwnerField.setText(tileEntity.blockOwner);
@@ -55,7 +53,7 @@ public class VendorWrenchGUI extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/vendor-wrench.png");
+		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/vendor_wrench.png");
 		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
 		int x = (width - xSize) / 2;
 		int y = (height - ySize) / 2;
@@ -66,7 +64,7 @@ public class VendorWrenchGUI extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(I18n.translateToLocal("vendor.wrench.owner"), 6, 5, 4210752);
+		fontRendererObj.drawString(StatCollector.translateToLocal("vending.wrench.owner"), 6, 5, 4210752);
 		blockOwnerField.drawTextBox();
 	}
 
@@ -75,11 +73,12 @@ public class VendorWrenchGUI extends GuiContainer {
 		if (blockOwnerField.isFocused()) {
 			blockOwnerField.textboxKeyTyped(c, i);
 		} else
-			try {
-				super.keyTyped(c, i);
-			} catch (IOException e) {
-			}
+			super.keyTyped(c, i);
 
+	}
+
+	protected void mouseClicked(int par1, int par2, int par3) {
+		super.mouseClicked(par1, par2, par3);
 	}
 
 	protected void actionPerformed(GuiButton button) {
@@ -98,8 +97,8 @@ public class VendorWrenchGUI extends GuiContainer {
 		}
 		if (button.id == idInfiniteButton) {
 			infinite = !infinite;
-			infiniteButton.displayString = (infinite ? I18n.translateToLocal("vendor.wrench.infiniteon")
-					: I18n.translateToLocal("vendor.wrench.infiniteoff"));
+			infiniteButton.displayString = (infinite ? StatCollector.translateToLocal("vending.wrench.infiniteon")
+					: StatCollector.translateToLocal("vending.wrench.infiniteoff"));
 			tileEntity.infiniteMode = infinite;
 			tileEntity.sendServerUpdateMessage();
 		}

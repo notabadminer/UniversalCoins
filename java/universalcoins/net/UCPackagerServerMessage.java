@@ -1,14 +1,16 @@
 package universalcoins.net;
 
+import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import universalcoins.tileentity.TilePackager;
+import universalcoins.tile.TilePackager;
+import universalcoins.tile.TileVendor;
+import universalcoins.tile.TileVendorBlock;
+import universalcoins.tile.TileVendorFrame;
 
 public class UCPackagerServerMessage implements IMessage, IMessageHandler<UCPackagerServerMessage, IMessage> {
 	private int x, y, z;
@@ -48,7 +50,7 @@ public class UCPackagerServerMessage implements IMessage, IMessageHandler<UCPack
 	public IMessage onMessage(UCPackagerServerMessage message, MessageContext ctx) {
 		World world = ctx.getServerHandler().playerEntity.worldObj;
 
-		TileEntity tileEntity = world.getTileEntity(new BlockPos(message.x, message.y, message.z));
+		TileEntity tileEntity = world.getTileEntity(message.x, message.y, message.z);
 		if (tileEntity instanceof TilePackager) {
 			((TilePackager) tileEntity).playerLookup(message.packageTarget, message.tabPressed);
 		}

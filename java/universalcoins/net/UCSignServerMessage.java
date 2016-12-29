@@ -1,29 +1,22 @@
 package universalcoins.net;
 
+import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import universalcoins.tileentity.TileUCSign;
+import universalcoins.tile.TileUCSign;
 
 public class UCSignServerMessage implements IMessage, IMessageHandler<UCSignServerMessage, IMessage> {
 	private int x, y, z;
-	private ITextComponent signText0, signText1, signText2, signText3;
+	private String signText0, signText1, signText2, signText3;
 
 	public UCSignServerMessage() {
 	}
 
-	public UCSignServerMessage(int x, int y, int z, ITextComponent[] signText) {
+	public UCSignServerMessage(int x, int y, int z, String[] signText) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -38,10 +31,10 @@ public class UCSignServerMessage implements IMessage, IMessageHandler<UCSignServ
 		buf.writeInt(x);
 		buf.writeInt(y);
 		buf.writeInt(z);
-		ByteBufUtils.writeUTF8String(buf, signText0.getFormattedText());
-		ByteBufUtils.writeUTF8String(buf, signText1.getFormattedText());
-		ByteBufUtils.writeUTF8String(buf, signText2.getFormattedText());
-		ByteBufUtils.writeUTF8String(buf, signText3.getFormattedText());
+		ByteBufUtils.writeUTF8String(buf, signText0);
+		ByteBufUtils.writeUTF8String(buf, signText1);
+		ByteBufUtils.writeUTF8String(buf, signText2);
+		ByteBufUtils.writeUTF8String(buf, signText3);
 	}
 
 	@Override
@@ -49,37 +42,17 @@ public class UCSignServerMessage implements IMessage, IMessageHandler<UCSignServ
 		this.x = buf.readInt();
 		this.y = buf.readInt();
 		this.z = buf.readInt();
-		this.signText0 = new TextComponentString(ByteBufUtils.readUTF8String(buf));
-		this.signText1 = new TextComponentString(ByteBufUtils.readUTF8String(buf));
-		this.signText2 = new TextComponentString(ByteBufUtils.readUTF8String(buf));
-		this.signText3 = new TextComponentString(ByteBufUtils.readUTF8String(buf));
+		this.signText0 = ByteBufUtils.readUTF8String(buf);
+		this.signText1 = ByteBufUtils.readUTF8String(buf);
+		this.signText2 = ByteBufUtils.readUTF8String(buf);
+		this.signText3 = ByteBufUtils.readUTF8String(buf);
 	}
 
 	@Override
-	public IMessage onMessage(final UCSignServerMessage message, final MessageContext ctx) {
-		Runnable task = new Runnable() {
-			@Override
-			public void run() {
-				processMessage(message, ctx);
-			}
-		};
-		if (ctx.side == Side.CLIENT) {
-			Minecraft.getMinecraft().addScheduledTask(task);
-		} else if (ctx.side == Side.SERVER) {
-			EntityPlayerMP playerEntity = ctx.getServerHandler().playerEntity;
-			if (playerEntity == null) {
-				FMLLog.warning("onMessage-server: Player is null");
-				return null;
-			}
-			playerEntity.getServerWorld().addScheduledTask(task);
-		}
-		return null;
-	}
-
-	private void processMessage(UCSignServerMessage message, final MessageContext ctx) {
+	public IMessage onMessage(UCSignServerMessage message, MessageContext ctx) {
 		World world = ctx.getServerHandler().playerEntity.worldObj;
 
-		TileEntity tileEntity = world.getTileEntity(new BlockPos(message.x, message.y, message.z));
+		TileEntity tileEntity = world.getTileEntity(message.x, message.y, message.z);
 		if (tileEntity != null && tileEntity instanceof TileUCSign) {
 			TileUCSign tentity = (TileUCSign) tileEntity;
 			tentity.signText[0] = message.signText0;
@@ -89,5 +62,6 @@ public class UCSignServerMessage implements IMessage, IMessageHandler<UCSignServ
 			tentity.updateSign();
 			tentity.markDirty();
 		}
+		return null;
 	}
 }

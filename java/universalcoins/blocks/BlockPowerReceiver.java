@@ -1,56 +1,68 @@
 package universalcoins.blocks;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.StatCollector;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
-import universalcoins.tileentity.TilePowerReceiver;
+import universalcoins.tile.TilePowerReceiver;
 
-public class BlockPowerReceiver extends BlockProtected {
+public class BlockPowerReceiver extends BlockContainer {
 
 	public BlockPowerReceiver() {
-		super(Material.IRON);
+		super(new Material(MapColor.stoneColor));
 		setHardness(3.0F);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(30.0F);
-	}
-	
-	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.MODEL;
+		setBlockTextureName("universalcoins:power_receiver");
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
-			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		TileEntity te = world.getTileEntity(pos);
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7,
+			float par8, float par9) {
+		TileEntity te = world.getTileEntity(x, y, z);
 		if (te != null && te instanceof TilePowerReceiver) {
 			TilePowerReceiver tentity = (TilePowerReceiver) te;
-			if (player.getName().matches(tentity.blockOwner)) {
-				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
+			if (tentity.publicAccess || player.getCommandSenderName().matches(tentity.blockOwner)) {
+				tentity.playerName = player.getDisplayName();
+				player.openGui(UniversalCoins.instance, 0, world, x, y, z);
+				return true;
+			}
+			if (!world.isRemote) {
+				player.addChatMessage(
+						new ChatComponentText(StatCollector.translateToLocal("chat.warning.private")));
 			}
 		}
-		return true;
+		return false;
 	}
 
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
-			ItemStack stack) {
+	@Override
+	public void onBlockExploded(World world, int x, int y, int z, Explosion explosion) {
+		world.setBlockToAir(x, y, z);
+		onBlockDestroyedByExplosion(world, x, y, z, explosion);
+		EntityItem entityItem = new EntityItem(world, x, y, z, new ItemStack(this, 1));
+		if (!world.isRemote)
+			world.spawnEntityInWorld(entityItem);
+	}
+
+	@Override
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack stack) {
 		if (world.isRemote)
 			return;
 		if (stack.hasTagCompound()) {
-			TileEntity te = world.getTileEntity(pos);
+			TileEntity te = world.getTileEntity(x, y, z);
 			if (te instanceof TilePowerReceiver) {
 				TilePowerReceiver tentity = (TilePowerReceiver) te;
 				NBTTagCompound tagCompound = stack.getTagCompound();
@@ -69,18 +81,69 @@ public class BlockPowerReceiver extends BlockProtected {
 				tentity.coinSum = tagCompound.getInteger("coinSum");
 				tentity.rfLevel = tagCompound.getInteger("rfLevel");
 			}
+			world.markBlockForUpdate(x, y, z);
 		}
-		((TilePowerReceiver) world.getTileEntity(pos)).blockOwner = player.getName();
+		((TilePowerReceiver) world.getTileEntity(x, y, z)).blockOwner = entity.getCommandSenderName();
 	}
 
+	@Override
+	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z) {
+		String ownerName = ((TilePowerReceiver) world.getTileEntity(x, y, z)).blockOwner;
+		if (player.capabilities.isCreativeMode) {
+			super.removedByPlayer(world, player, x, y, z);
+			return false;
+		}
+		if (player.getDisplayName().equals(ownerName) && !world.isRemote) {
+			ItemStack stack = getItemStackWithData(world, x, y, z);
+			EntityItem entityItem = new EntityItem(world, x, y, z, stack);
+			world.spawnEntityInWorld(entityItem);
+			super.removedByPlayer(world, player, x, y, z);
+		}
+		return false;
+	}
+
+	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
+		String ownerName = ((TilePowerReceiver) world.getTileEntity(x, y, z)).blockOwner;
+		if (player.getDisplayName().equals(ownerName)) {
+			this.setHardness(3.0F);
+		} else {
+			this.setHardness(-1.0F);
+		}
+	}
+
+	public ItemStack getItemStackWithData(World world, int x, int y, int z) {
+		ItemStack stack = new ItemStack(UniversalCoins.proxy.power_receiver);
+		TileEntity tentity = world.getTileEntity(x, y, z);
+		if (tentity instanceof TilePowerReceiver) {
+			TilePowerReceiver te = (TilePowerReceiver) tentity;
+			NBTTagList itemList = new NBTTagList();
+			NBTTagCompound tagCompound = new NBTTagCompound();
+			for (int i = 0; i < te.getSizeInventory(); i++) {
+				ItemStack invStack = te.getStackInSlot(i);
+				if (invStack != null) {
+					NBTTagCompound tag = new NBTTagCompound();
+					tag.setByte("Slot", (byte) i);
+					invStack.writeToNBT(tag);
+					itemList.appendTag(tag);
+				}
+			}
+			tagCompound.setTag("Inventory", itemList);
+			tagCompound.setLong("coinSum", te.coinSum);
+			tagCompound.setInteger("rfLevel", te.rfLevel);
+			stack.setTagCompound(tagCompound);
+			return stack;
+		} else
+			return stack;
+	}
+
+	@Override
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TilePowerReceiver();
 	}
 
-	//TODO: super removed, move code to new method.
-	// @Override
-	public void neighborChanged(World world, BlockPos pos, IBlockState state, Block neighborBlock) {
-		TilePowerReceiver tileEntity = (TilePowerReceiver) world.getTileEntity(pos);
+	@Override
+	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
+		TilePowerReceiver tileEntity = (TilePowerReceiver) world.getTileEntity(x, y, z);
 		tileEntity.resetPowerDirection();
 	}
 }

@@ -1,8 +1,0 @@
-{
-    "variants": {
-        "facing=north": { "model": "universalcoins:safe" },
-        "facing=south": { "model": "universalcoins:safe", "y": 180 },
-        "facing=west":  { "model": "universalcoins:safe", "y": 270 },
-        "facing=east":  { "model": "universalcoins:safe", "y": 90 }
-    }
-}

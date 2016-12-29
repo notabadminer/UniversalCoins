@@ -1,32 +1,30 @@
 package universalcoins.gui;
 
-import java.io.IOException;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
-import universalcoins.container.ContainerVendor;
-import universalcoins.tileentity.TileVendor;
+import net.minecraft.util.StatCollector;
+import universalcoins.inventory.ContainerVendor;
+import universalcoins.tile.TileVendor;
 
 public class VendorGUI extends GuiContainer {
 	private TileVendor tileEntity;
 	private GuiTextField itemPriceField;
 	private GuiButton modeButton, updateButton, setButton, tColorMinButton, tColorPlusButton;
-	private GuiCoinButton retrIronCoinBtn, retrGoldCoinBtn, retrEmeraldCoinBtn, retrDiamondCoinBtn, retrObsidianCoinBtn;
+	private GuiCoinButton retrCoinButton, retrSStackButton, retrLStackButton, retrSBagButton, retrLBagButton;
 	public static final int idModeButton = 0;
 	public static final int idUpdateButton = 1;
 	public static final int idSetButton = 2;
-	public static final int idIronCoinBtn = 3;
-	private static final int idGoldCoinBtn = 4;
-	private static final int idEmeraldCoinBtn = 5;
-	public static final int idDiamondCoinBtn = 6;
-	public static final int idObsidianCoinBtn = 7;
-	public static final int idtcmButton = 8;
-	public static final int idtcpButton = 9;
+	public static final int idCoinButton = 3;
+	private static final int idSStackButton = 4;
+	private static final int idLStackButton = 5;
+	public static final int idSBagButton = 6;
+	public static final int idLBagButton = 7;
+	public static final int idtcmButton = 15;
+	public static final int idtcpButton = 16;
 	private boolean textActive = false;
 	private int x;
 	private int y;
@@ -46,16 +44,16 @@ public class VendorGUI extends GuiContainer {
 		x = (width - xSize) / 2;
 		y = (height - ySize) / 2;
 		modeButton = new GuiSlimButton(idModeButton, 8 + x, 35 + y, 62, 12,
-				I18n.translateToLocal("vending.gui.button.mode.sell"));
+				StatCollector.translateToLocal("vending.gui.button.mode.sell"));
 		updateButton = new GuiSlimButton(idUpdateButton, 79 + x, 35 + y, 44, 12,
-				I18n.translateToLocal("general.button.edit"));
+				StatCollector.translateToLocal("general.button.edit"));
 		setButton = new GuiSlimButton(idSetButton, 124 + x, 35 + y, 44, 12,
-				I18n.translateToLocal("general.button.save"));
-		retrIronCoinBtn = new GuiCoinButton(idIronCoinBtn, 56 + x, 74 + y, 18, 18, "", 0);
-		retrGoldCoinBtn = new GuiCoinButton(idGoldCoinBtn, 74 + x, 74 + y, 18, 18, "", 1);
-		retrEmeraldCoinBtn = new GuiCoinButton(idEmeraldCoinBtn, 92 + x, 74 + y, 18, 18, "", 2);
-		retrDiamondCoinBtn = new GuiCoinButton(idDiamondCoinBtn, 110 + x, 74 + y, 18, 18, "", 3);
-		retrObsidianCoinBtn = new GuiCoinButton(idObsidianCoinBtn, 128 + x, 74 + y, 18, 18, "", 4);
+				StatCollector.translateToLocal("general.button.save"));
+		retrCoinButton = new GuiCoinButton(idCoinButton, 56 + x, 74 + y, 18, 18, "", 0);
+		retrSStackButton = new GuiCoinButton(idSStackButton, 74 + x, 74 + y, 18, 18, "", 1);
+		retrLStackButton = new GuiCoinButton(idLStackButton, 92 + x, 74 + y, 18, 18, "", 2);
+		retrSBagButton = new GuiCoinButton(idSBagButton, 110 + x, 74 + y, 18, 18, "", 3);
+		retrLBagButton = new GuiCoinButton(idLBagButton, 128 + x, 74 + y, 18, 18, "", 4);
 		tColorMinButton = new GuiSlimButton(idtcmButton, 7 + x, 78 + y, 12, 12, "-");
 		tColorPlusButton = new GuiSlimButton(idtcpButton, 33 + x, 78 + y, 12, 12, "+");
 
@@ -63,15 +61,15 @@ public class VendorGUI extends GuiContainer {
 		buttonList.add(modeButton);
 		buttonList.add(updateButton);
 		buttonList.add(setButton);
-		buttonList.add(retrIronCoinBtn);
-		buttonList.add(retrGoldCoinBtn);
-		buttonList.add(retrEmeraldCoinBtn);
-		buttonList.add(retrDiamondCoinBtn);
-		buttonList.add(retrObsidianCoinBtn);
+		buttonList.add(retrCoinButton);
+		buttonList.add(retrSStackButton);
+		buttonList.add(retrLStackButton);
+		buttonList.add(retrSBagButton);
+		buttonList.add(retrLBagButton);
 		buttonList.add(tColorMinButton);
 		buttonList.add(tColorPlusButton);
 
-		itemPriceField = new GuiTextField(0, this.fontRendererObj, 82, 21, 86, 15);
+		itemPriceField = new GuiTextField(this.fontRendererObj, 82, 21, 86, 15);
 		itemPriceField.setFocused(false);
 		itemPriceField.setMaxStringLength(10);
 		itemPriceField.setEnableBackgroundDrawing(false);
@@ -83,10 +81,7 @@ public class VendorGUI extends GuiContainer {
 				itemPriceField.textboxKeyTyped(c, i);
 			}
 		} else
-			try {
-				super.keyTyped(c, i);
-			} catch (IOException e) {
-			}
+			super.keyTyped(c, i);
 	}
 
 	@Override
@@ -95,22 +90,22 @@ public class VendorGUI extends GuiContainer {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
 		this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
 
-		retrIronCoinBtn.enabled = tileEntity.ironCoinBtnActive;
-		retrGoldCoinBtn.enabled = tileEntity.goldCoinBtnActive;
-		retrEmeraldCoinBtn.enabled = tileEntity.emeraldCoinBtnActive;
-		retrDiamondCoinBtn.enabled = tileEntity.diamondCoinBtnActive;
-		retrObsidianCoinBtn.enabled = tileEntity.obsidianCoinBtnActive;
+		retrCoinButton.enabled = tileEntity.ironCoinBtnActive;
+		retrSStackButton.enabled = tileEntity.goldCoinBtnActive;
+		retrLStackButton.enabled = tileEntity.emeraldCoinBtnActive;
+		retrSBagButton.enabled = tileEntity.diamondCoinBtnActive;
+		retrLBagButton.enabled = tileEntity.obsidianCoinBtnActive;
 
-		modeButton.displayString = (tileEntity.sellMode ? I18n.translateToLocal("general.button.sell")
-				: I18n.translateToLocal("general.button.buy"));
+		modeButton.displayString = (tileEntity.sellMode ? StatCollector.translateToLocal("general.button.sell")
+				: StatCollector.translateToLocal("general.button.buy"));
 	}
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(tileEntity.getName(), 6, 5, 4210752);
-		String priceInLocal = I18n.translateToLocal("general.label.price");
+		fontRendererObj.drawString(tileEntity.getInventoryName(), 6, 5, 4210752);
+		String priceInLocal = StatCollector.translateToLocal("general.label.price");
 		int stringWidth = fontRendererObj.getStringWidth(priceInLocal);
 		fontRendererObj.drawString(priceInLocal, 78 - stringWidth, 22, 4210752);
 		// draw itemprice

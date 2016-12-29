@@ -9,13 +9,13 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
-import universalcoins.container.ContainerSignal;
-import universalcoins.tileentity.TileSignal;
+import net.minecraft.util.StatCollector;
+import universalcoins.inventory.ContainerSignal;
+import universalcoins.tile.TileUCSignal;
 
 public class SignalGUI extends GuiContainer {
 
-	private TileSignal tEntity;
+	private TileUCSignal tEntity;
 	private GuiButton coinButton, durationMinusButton, durationPlusButton, coinMinusButton, coinPlusButton;
 	public static final int idCoinButton = 0;
 	public static final int idDurMinusButton = 1;
@@ -23,7 +23,7 @@ public class SignalGUI extends GuiContainer {
 	public static final int idCoinMinusButton = 3;
 	public static final int idCoinPlusButton = 4;
 
-	public SignalGUI(InventoryPlayer inventoryPlayer, TileSignal tileEntity) {
+	public SignalGUI(InventoryPlayer inventoryPlayer, TileUCSignal tileEntity) {
 		super(new ContainerSignal(inventoryPlayer, tileEntity));
 		tEntity = tileEntity;
 
@@ -35,7 +35,7 @@ public class SignalGUI extends GuiContainer {
 	public void initGui() {
 		super.initGui();
 		coinButton = new GuiSlimButton(idCoinButton, 111 + (width - xSize) / 2, 92 + (height - ySize) / 2, 32, 12,
-				I18n.translateToLocal("general.button.coin"));
+				StatCollector.translateToLocal("general.button.coin"));
 		durationMinusButton = new GuiSlimButton(idDurMinusButton, 95 + (width - xSize) / 2, 48 + (height - ySize) / 2,
 				12, 12, "-");
 		durationPlusButton = new GuiSlimButton(idDurPlusButton, 144 + (width - xSize) / 2, 48 + (height - ySize) / 2,
@@ -58,17 +58,17 @@ public class SignalGUI extends GuiContainer {
 
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(tEntity.getName(), 8, 5, 4210752);
+		fontRendererObj.drawString(tEntity.getInventoryName(), 8, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
-		fontRendererObj.drawString(I18n.translateToLocal("container.inventory"), 8, 96, 4210752);
-		String feeLabel = I18n.translateToLocal("signal.label.fee");
+		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, 96, 4210752);
+		String feeLabel = StatCollector.translateToLocal("signal.label.fee");
 		int stringWidth = fontRendererObj.getStringWidth(feeLabel);
 		fontRendererObj.drawString(feeLabel, 92 - stringWidth, 28, 4210752);
 		// draw fee right aligned
 		String fee = String.valueOf(formatter.format(tEntity.fee));
 		stringWidth = fontRendererObj.getStringWidth(fee);
 		fontRendererObj.drawString(fee, 138 - stringWidth, 28, 4210752);
-		String durationLabel = I18n.translateToLocal("signal.label.duration");
+		String durationLabel = StatCollector.translateToLocal("signal.label.duration");
 		stringWidth = fontRendererObj.getStringWidth(durationLabel);
 		fontRendererObj.drawString(durationLabel, 92 - stringWidth, 50, 4210752);
 		// draw signal duration right aligned

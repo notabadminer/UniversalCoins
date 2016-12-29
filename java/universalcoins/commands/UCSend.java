@@ -5,26 +5,23 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import universalcoins.UniversalCoins;
 
-public class UCSend extends CommandBase implements ICommand {
+public class UCSend extends CommandBase {
 
 	@Override
 	public String getCommandName() {
-		return I18n.translateToLocal("command.send.name");
+		return StatCollector.translateToLocal("command.send.name");
 	}
 
 	@Override
@@ -36,42 +33,42 @@ public class UCSend extends CommandBase implements ICommand {
 
 	@Override
 	public String getCommandUsage(ICommandSender var1) {
-		return I18n.translateToLocal("command.send.help");
+		return StatCollector.translateToLocal("command.send.help");
 	}
 
 	@Override
-	public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+	public boolean canCommandSenderUseCommand(ICommandSender par1ICommandSender) {
 		return true;
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void processCommand(ICommandSender sender, String[] args) {
 		if (sender instanceof EntityPlayerMP) {
 			if (args.length == 2) {
 				// check for player
 				EntityPlayerMP recipient = null;
-				WorldServer[] ws = server.worldServers;
+				WorldServer[] ws = MinecraftServer.getServer().worldServers;
 				for (WorldServer w : ws) {
 					if (w.playerEntities.contains(w.getPlayerEntityByName(args[0]))) {
 						recipient = (EntityPlayerMP) w.getPlayerEntityByName(args[0]);
 					}
 				}
 				if (recipient == null) {
-					sender.addChatMessage(
-							new TextComponentString("§c" + I18n.translateToLocal("command.send.error.notfound")));
+					sender.addChatMessage(new ChatComponentText(
+							"§c" + StatCollector.translateToLocal("command.send.error.notfound")));
 					return;
 				}
 				int requestedSendAmount = 0;
 				try {
 					requestedSendAmount = Integer.parseInt(args[1]);
 				} catch (NumberFormatException e) {
-					sender.addChatMessage(
-							new TextComponentString("§c" + I18n.translateToLocal("command.send.error.badentry")));
+					sender.addChatMessage(new ChatComponentText(
+							"§c" + StatCollector.translateToLocal("command.send.error.badentry")));
 					return;
 				}
 				if (requestedSendAmount <= 0) {
-					sender.addChatMessage(
-							new TextComponentString("§c" + I18n.translateToLocal("command.send.error.badentry")));
+					sender.addChatMessage(new ChatComponentText(
+							"§c" + StatCollector.translateToLocal("command.send.error.badentry")));
 					return;
 				}
 				// get coins from player inventory
@@ -106,8 +103,8 @@ public class UCSend extends CommandBase implements ICommand {
 				}
 				// if sender is short, cancel this transaction and return coins.
 				if (coinsFound < requestedSendAmount) {
-					sender.addChatMessage(
-							new TextComponentString("§c" + I18n.translateToLocal("command.send.error.insufficient")));
+					sender.addChatMessage(new ChatComponentText(
+							"§c" + StatCollector.translateToLocal("command.send.error.insufficient")));
 					givePlayerCoins((EntityPlayerMP) sender, coinsFound);
 					return;
 				}
@@ -115,19 +112,20 @@ public class UCSend extends CommandBase implements ICommand {
 				coinsFound -= requestedSendAmount;
 				// send coins to recipient
 				givePlayerCoins(recipient, requestedSendAmount);
-				sender.addChatMessage(new TextComponentString((requestedSendAmount) + " "
-						+ I18n.translateToLocal("command.send.result.sender") + " " + args[0]));
-				recipient.addChatMessage(new TextComponentString((requestedSendAmount) + " "
-						+ I18n.translateToLocal("command.send.result.receiver") + " " + sender.getName()));
+				sender.addChatMessage(new ChatComponentText((requestedSendAmount) + " "
+						+ StatCollector.translateToLocal("command.send.result.sender") + " " + args[0]));
+				recipient.addChatMessage(new ChatComponentText(
+						(requestedSendAmount) + " " + StatCollector.translateToLocal("command.send.result.receiver")
+								+ " " + sender.getCommandSenderName()));
 				// give sender back change
 				givePlayerCoins(player, coinsFound);
 			} else
 				sender.addChatMessage(
-						new TextComponentString("§c" + I18n.translateToLocal("command.send.error.incomplete")));
+						new ChatComponentText("§c" + StatCollector.translateToLocal("command.send.error.incomplete")));
 		}
 	}
 
-	private void givePlayerCoins(EntityPlayer recipient, int coinsLeft) {
+	public void givePlayerCoins(EntityPlayer recipient, int coinsLeft) {
 		ItemStack stack = null;
 		while (coinsLeft > 0) {
 			if (coinsLeft > UniversalCoins.coinValues[4]) {
@@ -146,7 +144,7 @@ public class UCSend extends CommandBase implements ICommand {
 				stack = new ItemStack(UniversalCoins.proxy.gold_coin, 1);
 				stack.stackSize = (int) Math.floor(coinsLeft / UniversalCoins.coinValues[1]);
 				coinsLeft -= stack.stackSize * UniversalCoins.coinValues[1];
-			} else if (coinsLeft > UniversalCoins.coinValues[0]) {
+			} else if (coinsLeft >= UniversalCoins.coinValues[0]) {
 				stack = new ItemStack(UniversalCoins.proxy.iron_coin, 1);
 				stack.stackSize = (int) Math.floor(coinsLeft / UniversalCoins.coinValues[0]);
 				coinsLeft -= stack.stackSize * UniversalCoins.coinValues[0];
@@ -182,15 +180,8 @@ public class UCSend extends CommandBase implements ICommand {
 	}
 
 	@Override
-	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args,
-			BlockPos pos) {
-		if (args.length == 1) {
-			List<String> players = new ArrayList<String>();
-			for (EntityPlayer p : (List<EntityPlayer>) sender.getEntityWorld().playerEntities) {
-				players.add(p.getName());
-			}
-			return getListOfStringsMatchingLastWord(args, players);
-		}
-		return null;
+	public List addTabCompletionOptions(ICommandSender sender, String[] args) {
+		return args.length != 1 && args.length != 2 ? null
+				: getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames());
 	}
 }

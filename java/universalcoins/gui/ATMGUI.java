@@ -1,6 +1,5 @@
 package universalcoins.gui;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 
 import net.minecraft.client.Minecraft;
@@ -9,9 +8,9 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
-import universalcoins.container.ContainerATM;
-import universalcoins.tileentity.TileATM;
+import net.minecraft.util.StatCollector;
+import universalcoins.inventory.ContainerATM;
+import universalcoins.tile.TileATM;
 
 public class ATMGUI extends GuiContainer {
 	private GuiButton buttonOne, buttonTwo, buttonThree, buttonFour;
@@ -44,11 +43,7 @@ public class ATMGUI extends GuiContainer {
 			textField.textboxKeyTyped(c, i);
 			textField.setFocused(false);
 		} else
-			try {
-				super.keyTyped(c, i);
-			} catch (IOException e) {
-				// fail silently
-			}
+			super.keyTyped(c, i);
 
 	}
 
@@ -65,7 +60,7 @@ public class ATMGUI extends GuiContainer {
 		buttonList.add(buttonThree);
 		buttonList.add(buttonFour);
 
-		textField = new GuiTextField(0, this.fontRendererObj, 1, 1, 100, 13);
+		textField = new GuiTextField(this.fontRendererObj, 1, 1, 100, 13);
 		textField.setFocused(false);
 		textField.setMaxStringLength(9);
 		textField.setText("0");
@@ -87,7 +82,7 @@ public class ATMGUI extends GuiContainer {
 			this.drawTexturedModalRect(x + 171, y + 19, 196, 0, 18, 18);
 			this.drawTexturedModalRect(x + 34, y + 43, 0, 201, Math.min(barProgress, 128), 5);
 			if (barProgress > 129) {
-				String authString = I18n.translateToLocal("atm.auth.access");
+				String authString = StatCollector.translateToLocal("atm.auth.access");
 				if (authString.startsWith("C:"))
 					authString = authString.substring(2);
 				int stringLength = fontRendererObj.getStringWidth(authString);
@@ -96,7 +91,7 @@ public class ATMGUI extends GuiContainer {
 			}
 			if (barProgress > 130) {
 				if (!tEntity.accountNumber.matches("none")) {
-					String authString = I18n.translateToLocal("atm.auth.success");
+					String authString = StatCollector.translateToLocal("atm.auth.success");
 					if (authString.startsWith("C:"))
 						authString = authString.substring(2);
 					int stringLength = fontRendererObj.getStringWidth(authString);
@@ -107,7 +102,7 @@ public class ATMGUI extends GuiContainer {
 						barProgress = 0;
 					}
 				} else {
-					String authString = I18n.translateToLocal("atm.auth.fail");
+					String authString = StatCollector.translateToLocal("atm.auth.fail");
 					if (authString.startsWith("C:"))
 						authString = authString.substring(2);
 					int stringLength = fontRendererObj.getStringWidth(authString);
@@ -176,9 +171,9 @@ public class ATMGUI extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(tEntity.getName(), 6, 5, 4210752);
+		fontRendererObj.drawString(tEntity.getInventoryName(), 6, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
-		fontRendererObj.drawString(I18n.translateToLocal("container.inventory"), 6, ySize - 96 + 2, 4210752);
+		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 6, ySize - 96 + 2, 4210752);
 		drawMenu(menuState);
 	}
 
@@ -469,7 +464,7 @@ public class ATMGUI extends GuiContainer {
 		String[] endString = { ".one", ".two", ".three", ".four", ".five", ".six", ".seven", ".eight" };
 		String menuString;
 		for (int x = 0; x < 8; x++) {
-			menuString = I18n.translateToLocal("atm." + menuStateName[state] + endString[x]);
+			menuString = StatCollector.translateToLocal("atm." + menuStateName[state] + endString[x]);
 			if (menuString.startsWith("C:")) { // center text
 				menuString = menuString.substring(2);// strip centering flag
 				int stringLength = fontRendererObj.getStringWidth(menuString);

@@ -2,99 +2,107 @@ package universalcoins.blocks;
 
 import java.util.Random;
 
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
-import universalcoins.tileentity.TileProtected;
-import universalcoins.tileentity.TileSignal;
+import universalcoins.tile.TileUCSignal;
 
-public class BlockSignal extends BlockProtected {
-
-	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
+public class BlockSignal extends BlockContainer {
 
 	public BlockSignal() {
-		super(Material.IRON);
+		super(new Material(MapColor.stoneColor));
 		setHardness(3.0F);
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(30.0F);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+		setBlockTextureName("universalcoins:signalblock");
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
-			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean shouldSideBeRendered(IBlockAccess par1IBlockAccess, int par2, int par3, int par4, int par5) {
+		return false;
+	}
+
+	@Override
+	public boolean isOpaqueCube() {
+		return false;
+	}
+
+	@Override
+	public int getRenderType() {
+		return 0;
+	}
+
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7,
+			float par8, float par9) {
 		if (player.isSneaking()) {
-			TileEntity te = world.getTileEntity(pos);
-			if (te != null && te instanceof TileSignal) {
-				TileSignal tentity = (TileSignal) te;
-				if (player.getCommandSenderEntity().getName().matches(tentity.blockOwner)) {
-					player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
+			TileEntity te = world.getTileEntity(x, y, z);
+			if (te != null && te instanceof TileUCSignal) {
+				TileUCSignal tentity = (TileUCSignal) te;
+				if (player.getCommandSenderName().matches(tentity.blockOwner)) {
+					player.openGui(UniversalCoins.instance, 0, world, x, y, z);
 				}
 			}
 		} else {
 			// take coins and activate on click
 			ItemStack[] inventory = player.inventory.mainInventory;
-			TileSignal tentity = (TileSignal) world.getTileEntity(pos);
+			TileUCSignal tentity = (TileUCSignal) world.getTileEntity(x, y, z);
 			int coinsFound = 0;
 			for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 				ItemStack stack = player.inventory.getStackInSlot(i);
-				if (stack != null) {
-					switch (stack.getItem().getUnlocalizedName()) {
-					case "item.iron_coin":
-						coinsFound += stack.stackSize * UniversalCoins.coinValues[0];
-						player.inventory.setInventorySlotContents(i, null);
-						break;
-					case "item.gold_coin":
-						coinsFound += stack.stackSize * UniversalCoins.coinValues[1];
-						player.inventory.setInventorySlotContents(i, null);
-						break;
-					case "item.emerald_coin":
-						coinsFound += stack.stackSize * UniversalCoins.coinValues[2];
-						player.inventory.setInventorySlotContents(i, null);
-						break;
-					case "item.diamond_coin":
-						coinsFound += stack.stackSize * UniversalCoins.coinValues[3];
-						player.inventory.setInventorySlotContents(i, null);
-						break;
-					case "item.obsidian_coin":
-						coinsFound += stack.stackSize * UniversalCoins.coinValues[4];
-						player.inventory.setInventorySlotContents(i, null);
-						break;
-					}
+				if (stack == null)
+					continue;
+				switch (stack.getUnlocalizedName()) {
+				case "item.iron_coin":
+					coinsFound = UniversalCoins.coinValues[0] * stack.stackSize;
+					player.inventory.setInventorySlotContents(i, null);
+					break;
+				case "item.gold_coin":
+					coinsFound = UniversalCoins.coinValues[1] * stack.stackSize;
+					player.inventory.setInventorySlotContents(i, null);
+					break;
+				case "item.emerald_coin":
+					coinsFound = UniversalCoins.coinValues[2] * stack.stackSize;
+					player.inventory.setInventorySlotContents(i, null);
+					break;
+				case "item.diamond_coin":
+					coinsFound = UniversalCoins.coinValues[3] * stack.stackSize;
+					player.inventory.setInventorySlotContents(i, null);
+					break;
+				case "item.obsidian_coin":
+					coinsFound = UniversalCoins.coinValues[4] * stack.stackSize;
+					player.inventory.setInventorySlotContents(i, null);
+					break;
 				}
 				if (coinsFound > tentity.fee)
 					break;
 			}
 			if (world.isRemote)
-				return false; // we don't want to do the rest on client side
+				return false;
 			if (coinsFound < tentity.fee) {
-				player.addChatMessage(new TextComponentString(I18n.translateToLocal("signal.message.notenough")));
+				player.addChatMessage(
+						new ChatComponentText(StatCollector.translateToLocal("signal.message.notenough")));
 			} else {
-				// we have enough coins to cover the fee so we pay it and
-				// return
+				// we have enough coins to cover the fee so we pay it and return
 				// the change
-				player.addChatMessage(new TextComponentString(I18n.translateToLocal("signal.message.activated")));
+				player.addChatMessage(
+						new ChatComponentText(StatCollector.translateToLocal("signal.message.activated")));
 				coinsFound -= tentity.fee;
 				tentity.activateSignal();
 			}
+			// return excess coins
 			ItemStack stack = null;
 			while (coinsFound > 0) {
 				if (coinsFound > UniversalCoins.coinValues[4]) {
@@ -113,19 +121,18 @@ public class BlockSignal extends BlockProtected {
 					stack = new ItemStack(UniversalCoins.proxy.gold_coin, 1);
 					stack.stackSize = (int) Math.floor(coinsFound / UniversalCoins.coinValues[1]);
 					coinsFound -= stack.stackSize * UniversalCoins.coinValues[1];
-				} else if (coinsFound > UniversalCoins.coinValues[0]) {
+				} else if (coinsFound >= UniversalCoins.coinValues[0]) {
 					stack = new ItemStack(UniversalCoins.proxy.iron_coin, 1);
 					stack.stackSize = (int) Math.floor(coinsFound / UniversalCoins.coinValues[0]);
 					coinsFound -= stack.stackSize * UniversalCoins.coinValues[0];
 				}
-				if (stack == null)
-					break;
-				// add a stack to the players inventory
+
+				// add a stack to the recipients inventory
 				if (player.inventory.getFirstEmptyStack() != -1) {
 					player.inventory.addItemStackToInventory(stack);
 				} else {
-					for (int j = 0; j < player.inventory.getSizeInventory(); j++) {
-						ItemStack istack = player.inventory.getStackInSlot(j);
+					for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+						ItemStack istack = player.inventory.getStackInSlot(i);
 						if (istack != null && istack.getItem() == stack.getItem()) {
 							int amountToAdd = (int) Math.min(stack.stackSize,
 									istack.getMaxStackSize() - istack.stackSize);
@@ -133,105 +140,61 @@ public class BlockSignal extends BlockProtected {
 							stack.stackSize -= amountToAdd;
 						}
 					}
-					if (stack.stackSize > 0) {
-						// at this point, we're going to throw extra to the
-						// world since
-						// the player inventory must be full.
-						Random rand = new Random();
-						float rx = rand.nextFloat() * 0.8F + 0.1F;
-						float ry = rand.nextFloat() * 0.8F + 0.1F;
-						float rz = rand.nextFloat() * 0.8F + 0.1F;
-						EntityItem entityItem = new EntityItem(world, ((EntityPlayerMP) player).posX + rx,
-								((EntityPlayerMP) player).posY + ry, ((EntityPlayerMP) player).posZ + rz, stack);
-						world.spawnEntityInWorld(entityItem);
-					}
+					// at this point, we're going to throw extra to the world
+					// since the player inventory must be full.
+					Random rand = new Random();
+					float rx = rand.nextFloat() * 0.8F + 0.1F;
+					float ry = rand.nextFloat() * 0.8F + 0.1F;
+					float rz = rand.nextFloat() * 0.8F + 0.1F;
+					EntityItem entityItem = new EntityItem(world, player.posX + rx, player.posY + ry, player.posZ + rz,
+							stack);
+					world.spawnEntityInWorld(entityItem);
 				}
 			}
 		}
 		return true;
-
 	}
 
 	@Override
-	public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {
-		world.setBlockToAir(pos);
-		onBlockDestroyedByExplosion(world, pos, explosion);
-		EntityItem entityItem = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(this, 1));
+	public void onBlockExploded(World world, int x, int y, int z, Explosion explosion) {
+		world.setBlockToAir(x, y, z);
+		onBlockDestroyedByExplosion(world, x, y, z, explosion);
+		EntityItem entityItem = new EntityItem(world, x, y, z, new ItemStack(this, 1));
 		if (!world.isRemote)
 			world.spawnEntityInWorld(entityItem);
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
-			ItemStack stack) {
-		world.setBlockState(pos, state.withProperty(FACING, player.getHorizontalFacing().getOpposite()), 2);
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack stack) {
 		if (world.isRemote)
 			return;
-		TileEntity te = world.getTileEntity(pos);
+		int rotation = MathHelper.floor_double((double) ((player.rotationYaw * 4.0f) / 360F) + 2.5D) & 3;
+		world.setBlockMetadataWithNotify(x, y, z, rotation, 2);
+		TileEntity te = world.getTileEntity(x, y, z);
 		if (te != null) {
-			((TileProtected) world.getTileEntity(pos)).blockOwner = player.getCommandSenderEntity().getName();
+			((TileUCSignal) world.getTileEntity(x, y, z)).blockOwner = player.getCommandSenderName();
 		}
-	}
-
-	public void updatePower(World worldIn, BlockPos pos) {
-		if (!worldIn.isRemote) {
-			worldIn.notifyNeighborsOfStateChange(pos, this);
-			EnumFacing[] aenumfacing = EnumFacing.values();
-			int i = aenumfacing.length;
-
-			for (int j = 0; j < i; ++j) {
-				EnumFacing enumfacing = aenumfacing[j];
-				worldIn.notifyNeighborsOfStateChange(pos.offset(enumfacing), this);
-			}
-		}
-	}
-
-	@Override
-	public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-		TileEntity te = blockAccess.getTileEntity(pos);
-		if (te != null && te instanceof TileSignal) {
-			TileSignal tentity = (TileSignal) te;
-			return tentity.canProvidePower ? 15 : 0;
-		}
-		return 0;
 	}
 
 	@Override
 	public TileEntity createNewTileEntity(World var1, int var2) {
-		return new TileSignal();
+		return new TileUCSignal();
 	}
 
-	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.MODEL;
-	}
-
-	@Override
-	public boolean canProvidePower(IBlockState state) {
-		return true;
-	}
-
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[] { FACING });
-	}
-
-	/**
-	 * Convert the given metadata into a BlockState for this Block
-	 */
-	public IBlockState getStateFromMeta(int meta) {
-		EnumFacing enumfacing = EnumFacing.getFront(meta);
-
-		if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
-			enumfacing = EnumFacing.NORTH;
+	public int isProvidingWeakPower(IBlockAccess block, int x, int y, int z, int side) {
+		TileUCSignal tentity = (TileUCSignal) block.getTileEntity(x, y, z);
+		if (tentity.canProvidePower) {
+			return 15;
+		} else {
+			return 0;
 		}
-
-		return this.getDefaultState().withProperty(FACING, enumfacing);
 	}
 
-	/**
-	 * Convert the BlockState into the correct metadata value
-	 */
-	public int getMetaFromState(IBlockState state) {
-		return ((EnumFacing) state.getValue(FACING)).getIndex();
+	public int isProvidingStrongPower(IBlockAccess block, int x, int y, int z, int side) {
+		return isProvidingWeakPower(block, x, y, z, side);
+	}
+
+	public boolean canProvidePower() {
+		return true;
 	}
 }

@@ -1,8 +1,0 @@
-{
-    "variants": {
-        "facing=north": { "model": "universalcoins:atm" },
-        "facing=south": { "model": "universalcoins:atm", "y": 180 },
-        "facing=west":  { "model": "universalcoins:atm", "y": 270 },
-        "facing=east":  { "model": "universalcoins:atm", "y": 90 }
-    }
-}

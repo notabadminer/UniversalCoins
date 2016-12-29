@@ -3,48 +3,48 @@ package universalcoins.commands;
 import java.text.DecimalFormat;
 
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.StatCollector;
 import universalcoins.Achievements;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UniversalAccounts;
 
-public class UCBalance extends CommandBase implements ICommand {
+public class UCBalance extends CommandBase {
 
 	@Override
 	public String getCommandName() {
-		return I18n.translateToLocal("command.balance.name");
+		return StatCollector.translateToLocal("command.balance.name");
 	}
 
 	@Override
 	public String getCommandUsage(ICommandSender var1) {
-		return I18n.translateToLocal("command.balance.help");
+		return StatCollector.translateToLocal("command.balance.help");
 	}
 
 	@Override
-	public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+	public boolean canCommandSenderUseCommand(ICommandSender par1ICommandSender) {
 		return true;
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void processCommand(ICommandSender sender, String[] astring) {
 		if (sender instanceof EntityPlayerMP) {
 			int playerCoins = getPlayerCoins((EntityPlayerMP) sender);
 			String uuid = ((EntityPlayerMP) sender).getPersistentID().toString();
 			String playerAcct = UniversalAccounts.getInstance().getPlayerAccount(uuid);
 			long accountBalance = UniversalAccounts.getInstance().getAccountBalance(playerAcct);
 			DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
-			sender.addChatMessage(new TextComponentString(
-					I18n.translateToLocal("command.balance.result.inventory") + formatter.format(playerCoins)));
+			sender.addChatMessage(
+					new ChatComponentText(StatCollector.translateToLocal("command.balance.result.inventory")
+							+ formatter.format(playerCoins)));
 			if (accountBalance != -1) {
-				sender.addChatMessage(new TextComponentString(
-						I18n.translateToLocal("command.balance.result.account") + formatter.format(accountBalance)));
+				sender.addChatMessage(
+						new ChatComponentText(StatCollector.translateToLocal("command.balance.result.account")
+								+ formatter.format(accountBalance)));
 			}
 			// achievement stuff
 			if (playerCoins > 1000 || accountBalance > 1000) {

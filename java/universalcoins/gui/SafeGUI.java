@@ -6,9 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
-import universalcoins.container.ContainerSafe;
-import universalcoins.tileentity.TileSafe;
+import net.minecraft.util.StatCollector;
+import universalcoins.inventory.ContainerSafe;
+import universalcoins.tile.TileSafe;
 
 public class SafeGUI extends GuiContainer {
 	private TileSafe tEntity;
@@ -33,9 +33,9 @@ public class SafeGUI extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
-		fontRendererObj.drawString(tEntity.getName(), 6, 5, 4210752);
+		fontRendererObj.drawString(tEntity.getInventoryName(), 6, 5, 4210752);
 
-		fontRendererObj.drawString(I18n.translateToLocal("container.inventory"), 6, 58, 4210752);
+		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 6, 58, 4210752);
 
 		// display player account balance
 		String formattedBalance = formatter.format(tEntity.accountBalance);

@@ -3,16 +3,26 @@ package universalcoins.items;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.StatCollector;
 import universalcoins.UniversalCoins;
 
 public class ItemCoin extends Item {
 
 	public ItemCoin() {
-		this.setCreativeTab(UniversalCoins.tabUniversalCoins);
+		super();
+		setCreativeTab(UniversalCoins.tabUniversalCoins);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister par1IconRegister) {
+		this.itemIcon = par1IconRegister
+				.registerIcon(UniversalCoins.MODID + ":" + this.getUnlocalizedName().substring(5));
 	}
 
 	@Override
@@ -20,7 +30,7 @@ public class ItemCoin extends Item {
 		DecimalFormat formatter = new DecimalFormat("###,###,###,###,###");
 		list.add(formatter.format(stack.stackSize * UniversalCoins.coinValues[0]) + " "
 				+ (stack.stackSize * UniversalCoins.coinValues[0] > 1
-						? I18n.translateToLocal("general.currency.multiple")
-						: I18n.translateToLocal("general.currency.single")));
+						? StatCollector.translateToLocal("general.currency.multiple")
+						: StatCollector.translateToLocal("general.currency.single")));
 	}
 }

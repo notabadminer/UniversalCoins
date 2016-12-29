@@ -1,8 +1,0 @@
-{
-    "variants": {
-        "facing=north": { "model": "universalcoins:signalblock" },
-        "facing=south": { "model": "universalcoins:signalblock", "y": 180 },
-        "facing=west":  { "model": "universalcoins:signalblock", "y": 270 },
-        "facing=east":  { "model": "universalcoins:signalblock", "y": 90 }
-    }
-}

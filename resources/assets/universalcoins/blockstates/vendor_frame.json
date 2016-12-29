@@ -1,8 +1,0 @@
-{
-    "variants": {
-        "facing=north": { "model": "universalcoins:vendor_frame" },
-        "facing=south": { "model": "universalcoins:vendor_frame", "y": 180 },
-        "facing=west":  { "model": "universalcoins:vendor_frame", "y": 270 },
-        "facing=east":  { "model": "universalcoins:vendor_frame", "y": 90 }
-    }
-}

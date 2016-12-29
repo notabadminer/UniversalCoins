@@ -5,20 +5,20 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
-import universalcoins.container.ContainerVendorBuy;
-import universalcoins.tileentity.TileVendor;
+import net.minecraft.util.StatCollector;
+import universalcoins.inventory.ContainerVendorBuy;
+import universalcoins.tile.TileVendor;
 
 public class VendorBuyGUI extends GuiContainer {
 	private TileVendor tileEntity;
 	private GuiButton sellButton;
-	private GuiCoinButton retrIronCoinBtn, retrGoldCoinBtn, retrEmeraldCoinBtn, retrDiamondCoinBtn, retrObsidianCoinBtn;
-	public static final int idSellButton = 10;
-	public static final int idIronCoinBtn = 12;
-	private static final int idGoldCoinBtn = 13;
-	private static final int idEmeraldCoinBtn = 14;
-	public static final int idDiamondCoinBtn = 15;
-	public static final int idObsidianCoinBtn = 16;
+	private GuiCoinButton retrCoinButton, retrSStackButton, retrLStackButton, retrSBagButton, retrLBagButton;
+	public static final int idSellButton = 8;
+	public static final int idCoinButton = 10;
+	private static final int idSStackButton = 11;
+	private static final int idLStackButton = 12;
+	public static final int idSBagButton = 13;
+	public static final int idLBagButton = 14;
 
 	public VendorBuyGUI(InventoryPlayer inventoryPlayer, TileVendor tEntity) {
 		super(new ContainerVendorBuy(inventoryPlayer, tEntity));
@@ -32,50 +32,50 @@ public class VendorBuyGUI extends GuiContainer {
 	public void initGui() {
 		super.initGui();
 		sellButton = new GuiSlimButton(idSellButton, 126 + (width - xSize) / 2, 46 + (height - ySize) / 2, 42, 12,
-				I18n.translateToLocal("general.button.sell"));
-		retrIronCoinBtn = new GuiCoinButton(idIronCoinBtn, 60 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18, 18,
+				StatCollector.translateToLocal("general.button.sell"));
+		retrCoinButton = new GuiCoinButton(idCoinButton, 60 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18, 18,
 				"", 0);
-		retrGoldCoinBtn = new GuiCoinButton(idGoldCoinBtn, 78 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18,
+		retrSStackButton = new GuiCoinButton(idSStackButton, 78 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18,
 				18, "", 1);
-		retrEmeraldCoinBtn = new GuiCoinButton(idEmeraldCoinBtn, 96 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18,
+		retrLStackButton = new GuiCoinButton(idLStackButton, 96 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18,
 				18, "", 2);
-		retrDiamondCoinBtn = new GuiCoinButton(idDiamondCoinBtn, 114 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18, 18,
+		retrSBagButton = new GuiCoinButton(idSBagButton, 114 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18, 18,
 				"", 3);
-		retrObsidianCoinBtn = new GuiCoinButton(idObsidianCoinBtn, 132 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18, 18,
+		retrLBagButton = new GuiCoinButton(idLBagButton, 132 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18, 18,
 				"", 4);
 		buttonList.clear();
 		buttonList.add(sellButton);
-		buttonList.add(retrIronCoinBtn);
-		buttonList.add(retrGoldCoinBtn);
-		buttonList.add(retrEmeraldCoinBtn);
-		buttonList.add(retrDiamondCoinBtn);
-		buttonList.add(retrObsidianCoinBtn);
+		buttonList.add(retrCoinButton);
+		buttonList.add(retrSStackButton);
+		buttonList.add(retrLStackButton);
+		buttonList.add(retrSBagButton);
+		buttonList.add(retrLBagButton);
 
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/vendor-buy.png");
+		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/vendor_buy.png");
 		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
 		int x = (width - xSize) / 2;
 		int y = (height - ySize) / 2;
 		this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
 
 		sellButton.enabled = tileEntity.sellButtonActive;
-		retrIronCoinBtn.enabled = tileEntity.uironCoinBtnActive;
-		retrGoldCoinBtn.enabled = tileEntity.goldCoinBtnActive;
-		retrEmeraldCoinBtn.enabled = tileEntity.emeraldCoinBtnActive;
-		retrDiamondCoinBtn.enabled = tileEntity.diamondCoinBtnActive;
-		retrObsidianCoinBtn.enabled = tileEntity.obsidianCoinBtnActive;
+		retrCoinButton.enabled = tileEntity.uIronCoinBtnActive;
+		retrSStackButton.enabled = tileEntity.uGoldCoinBtnActive;
+		retrLStackButton.enabled = tileEntity.uEmeraldCoinBtnActive;
+		retrSBagButton.enabled = tileEntity.uDiamondCoinBtnActive;
+		retrLBagButton.enabled = tileEntity.uObsidianCoinBtnActive;
 	}
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(tileEntity.getName(), 6, 5, 4210752);
+		fontRendererObj.drawString(tileEntity.getInventoryName(), 6, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
-		fontRendererObj.drawString(I18n.translateToLocal("container.inventory"), 8, 106, 4210752);
+		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, 106, 4210752);
 		fontRendererObj.drawString(String.valueOf(tileEntity.itemPrice), 48, 29, 4210752);
 		fontRendererObj.drawString(String.valueOf(tileEntity.userCoinSum), 63, 69, 4210752);
 	}
