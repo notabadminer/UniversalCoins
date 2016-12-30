@@ -18,7 +18,7 @@ import universalcoins.UniversalCoins;
 import universalcoins.blocks.BlockSignal;
 import universalcoins.net.UCButtonMessage;
 
-public class TileSignal extends TileEntity implements IInventory, ITickable {
+public class TileSignal extends TileProtected implements IInventory, ITickable {
 
 	private ItemStack[] inventory = new ItemStack[1];
 	public static final int itemOutputSlot = 0;

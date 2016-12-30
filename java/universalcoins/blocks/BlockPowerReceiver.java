@@ -15,7 +15,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
@@ -35,7 +35,6 @@ public class BlockPowerReceiver extends BlockProtected {
 		return EnumBlockRenderType.MODEL;
 	}
 
-	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
 			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntity te = world.getTileEntity(pos);
@@ -48,7 +47,7 @@ public class BlockPowerReceiver extends BlockProtected {
 			}
 			if (!world.isRemote) {
 				player.addChatMessage(
-						new TextComponentString(I18n.translateToLocal("chat.warning.private")));
+						new TextComponentTranslation("chat.warning.private"));
 			}
 		}
 		return false;
@@ -56,6 +55,7 @@ public class BlockPowerReceiver extends BlockProtected {
 
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
 			ItemStack stack) {
+		super.onBlockPlacedBy(world, pos, state, player, stack);
 		if (world.isRemote)
 			return;
 		if (stack.hasTagCompound()) {
@@ -79,7 +79,6 @@ public class BlockPowerReceiver extends BlockProtected {
 				tentity.rfLevel = tagCompound.getInteger("rfLevel");
 			}
 		}
-		((TilePowerReceiver) world.getTileEntity(pos)).blockOwner = player.getName();
 	}
 
 	public TileEntity createNewTileEntity(World var1, int var2) {

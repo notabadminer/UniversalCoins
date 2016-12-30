@@ -38,7 +38,6 @@ public class BlockSignal extends BlockProtected {
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 	}
 
-	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
 			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (player.isSneaking()) {
@@ -161,16 +160,10 @@ public class BlockSignal extends BlockProtected {
 			world.spawnEntityInWorld(entityItem);
 	}
 
-	@Override
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
 			ItemStack stack) {
+		super.onBlockPlacedBy(world, pos, state, player, stack);
 		world.setBlockState(pos, state.withProperty(FACING, player.getHorizontalFacing().getOpposite()), 2);
-		if (world.isRemote)
-			return;
-		TileEntity te = world.getTileEntity(pos);
-		if (te != null) {
-			((TileSignal) world.getTileEntity(pos)).blockOwner = player.getCommandSenderEntity().getName();
-		}
 	}
 
 	public void updatePower(World worldIn, BlockPos pos) {

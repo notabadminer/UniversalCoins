@@ -19,7 +19,7 @@ import universalcoins.net.ATMWithdrawalMessage;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.util.UniversalAccounts;
 
-public class TileATM extends TileEntity implements IInventory, ISidedInventory {
+public class TileATM extends TileProtected implements IInventory, ISidedInventory {
 	private ItemStack[] inventory = new ItemStack[2];
 	public static final int itemCoinSlot = 0;
 	public static final int itemCardSlot = 1;

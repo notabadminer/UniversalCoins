@@ -16,6 +16,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.tileentity.TileTradeStation;
 
@@ -28,27 +29,28 @@ public class BlockTradeStation extends BlockProtected {
 		setResistance(6000.0F);
 	}
 
-	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
 			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity != null && tileEntity instanceof TileTradeStation) {
-			if (((TileTradeStation) tileEntity).inUse) {
+			TileTradeStation tentity = (TileTradeStation) tileEntity;
+			FMLLog.info("block owner: " + tentity.blockOwner);
+			if (tentity.inUse) {
 				if (!world.isRemote) {
 					player.addChatMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
 				}
 				return true;
 			}
-			if (((TileTradeStation) tileEntity).publicAccess) {
+			if (tentity.publicAccess) {
 				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
-				((TileTradeStation) tileEntity).playerName = player.getName();
-				((TileTradeStation) tileEntity).inUse = true;
+				tentity.playerName = player.getName();
+				tentity.inUse = true;
 				return true;
 			} else {
-				if (((TileTradeStation) tileEntity).blockOwner.matches(player.getName())) {
+				if (tentity.blockOwner.matches(player.getName())) {
 					player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
-					((TileTradeStation) tileEntity).playerName = player.getName();
-					((TileTradeStation) tileEntity).inUse = true;
+					tentity.playerName = player.getName();
+					tentity.inUse = true;
 					return true;
 				}
 				if (!world.isRemote) {
@@ -61,6 +63,7 @@ public class BlockTradeStation extends BlockProtected {
 	
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
 			ItemStack stack) {
+		super.onBlockPlacedBy(world, pos, state, player, stack);
 		if (world.isRemote)
 			return;
 		if (stack.hasTagCompound()) {
@@ -86,8 +89,6 @@ public class BlockTradeStation extends BlockProtected {
 				tentity.customName = tagCompound.getString("CustomName");
 				tentity.blockOwner = player.getName();
 			}
-		} else {
-			((TileTradeStation) world.getTileEntity(pos)).blockOwner = player.getName();
 		}
 		if (stack.hasDisplayName()) {
 			((TileTradeStation) world.getTileEntity(pos)).setName(stack.getDisplayName());

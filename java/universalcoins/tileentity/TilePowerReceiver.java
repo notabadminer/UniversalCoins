@@ -23,7 +23,7 @@ import universalcoins.net.UCButtonMessage;
 import universalcoins.util.UniversalAccounts;
 import universalcoins.util.UniversalPower;
 
-public class TilePowerReceiver extends TileEntity implements ITickable, IInventory, IEnergyProvider {
+public class TilePowerReceiver extends TileProtected implements ITickable, IInventory, IEnergyProvider {
 
 	private ItemStack[] inventory = new ItemStack[3];
 	public static final int itemCardSlot = 0;

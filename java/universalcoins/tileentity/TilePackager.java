@@ -24,7 +24,7 @@ import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCPackagerServerMessage;
 import universalcoins.util.UniversalAccounts;
 
-public class TilePackager extends TileEntity implements IInventory {
+public class TilePackager extends TileProtected implements IInventory {
 
 	private ItemStack[] inventory = new ItemStack[12];
 	public static final int[] itemPackageSlot = { 0, 1, 2, 3, 4, 5, 6, 7 };

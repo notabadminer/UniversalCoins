@@ -20,7 +20,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UniversalAccounts;
 
-public class TileSafe extends TileEntity implements IInventory, ISidedInventory {
+public class TileSafe extends TileProtected implements IInventory, ISidedInventory {
 	private ItemStack[] inventory = new ItemStack[2];
 	public static final int itemInputSlot = 0;
 	public static final int itemOutputSlot = 1;
