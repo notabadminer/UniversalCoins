@@ -59,7 +59,8 @@ import universalcoins.worldgen.VillageGenTrade;
  * 
  **/
 
-@Mod(modid = UniversalCoins.MODID, name = UniversalCoins.NAME, version = UniversalCoins.VERSION, acceptedMinecraftVersions = "@MC_VERSION@")
+@Mod(modid = UniversalCoins.MODID, name = UniversalCoins.NAME, version = UniversalCoins.VERSION, acceptedMinecraftVersions = "@MC_VERSION@", 
+updateJSON = "https://raw.githubusercontent.com/notabadminer/UniversalCoins/master/version.json")
 public class UniversalCoins {
 	@Instance("universalcoins")
 	public static UniversalCoins instance;

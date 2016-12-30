@@ -1,14 +1,10 @@
 {
-	"versionList": [
-		{
-			"mcVersion":"Minecraft 1.8.9",
-			"modVersion":"1.8.9-0.4",
-			"changeLog": [
-				"Please read changes on release page."
-			],
-			"updateURL":"https://github.com/notabadminer/UniversalCoins/releases",
-			"isDirectLink":"false",
-			"newFileName":""
-		}
-	]
+  "homepage": "https://github.com/notabadminer/UniversalCoins/releases",
+  "promos": {
+    "1.10.2-latest": "0.5",
+    "1.10.2-recommendedd": "0.5"
+  },
+  "1.10.2" : {
+    "0.5": "Changed to forge mod update notification system"
+  }
 }
