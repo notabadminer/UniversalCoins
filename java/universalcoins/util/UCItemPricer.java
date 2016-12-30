@@ -62,6 +62,7 @@ public class UCItemPricer {
 				FMLLog.warning("Universal Coins: Failed to load default configs");
 				e.printStackTrace();
 			}
+			updateOreDictionaryPrices();
 			autoPriceCraftedItems();
 			autoPriceSmeltedItems();
 			writePriceLists();
@@ -103,12 +104,6 @@ public class UCItemPricer {
 		while (tokenizer.hasMoreElements()) {
 			String token = tokenizer.nextToken();
 			String[] tempData = token.split("=");
-			// FMLLog.info("Universal Coins: Updating UCPricelist: " +
-			// tempData[0] + "=" +
-			// Integer.valueOf(tempData[1]));
-			// We'll update the prices of all the items and not add all the
-			// default prices to the config folder if the
-			// mods are not present
 			if (ucPriceMap.get(tempData[0]) != null && tempData.length == 2) {
 				ucPriceMap.put(tempData[0], Integer.valueOf(tempData[1]));
 			}
@@ -127,88 +122,90 @@ public class UCItemPricer {
 			// pass the first value as modname
 			String modName = tempModName[0];
 			if (item != null) {
-				Item test = (Item) Item.REGISTRY.getObject(new ResourceLocation(item));
-				// check for meta values so we catch all items
-				// Iterate through damage values and add them if unique
-				ItemStack baseStack = new ItemStack(test, 1, 0);
-				ItemStack previousStack = new ItemStack(test, 1, 0);
-				boolean newItem = true;
-				int itemDamage = 0;
-				while (newItem == true) {
-					ItemStack testStack = new ItemStack(test, 1, itemDamage);
-					String baseName=null, testName=null, previousName=null;
-					try{
-						baseName = baseStack.getDisplayName();
-						previousName = previousStack.getDisplayName();
-						testName = testStack.getDisplayName();
-					}catch (java.lang.IndexOutOfBoundsException e){
-						// Some mods manage to throw an exception here.
-						// Lets try to be compatible
-						e.printStackTrace();
-						itemDamage++;
-						break;
-					}
-
-					if (itemDamage == 0 || !baseName.equals(testName)
-							&& !previousName.equals(testName)) {
-						previousStack = testStack;
+				Item testItem = (Item) Item.REGISTRY.getObject(new ResourceLocation(item));
+				if (testItem != null && testItem.getHasSubtypes()) {
+					// check for meta values so we catch all items
+					// Iterate through damage values and add them if unique
+					ItemStack baseStack = new ItemStack(testItem, 1, 0);
+					ItemStack previousStack = new ItemStack(testItem, 1, 0);
+					for (int itemDamage = 0; itemDamage < 16; itemDamage++) {
+						ItemStack testStack = new ItemStack(testItem, 1, itemDamage);
+						String testName = "";
+						String baseName = "";
+						String previousName = "";
 						try {
-							String name = testName + "." + itemDamage;
-							if (!itemsDiscovered.contains(name)) {
-								itemsDiscovered.add(testStack);
+							testName = testStack.getDisplayName();
+							baseName = baseStack.getDisplayName();
+							previousName = previousStack.getDisplayName();
+							testName = testStack.getDisplayName();
+						} catch (Exception e) {
+							// Some mods manage to throw an exception here.
+							break;
+						}
+
+						if (itemDamage == 0 || !baseName.equals(testName) && !previousName.equals(testName)) {
+							previousStack = testStack;
+						} else {
+						}
+					}
+				}
+
+				// parse oredictionary
+				for (String ore : OreDictionary.getOreNames()) {
+					ucModnameMap.put(ore, "oredictionary");
+					if (!ucPriceMap.containsKey(ore)) {
+						// check ore to see if any of the types has a price, use
+						// it
+						// if true
+						List<ItemStack> test = OreDictionary.getOres(ore);
+						int itemValue = -1;
+						for (int j = 0; j < test.size(); j++) {
+							int subItemValue = UCItemPricer.getInstance().getItemPrice((ItemStack) test.get(j));
+							if (subItemValue > 0) {
+								itemValue = subItemValue;
 							}
-						} catch (Throwable ex) {
-							// set false to exit as something has gone wrong.
-							newItem = false;
 						}
-					} else {
-						newItem = false;
+						ucPriceMap.put(ore, itemValue);
 					}
-					// Botania will make infinite numbers of these if we try.
-					// botania:pavement1, botania:pavement2, botania:pavement3
-					if(testName.contains(""+itemDamage)){
-						newItem = false;
-					}
-
-					itemDamage++;
 				}
-			}
 
-			// parse oredictionary
-			for (String ore : OreDictionary.getOreNames()) {
-				ucModnameMap.put(ore, "oredictionary");
-				if (!ucPriceMap.containsKey(ore)) {
-					// check ore to see if any of the types has a price, use it
-					// if true
-					List<ItemStack> test = OreDictionary.getOres(ore);
-					int itemValue = -1;
-					for (int j = 0; j < test.size(); j++) {
-						int subItemValue = UCItemPricer.getInstance().getItemPrice((ItemStack) test.get(j));
-						if (subItemValue > 0) {
-							itemValue = subItemValue;
+				// iterate through the items and update the hashmaps
+				for (ItemStack itemstack : itemsDiscovered) {
+					try {
+						// update ucModnameMap with items found
+						ucModnameMap.put(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage(), modName);
+						// update ucPriceMap with initial values
+						if (!ucPriceMap.containsKey(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage())) {
+							ucPriceMap.put(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage(), -1);
 						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-					ucPriceMap.put(ore, itemValue);
 				}
+				// clear this variable so we can use it next round
+				itemsDiscovered.clear();
 			}
-
-			// iterate through the items and update the hashmaps
-			for (ItemStack itemstack : itemsDiscovered) {
-				try {
-					// update ucModnameMap with items found
-					ucModnameMap.put(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage(), modName);
-					// update ucPriceMap with initial values
-					if (!ucPriceMap.containsKey(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage())) {
-						ucPriceMap.put(itemstack.getUnlocalizedName() + "." + itemstack.getItemDamage(), -1);
-					}
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-			}
-			// clear this variable so we can use it next round
-			itemsDiscovered.clear();
 		}
+	}
 
+	private void updateOreDictionaryPrices() {
+		// parse oredictionary
+		for (String ore : OreDictionary.getOreNames()) {
+			ucModnameMap.put(ore, "oredictionary");
+			if (!ucPriceMap.containsKey(ore)) {
+				// check ore to see if any of the types has a price, use it
+				// if true
+				List<ItemStack> test = OreDictionary.getOres(ore);
+				int itemValue = -1;
+				for (int j = 0; j < test.size(); j++) {
+					int subItemValue = getItemPrice((ItemStack) test.get(j));
+					if (subItemValue > 0) {
+						itemValue = subItemValue;
+					}
+				}
+				ucPriceMap.put(ore, itemValue);
+			}
+		}
 	}
 
 	private void loadPricelists() throws IOException {
@@ -250,6 +247,19 @@ public class UCItemPricer {
 	}
 
 	private void writePriceLists() {
+		// writing pricelists takes a while so we start a thread and let it work
+		// in the background.
+		Runnable r = new Runnable() {
+			public void run() {
+				priceListWriter();
+			}
+		};
+
+		Thread t = new Thread(r);
+		t.start();
+	}
+
+	private void priceListWriter() {
 		// write config set from item hashmap
 		Set set = ucPriceMap.entrySet();
 		Iterator i = set.iterator();
@@ -284,7 +294,6 @@ public class UCItemPricer {
 
 	public int getItemPrice(ItemStack itemStack) {
 		if (itemStack == null) {
-			// FMLLog.warning("itemstack is null");
 			return -1;
 		}
 		int ItemPrice = -1;
@@ -314,20 +323,15 @@ public class UCItemPricer {
 		if (itemStack == null) {
 			return false;
 		}
-		int itemStackMeta = itemStack.getMetadata();
-		if (itemStack.isItemStackDamageable()) {
-			// override for damaged items
-			itemStackMeta = 0;
-		}
-		String itemName = itemStack.getUnlocalizedName();
+		String itemName = itemStack.getUnlocalizedName() + "." + itemStack.getItemDamage();
 		// get modName to add to mapping
 		String itemRegistryKey = Item.REGISTRY.getNameForObject(itemStack.getItem()).toString();
 		String[] tempModName = itemRegistryKey.split("\\W", 3);
 		// pass the first value as modname
 		String modName = tempModName[0];
-		ucModnameMap.put(itemName + "." + itemStackMeta, modName);
+		ucModnameMap.put(itemName, modName);
 		// update price
-		ucPriceMap.put(itemName + "." + itemStackMeta, price);
+		ucPriceMap.put(itemName, price);
 		return true;
 	}
 
@@ -346,7 +350,9 @@ public class UCItemPricer {
 		// update mod itemlist
 		buildPricelistHashMap();
 		// update prices
+		updateOreDictionaryPrices();
 		autoPriceCraftedItems();
+		autoPriceSmeltedItems();
 		// write new configs
 		writePriceLists();
 	}
@@ -388,12 +394,27 @@ public class UCItemPricer {
 				if (keyName.startsWith("tile.") || keyName.startsWith("item.")) {
 					keyName = keyName.substring(5);
 				}
-				// split string into item name and meta
-				String itemName = keyName.substring(0, keyName.length() - 2);
-				int itemMeta = Integer.valueOf(keyName.substring(keyName.length() - 1));
-				Item item = (Item) Item.REGISTRY.getObject(new ResourceLocation(itemName));
-				if (item != null) {
-					stack = new ItemStack(item, 1, itemMeta);
+				// oredictionary entries do not include metadata value
+				// we need to check for this
+				if (!Character.isDigit(keyName.charAt(keyName.length() - 1))) {
+					List<ItemStack> test = OreDictionary.getOres(keyName);
+					int itemValue = -1;
+					for (int j = 0; j < test.size(); j++) {
+						ItemStack oreDictionaryStack = (ItemStack) test.get(j);
+						int subItemValue = getItemPrice(oreDictionaryStack);
+						if (subItemValue > 0) {
+							itemValue = subItemValue;
+							return oreDictionaryStack;
+						}
+					}
+				} else {
+					// split string into item name and meta
+					String itemName = keyName.substring(0, keyName.length() - 2);
+					int itemMeta = Integer.valueOf(keyName.substring(keyName.length() - 1));
+					Item item = (Item) Item.REGISTRY.getObject(new ResourceLocation(itemName));
+					if (item != null) {
+						stack = new ItemStack(item, 1, itemMeta);
+					}
 				}
 			}
 		}
@@ -404,6 +425,8 @@ public class UCItemPricer {
 		List<IRecipe> allrecipes = new ArrayList<IRecipe>(CraftingManager.getInstance().getRecipeList());
 		boolean priceUpdate = false;
 
+		// we rerun multiple times if needed since recipe components might be
+		// priced in previous runs
 		while (priceUpdate == true) {
 			priceUpdate = false;
 			for (IRecipe irecipe : allrecipes) {
@@ -423,6 +446,7 @@ public class UCItemPricer {
 						itemCost += UCItemPricer.getInstance().getItemPrice(stack);
 					} else {
 						validRecipe = false;
+						break;
 					}
 				}
 				if (validRecipe && itemCost > 0) {
@@ -524,7 +548,16 @@ public class UCItemPricer {
 		for (Entry<ItemStack, ItemStack> recipe : recipes.entrySet()) {
 			ItemStack input = recipe.getKey();
 			ItemStack output = recipe.getValue();
-			if (ucPriceMap.get(input.getUnlocalizedName() + "." + input.getItemDamage()) != null) {
+	String inputName = "";
+			String outputName = "";
+			try {
+				inputName = input.getUnlocalizedName();
+				outputName = output.getUnlocalizedName();
+			} catch (Exception e) {
+				continue;
+			}
+			if (ucPriceMap.get(input.getUnlocalizedName() + "." + input.getItemDamage()) != null
+					&& ucPriceMap.get(outputName + "." + input.getItemDamage()) != null) {
 				int inputValue = ucPriceMap.get(input.getUnlocalizedName() + "." + input.getItemDamage());
 				int outputValue = ucPriceMap.get(output.getUnlocalizedName() + "." + output.getItemDamage());
 				if (inputValue != -1 && outputValue == -1) {

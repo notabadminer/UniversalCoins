@@ -6,9 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
 import universalcoins.container.ContainerVendorWrench;
 import universalcoins.tileentity.TileVendor;
 
@@ -35,12 +35,12 @@ public class VendorWrenchGUI extends GuiContainer {
 		super.initGui();
 		infinite = tileEntity.infiniteMode;
 		infiniteButton = new GuiSlimButton(idInfiniteButton, 9 + (width - xSize) / 2, 54 + (height - ySize) / 2, 148,
-				12, infinite ? I18n.translateToLocal("vendor.wrench.infiniteon")
-						: I18n.translateToLocal("vendor.wrench.infiniteoff"));
+				12, infinite ? I18n.format("vendor.wrench.infiniteon")
+						: I18n.format("vendor.wrench.infiniteoff"));
 		editButton = new GuiSlimButton(idEditButton, 68 + (width - xSize) / 2, 34 + (height - ySize) / 2, 40, 12,
-				I18n.translateToLocal("general.button.edit"));
+				I18n.format("general.button.edit"));
 		applyButton = new GuiSlimButton(idApplyButton, 110 + (width - xSize) / 2, 34 + (height - ySize) / 2, 40, 12,
-				I18n.translateToLocal("general.button.save"));
+				I18n.format("general.button.save"));
 		buttonList.clear();
 		buttonList.add(editButton);
 		buttonList.add(applyButton);
@@ -55,7 +55,7 @@ public class VendorWrenchGUI extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/vendor-wrench.png");
+		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/vendor_wrench.png");
 		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
 		int x = (width - xSize) / 2;
 		int y = (height - ySize) / 2;
@@ -66,7 +66,7 @@ public class VendorWrenchGUI extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(I18n.translateToLocal("vendor.wrench.owner"), 6, 5, 4210752);
+		fontRendererObj.drawString(I18n.format("vendor.wrench.owner"), 6, 5, 4210752);
 		blockOwnerField.drawTextBox();
 	}
 
@@ -98,8 +98,8 @@ public class VendorWrenchGUI extends GuiContainer {
 		}
 		if (button.id == idInfiniteButton) {
 			infinite = !infinite;
-			infiniteButton.displayString = (infinite ? I18n.translateToLocal("vendor.wrench.infiniteon")
-					: I18n.translateToLocal("vendor.wrench.infiniteoff"));
+			infiniteButton.displayString = (infinite ? I18n.format("vendor.wrench.infiniteon")
+					: I18n.format("vendor.wrench.infiniteoff"));
 			tileEntity.infiniteMode = infinite;
 			tileEntity.sendServerUpdateMessage();
 		}

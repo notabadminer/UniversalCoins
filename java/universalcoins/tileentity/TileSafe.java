@@ -1,5 +1,6 @@
 package universalcoins.tileentity;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -102,7 +103,7 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 				: Long.MAX_VALUE - accountBalance);
 		debitAmount = Math.min(stack.stackSize, accountCapacity / coinValue);
 		if (!worldObj.isRemote) {
-			UniversalAccounts.getInstance().debitAccount(accountNumber, debitAmount * coinValue);
+			UniversalAccounts.getInstance().debitAccount(accountNumber, debitAmount * coinValue, false);
 			updateAccountBalance();
 		}
 		fillOutputSlot();
@@ -142,7 +143,7 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 					int depositAmount = Math.min(accountCapacity / coinValue, stack.stackSize);
 					if(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
 						//Only deposit on server side, otherwise we deposit twice.
-						UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue);
+						UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue, false);
 					}
 					inventory[slot].stackSize -= depositAmount;
 					if (inventory[slot].stackSize == 0) {
@@ -275,8 +276,8 @@ public class TileSafe extends TileEntity implements IInventory, ISidedInventory 
 	}
 
 	public void updateTE() {
-		markDirty();
-		worldObj.notifyBlockUpdate(getPos(), worldObj.getBlockState(pos), worldObj.getBlockState(pos), 3);
+		final IBlockState state = getWorld().getBlockState(getPos());
+		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
 	}
 
 	public void setSafeAccount(String playerName) {

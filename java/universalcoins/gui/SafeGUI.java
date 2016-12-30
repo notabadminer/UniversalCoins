@@ -4,9 +4,9 @@ import java.text.DecimalFormat;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
 import universalcoins.container.ContainerSafe;
 import universalcoins.tileentity.TileSafe;
 
@@ -35,7 +35,7 @@ public class SafeGUI extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 		fontRendererObj.drawString(tEntity.getName(), 6, 5, 4210752);
 
-		fontRendererObj.drawString(I18n.translateToLocal("container.inventory"), 6, 58, 4210752);
+		fontRendererObj.drawString(I18n.format("container.inventory"), 6, 58, 4210752);
 
 		// display player account balance
 		String formattedBalance = formatter.format(tEntity.accountBalance);

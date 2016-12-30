@@ -10,7 +10,6 @@ import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
@@ -101,8 +100,9 @@ public class UCCommand extends CommandBase implements ICommand {
 					}
 				}
 				if (result == true) {
-					sender.addChatMessage(new TextComponentString(
-							I18n.translateToLocal("command.uccommand.option.set.price") + " " + formatter.format(price)));
+					sender.addChatMessage(
+							new TextComponentString(I18n.translateToLocal("command.uccommand.option.set.price") + " "
+									+ formatter.format(price)));
 					if (firstChange) {
 						sender.addChatMessage(new TextComponentString(
 								I18n.translateToLocal("command.uccommand.option.set.price.firstuse.one")));

@@ -84,7 +84,7 @@ public class BlockSignal extends BlockProtected {
 					break;
 			}
 			if (world.isRemote)
-				return false; // we don't want to do the rest on client side
+				return true; // we don't want to do the rest on client side
 			if (coinsFound < tentity.fee) {
 				player.addChatMessage(new TextComponentString(I18n.translateToLocal("signal.message.notenough")));
 			} else {
@@ -97,23 +97,23 @@ public class BlockSignal extends BlockProtected {
 			}
 			ItemStack stack = null;
 			while (coinsFound > 0) {
-				if (coinsFound > UniversalCoins.coinValues[4]) {
+				if (coinsFound >= UniversalCoins.coinValues[4]) {
 					stack = new ItemStack(UniversalCoins.proxy.obsidian_coin, 1);
 					stack.stackSize = (int) Math.floor(coinsFound / UniversalCoins.coinValues[4]);
 					coinsFound -= stack.stackSize * UniversalCoins.coinValues[4];
-				} else if (coinsFound > UniversalCoins.coinValues[3]) {
+				} else if (coinsFound >= UniversalCoins.coinValues[3]) {
 					stack = new ItemStack(UniversalCoins.proxy.diamond_coin, 1);
 					stack.stackSize = (int) Math.floor(coinsFound / UniversalCoins.coinValues[3]);
 					coinsFound -= stack.stackSize * UniversalCoins.coinValues[3];
-				} else if (coinsFound > UniversalCoins.coinValues[2]) {
+				} else if (coinsFound >= UniversalCoins.coinValues[2]) {
 					stack = new ItemStack(UniversalCoins.proxy.emerald_coin, 1);
 					stack.stackSize = (int) Math.floor(coinsFound / UniversalCoins.coinValues[2]);
 					coinsFound -= stack.stackSize * UniversalCoins.coinValues[2];
-				} else if (coinsFound > UniversalCoins.coinValues[1]) {
+				} else if (coinsFound >= UniversalCoins.coinValues[1]) {
 					stack = new ItemStack(UniversalCoins.proxy.gold_coin, 1);
 					stack.stackSize = (int) Math.floor(coinsFound / UniversalCoins.coinValues[1]);
 					coinsFound -= stack.stackSize * UniversalCoins.coinValues[1];
-				} else if (coinsFound > UniversalCoins.coinValues[0]) {
+				} else if (coinsFound >= UniversalCoins.coinValues[0]) {
 					stack = new ItemStack(UniversalCoins.proxy.iron_coin, 1);
 					stack.stackSize = (int) Math.floor(coinsFound / UniversalCoins.coinValues[0]);
 					coinsFound -= stack.stackSize * UniversalCoins.coinValues[0];
@@ -169,7 +169,7 @@ public class BlockSignal extends BlockProtected {
 			return;
 		TileEntity te = world.getTileEntity(pos);
 		if (te != null) {
-			((TileProtected) world.getTileEntity(pos)).blockOwner = player.getCommandSenderEntity().getName();
+			((TileSignal) world.getTileEntity(pos)).blockOwner = player.getCommandSenderEntity().getName();
 		}
 	}
 

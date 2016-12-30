@@ -1,6 +1,7 @@
 package universalcoins.tileentity;
 
 import cofh.api.energy.IEnergyReceiver;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -14,6 +15,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
+import universalcoins.gui.PowerTransmitterGUI;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.util.UniversalAccounts;
 import universalcoins.util.UniversalPower;
@@ -25,8 +27,10 @@ public class TilePowerTransmitter extends TileEntity implements IInventory, IEne
 	public static final int itemOutputSlot = 1;
 	public long coinSum = 0;
 	public int rfLevel = 0;
+	public int rfOutput = 0;
 	public int krfSold = 0;
 	public String blockOwner = "nobody";
+	public boolean publicAccess;
 
 	@Override
 	public int getSizeInventory() {
@@ -57,7 +61,6 @@ public class TilePowerTransmitter extends TileEntity implements IInventory, IEne
 		return stack;
 	}
 
-	@Override
 	public void setInventorySlotContents(int slot, ItemStack stack) {
 		inventory[slot] = stack;
 		if (stack != null) {
@@ -103,21 +106,21 @@ public class TilePowerTransmitter extends TileEntity implements IInventory, IEne
 	@Override
 	public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
 		if (!simulate) {
+			int rfChunks = 0;
 			rfLevel += maxReceive;
 			if (rfLevel >= 10000) {
-				rfLevel -= 10000;
+				// calculate how many 10k chunks we can sell
+				rfChunks = (int) Math.floor(rfLevel / 10000);
 				boolean playerCredited = false;
-				if (inventory[itemCardSlot] != null) {
-					playerCredited = creditAccount(UniversalCoins.rfWholesaleRate);
-					if (playerCredited) {
-						krfSold += 10;
-						UniversalPower.getInstance().receiveEnergy(10, false);
-					}
-				}
-				if (!playerCredited && coinSum + UniversalCoins.rfWholesaleRate < Integer.MAX_VALUE) {
-					coinSum += UniversalCoins.rfWholesaleRate;
-					krfSold += 10;
-					UniversalPower.getInstance().receiveEnergy(10, false);
+				if (creditAccount(UniversalCoins.rfWholesaleRate * rfChunks)) {
+					krfSold += Math.min(10 * rfChunks, Integer.MAX_VALUE - krfSold);
+					UniversalPower.getInstance().receiveEnergy(10 * rfChunks, false);
+					rfLevel -= 10000 * rfChunks;
+				} else if (coinSum + UniversalCoins.rfWholesaleRate * rfChunks <= Integer.MAX_VALUE) {
+					coinSum += UniversalCoins.rfWholesaleRate * rfChunks;
+					krfSold += Math.min(10 * rfChunks, Integer.MAX_VALUE - krfSold);
+					UniversalPower.getInstance().receiveEnergy(10 * rfChunks, false);
+					rfLevel -= 10000 * rfChunks;
 				}
 			}
 		}
@@ -155,7 +158,7 @@ public class TilePowerTransmitter extends TileEntity implements IInventory, IEne
 		if (accountNumber == "") {
 			return false;
 		}
-		return UniversalAccounts.getInstance().creditAccount(accountNumber, amount);
+		return UniversalAccounts.getInstance().creditAccount(accountNumber, amount, false);
 	}
 
 	public void sendPacket(int button, boolean shiftPressed) {
@@ -179,8 +182,8 @@ public class TilePowerTransmitter extends TileEntity implements IInventory, IEne
 	}
 
 	public void updateTE() {
-		markDirty();
-		worldObj.notifyBlockUpdate(getPos(), worldObj.getBlockState(pos), worldObj.getBlockState(pos), 3);
+		final IBlockState state = getWorld().getBlockState(getPos());
+		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
 	}
 
 	@Override
@@ -201,6 +204,7 @@ public class TilePowerTransmitter extends TileEntity implements IInventory, IEne
 		tagCompound.setInteger("rfLevel", rfLevel);
 		tagCompound.setInteger("krfSold", krfSold);
 		tagCompound.setString("blockOwner", blockOwner);
+		tagCompound.setBoolean("publicAccess", publicAccess);
 		return tagCompound;
 	}
 
@@ -236,41 +240,45 @@ public class TilePowerTransmitter extends TileEntity implements IInventory, IEne
 		} catch (Throwable ex2) {
 			blockOwner = "nobody";
 		}
+		try {
+			publicAccess = tagCompound.getBoolean("publicAccess");
+		} catch (Throwable ex2) {
+			publicAccess = false;
+		}
 	}
 
-	public void onButtonPressed(int buttonId) {
-		if (buttonId == 0) {
+	public void onButtonPressed(int buttonId, boolean shift) {
+		if (buttonId == PowerTransmitterGUI.idCoinButton) {
 			fillOutputSlot();
+		}
+		if (buttonId == PowerTransmitterGUI.idAccessModeButton && blockOwner.matches(blockOwner)) {
+			publicAccess ^= true;
 		}
 	}
 
 	public void fillOutputSlot() {
-		inventory[itemOutputSlot] = null;
-		if (coinSum > UniversalCoins.coinValues[4]) {
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.obsidian_coin);
-			 int amount = (int) Math.min(coinSum / UniversalCoins.coinValues[4], 64);
-			 inventory[itemOutputSlot].stackSize = amount;
-			 coinSum -= amount * UniversalCoins.coinValues[4];
-		} else if (coinSum > UniversalCoins.coinValues[3]) {
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.diamond_coin);
-			int amount  = (int) Math.min(coinSum / UniversalCoins.coinValues[3], 64);
-			inventory[itemOutputSlot].stackSize = amount;
-			 coinSum -= amount * UniversalCoins.coinValues[3];
-		} else if (coinSum > UniversalCoins.coinValues[2]) {
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.emerald_coin);
-			int amount  = (int) Math.min(coinSum / UniversalCoins.coinValues[2], 64);
-			inventory[itemOutputSlot].stackSize = amount;
-			 coinSum -= amount * UniversalCoins.coinValues[2];
-		} else if (coinSum > UniversalCoins.coinValues[1]) {
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.gold_coin);
-			int amount  = (int) Math.min(coinSum / UniversalCoins.coinValues[1], 64);
-			inventory[itemOutputSlot].stackSize = amount;
-			 coinSum -= amount * UniversalCoins.coinValues[1];
-		} else if (coinSum > UniversalCoins.coinValues[0]) {
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.iron_coin);
-			int amount  = (int) Math.min(coinSum / UniversalCoins.coinValues[0], 64);
-			inventory[itemOutputSlot].stackSize = amount;
-			 coinSum -= amount * UniversalCoins.coinValues[0];
+		if (inventory[itemOutputSlot] == null && coinSum > 0) {
+			if (coinSum > UniversalCoins.coinValues[4]) {
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.obsidian_coin);
+				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[4], 64);
+				coinSum -= UniversalCoins.coinValues[4] * inventory[itemOutputSlot].stackSize;
+			} else if (coinSum > UniversalCoins.coinValues[3]) {
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.diamond_coin);
+				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[3], 64);
+				coinSum -= UniversalCoins.coinValues[3] * inventory[itemOutputSlot].stackSize;
+			} else if (coinSum > UniversalCoins.coinValues[2]) {
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.emerald_coin);
+				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[2], 64);
+				coinSum -= UniversalCoins.coinValues[2] * inventory[itemOutputSlot].stackSize;
+			} else if (coinSum > UniversalCoins.coinValues[1]) {
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.gold_coin);
+				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[1], 64);
+				coinSum -= UniversalCoins.coinValues[1] * inventory[itemOutputSlot].stackSize;
+			} else if (coinSum > UniversalCoins.coinValues[0]) {
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.iron_coin);
+				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[0], 64);
+				coinSum -= UniversalCoins.coinValues[0] * inventory[itemOutputSlot].stackSize;
+			}
 		}
 	}
 

@@ -12,6 +12,8 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
@@ -38,11 +40,17 @@ public class BlockPowerTransmitter extends BlockProtected {
 		TileEntity te = world.getTileEntity(pos);
 		if (te != null && te instanceof TilePowerTransmitter) {
 			TilePowerTransmitter tentity = (TilePowerTransmitter) te;
-			if (player.getName().matches(tentity.blockOwner)) {
+			if (tentity.publicAccess || player.getName().matches(tentity.blockOwner)) {
+				tentity.blockOwner = player.getName();
 				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
+				return true;
+			}
+			if (!world.isRemote) {
+				player.addChatMessage(
+						new TextComponentString(I18n.translateToLocal("chat.warning.private")));
 			}
 		}
-		return true;
+		return false;
 	}
 
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,

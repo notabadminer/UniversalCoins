@@ -7,9 +7,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
 import universalcoins.container.ContainerATM;
 import universalcoins.tileentity.TileATM;
 
@@ -87,7 +87,7 @@ public class ATMGUI extends GuiContainer {
 			this.drawTexturedModalRect(x + 171, y + 19, 196, 0, 18, 18);
 			this.drawTexturedModalRect(x + 34, y + 43, 0, 201, Math.min(barProgress, 128), 5);
 			if (barProgress > 129) {
-				String authString = I18n.translateToLocal("atm.auth.access");
+				String authString = I18n.format("atm.auth.access");
 				if (authString.startsWith("C:"))
 					authString = authString.substring(2);
 				int stringLength = fontRendererObj.getStringWidth(authString);
@@ -96,7 +96,7 @@ public class ATMGUI extends GuiContainer {
 			}
 			if (barProgress > 130) {
 				if (!tEntity.accountNumber.matches("none")) {
-					String authString = I18n.translateToLocal("atm.auth.success");
+					String authString = I18n.format("atm.auth.success");
 					if (authString.startsWith("C:"))
 						authString = authString.substring(2);
 					int stringLength = fontRendererObj.getStringWidth(authString);
@@ -107,7 +107,7 @@ public class ATMGUI extends GuiContainer {
 						barProgress = 0;
 					}
 				} else {
-					String authString = I18n.translateToLocal("atm.auth.fail");
+					String authString = I18n.format("atm.auth.fail");
 					if (authString.startsWith("C:"))
 						authString = authString.substring(2);
 					int stringLength = fontRendererObj.getStringWidth(authString);
@@ -178,7 +178,7 @@ public class ATMGUI extends GuiContainer {
 		// the parameters for drawString are: string, x, y, color
 		fontRendererObj.drawString(tEntity.getName(), 6, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
-		fontRendererObj.drawString(I18n.translateToLocal("container.inventory"), 6, ySize - 96 + 2, 4210752);
+		fontRendererObj.drawString(I18n.format("container.inventory"), 6, ySize - 96 + 2, 4210752);
 		drawMenu(menuState);
 	}
 
@@ -469,7 +469,7 @@ public class ATMGUI extends GuiContainer {
 		String[] endString = { ".one", ".two", ".three", ".four", ".five", ".six", ".seven", ".eight" };
 		String menuString;
 		for (int x = 0; x < 8; x++) {
-			menuString = I18n.translateToLocal("atm." + menuStateName[state] + endString[x]);
+			menuString = I18n.format("atm." + menuStateName[state] + endString[x]);
 			if (menuString.startsWith("C:")) { // center text
 				menuString = menuString.substring(2);// strip centering flag
 				int stringLength = fontRendererObj.getStringWidth(menuString);

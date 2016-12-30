@@ -1,5 +1,6 @@
 package universalcoins.tileentity;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -306,7 +307,6 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 			onBuyMaxPressed();
 		} else if (autoMode == 2) {
 			onSellMaxPressed();
-			// FMLLog.info("UC: coins = " + coinSum);
 		}
 	}
 
@@ -515,8 +515,8 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 	}
 
 	public void updateTE() {
-		markDirty();
-		worldObj.notifyBlockUpdate(getPos(), worldObj.getBlockState(pos), worldObj.getBlockState(pos), 3);
+		final IBlockState state = getWorld().getBlockState(getPos());
+		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
 	}
 
 	@Override
@@ -544,6 +544,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 		return inventory.length;
 	}
 
+	@Override
 	public String getName() {
 		return this.hasCustomName() ? this.customName : UniversalCoins.proxy.tradestation.getLocalizedName();
 	}
@@ -597,7 +598,6 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 		return getStackInSlot(i);
 	}
 
-	@Override
 	public void setInventorySlotContents(int slot, ItemStack stack) {
 		inventory[slot] = stack;
 		int coinValue = 0;
@@ -634,6 +634,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 					inventory[slot] = null;
 				}
 			}
+			update();
 		}
 	}
 
@@ -654,8 +655,8 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 			return stackItem == UniversalCoins.proxy.iron_coin || stackItem == UniversalCoins.proxy.gold_coin
 					|| stackItem == UniversalCoins.proxy.emerald_coin || stackItem == UniversalCoins.proxy.diamond_coin
 					|| stackItem == UniversalCoins.proxy.obsidian_coin;
-		} else { // noinspection RedundantIfStatement
-			return slot == itemInputSlot || slot == itemCoinSlot;
+		} else {
+			return slot == itemInputSlot;
 		}
 	}
 
@@ -703,14 +704,14 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 	public void debitAccount(int amount) {
 		if (inventory[itemCardSlot] != null) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			UniversalAccounts.getInstance().debitAccount(accountNumber, amount);
+			UniversalAccounts.getInstance().debitAccount(accountNumber, amount, false);
 		}
 	}
 
 	public void creditAccount(int amount) {
 		if (inventory[itemCardSlot] != null) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			UniversalAccounts.getInstance().creditAccount(accountNumber, amount);
+			UniversalAccounts.getInstance().creditAccount(accountNumber, amount, false);
 		}
 	}
 

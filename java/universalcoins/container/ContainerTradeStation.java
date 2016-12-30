@@ -15,13 +15,12 @@ public class ContainerTradeStation extends Container {
 	private long lastCoinSum;
 	private int lastItemPrice, lastAutoMode, lastCoinMode;
 	private boolean lastBuyButtonActive, lastSellButtonActive, lastIronBtnActive, lastGoldBtnActive,
-			lastEmeraldBtnActive, lastDiamondBtnActive, lastObsidianBtnActive, lastInUse;
+			lastEmeraldBtnActive, lastDiamondBtnActive, lastObsidianBtnActive, lastInUse, lastPublicAccess;
 
 	public ContainerTradeStation(InventoryPlayer inventoryPlayer, TileTradeStation tEntity) {
 		tileEntity = tEntity;
 		// the Slot constructor takes the IInventory and the slot number in that
-		// it binds to
-		// and the x-y coordinates it resides on-screen
+		// it binds to and the x-y coordinates it resides on-screen
 		addSlotToContainer(new UCSlotCard(tileEntity, TileTradeStation.itemCardSlot, 12, 27));
 		addSlotToContainer(new Slot(tileEntity, TileTradeStation.itemInputSlot, 31, 27));
 		addSlotToContainer(new UCSlotOutput(tileEntity, TileTradeStation.itemOutputSlot, 155, 27));
@@ -96,7 +95,6 @@ public class ContainerTradeStation extends Container {
 	/**
 	 * Looks for changes made in the container, sends them to every listener.
 	 */
-	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 
@@ -108,8 +106,10 @@ public class ContainerTradeStation extends Container {
 				|| this.lastEmeraldBtnActive != this.tileEntity.emeraldCoinBtnActive
 				|| this.lastDiamondBtnActive != this.tileEntity.diamondCoinBtnActive
 				|| this.lastInUse != this.tileEntity.inUse || this.lastAutoMode != this.tileEntity.autoMode
-				|| this.lastCoinMode != this.tileEntity.coinMode) {
+				|| this.lastCoinMode != this.tileEntity.coinMode
+				|| this.lastPublicAccess != this.tileEntity.publicAccess) {
 			tileEntity.updateTE();
+			
 			this.lastCoinSum = this.tileEntity.coinSum;
 			this.lastItemPrice = this.tileEntity.itemPrice;
 			this.lastBuyButtonActive = this.tileEntity.buyButtonActive;
@@ -122,11 +122,8 @@ public class ContainerTradeStation extends Container {
 			this.lastInUse = this.tileEntity.inUse;
 			this.lastAutoMode = this.tileEntity.autoMode;
 			this.lastCoinMode = this.tileEntity.coinMode;
+			this.lastPublicAccess = this.tileEntity.publicAccess;
 		}
-	}
-
-	@SideOnly(Side.CLIENT)
-	public void updateProgressBar(int par1, int par2) {
 	}
 
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {

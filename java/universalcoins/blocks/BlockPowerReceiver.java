@@ -13,6 +13,9 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
@@ -38,11 +41,17 @@ public class BlockPowerReceiver extends BlockProtected {
 		TileEntity te = world.getTileEntity(pos);
 		if (te != null && te instanceof TilePowerReceiver) {
 			TilePowerReceiver tentity = (TilePowerReceiver) te;
-			if (player.getName().matches(tentity.blockOwner)) {
+			if (tentity.publicAccess || player.getName().matches(tentity.blockOwner)) {
+				tentity.blockOwner = player.getName();
 				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
+				return true;
+			}
+			if (!world.isRemote) {
+				player.addChatMessage(
+						new TextComponentString(I18n.translateToLocal("chat.warning.private")));
 			}
 		}
-		return true;
+		return false;
 	}
 
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
@@ -77,10 +86,10 @@ public class BlockPowerReceiver extends BlockProtected {
 		return new TilePowerReceiver();
 	}
 
-	//TODO: super removed, move code to new method.
-	// @Override
-	public void neighborChanged(World world, BlockPos pos, IBlockState state, Block neighborBlock) {
-		TilePowerReceiver tileEntity = (TilePowerReceiver) world.getTileEntity(pos);
-		tileEntity.resetPowerDirection();
+	@Override
+	public boolean eventReceived(IBlockState state, World world, BlockPos pos, int id, int param) {
+		TilePowerReceiver tileentity = (TilePowerReceiver) world.getTileEntity(pos);
+		tileentity.resetPowerDirection();
+		return tileentity == null ? false : tileentity.receiveClientEvent(id, param);
 	}
 }

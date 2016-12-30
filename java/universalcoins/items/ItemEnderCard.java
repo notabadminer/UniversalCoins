@@ -24,11 +24,10 @@ public class ItemEnderCard extends ItemUCCard {
 		if (stack.getTagCompound() == null) {
 			createNBT(stack, world, player);
 		}
-		long accountBalance = UniversalAccounts.getInstance()
-				.getAccountBalance(stack.getTagCompound().getString("Account"));
 		DecimalFormat formatter = new DecimalFormat("#,###,###,###");
 		ItemStack[] inventory = player.inventory.mainInventory;
 		String accountNumber = stack.getTagCompound().getString("Account");
+		long accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 		int coinValue = 0;
 		int depositAmount = 0;
 		int coinsDeposited = 0;
@@ -62,7 +61,7 @@ public class ItemEnderCard extends ItemUCCard {
 				} else {
 					depositAmount = (int) (Long.MAX_VALUE - accountBalance) / coinValue;
 				}
-				UniversalAccounts.getInstance().creditAccount(accountNumber, coinValue * depositAmount);
+				UniversalAccounts.getInstance().creditAccount(accountNumber, coinValue * depositAmount, false);
 				coinsDeposited += coinValue * depositAmount;
 				inventory[i].stackSize -= depositAmount;
 				if (inventory[i].stackSize == 0) {

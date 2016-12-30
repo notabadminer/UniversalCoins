@@ -7,9 +7,9 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
 import universalcoins.container.ContainerSignal;
 import universalcoins.tileentity.TileSignal;
 
@@ -35,7 +35,7 @@ public class SignalGUI extends GuiContainer {
 	public void initGui() {
 		super.initGui();
 		coinButton = new GuiSlimButton(idCoinButton, 111 + (width - xSize) / 2, 92 + (height - ySize) / 2, 32, 12,
-				I18n.translateToLocal("general.button.coin"));
+				I18n.format("general.button.coin"));
 		durationMinusButton = new GuiSlimButton(idDurMinusButton, 95 + (width - xSize) / 2, 48 + (height - ySize) / 2,
 				12, 12, "-");
 		durationPlusButton = new GuiSlimButton(idDurPlusButton, 144 + (width - xSize) / 2, 48 + (height - ySize) / 2,
@@ -60,15 +60,15 @@ public class SignalGUI extends GuiContainer {
 		// the parameters for drawString are: string, x, y, color
 		fontRendererObj.drawString(tEntity.getName(), 8, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
-		fontRendererObj.drawString(I18n.translateToLocal("container.inventory"), 8, 96, 4210752);
-		String feeLabel = I18n.translateToLocal("signal.label.fee");
+		fontRendererObj.drawString(I18n.format("container.inventory"), 8, 96, 4210752);
+		String feeLabel = I18n.format("signal.label.fee");
 		int stringWidth = fontRendererObj.getStringWidth(feeLabel);
 		fontRendererObj.drawString(feeLabel, 92 - stringWidth, 28, 4210752);
 		// draw fee right aligned
 		String fee = String.valueOf(formatter.format(tEntity.fee));
 		stringWidth = fontRendererObj.getStringWidth(fee);
 		fontRendererObj.drawString(fee, 138 - stringWidth, 28, 4210752);
-		String durationLabel = I18n.translateToLocal("signal.label.duration");
+		String durationLabel = I18n.format("signal.label.duration");
 		stringWidth = fontRendererObj.getStringWidth(durationLabel);
 		fontRendererObj.drawString(durationLabel, 92 - stringWidth, 50, 4210752);
 		// draw signal duration right aligned

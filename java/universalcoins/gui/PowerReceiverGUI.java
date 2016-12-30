@@ -5,16 +5,17 @@ import java.text.DecimalFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
 import universalcoins.container.ContainerPowerReceiver;
 import universalcoins.tileentity.TilePowerReceiver;
 
 public class PowerReceiverGUI extends GuiContainer {
 	private TilePowerReceiver tEntity;
-	private GuiButton coinButton;
+	private GuiButton coinButton, accessModeButton;
 	public static final int idCoinButton = 0;
+	public static final int idAccessModeButton = 1;
 	DecimalFormat formatter = new DecimalFormat("#,###,###,###");
 
 	public PowerReceiverGUI(InventoryPlayer inventoryPlayer, TilePowerReceiver tileEntity) {
@@ -22,16 +23,19 @@ public class PowerReceiverGUI extends GuiContainer {
 		tEntity = tileEntity;
 
 		xSize = 176;
-		ySize = 160;
+		ySize = 184;
 	}
 
 	@Override
 	public void initGui() {
 		super.initGui();
-		coinButton = new GuiSlimButton(idCoinButton, 123 + (width - xSize) / 2, 64 + (height - ySize) / 2, 46, 12,
-				I18n.translateToLocal("general.button.coin"));
+		coinButton = new GuiSlimButton(idCoinButton, 123 + (width - xSize) / 2, 89 + (height - ySize) / 2, 46, 12,
+				I18n.format("general.button.coin"));
+		accessModeButton = new GuiSlimButton(idAccessModeButton, 122 + (width - xSize) / 2, 4 + (height - ySize) / 2,
+				50, 12, I18n.format("general.label.public"));
 		buttonList.clear();
 		buttonList.add(coinButton);
+		buttonList.add(accessModeButton);
 	}
 
 	@Override
@@ -41,30 +45,40 @@ public class PowerReceiverGUI extends GuiContainer {
 		int x = (width - xSize) / 2;
 		int y = (height - ySize) / 2;
 		this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+
+		if (tEntity.publicAccess) {
+			accessModeButton.displayString = I18n.format("general.label.public");
+		} else {
+			accessModeButton.displayString = I18n.format("general.label.private");
+		}
 	}
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 		fontRendererObj.drawString(tEntity.getName(), 6, 5, 4210752);
+		fontRendererObj.drawString(I18n.format("container.inventory"), 6, 92, 4210752);
 
-		fontRendererObj.drawString(I18n.translateToLocal("container.inventory"), 6, 67, 4210752);
-		
-		//display world rf level
-		fontRendererObj.drawString("World", 24, 18, 4210752);
+		// display world rf level
+
 		String formattedwrf = formatter.format(tEntity.wrfLevel);
 		int wrfLength = fontRendererObj.getStringWidth(formattedwrf + " kRF");
-		fontRendererObj.drawString(formattedwrf + " kRF", 142 - wrfLength, 18, 4210752);
+		fontRendererObj.drawString(formattedwrf + " kRF", 162 - wrfLength, 23, 4210752);
 
 		// display rf level
-		fontRendererObj.drawString("Local", 24, 36, 4210752);
+		fontRendererObj.drawString("Stored", 16, 41, 4210752);
 		String formattedrf = formatter.format(tEntity.rfLevel);
 		int rfLength = fontRendererObj.getStringWidth(formattedrf + " RF");
-		fontRendererObj.drawString(formattedrf + " RF", 142 - rfLength, 36, 4210752);
+		fontRendererObj.drawString(formattedrf + " RF", 142 - rfLength, 41, 4210752);
 
+		// display rf output
+		fontRendererObj.drawString("Output", 18, 58, 4210752);
+		String formattedrfOutput = formatter.format(tEntity.rfOutput);
+		int rfOutputLength = fontRendererObj.getStringWidth(formattedrfOutput + " RF/t");
+		fontRendererObj.drawString(formattedrfOutput + " RF/t", 142 - rfOutputLength, 59, 4210752);
 		// display coin balance
 		String formattedBalance = formatter.format(tEntity.coinSum);
 		int balLength = fontRendererObj.getStringWidth(formattedBalance);
-		fontRendererObj.drawString(formattedBalance, 142 - balLength, 52, 4210752);
+		fontRendererObj.drawString(formattedBalance, 142 - balLength, 76, 4210752);
 	}
 
 	protected void actionPerformed(GuiButton button) {

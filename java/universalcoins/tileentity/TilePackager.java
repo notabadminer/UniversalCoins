@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -74,7 +75,7 @@ public class TilePackager extends TileEntity implements IInventory {
 					inventory[itemOutputSlot].setTagCompound(tagCompound);
 					if (cardAvailable) {
 						String account = inventory[itemCardSlot].getTagCompound().getString("accountNumber");
-						UniversalAccounts.getInstance().debitAccount(account, packageCost[packageSize]);
+						UniversalAccounts.getInstance().debitAccount(account, packageCost[packageSize], false);
 					} else {
 						coinSum -= packageCost[packageSize];
 
@@ -189,8 +190,8 @@ public class TilePackager extends TileEntity implements IInventory {
 	}
 
 	public void updateTE() {
-		markDirty();
-		worldObj.notifyBlockUpdate(getPos(), worldObj.getBlockState(pos), worldObj.getBlockState(pos), 3);
+		final IBlockState state = getWorld().getBlockState(getPos());
+		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
 	}
 
 	@Override
@@ -316,18 +317,23 @@ public class TilePackager extends TileEntity implements IInventory {
 		if (coinSum > UniversalCoins.coinValues[4]) {
 			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.obsidian_coin);
 			inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[4], 64);
+			coinSum -= UniversalCoins.coinValues[4] * inventory[itemOutputSlot].stackSize;
 		} else if (coinSum > UniversalCoins.coinValues[3]) {
 			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.diamond_coin);
 			inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[3], 64);
+			coinSum -= UniversalCoins.coinValues[3] * inventory[itemOutputSlot].stackSize;
 		} else if (coinSum > UniversalCoins.coinValues[2]) {
 			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.emerald_coin);
 			inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[2], 64);
+			coinSum -= UniversalCoins.coinValues[2] * inventory[itemOutputSlot].stackSize;
 		} else if (coinSum > UniversalCoins.coinValues[1]) {
 			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.gold_coin);
 			inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[1], 64);
+			coinSum -= UniversalCoins.coinValues[1] * inventory[itemOutputSlot].stackSize;
 		} else if (coinSum > UniversalCoins.coinValues[0]) {
 			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.iron_coin);
 			inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[0], 64);
+			coinSum -= UniversalCoins.coinValues[0] * inventory[itemOutputSlot].stackSize;
 		}
 	}
 
@@ -359,12 +365,13 @@ public class TilePackager extends TileEntity implements IInventory {
 					coinValue = UniversalCoins.coinValues[4];
 					break;
 				}
-			}
-			long depositAmount = Math.min(stack.stackSize, (Long.MAX_VALUE - coinSum) / coinValue);
-			inventory[slot].stackSize -= depositAmount;
-			coinSum += depositAmount * coinValue;
-			if (inventory[slot].stackSize == 0) {
-				inventory[slot] = null;
+
+				long depositAmount = Math.min(stack.stackSize, (Long.MAX_VALUE - coinSum) / coinValue);
+				inventory[slot].stackSize -= depositAmount;
+				coinSum += depositAmount * coinValue;
+				if (inventory[slot].stackSize == 0) {
+					inventory[slot] = null;
+				}
 			}
 		}
 		if (slot == itemCardSlot && !worldObj.isRemote) {

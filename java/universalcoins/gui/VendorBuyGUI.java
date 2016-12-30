@@ -3,9 +3,9 @@ package universalcoins.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
 import universalcoins.container.ContainerVendorBuy;
 import universalcoins.tileentity.TileVendor;
 
@@ -32,7 +32,7 @@ public class VendorBuyGUI extends GuiContainer {
 	public void initGui() {
 		super.initGui();
 		sellButton = new GuiSlimButton(idSellButton, 126 + (width - xSize) / 2, 46 + (height - ySize) / 2, 42, 12,
-				I18n.translateToLocal("general.button.sell"));
+				I18n.format("general.button.sell"));
 		retrIronCoinBtn = new GuiCoinButton(idIronCoinBtn, 60 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18, 18,
 				"", 0);
 		retrGoldCoinBtn = new GuiCoinButton(idGoldCoinBtn, 78 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18,
@@ -55,7 +55,7 @@ public class VendorBuyGUI extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/vendor-buy.png");
+		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/vendor_buy.png");
 		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
 		int x = (width - xSize) / 2;
 		int y = (height - ySize) / 2;
@@ -75,7 +75,7 @@ public class VendorBuyGUI extends GuiContainer {
 		// the parameters for drawString are: string, x, y, color
 		fontRendererObj.drawString(tileEntity.getName(), 6, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
-		fontRendererObj.drawString(I18n.translateToLocal("container.inventory"), 8, 106, 4210752);
+		fontRendererObj.drawString(I18n.format("container.inventory"), 8, 106, 4210752);
 		fontRendererObj.drawString(String.valueOf(tileEntity.itemPrice), 48, 29, 4210752);
 		fontRendererObj.drawString(String.valueOf(tileEntity.userCoinSum), 63, 69, 4210752);
 	}

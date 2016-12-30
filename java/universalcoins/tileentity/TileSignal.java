@@ -1,5 +1,6 @@
 package universalcoins.tileentity;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -36,7 +37,6 @@ public class TileSignal extends TileEntity implements IInventory, ITickable {
 		if (!worldObj.isRemote) {
 			if (counter > 0) {
 				counter--;
-				FMLLog.info("counter: " + counter);
 				secondsLeft = counter / 20;
 				if (secondsLeft != lastSecondsLeft) {
 					lastSecondsLeft = secondsLeft;
@@ -158,8 +158,8 @@ public class TileSignal extends TileEntity implements IInventory, ITickable {
 	}
 
 	public void updateTE() {
-		markDirty();
-		worldObj.notifyBlockUpdate(getPos(), worldObj.getBlockState(pos), worldObj.getBlockState(pos), 3);
+		final IBlockState state = getWorld().getBlockState(getPos());
+		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
 	}
 
 	@Override

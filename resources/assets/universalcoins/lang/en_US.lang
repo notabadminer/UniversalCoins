@@ -13,6 +13,7 @@ item.catalog.name=Selling Catalog
 item.vendor_wrench.name=Vendor Wrench
 tile.tradestation.name=Trade Station
 item.uc_sign.name=Advanced Sign
+item.uc_package.name=Package
 tile.safe.name=Ender Safe
 tile.vendor.name=Vendor Block
 tile.vendor_frame.name=Vendor Frame

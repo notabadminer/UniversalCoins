@@ -8,6 +8,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import universalcoins.Achievements;
 import universalcoins.UniversalCoins;
@@ -35,52 +36,42 @@ public class UCPlayerPickupEventHandler {
 						return; // card has not been initialized. Nothing we can
 								// do here
 					accountNumber = inventory[i].getTagCompound().getString("Account");
-					long accountBalance = getAccountBalance(accountNumber);
+					FMLLog.info("Account: " + accountNumber);
+					long accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 					if (accountBalance == -1)
 						return; // get out of here if the card is invalid
 					if (event.getItem().getEntityItem().stackSize == 0)
 						return; // no need to notify on zero size stack
-					int coinsFound = 0;
+					int coinValue = 0;
+					int depositAmount = 0;
+					int stackSize = event.getItem().getEntityItem().stackSize;
 					switch (event.getItem().getEntityItem().getUnlocalizedName()) {
 					case "item.iron_coin":
-						coinsFound += event.getItem().getEntityItem().stackSize * UniversalCoins.coinValues[0];
+						coinValue = UniversalCoins.coinValues[0];
 						break;
 					case "item.gold_coin":
-						coinsFound += event.getItem().getEntityItem().stackSize * UniversalCoins.coinValues[1];
+						coinValue = UniversalCoins.coinValues[1];
 						break;
 					case "item.emerald_coin":
-						coinsFound += event.getItem().getEntityItem().stackSize * UniversalCoins.coinValues[2];
+						coinValue = UniversalCoins.coinValues[2];
 						break;
 					case "item.diamond_coin":
-						coinsFound += event.getItem().getEntityItem().stackSize * UniversalCoins.coinValues[3];
+						coinValue = UniversalCoins.coinValues[3];
 						break;
 					case "item.obsidian_coin":
-						coinsFound += event.getItem().getEntityItem().stackSize * UniversalCoins.coinValues[4];
+						coinValue = UniversalCoins.coinValues[4];
 						break;
 					}
-					long depositAmount = Math.min(Long.MAX_VALUE - accountBalance, coinsFound);
-					if (depositAmount > 0) {
-						creditAccount(accountNumber, depositAmount);
-						player.addChatMessage(new TextComponentString(I18n
-								.translateToLocal("item.card.deposit") + " "
-								+ formatter.format(depositAmount) + " " + I18n.translateToLocal(
-										depositAmount > 1 ? "general.currency.multiple" : "general.currency.single")));
-						event.getItem().getEntityItem().stackSize -= depositAmount;
+					if (UniversalAccounts.getInstance().creditAccount(accountNumber, coinValue * stackSize, true)) {
+						UniversalAccounts.getInstance().creditAccount(accountNumber, coinValue * stackSize, false);
+						event.getItem().getEntityItem().stackSize = 0;
+						player.addChatMessage(new TextComponentString(I18n.translateToLocal("item.card.deposit") + " "
+								+ formatter.format(stackSize * coinValue) + " "
+								+ I18n.translateToLocal("general.currency.single")));
+						break; // no need to continue. We are done here
 					}
-					if (event.getItem().getEntityItem().stackSize == 0) {
-						event.setCanceled(true);
-					}
-					break; // no need to continue. We are done here
 				}
 			}
 		}
-	}
-
-	private long getAccountBalance(String accountNumber) {
-		return UniversalAccounts.getInstance().getAccountBalance(accountNumber);
-	}
-
-	private void creditAccount(String accountNumber, long amount) {
-		UniversalAccounts.getInstance().creditAccount(accountNumber, amount);
 	}
 }
