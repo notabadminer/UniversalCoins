@@ -77,8 +77,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 			} else {
 				sellButtonActive = true;
 				// disable sell button if coinSum is near max
-				// recast into long so value doesn't go negative
-				if ((long) coinSum + (long) itemPrice > Integer.MAX_VALUE) {
+				if (Integer.MAX_VALUE - coinSum < itemPrice) {
 					sellButtonActive = false;
 				}
 				// disable sell button if item is enchanted

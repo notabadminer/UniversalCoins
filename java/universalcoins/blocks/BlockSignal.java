@@ -1,5 +1,6 @@
 package universalcoins.blocks;
 
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
@@ -12,6 +13,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
@@ -23,7 +25,6 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
-import universalcoins.tileentity.TileProtected;
 import universalcoins.tileentity.TileSignal;
 
 public class BlockSignal extends BlockProtected {
@@ -162,8 +163,15 @@ public class BlockSignal extends BlockProtected {
 
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
 			ItemStack stack) {
-		super.onBlockPlacedBy(world, pos, state, player, stack);
 		world.setBlockState(pos, state.withProperty(FACING, player.getHorizontalFacing().getOpposite()), 2);
+		super.onBlockPlacedBy(world, pos, state, player, stack);
+		if (world.isRemote)
+			return;
+		TileEntity te = world.getTileEntity(pos);
+		if (te instanceof TileSignal) {
+			TileSignal tentity = (TileSignal) te;
+			tentity.blockOwner = player.getName();
+		}
 	}
 
 	public void updatePower(World worldIn, BlockPos pos) {
@@ -226,5 +234,36 @@ public class BlockSignal extends BlockProtected {
 	 */
 	public int getMetaFromState(IBlockState state) {
 		return ((EnumFacing) state.getValue(FACING)).getIndex();
+	}
+
+	@Override
+	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+		java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
+		TileSignal te = world.getTileEntity(pos) instanceof TileSignal ? (TileSignal) world.getTileEntity(pos) : null;
+		ItemStack stack = new ItemStack(UniversalCoins.proxy.signalblock, 1);
+		if (te != null) {
+			NBTTagCompound tag = new NBTTagCompound();
+			NBTTagCompound tagCompound = new NBTTagCompound();
+			te.writeToNBT(tag);
+			tagCompound.setTag("BlockEntityTag", tag);
+			stack.setTagCompound(tagCompound);
+		}
+		ret.add(stack);
+		return ret;
+	}
+
+	@Override
+	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
+			boolean willHarvest) {
+		if (willHarvest)
+			return true; // If it will harvest, delay deletion of the block until after getDrops
+		return super.removedByPlayer(state, world, pos, player, willHarvest);
+	}
+
+	@Override
+	public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te,
+			ItemStack tool) {
+		super.harvestBlock(world, player, pos, state, te, tool);
+		world.setBlockToAir(pos);
 	}
 }

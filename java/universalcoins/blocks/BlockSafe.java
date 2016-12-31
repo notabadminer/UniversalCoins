@@ -49,15 +49,14 @@ public class BlockSafe extends BlockProtected {
 
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
 			ItemStack stack) {
-		super.onBlockPlacedBy(world, pos, state, player, stack);
 		if (world.isRemote)
 			return;
 		world.setBlockState(pos, state.withProperty(FACING, player.getHorizontalFacing().getOpposite()), 2);
 		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity != null && tileEntity instanceof TileSafe) {
 			TileSafe tentity = (TileSafe) tileEntity;
-			tentity.blockOwner = player.getCommandSenderEntity().getName();
-			tentity.setSafeAccount(player.getCommandSenderEntity().getName());
+			tentity.blockOwner = player.getName();
+			tentity.setSafeAccount(player.getName());
 		}
 	}
 

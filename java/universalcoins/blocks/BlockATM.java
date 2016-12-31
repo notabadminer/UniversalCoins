@@ -43,8 +43,8 @@ public class BlockATM extends BlockProtected {
 
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
 			ItemStack stack) {
-		super.onBlockPlacedBy(world, pos, state, player, stack);
 		world.setBlockState(pos, state.withProperty(FACING, player.getHorizontalFacing().getOpposite()), 2);
+		super.onBlockPlacedBy(world, pos, state, player, stack);
 	}
 
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,

@@ -1,19 +1,26 @@
 package universalcoins.blocks;
 
+import java.util.List;
+import java.util.Random;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityFlowerPot;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.FMLLog;
@@ -28,13 +35,27 @@ public class BlockTradeStation extends BlockProtected {
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(6000.0F);
 	}
+	
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
+			ItemStack stack) {
+		super.onBlockPlacedBy(world, pos, state, player, stack);
+		if (world.isRemote)
+			return;
+		TileEntity te = world.getTileEntity(pos);
+		if (te instanceof TileTradeStation) {
+			TileTradeStation tentity = (TileTradeStation) te;
+			tentity.blockOwner = player.getName();
+		}
+		if (stack.hasDisplayName()) {
+			((TileTradeStation) world.getTileEntity(pos)).setName(stack.getDisplayName());
+		}
+	}
 
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
 			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity != null && tileEntity instanceof TileTradeStation) {
 			TileTradeStation tentity = (TileTradeStation) tileEntity;
-			FMLLog.info("block owner: " + tentity.blockOwner);
 			if (tentity.inUse) {
 				if (!world.isRemote) {
 					player.addChatMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
@@ -60,39 +81,37 @@ public class BlockTradeStation extends BlockProtected {
 		}
 		return false;
 	}
-	
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
-			ItemStack stack) {
-		super.onBlockPlacedBy(world, pos, state, player, stack);
-		if (world.isRemote)
-			return;
-		if (stack.hasTagCompound()) {
-			TileEntity te = world.getTileEntity(pos);
-			if (te instanceof TileTradeStation) {
-				TileTradeStation tentity = (TileTradeStation) te;
-				NBTTagCompound tagCompound = stack.getTagCompound();
-				if (tagCompound == null) {
-					return;
-				}
-				NBTTagList tagList = tagCompound.getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
-				for (int i = 0; i < tagList.tagCount(); i++) {
-					NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
-					byte slot = tag.getByte("Slot");
-					if (slot >= 0 && slot < tentity.getSizeInventory()) {
-						tentity.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(tag));
-					}
-				}
-				tentity.coinSum = tagCompound.getInteger("CoinsLeft");
-				tentity.autoMode = tagCompound.getInteger("AutoMode");
-				tentity.coinMode = tagCompound.getInteger("CoinMode");
-				tentity.itemPrice = tagCompound.getInteger("ItemPrice");
-				tentity.customName = tagCompound.getString("CustomName");
-				tentity.blockOwner = player.getName();
-			}
+
+	@Override
+	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+		java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
+		TileTradeStation te = world.getTileEntity(pos) instanceof TileTradeStation
+				? (TileTradeStation) world.getTileEntity(pos) : null;
+		ItemStack stack = new ItemStack(UniversalCoins.proxy.tradestation, 1);
+		if (te != null) {
+			NBTTagCompound tag = new NBTTagCompound();
+			NBTTagCompound tagCompound = new NBTTagCompound();
+			te.writeToNBT(tag);
+			tagCompound.setTag("BlockEntityTag", tag);
+			stack.setTagCompound(tagCompound);
 		}
-		if (stack.hasDisplayName()) {
-			((TileTradeStation) world.getTileEntity(pos)).setName(stack.getDisplayName());
-		}
+		ret.add(stack);
+		return ret;
+	}
+
+	@Override
+	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
+			boolean willHarvest) {
+		if (willHarvest)
+			return true; // If it will harvest, delay deletion of the block until after getDrops
+		return super.removedByPlayer(state, world, pos, player, willHarvest);
+	}
+
+	@Override
+	public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te,
+			ItemStack tool) {
+		super.harvestBlock(world, player, pos, state, te, tool);
+		world.setBlockToAir(pos);
 	}
 
 	@Override

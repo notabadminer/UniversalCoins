@@ -8,12 +8,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.blocks.BlockSignal;
 import universalcoins.net.UCButtonMessage;
@@ -264,21 +264,30 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 		return stack;
 	}
 
-	public void fillOutputSlot() { //TODO fix this
-//		inventory[itemOutputSlot] = null;
-//		if (coinSum > 0) {
-//			// use logarithm to find largest cointype for the balance
-//			int logVal = Math.min((int) (Math.log(coinSum) / Math.log(9)), 4);
-//			int stackSize = Math.min((int) (coinSum / Math.pow(9, logVal)), 64);
-//			// add a stack to the slot
-//			inventory[itemOutputSlot] = new ItemStack(coins[logVal], stackSize);
-//			int itemValue = multiplier[logVal];
-//			int debitAmount = 0;
-//			debitAmount = Math.min(stackSize, (Integer.MAX_VALUE - coinSum) / itemValue);
-//			if (!worldObj.isRemote) {
-//				coinSum -= debitAmount * itemValue;
-//			}
-//		}
+	public void fillOutputSlot() {
+		if (inventory[itemOutputSlot] == null && coinSum > 0) {
+			if (coinSum > UniversalCoins.coinValues[4]) {
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.obsidian_coin);
+				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[4], 64);
+				coinSum -= UniversalCoins.coinValues[4] * inventory[itemOutputSlot].stackSize;
+			} else if (coinSum > UniversalCoins.coinValues[3]) {
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.diamond_coin);
+				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[3], 64);
+				coinSum -= UniversalCoins.coinValues[3] * inventory[itemOutputSlot].stackSize;
+			} else if (coinSum > UniversalCoins.coinValues[2]) {
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.emerald_coin);
+				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[2], 64);
+				coinSum -= UniversalCoins.coinValues[2] * inventory[itemOutputSlot].stackSize;
+			} else if (coinSum > UniversalCoins.coinValues[1]) {
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.gold_coin);
+				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[1], 64);
+				coinSum -= UniversalCoins.coinValues[1] * inventory[itemOutputSlot].stackSize;
+			} else if (coinSum > UniversalCoins.coinValues[0]) {
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.iron_coin);
+				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[0], 64);
+				coinSum -= UniversalCoins.coinValues[0] * inventory[itemOutputSlot].stackSize;
+			}
+		}
 	}
 
 	// @Override
@@ -299,7 +308,7 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 	public boolean isItemValidForSlot(int var1, ItemStack var2) {
 		return false;
 	}
-	
+
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
 		// TODO Auto-generated method stub
@@ -345,5 +354,10 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 	@Override
 	public ITextComponent getDisplayName() {
 		return new TextComponentString(UniversalCoins.proxy.signalblock.getLocalizedName());
+	}
+
+	@Override
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
+		return false;
 	}
 }

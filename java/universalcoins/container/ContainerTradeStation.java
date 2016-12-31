@@ -88,7 +88,7 @@ public class ContainerTradeStation extends Container {
 			}
 			slotObject.onPickupFromSlot(player, stackInSlot);
 		}
-
+		tileEntity.update();
 		return stack;
 	}
 
