@@ -312,9 +312,13 @@ public class UCItemPricer {
 		int ItemPrice = -1;
 		String itemName = null;
 		try {
-			itemName = itemStack.getUnlocalizedName() + "." + itemStack.getItemDamage();
+			if (itemStack.isItemStackDamageable()) {
+				itemName = itemStack.getUnlocalizedName() + ".0";
+			} else {
+				itemName = itemStack.getUnlocalizedName() + "." + itemStack.getItemDamage();
+			}
 		} catch (Exception e) {
-			// fail silently
+			return -1;
 		}
 		if (ucPriceMap.get(itemName) != null) {
 			ItemPrice = ucPriceMap.get(itemName);
