@@ -276,6 +276,7 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 	}
 
 	public void updateTE() {
+		fillOutputSlot();
 		final IBlockState state = getWorld().getBlockState(getPos());
 		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
 	}

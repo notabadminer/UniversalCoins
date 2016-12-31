@@ -373,6 +373,13 @@ public class TilePackager extends TileProtected implements IInventory {
 				if (inventory[slot].stackSize == 0) {
 					inventory[slot] = null;
 				}
+				if (slot == itemCardSlot && inventory[itemCardSlot].getItem() == UniversalCoins.proxy.ender_card) {
+					if (!worldObj.isRemote && stack.hasTagCompound()) {
+						String accountNumber = stack.getTagCompound().getString("Account");
+						UniversalAccounts.getInstance().creditAccount(accountNumber, coinSum, false);
+						coinSum = 0;
+					}
+				}
 			}
 		}
 		if (slot == itemCardSlot && !worldObj.isRemote) {

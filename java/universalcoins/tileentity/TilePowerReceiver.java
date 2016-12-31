@@ -105,6 +105,13 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 					inventory[slot] = null;
 				}
 			}
+			if (slot == itemCardSlot && inventory[itemCardSlot].getItem() == UniversalCoins.proxy.ender_card) {
+				if (!worldObj.isRemote && stack.hasTagCompound()) {
+					String accountNumber = stack.getTagCompound().getString("Account");
+					UniversalAccounts.getInstance().creditAccount(accountNumber, coinSum, false);
+					coinSum = 0;				
+				}
+			}
 		}
 	}
 

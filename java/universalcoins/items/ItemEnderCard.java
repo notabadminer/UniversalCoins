@@ -33,6 +33,7 @@ public class ItemEnderCard extends ItemUCCard {
 		int coinsDeposited = 0;
 		for (int i = 0; i < inventory.length; i++) {
 			ItemStack instack = player.inventory.getStackInSlot(i);
+			coinValue = 0;
 			if (instack != null) {
 				switch (instack.getUnlocalizedName()) {
 				case "item.iron_coin":

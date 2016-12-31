@@ -99,7 +99,6 @@ public class ContainerSafe extends Container {
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 
-
 		if (this.lastOwner != tEntity.blockOwner || this.lastAccountBalance != tEntity.accountBalance) {
 			tEntity.updateTE();
 		}
@@ -108,12 +107,4 @@ public class ContainerSafe extends Container {
 		this.lastAccountBalance = tEntity.accountBalance;
 
 	}
-
-	@SideOnly(Side.CLIENT)
-	public void updateProgressBar(int par1, int par2) {
-		if (par1 == 0) {
-			// this.tileEntity.autoMode = par2;
-		}
-	}
-
 }

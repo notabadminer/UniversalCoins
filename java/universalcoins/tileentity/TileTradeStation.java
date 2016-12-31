@@ -633,6 +633,13 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 					inventory[slot] = null;
 				}
 			}
+			if (slot == itemCardSlot && inventory[itemCardSlot].getItem() == UniversalCoins.proxy.ender_card) {
+				if (!worldObj.isRemote && stack.hasTagCompound()) {
+					String accountNumber = stack.getTagCompound().getString("Account");
+					UniversalAccounts.getInstance().creditAccount(accountNumber, coinSum, false);
+					coinSum = 0;				
+				}
+			}
 			update();
 		}
 	}
