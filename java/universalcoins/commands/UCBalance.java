@@ -19,12 +19,12 @@ public class UCBalance extends CommandBase implements ICommand {
 
 	@Override
 	public String getCommandName() {
-		return I18n.translateToLocal("command.balance.name");
+		return "balance";
 	}
 
 	@Override
 	public String getCommandUsage(ICommandSender var1) {
-		return I18n.translateToLocal("command.balance.help");
+		return "/balance : returns player inventory and account coin balances";
 	}
 
 	@Override
@@ -40,11 +40,9 @@ public class UCBalance extends CommandBase implements ICommand {
 			String playerAcct = UniversalAccounts.getInstance().getPlayerAccount(uuid);
 			long accountBalance = UniversalAccounts.getInstance().getAccountBalance(playerAcct);
 			DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
-			sender.addChatMessage(new TextComponentString(
-					I18n.translateToLocal("command.balance.result.inventory") + formatter.format(playerCoins)));
+			sender.addChatMessage(new TextComponentString("Inventory:" + formatter.format(playerCoins)));
 			if (accountBalance != -1) {
-				sender.addChatMessage(new TextComponentString(
-						I18n.translateToLocal("command.balance.result.account") + formatter.format(accountBalance)));
+				sender.addChatMessage(new TextComponentString("Account:" + formatter.format(accountBalance)));
 			}
 			// achievement stuff
 			if (playerCoins > 1000 || accountBalance > 1000) {

@@ -107,61 +107,6 @@ packager.button.mode.send=Mode: Send
 packager.message.sent= sent you a package
 
 #####
-# Commands
-#####
-command.balance.name=balance
-command.balance.help=/balance : Retrieve coin balance.
-command.balance.result.inventory=Inventory Balance: 
-command.balance.result.account=Account Balance: 
-command.balance.result.customaccount=Secondary Account Balance: 
-command.uccommand.name=universalcoins
-command.uccommand.help=/universalcoins help
-command.uccommand.option.help.name=help
-command.uccommand.usage=Usage: universalcoins <command> <arguments>
-command.uccommand.commandheader=Available commands:
-command.uccommand.option.get.name=get
-command.uccommand.option.get.help=- get this: Get price of item held in main hand.
-command.uccommand.option.reload.name=reload
-command.uccommand.option.reload.help=- reload : Reload pricelists. This will reset any unsaved changes.
-command.uccommand.option.set.name=set
-command.uccommand.option.set.help=- set this <price> : Set price of item held in main hand.
-command.uccommand.option.set.itemheld=this
-command.uccommand.option.set.price.invalid=Please specify a valid price
-command.uccommand.option.set.price=price set to
-command.uccommand.option.set.price.firstuse.one=Changes will not be saved
-command.uccommand.option.set.price.firstuse.two=Run "universalcoins save" to save changes
-command.uccommand.option.set.price.firstuse.three=Run "universalcoins reload" to undo changes
-command.uccommand.option.set.price.fail.one=Failed to set price.
-command.uccommand.option.set.price.error=Please specify item and price
-command.uccommand.option.reload=reload
-command.uccommand.option.reload.confirm=All changes since last save reset
-command.uccommand.option.reset.name=reset
-command.uccommand.option.reset.confirm=UC: Price defaults reloaded
-command.uccommand.option.reset.help=- reset : Reset all prices to defaults. Will not override items not priced by default
-command.uccommand.option.save.name=save
-command.uccommand.option.save.confirm=Changes saved
-command.uccommand.option.save.help=- save : Save pricelists.
-command.uccommand.warning.pricenotset=No price has been set for
-command.uccommand.warning.pricefound=The price for
-command.uccommand.warning.noitem=Please specify item
-command.givecoins.name=givecoins
-command.givecoins.help=/givecoins <playerName> <amount> : Give another player coins.
-command.givecoins.error.notfound=That player cannot be found.
-command.givecoins.error.badentry=Please specify a valid coin amount.
-command.givecoins.error.noname=Please include player name and amount to give.
-command.givecoins.result=gave you
-command.rebalance.name=rebalance
-command.rebalance.help=/rebalance : Group coins into largest denomination possible.
-command.send.name=send
-command.send.help=/send <playerName> <amount> : Send another player coins.
-command.send.error.notfound=Player not found.
-command.send.error.badentry=Please specify a valid coin amount.
-command.send.error.insufficient=Insufficient funds.
-command.send.error.incomplete=Please include player name and amount to send.
-command.send.result.sender=coins sent to
-command.send.result.receiver=coins received from
-
-#####
 # Achievements
 #####
 achievement.AchievementCoin=Money!

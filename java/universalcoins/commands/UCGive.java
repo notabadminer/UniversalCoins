@@ -16,7 +16,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import universalcoins.UniversalCoins;
@@ -25,12 +24,12 @@ public class UCGive extends CommandBase implements ICommand {
 
 	@Override
 	public String getCommandName() {
-		return I18n.translateToLocal("command.givecoins.name");
+		return "givecoins";
 	}
 
 	@Override
 	public String getCommandUsage(ICommandSender var1) {
-		return I18n.translateToLocal("command.givecoins.help");
+		return "/givecoins <player> <amount>";
 	}
 
 	@Override
@@ -45,35 +44,28 @@ public class UCGive extends CommandBase implements ICommand {
 			}
 			int coinsToSend = 0;
 			if (recipient == null) {
-				sender.addChatMessage(
-						new TextComponentString("§c" + I18n.translateToLocal("command.givecoins.error.notfound")));
+				sender.addChatMessage(new TextComponentString("§cPlayer not found!"));
 				return;
 			}
 			try {
 				coinsToSend = Integer.parseInt(args[1]);
 			} catch (NumberFormatException e) {
-				sender.addChatMessage(
-						new TextComponentString("§c" + I18n.translateToLocal("command.givecoins.error.badentry")));
+				sender.addChatMessage(new TextComponentString("§cInvalid coin amount!"));
 				return;
 			}
 			if (coinsToSend <= 0) {
-				sender.addChatMessage(
-						new TextComponentString("§c" + I18n.translateToLocal("command.send.error.badentry")));
+				sender.addChatMessage(new TextComponentString("§cInvalid coin amount!"));
 				return;
 			}
 			// we made it through the exceptions, give the coins to the player
 			givePlayerCoins(recipient, coinsToSend);
 			DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
-			sender.addChatMessage(new TextComponentString(
-					"Gave " + args[0] + " " + formatter.format(coinsToSend) + " " + I18n.translateToLocal(
-							coinsToSend > 1 ? "general.currency.multiple" : "general.currency.single")));
-			recipient.addChatMessage(
-					new TextComponentString(sender.getName() + " " + I18n.translateToLocal("command.givecoins.result")
-							+ " " + (coinsToSend) + " " + I18n.translateToLocal(
-									coinsToSend > 1 ? "general.currency.multiple" : "general.currency.single")));
-		} else
 			sender.addChatMessage(
-					new TextComponentString("§c" + I18n.translateToLocal("command.givecoins.error.noname")));
+					new TextComponentString("Gave " + args[0] + " " + formatter.format(coinsToSend) + " Coin."));
+			recipient.addChatMessage(
+					new TextComponentString(sender.getName() + " gave you " + (coinsToSend) + " coin."));
+		} else
+			sender.addChatMessage(new TextComponentString("§cError: Please specify recipient and amount."));
 	}
 
 	private void givePlayerCoins(EntityPlayer recipient, int coinsLeft) {

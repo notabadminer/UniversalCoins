@@ -20,14 +20,27 @@ public class BlockProtected extends BlockContainer {
 		super(materialIn);
 	}
 
-	@Override
-	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
+	/**
+	 * Called before a block is broken. Return true to prevent default block harvesting.
+	 *
+	 * Note: In SMP, this is called on both client and server sides!
+	 *
+	 * @param itemstack
+	 *            The current ItemStack
+	 * @param pos
+	 *            Block's position in world
+	 * @param player
+	 *            The Player that is wielding the item
+	 * @return True to prevent harvesting, false to continue as normal
+	 */
+	public boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, EntityPlayer player) {
 		if (UniversalCoins.blockProtection) {
-			TileProtected tileEntity = (TileProtected) world.getTileEntity(pos);
+			TileProtected tileEntity = (TileProtected) player.getEntityWorld().getTileEntity(pos);
 			if (!player.capabilities.isCreativeMode && !tileEntity.blockOwner.equals(player.getName())) {
-				this.setBlockUnbreakable();
+				return true;
 			}
 		}
+		return false;
 	}
 
 	@Override
@@ -47,7 +60,6 @@ public class BlockProtected extends BlockContainer {
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
 		return new TileProtected();
 	}
-	
 
 	@Override
 	public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {
