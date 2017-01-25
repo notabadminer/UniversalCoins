@@ -12,6 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -222,49 +224,62 @@ public class UCItemPricer {
 		}
 	}
 
-	private void writePriceLists() {
+	private boolean writePriceLists() {
 		// writing pricelists takes a while so we start a thread and let it work
 		// in the background.
-		Runnable r = new Runnable() {
-			public void run() {
-				priceListWriter();
-			}
-		};
-
-		Thread t = new Thread(r);
-		t.start();
+		try {
+			priceListWriter();
+		} catch (IOException e) {
+			FMLLog.warning("Universal Coins: Failed to create config file");
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
-	private void priceListWriter() {
-		// write config set from item hashmap
-		Set set = ucPriceMap.entrySet();
-		Iterator i = set.iterator();
-		while (i.hasNext()) {
-			Map.Entry me = (Map.Entry) i.next();
-			String keyname = (String) me.getKey();
-			String modname = ucModnameMap.get(keyname) + ".cfg";
-			Path pathToFile = Paths.get(configDir + modname);
-			try {
-				Files.createDirectories(pathToFile.getParent());
-			} catch (IOException e) {
-				FMLLog.warning("Universal Coins: Failed to create pricelist folder");
+	private void priceListWriter() throws IOException {
+		//long startTime = System.currentTimeMillis();
+
+		Set<Entry<String, String>> set = ucModnameMap.entrySet();
+		List<Entry<String, String>> list = new ArrayList<Entry<String, String>>(set);
+		Collections.sort(list, new Comparator<Map.Entry<String, String>>() {
+			public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
+				return o2.getValue().compareTo(o1.getValue());
 			}
-			File modconfigfile = new File(configDir + modname);
-			if (!modconfigfile.exists()) {
-				try {
-					modconfigfile.createNewFile();
-				} catch (IOException e) {
-					FMLLog.warning("Universal Coins: Failed to create pricelist file: " + modconfigfile);
-				}
-			}
-			try {
-				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(modconfigfile, true)));
-				out.println(me.getKey() + "=" + me.getValue());
-				out.close();
-			} catch (IOException e) {
-				FMLLog.warning("Universal Coins: Failed to append to pricelist file: " + modconfigfile);
-			}
+		});
+
+		Path pathToFile = Paths.get(configDir + list.get(0).getValue());
+		Files.createDirectories(pathToFile.getParent());
+
+		File csvFile = new File(configDir + list.get(0).getValue() + ".cfg");
+		if (csvFile.exists()) {
+			csvFile.delete();
+			csvFile.createNewFile();
 		}
+		BufferedWriter out = new BufferedWriter(new FileWriter(csvFile));
+		String previousModName = list.get(0).getValue();
+		for (Entry<String, String> entry : list) {
+			String modName = entry.getValue();
+			if (!modName.matches(previousModName)) {
+				previousModName = modName;
+				out.flush();
+				out.close();
+				// move to next file
+				csvFile = new File(configDir + entry.getValue() + ".cfg");
+				if (csvFile.exists()) {
+					csvFile.delete();
+					csvFile.createNewFile();
+				}
+				out = new BufferedWriter(new FileWriter(csvFile));
+			}
+			int price = ucPriceMap.get(entry.getKey());
+			out.write(entry.getKey() + "=" + price);
+			out.newLine();
+		}
+		out.flush();
+		out.close();
+		//long endTime = System.currentTimeMillis();
+		//FMLLog.info("File writes took " + (endTime - startTime) + " milliseconds");
 	}
 
 	public int getItemPrice(ItemStack itemStack) {
@@ -332,7 +347,7 @@ public class UCItemPricer {
 		writePriceLists();
 	}
 
-	public void savePriceLists() {
+	public boolean savePriceLists() {
 		// delete old configs
 		File folder = new File(configDir);
 		// cleanup
@@ -345,7 +360,7 @@ public class UCItemPricer {
 			}
 		}
 		// write new configs
-		writePriceLists();
+		return writePriceLists();
 	}
 
 	public void resetDefaults() {

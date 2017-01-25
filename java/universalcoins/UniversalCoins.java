@@ -13,6 +13,7 @@ import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -352,5 +353,15 @@ public class UniversalCoins {
 		manager.registerCommand(new UCRebalance());
 		manager.registerCommand(new UCGive());
 		manager.registerCommand(new UCSend());
+	}
+	
+	@EventHandler
+	public void serverStop(FMLServerStoppingEvent event) {
+		boolean saved = UCItemPricer.getInstance().savePriceLists();
+		if (saved) {
+			FMLLog.info("Universal Coins: pricelists saved.");
+		} else {
+			FMLLog.info("Universal Coins: failed to save pricelists.");
+		}
 	}
 }
