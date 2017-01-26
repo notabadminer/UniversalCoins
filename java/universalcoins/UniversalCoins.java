@@ -33,7 +33,6 @@ import universalcoins.commands.UCBalance;
 import universalcoins.commands.UCCommand;
 import universalcoins.commands.UCGive;
 import universalcoins.commands.UCRebalance;
-import universalcoins.commands.UCSend;
 import universalcoins.net.ATMWithdrawalMessage;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCPackagerServerMessage;
@@ -352,9 +351,8 @@ public class UniversalCoins {
 		manager.registerCommand(new UCBalance());
 		manager.registerCommand(new UCRebalance());
 		manager.registerCommand(new UCGive());
-		manager.registerCommand(new UCSend());
 	}
-	
+
 	@EventHandler
 	public void serverStop(FMLServerStoppingEvent event) {
 		boolean saved = UCItemPricer.getInstance().savePriceLists();

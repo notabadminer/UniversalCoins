@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -78,7 +76,7 @@ public class UCItemPricer {
 	}
 
 	private void loadDefaults() throws IOException {
-		String[] configList = { "pricelists/minecraft.cfg", "pricelists/universalcoins.cfg" };
+		String[] configList = { "pricelists/minecraft.cfg" };
 		InputStream priceResource;
 		// load those files into hashmap(ucPriceMap)
 		for (int i = 0; i < configList.length; i++) {
@@ -238,7 +236,7 @@ public class UCItemPricer {
 	}
 
 	private void priceListWriter() throws IOException {
-		//long startTime = System.currentTimeMillis();
+		// long startTime = System.currentTimeMillis();
 
 		Set<Entry<String, String>> set = ucModnameMap.entrySet();
 		List<Entry<String, String>> list = new ArrayList<Entry<String, String>>(set);
@@ -278,11 +276,12 @@ public class UCItemPricer {
 		}
 		out.flush();
 		out.close();
-		//long endTime = System.currentTimeMillis();
-		//FMLLog.info("File writes took " + (endTime - startTime) + " milliseconds");
+		// long endTime = System.currentTimeMillis();
+		// FMLLog.info("File writes took " + (endTime - startTime) + "
+		// milliseconds");
 	}
 
-	public int getItemPrice(ItemStack itemStack) {
+	public static int getItemPrice(ItemStack itemStack) {
 		if (itemStack == null) {
 			return -1;
 		}
@@ -363,11 +362,12 @@ public class UCItemPricer {
 		return writePriceLists();
 	}
 
-	public void resetDefaults() {
+	public boolean resetDefaults() {
 		try {
 			loadDefaults();
+			return true;
 		} catch (IOException e) {
-			// fail quietly
+			return false;
 		}
 	}
 
@@ -413,11 +413,11 @@ public class UCItemPricer {
 
 	private void autoPriceCraftedItems() {
 		List<IRecipe> allrecipes = new ArrayList<IRecipe>(CraftingManager.getInstance().getRecipeList());
-		boolean priceUpdate = true;
+		boolean priceUpdate = false;
 
 		// we rerun multiple times if needed since recipe components might be
 		// priced in previous runs
-		while (priceUpdate == true) {
+		do {
 			priceUpdate = false;
 			for (IRecipe irecipe : allrecipes) {
 				int itemCost = 0;
@@ -451,10 +451,10 @@ public class UCItemPricer {
 					}
 				}
 			}
-		}
+		} while (priceUpdate == true);
 	}
 
-	public static List<ItemStack> getRecipeInputs(IRecipe recipe) {
+	public static ArrayList<ItemStack> getRecipeInputs(IRecipe recipe) {
 		ArrayList<ItemStack> recipeInputs = new ArrayList<ItemStack>();
 		if (recipe instanceof ShapedRecipes) {
 			ShapedRecipes shapedRecipe = (ShapedRecipes) recipe;
@@ -486,8 +486,12 @@ public class UCItemPricer {
 					if (test.size() > 0) {
 						boolean arrayListHasPricedItem = false;
 						for (int j = 0; j < test.size(); j++) {
-							if (UCItemPricer.getInstance().getItemPrice((ItemStack) test.get(j)) > 0) {
-								recipeInputs.add((ItemStack) test.get(j));
+							ItemStack stack = (ItemStack) test.get(j);
+							if (stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+								stack.setItemDamage(0);
+							}
+							if (getItemPrice(stack) > 0) {
+								recipeInputs.add(stack);
 								arrayListHasPricedItem = true;
 								break;
 							}
@@ -502,6 +506,9 @@ public class UCItemPricer {
 					if (itemStack.stackSize > 1) {
 						itemStack.stackSize = 1;
 					}
+					if (itemStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+						itemStack.setItemDamage(0);
+					}
 					recipeInputs.add(itemStack);
 				}
 			}
@@ -512,19 +519,27 @@ public class UCItemPricer {
 					ArrayList test = (ArrayList) object;
 					boolean arrayListHasPricedItem = false;
 					for (int j = 0; j < test.size(); j++) {
-						if (UCItemPricer.getInstance().getItemPrice((ItemStack) test.get(j)) > 0) {
-							recipeInputs.add((ItemStack) test.get(j));
+						ItemStack stack = (ItemStack) test.get(j);
+						if (stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+							stack.setItemDamage(0);
+						}
+						if (getItemPrice(stack) > 0) {
+							recipeInputs.add(stack);
 							arrayListHasPricedItem = true;
 							break;
 						}
 					}
 					// everything is invalid, just add one
-					if (!arrayListHasPricedItem && test.size() > 0)
+					if (!arrayListHasPricedItem && test.size() > 0) {
 						recipeInputs.add((ItemStack) test.get(0));
+					}
 				} else if (object instanceof ItemStack) {
 					ItemStack itemStack = ((ItemStack) object).copy();
 					if (itemStack.stackSize > 1) {
 						itemStack.stackSize = 1;
+					}
+					if (itemStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+						itemStack.setItemDamage(0);
 					}
 					recipeInputs.add(itemStack);
 				}
@@ -552,6 +567,8 @@ public class UCItemPricer {
 				int outputValue = ucPriceMap.get(outputName + "." + input.getItemDamage());
 				if (inputValue != -1 && outputValue == -1) {
 					ucPriceMap.put(outputName + "." + input.getItemDamage(), inputValue + 2);
+				} else if (outputValue != -1 && inputValue == -1) {
+					ucPriceMap.put(inputName + "." + output.getItemDamage(), outputValue - 2);
 				}
 			}
 		}
