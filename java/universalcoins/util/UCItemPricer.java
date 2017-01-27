@@ -17,6 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.logging.log4j.Level;
+
 import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -321,10 +324,15 @@ public class UCItemPricer {
 	}
 
 	public boolean setItemPrice(ItemStack itemStack, int price) {
+		String itemName = null;
 		if (itemStack == null) {
 			return false;
 		}
-		String itemName = itemStack.getUnlocalizedName() + "." + itemStack.getItemDamage();
+		if (itemStack.isItemStackDamageable()) {
+			itemName = itemStack.getUnlocalizedName() + ".0";
+		} else {
+			itemName = itemStack.getUnlocalizedName() + "." + itemStack.getItemDamage();
+		}
 		// get modName to add to mapping
 		String itemRegistryKey = Item.itemRegistry.getNameForObject(itemStack.getItem());
 		String[] tempModName = itemRegistryKey.split("\\W", 3);
@@ -435,10 +443,7 @@ public class UCItemPricer {
 				int itemCost = 0;
 				boolean validRecipe = true;
 				ItemStack output = irecipe.getRecipeOutput();
-				if (output == null) {
-					continue;
-				}
-				if (getItemPrice(output) != -1) {
+				if (output == null || getItemPrice(output) != -1) {
 					continue;
 				}
 				List recipeItems = getRecipeInputs(irecipe);
@@ -572,9 +577,5 @@ public class UCItemPricer {
 				}
 			}
 		}
-	}
-
-	public static Map<String, Integer> getUcPriceMap() {
-		return ucPriceMap;
 	}
 }
