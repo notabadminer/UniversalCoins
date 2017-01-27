@@ -95,6 +95,12 @@ public class TradeStationGUI extends GuiContainer {
 			if (sellButton.func_146115_a() || !UniversalCoins.tradeStationBuyEnabled) {
 				// player hovering over sell button or buy button disabled
 				int sellPrice = (int) (tileEntity.itemPrice * UniversalCoins.itemSellRatio);
+				if (tileEntity.getStackInSlot(tileEntity.itemInputSlot) != null
+						&& tileEntity.getStackInSlot(tileEntity.itemInputSlot).isItemStackDamageable()) {
+					int maxDamage = tileEntity.getStackInSlot(tileEntity.itemInputSlot).getMaxDamage();
+					int currentDamage = tileEntity.getStackInSlot(tileEntity.itemInputSlot).getItemDamage();
+					sellPrice = sellPrice * (maxDamage - currentDamage) / maxDamage;
+				}
 				fontRendererObj.drawString(String.valueOf(sellPrice), 48, 57, 4210752);
 			} else {
 				fontRendererObj.drawString(String.valueOf(tileEntity.itemPrice), 48, 57, 4210752);

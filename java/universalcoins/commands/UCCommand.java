@@ -42,9 +42,10 @@ public class UCCommand extends CommandBase {
 			sender.addChatMessage(new ChatComponentText("Usage: /universalcoins <command option> <arguments>"));
 			sender.addChatMessage(new ChatComponentText("Available command options:"));
 			sender.addChatMessage(new ChatComponentText("/universalcoins price : Get price of item held in hand."));
-			sender.addChatMessage(new ChatComponentText("/universalcoins set <price> : Set price of item held in hand."));
 			sender.addChatMessage(
-					new ChatComponentText("/universalcoins reload : Reload pricelists. This will reset any unsaved changes."));
+					new ChatComponentText("/universalcoins set <price> : Set price of item held in hand."));
+			sender.addChatMessage(new ChatComponentText(
+					"/universalcoins reload : Reload pricelists. This will reset any unsaved changes."));
 			sender.addChatMessage(new ChatComponentText(
 					"/universalcoins reset : Reset all prices to defaults. Will not override items not priced by default"));
 			sender.addChatMessage(new ChatComponentText("/universalcoins save : Save pricelists."));
@@ -65,8 +66,13 @@ public class UCCommand extends CommandBase {
 			}
 			if (price == -1) {
 				sender.addChatMessage(new ChatComponentText("§cNo price set for" + " " + stackName));
-			} else
+			} else {
 				sender.addChatMessage(new ChatComponentText("§a" + stackName + " = " + formatter.format(price)));
+				if (stack.isItemStackDamageable()) {
+					int value = price * (stack.getMaxDamage() - stack.getItemDamage()) / stack.getMaxDamage();
+					sender.addChatMessage(new ChatComponentText("§acurrent value = " + formatter.format(value)));
+				}
+			}
 		} else if (astring[0].matches("set")) {
 			// set item price
 			if (astring.length > 1) {

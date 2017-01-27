@@ -174,7 +174,11 @@ public class UCItemPricer {
 				ArrayList test = OreDictionary.getOres(ore);
 				int itemValue = -1;
 				for (int j = 0; j < test.size(); j++) {
-					int subItemValue = getItemPrice((ItemStack) test.get(j));
+					ItemStack itemStack = ((ItemStack) test.get(j));
+					if (itemStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+						itemStack.setItemDamage(0);
+					}
+					int subItemValue = getItemPrice(itemStack);
 					if (subItemValue > 0) {
 						itemValue = subItemValue;
 					}
@@ -287,10 +291,18 @@ public class UCItemPricer {
 		}
 		int itemPrice = -1;
 		String itemName = null;
+		if (itemStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+			itemStack.setItemDamage(0);
+		}
 		try {
-			itemName = itemStack.getUnlocalizedName() + "." + itemStack.getItemDamage();
+			if (itemStack.isItemStackDamageable()) {
+				itemName = itemStack.getUnlocalizedName() + ".0";
+
+			} else {
+				itemName = itemStack.getUnlocalizedName() + "." + itemStack.getItemDamage();
+			}
 		} catch (Exception e) {
-			// fail silently
+			FMLLog.warning("Universal Coins: Failed to retrieve price for " + itemStack);
 		}
 		if (ucPriceMap.get(itemName) != null) {
 			itemPrice = ucPriceMap.get(itemName);
@@ -487,9 +499,6 @@ public class UCItemPricer {
 						boolean arrayListHasPricedItem = false;
 						for (int j = 0; j < test.size(); j++) {
 							ItemStack stack = (ItemStack) test.get(j);
-							if (stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-								stack.setItemDamage(0);
-							}
 							if (getItemPrice(stack) > 0) {
 								recipeInputs.add(stack);
 								arrayListHasPricedItem = true;
@@ -506,9 +515,6 @@ public class UCItemPricer {
 					if (itemStack.stackSize > 1) {
 						itemStack.stackSize = 1;
 					}
-					if (itemStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-						itemStack.setItemDamage(0);
-					}
 					recipeInputs.add(itemStack);
 				}
 			}
@@ -520,9 +526,6 @@ public class UCItemPricer {
 					boolean arrayListHasPricedItem = false;
 					for (int j = 0; j < test.size(); j++) {
 						ItemStack stack = (ItemStack) test.get(j);
-						if (stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-							stack.setItemDamage(0);
-						}
 						if (getItemPrice(stack) > 0) {
 							recipeInputs.add(stack);
 							arrayListHasPricedItem = true;
@@ -537,9 +540,6 @@ public class UCItemPricer {
 					ItemStack itemStack = ((ItemStack) object).copy();
 					if (itemStack.stackSize > 1) {
 						itemStack.stackSize = 1;
-					}
-					if (itemStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-						itemStack.setItemDamage(0);
 					}
 					recipeInputs.add(itemStack);
 				}
