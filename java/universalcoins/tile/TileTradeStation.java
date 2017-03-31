@@ -258,9 +258,13 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 		if (inventory[itemOutputSlot] == null && inventory[itemInputSlot].getMaxStackSize() >= amount) {
 			if (!debitAccount(itemPrice * amount)) {
 				coinSum -= itemPrice * amount;
+			} // TODO fix damaged item purchase
+			if (inventory[itemInputSlot].isItemStackDamageable()) {
+				inventory[itemOutputSlot] = new ItemStack(inventory[itemInputSlot].getItem(), amount, 0);
+			} else {
+				inventory[itemOutputSlot] = new ItemStack(inventory[itemInputSlot].getItem(), amount,
+						inventory[itemInputSlot].getItemDamage());
 			}
-			inventory[itemOutputSlot] = new ItemStack(inventory[itemInputSlot].getItem(), amount,
-					inventory[itemInputSlot].getItemDamage());
 		} else if (inventory[itemOutputSlot].getItem() == inventory[itemInputSlot].getItem()
 				&& inventory[itemOutputSlot].getItemDamage() == inventory[itemInputSlot].getItemDamage()
 				&& inventory[itemOutputSlot].stackSize + amount <= inventory[itemInputSlot].getMaxStackSize()) {
@@ -616,7 +620,7 @@ public class TileTradeStation extends TileEntity implements IInventory, ISidedIn
 					inventory[slot] = null;
 				}
 			}
-			if(slot == itemCardSlot) {
+			if (slot == itemCardSlot) {
 				if (creditAccount(coinSum)) {
 					coinSum = 0;
 				}

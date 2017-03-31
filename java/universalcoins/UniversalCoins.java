@@ -77,37 +77,15 @@ public class UniversalCoins {
 	public static UniversalCoins instance;
 
 	public static int[] coinValues;
-	public static Boolean autoModeEnabled;
-	public static Boolean tradeStationRecipesEnabled;
-	public static Boolean vendorRecipesEnabled;
-	public static Boolean vendorFrameRecipesEnabled;
-	public static Boolean atmRecipeEnabled;
-	public static Boolean enderCardRecipeEnabled;
-	public static Boolean signalRecipeEnabled;
-	public static Boolean linkCardRecipeEnabled;
-	public static Boolean tradeStationBuyEnabled;
-	public static Boolean packagerRecipeEnabled;
-	public static Boolean mobsDropCoins;
-	public static Boolean powerBaseRecipeEnabled;
-	public static Boolean powerReceiverRecipeEnabled;
-	public static Boolean coinsInMineshaft;
-	public static Integer bankGenWeight;
-	public static Integer shopGenWeight;
-	public static Integer tradeGenWeight;
-	public static Integer shopMinPrice;
-	public static Integer shopMaxPrice;
-	public static Integer mineshaftCoinChance;
-	public static Boolean coinsInDungeon;
-	public static Integer dungeonCoinChance;
-	public static Integer mobDropMax;
-	public static Integer mobDropChance;
-	public static Integer enderDragonMultiplier;
+	public static Boolean autoModeEnabled, tradeStationRecipesEnabled, vendorRecipesEnabled, vendorFrameRecipesEnabled,
+			atmRecipeEnabled, enderCardRecipeEnabled, signalRecipeEnabled, linkCardRecipeEnabled,
+			tradeStationBuyEnabled, packagerRecipeEnabled, mobsDropCoins, powerBaseRecipeEnabled,
+			powerReceiverRecipeEnabled, coinsInMineshaft, coinsInDungeon;
+	public static Integer bankGenWeight, shopGenWeight, tradeGenWeight, shopMinPrice, shopMaxPrice, mineshaftCoinChance,
+			dungeonCoinChance;
+	public static Integer mobDropMax, mobDropChance, enderDragonMultiplier, smallPackagePrice, medPackagePrice,
+			largePackagePrice, rfWholesaleRate, rfRetailRate;
 	public static Double itemSellRatio;
-	public static Integer smallPackagePrice;
-	public static Integer medPackagePrice;
-	public static Integer largePackagePrice;
-	public static Integer rfWholesaleRate;
-	public static Integer rfRetailRate;
 
 	public static SimpleNetworkWrapper snw;
 
