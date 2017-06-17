@@ -6,9 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
 import universalcoins.container.ContainerVendor;
 import universalcoins.tileentity.TileVendor;
 
@@ -46,11 +46,11 @@ public class VendorGUI extends GuiContainer {
 		x = (width - xSize) / 2;
 		y = (height - ySize) / 2;
 		modeButton = new GuiSlimButton(idModeButton, 8 + x, 35 + y, 62, 12,
-				I18n.translateToLocal("vending.gui.button.mode.sell"));
+				I18n.format("vending.gui.button.mode.sell"));
 		updateButton = new GuiSlimButton(idUpdateButton, 79 + x, 35 + y, 44, 12,
-				I18n.translateToLocal("general.button.edit"));
+				I18n.format("general.button.edit"));
 		setButton = new GuiSlimButton(idSetButton, 124 + x, 35 + y, 44, 12,
-				I18n.translateToLocal("general.button.save"));
+				I18n.format("general.button.save"));
 		retrIronCoinBtn = new GuiCoinButton(idIronCoinBtn, 56 + x, 74 + y, 18, 18, "", 0);
 		retrGoldCoinBtn = new GuiCoinButton(idGoldCoinBtn, 74 + x, 74 + y, 18, 18, "", 1);
 		retrEmeraldCoinBtn = new GuiCoinButton(idEmeraldCoinBtn, 92 + x, 74 + y, 18, 18, "", 2);
@@ -101,8 +101,8 @@ public class VendorGUI extends GuiContainer {
 		retrDiamondCoinBtn.enabled = tileEntity.diamondCoinBtnActive;
 		retrObsidianCoinBtn.enabled = tileEntity.obsidianCoinBtnActive;
 
-		modeButton.displayString = (tileEntity.sellMode ? I18n.translateToLocal("general.button.sell")
-				: I18n.translateToLocal("general.button.buy"));
+		modeButton.displayString = (tileEntity.sellMode ? I18n.format("general.button.sell")
+				: I18n.format("general.button.buy"));
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class VendorGUI extends GuiContainer {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
 		fontRendererObj.drawString(tileEntity.getName(), 6, 5, 4210752);
-		String priceInLocal = I18n.translateToLocal("general.label.price");
+		String priceInLocal = I18n.format("general.label.price");
 		int stringWidth = fontRendererObj.getStringWidth(priceInLocal);
 		fontRendererObj.drawString(priceInLocal, 78 - stringWidth, 22, 4210752);
 		// draw itemprice

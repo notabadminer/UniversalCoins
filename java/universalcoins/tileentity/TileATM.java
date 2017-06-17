@@ -1,5 +1,6 @@
 package universalcoins.tileentity;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -10,15 +11,17 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
 import universalcoins.net.ATMWithdrawalMessage;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.util.UniversalAccounts;
 
-public class TileATM extends TileEntity implements IInventory, ISidedInventory {
+public class TileATM extends TileProtected implements IInventory, ISidedInventory {
 	private ItemStack[] inventory = new ItemStack[2];
 	public static final int itemCoinSlot = 0;
 	public static final int itemCardSlot = 1;
@@ -111,7 +114,7 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 				}
 				long depositAmount = Math.min(stack.stackSize, (Long.MAX_VALUE - accountBalance) / coinValue);
 				if (!worldObj.isRemote) {
-					UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue);
+					UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue, false);
 					accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 				}
 				inventory[slot].stackSize -= depositAmount;
@@ -150,7 +153,6 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 				.sendToServer(new UCButtonMessage(pos.getX(), pos.getY(), pos.getZ(), functionID, shiftPressed));
 	}
 
-
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		return new SPacketUpdateTileEntity(this.pos, getBlockMetadata(), getUpdateTag());
@@ -172,8 +174,8 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 	}
 
 	public void updateTE() {
-		markDirty();
-		worldObj.notifyBlockUpdate(getPos(), worldObj.getBlockState(pos), worldObj.getBlockState(pos), 3);
+		final IBlockState state = getWorld().getBlockState(getPos());
+		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
 	}
 
 	@Override
@@ -334,7 +336,7 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 	}
 
 	public void startCoinWithdrawal(int amount) {
-		if (UniversalAccounts.getInstance().debitAccount(accountNumber, amount)) {
+		if (UniversalAccounts.getInstance().debitAccount(accountNumber, amount, false)) {
 			coinWithdrawalAmount = amount;
 			accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 		}
@@ -437,6 +439,10 @@ public class TileATM extends TileEntity implements IInventory, ISidedInventory {
 	@Override
 	public void clear() {
 		// TODO Auto-generated method stub
-
+	}
+	
+	@Override
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
+		return false;
 	}
 }

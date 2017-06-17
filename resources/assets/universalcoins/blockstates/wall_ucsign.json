@@ -1,5 +1,9 @@
 {
     "variants": {
-        "normal": { "model": "universalcoins:wall_ucsign" }
+        "normal": { "model": "universalcoins:wall_ucsign" },
+		"facing=south": { "model": "universalcoins:wall_ucsign" },
+		"facing=north": { "model": "universalcoins:wall_ucsign" },
+		"facing=east": { "model": "universalcoins:wall_ucsign" },
+		"facing=west": { "model": "universalcoins:wall_ucsign" }
     }
 }

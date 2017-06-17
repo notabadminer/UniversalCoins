@@ -33,13 +33,12 @@ public class BlockSafe extends BlockProtected {
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 	}
 
-	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
 			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity != null && tileEntity instanceof TileSafe) {
 			TileSafe tentity = (TileSafe) tileEntity;
-			if (player.getCommandSenderEntity().getName().matches(tentity.blockOwner)) {
+			if (player.getName().matches(tentity.blockOwner)) {
 				if (!world.isRemote)
 					tentity.updateAccountBalance();
 				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
@@ -56,8 +55,8 @@ public class BlockSafe extends BlockProtected {
 		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity != null && tileEntity instanceof TileSafe) {
 			TileSafe tentity = (TileSafe) tileEntity;
-			tentity.blockOwner = player.getCommandSenderEntity().getName();
-			tentity.setSafeAccount(player.getCommandSenderEntity().getName());
+			tentity.blockOwner = player.getName();
+			tentity.setSafeAccount(player.getName());
 		}
 	}
 

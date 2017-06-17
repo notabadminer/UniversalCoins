@@ -1,5 +1,6 @@
 package universalcoins.blocks;
 
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
@@ -12,6 +13,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
@@ -23,7 +25,6 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
-import universalcoins.tileentity.TileProtected;
 import universalcoins.tileentity.TileSignal;
 
 public class BlockSignal extends BlockProtected {
@@ -38,7 +39,6 @@ public class BlockSignal extends BlockProtected {
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 	}
 
-	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
 			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (player.isSneaking()) {
@@ -84,7 +84,7 @@ public class BlockSignal extends BlockProtected {
 					break;
 			}
 			if (world.isRemote)
-				return false; // we don't want to do the rest on client side
+				return true; // we don't want to do the rest on client side
 			if (coinsFound < tentity.fee) {
 				player.addChatMessage(new TextComponentString(I18n.translateToLocal("signal.message.notenough")));
 			} else {
@@ -97,23 +97,23 @@ public class BlockSignal extends BlockProtected {
 			}
 			ItemStack stack = null;
 			while (coinsFound > 0) {
-				if (coinsFound > UniversalCoins.coinValues[4]) {
+				if (coinsFound >= UniversalCoins.coinValues[4]) {
 					stack = new ItemStack(UniversalCoins.proxy.obsidian_coin, 1);
 					stack.stackSize = (int) Math.floor(coinsFound / UniversalCoins.coinValues[4]);
 					coinsFound -= stack.stackSize * UniversalCoins.coinValues[4];
-				} else if (coinsFound > UniversalCoins.coinValues[3]) {
+				} else if (coinsFound >= UniversalCoins.coinValues[3]) {
 					stack = new ItemStack(UniversalCoins.proxy.diamond_coin, 1);
 					stack.stackSize = (int) Math.floor(coinsFound / UniversalCoins.coinValues[3]);
 					coinsFound -= stack.stackSize * UniversalCoins.coinValues[3];
-				} else if (coinsFound > UniversalCoins.coinValues[2]) {
+				} else if (coinsFound >= UniversalCoins.coinValues[2]) {
 					stack = new ItemStack(UniversalCoins.proxy.emerald_coin, 1);
 					stack.stackSize = (int) Math.floor(coinsFound / UniversalCoins.coinValues[2]);
 					coinsFound -= stack.stackSize * UniversalCoins.coinValues[2];
-				} else if (coinsFound > UniversalCoins.coinValues[1]) {
+				} else if (coinsFound >= UniversalCoins.coinValues[1]) {
 					stack = new ItemStack(UniversalCoins.proxy.gold_coin, 1);
 					stack.stackSize = (int) Math.floor(coinsFound / UniversalCoins.coinValues[1]);
 					coinsFound -= stack.stackSize * UniversalCoins.coinValues[1];
-				} else if (coinsFound > UniversalCoins.coinValues[0]) {
+				} else if (coinsFound >= UniversalCoins.coinValues[0]) {
 					stack = new ItemStack(UniversalCoins.proxy.iron_coin, 1);
 					stack.stackSize = (int) Math.floor(coinsFound / UniversalCoins.coinValues[0]);
 					coinsFound -= stack.stackSize * UniversalCoins.coinValues[0];
@@ -161,15 +161,16 @@ public class BlockSignal extends BlockProtected {
 			world.spawnEntityInWorld(entityItem);
 	}
 
-	@Override
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
 			ItemStack stack) {
 		world.setBlockState(pos, state.withProperty(FACING, player.getHorizontalFacing().getOpposite()), 2);
+		super.onBlockPlacedBy(world, pos, state, player, stack);
 		if (world.isRemote)
 			return;
 		TileEntity te = world.getTileEntity(pos);
-		if (te != null) {
-			((TileProtected) world.getTileEntity(pos)).blockOwner = player.getCommandSenderEntity().getName();
+		if (te instanceof TileSignal) {
+			TileSignal tentity = (TileSignal) te;
+			tentity.blockOwner = player.getName();
 		}
 	}
 
@@ -233,5 +234,36 @@ public class BlockSignal extends BlockProtected {
 	 */
 	public int getMetaFromState(IBlockState state) {
 		return ((EnumFacing) state.getValue(FACING)).getIndex();
+	}
+
+	@Override
+	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+		java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
+		TileSignal te = world.getTileEntity(pos) instanceof TileSignal ? (TileSignal) world.getTileEntity(pos) : null;
+		ItemStack stack = new ItemStack(UniversalCoins.proxy.signalblock, 1);
+		if (te != null) {
+			NBTTagCompound tag = new NBTTagCompound();
+			NBTTagCompound tagCompound = new NBTTagCompound();
+			te.writeToNBT(tag);
+			tagCompound.setTag("BlockEntityTag", tag);
+			stack.setTagCompound(tagCompound);
+		}
+		ret.add(stack);
+		return ret;
+	}
+
+	@Override
+	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
+			boolean willHarvest) {
+		if (willHarvest)
+			return true; // If it will harvest, delay deletion of the block until after getDrops
+		return super.removedByPlayer(state, world, pos, player, willHarvest);
+	}
+
+	@Override
+	public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te,
+			ItemStack tool) {
+		super.harvestBlock(world, player, pos, state, te, tool);
+		world.setBlockToAir(pos);
 	}
 }

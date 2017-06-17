@@ -11,8 +11,8 @@ import universalcoins.tileentity.TileVendor;
 
 public class ContainerVendor extends Container {
 	private TileVendor tileEntity;
-	private boolean lastOoStock, lastOoCoins, lastInvFull, lastSellMode, lastInUse, lastCoinButtonActive,
-			lastSStackButtonActive, lastLStackButtonActive, lastSBagButtonActive, lastLBagButtonActive;
+	private boolean lastOoStock, lastOoCoins, lastInvFull, lastSellMode, lastInUse, lastIronCoinBtnActive,
+			lastGoldCoinBtnActive, lastEmeraldCoinBtnActive, lastDiamondCoinBtnActive, lastObsidianCoinBtnActive;
 	private int lastCoinSum, lastUserCoinSum, lastItemPrice, lastTextColor;
 
 	public ContainerVendor(InventoryPlayer inventoryPlayer, TileVendor tEntity) {
@@ -109,11 +109,11 @@ public class ContainerVendor extends Container {
 				|| this.lastUserCoinSum != this.tileEntity.userCoinSum
 				|| this.lastItemPrice != this.tileEntity.itemPrice || this.lastSellMode != this.tileEntity.sellMode
 				|| this.lastTextColor != this.tileEntity.textColor
-				|| this.lastCoinButtonActive != this.tileEntity.ironCoinBtnActive
-				|| this.lastSStackButtonActive != this.tileEntity.goldCoinBtnActive
-				|| this.lastLStackButtonActive != this.tileEntity.emeraldCoinBtnActive
-				|| this.lastSBagButtonActive != this.tileEntity.diamondCoinBtnActive
-				|| this.lastLBagButtonActive != this.tileEntity.obsidianCoinBtnActive
+				|| this.lastIronCoinBtnActive != this.tileEntity.ironCoinBtnActive
+				|| this.lastGoldCoinBtnActive != this.tileEntity.goldCoinBtnActive
+				|| this.lastEmeraldCoinBtnActive != this.tileEntity.emeraldCoinBtnActive
+				|| this.lastDiamondCoinBtnActive != this.tileEntity.diamondCoinBtnActive
+				|| this.lastObsidianCoinBtnActive != this.tileEntity.obsidianCoinBtnActive
 				|| this.lastInUse != this.tileEntity.inUse) {
 			// update
 			tileEntity.updateTE();
@@ -126,11 +126,11 @@ public class ContainerVendor extends Container {
 			this.lastItemPrice = this.tileEntity.itemPrice;
 			this.lastSellMode = this.tileEntity.sellMode;
 			this.lastTextColor = this.tileEntity.textColor;
-			this.lastCoinButtonActive = this.tileEntity.ironCoinBtnActive;
-			this.lastSStackButtonActive = this.tileEntity.goldCoinBtnActive;
-			this.lastLStackButtonActive = this.tileEntity.emeraldCoinBtnActive;
-			this.lastSBagButtonActive = this.tileEntity.diamondCoinBtnActive;
-			this.lastLBagButtonActive = this.tileEntity.obsidianCoinBtnActive;
+			this.lastIronCoinBtnActive = this.tileEntity.ironCoinBtnActive;
+			this.lastGoldCoinBtnActive = this.tileEntity.goldCoinBtnActive;
+			this.lastEmeraldCoinBtnActive = this.tileEntity.emeraldCoinBtnActive;
+			this.lastDiamondCoinBtnActive = this.tileEntity.diamondCoinBtnActive;
+			this.lastObsidianCoinBtnActive = this.tileEntity.obsidianCoinBtnActive;
 			this.lastInUse = this.tileEntity.inUse;
 		}
 

@@ -41,29 +41,12 @@ public class BlockATM extends BlockProtected {
 		return EnumBlockRenderType.MODEL;
 	}
 
-	@Override
-	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
-		String ownerName = ((TileATM) world.getTileEntity(pos)).blockOwner;
-		if (player.getDisplayName().equals(ownerName)) {
-			this.setHardness(1.0F);
-		} else {
-			this.setHardness(-1.0F);
-		}
-	}
-
-	@Override
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
 			ItemStack stack) {
 		world.setBlockState(pos, state.withProperty(FACING, player.getHorizontalFacing().getOpposite()), 2);
-		if (world.isRemote)
-			return;
-		TileEntity te = world.getTileEntity(pos);
-		if (te != null) {
-			((TileProtected) world.getTileEntity(pos)).blockOwner = player.getCommandSenderEntity().getName();
-		}
+		super.onBlockPlacedBy(world, pos, state, player, stack);
 	}
 
-	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
 			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntity tileEntity = world.getTileEntity(pos);

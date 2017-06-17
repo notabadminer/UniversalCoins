@@ -10,10 +10,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
 import universalcoins.container.ContainerPackager;
 import universalcoins.tileentity.TilePackager;
 
@@ -45,18 +45,18 @@ public class PackagerGUI extends GuiContainer {
 	public void initGui() {
 		super.initGui();
 		modeButton = new GuiSlimButton(idModeButton, 110 + (width - xSize) / 2, 4 + (height - ySize) / 2, 60, 12,
-				I18n.translateToLocal("packager.button.mode.buy"));
+				I18n.format("packager.button.mode.buy"));
 		smallButton = new GuiSlimButton(idSmallButton, 87 + (width - xSize) / 2, 20 + (height - ySize) / 2, 50, 12,
-				I18n.translateToLocal("packager.button.small"));
+				I18n.format("packager.button.small"));
 		medButton = new GuiSlimButton(idMedButton, 87 + (width - xSize) / 2, 32 + (height - ySize) / 2, 50, 12,
-				I18n.translateToLocal("packager.button.medium"));
+				I18n.format("packager.button.medium"));
 		largeButton = new GuiSlimButton(idLargeButton, 87 + (width - xSize) / 2, 44 + (height - ySize) / 2, 50, 12,
-				I18n.translateToLocal("packager.button.large"));
+				I18n.format("packager.button.large"));
 
 		buyButton = new GuiSlimButton(idBuyButton, 123 + (width - xSize) / 2, 58 + (height - ySize) / 2, 46, 12,
-				I18n.translateToLocal("general.button.buy"));
+				I18n.format("general.button.buy"));
 		coinButton = new GuiSlimButton(idCoinButton, 123 + (width - xSize) / 2, 91 + (height - ySize) / 2, 46, 12,
-				I18n.translateToLocal("general.button.coin"));
+				I18n.format("general.button.coin"));
 		buttonList.clear();
 		buttonList.add(modeButton);
 		buttonList.add(smallButton);
@@ -80,7 +80,7 @@ public class PackagerGUI extends GuiContainer {
 		// the parameters for drawString are: string, x, y, color
 		fontRendererObj.drawString(tEntity.getName(), 8, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
-		fontRendererObj.drawString(I18n.translateToLocal("container.inventory"), 8, 96, 4210752);
+		fontRendererObj.drawString(I18n.format("container.inventory"), 8, 96, 4210752);
 
 		// draw package price if button hover true
 		buttonHover = false;
@@ -126,10 +126,10 @@ public class PackagerGUI extends GuiContainer {
 			if (tEntity.packageTarget != "")
 				packageReceiverField.setText(tEntity.packageTarget);
 			fontRendererObj.drawString(packageReceiverField.getText(), x + 30, y + 30, 4210752);
-			buyButton.displayString = I18n.translateToLocal("general.button.send");
+			buyButton.displayString = I18n.format("general.button.send");
 			buyButton.enabled = canSend();
 		} else {
-			buyButton.displayString = I18n.translateToLocal("general.button.buy");
+			buyButton.displayString = I18n.format("general.button.buy");
 			buyButton.enabled = tEntity.coinSum >= tEntity.packageCost[tEntity.packageSize] || tEntity.cardAvailable;
 
 			// draw highlight over currently selected package mode
@@ -245,7 +245,7 @@ public class PackagerGUI extends GuiContainer {
 		if (button.id == idModeButton) {
 			sendMode = !sendMode;
 			if (sendMode) {
-				modeButton.displayString = I18n.translateToLocal("packager.button.mode.send");
+				modeButton.displayString = I18n.format("packager.button.mode.send");
 				// move package size buttons
 				smallButton.xPosition = hideCoord;
 				medButton.xPosition = hideCoord;
@@ -254,7 +254,7 @@ public class PackagerGUI extends GuiContainer {
 				updateSlots(3);
 				packageReceiverField.setFocused(true);
 			} else {
-				modeButton.displayString = I18n.translateToLocal("packager.button.mode.buy");
+				modeButton.displayString = I18n.format("packager.button.mode.buy");
 				// move package size buttons
 				smallButton.xPosition = 87 + (width - xSize) / 2;
 				medButton.xPosition = 87 + (width - xSize) / 2;

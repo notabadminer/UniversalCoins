@@ -15,7 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import universalcoins.UniversalCoins;
@@ -24,7 +23,7 @@ public class UCSend extends CommandBase implements ICommand {
 
 	@Override
 	public String getCommandName() {
-		return I18n.translateToLocal("command.send.name");
+		return "send";
 	}
 
 	@Override
@@ -36,7 +35,7 @@ public class UCSend extends CommandBase implements ICommand {
 
 	@Override
 	public String getCommandUsage(ICommandSender var1) {
-		return I18n.translateToLocal("command.send.help");
+		return "/send <playername> <amount> : send another player coins from your inventory";
 	}
 
 	@Override
@@ -57,21 +56,18 @@ public class UCSend extends CommandBase implements ICommand {
 					}
 				}
 				if (recipient == null) {
-					sender.addChatMessage(
-							new TextComponentString("§c" + I18n.translateToLocal("command.send.error.notfound")));
+					sender.addChatMessage(new TextComponentString("§cError: player not found"));
 					return;
 				}
 				int requestedSendAmount = 0;
 				try {
 					requestedSendAmount = Integer.parseInt(args[1]);
 				} catch (NumberFormatException e) {
-					sender.addChatMessage(
-							new TextComponentString("§c" + I18n.translateToLocal("command.send.error.badentry")));
+					sender.addChatMessage(new TextComponentString("§cError: invalid number format"));
 					return;
 				}
 				if (requestedSendAmount <= 0) {
-					sender.addChatMessage(
-							new TextComponentString("§c" + I18n.translateToLocal("command.send.error.badentry")));
+					sender.addChatMessage(new TextComponentString("§cError: specify an amount greater than zero"));
 					return;
 				}
 				// get coins from player inventory
@@ -106,8 +102,7 @@ public class UCSend extends CommandBase implements ICommand {
 				}
 				// if sender is short, cancel this transaction and return coins.
 				if (coinsFound < requestedSendAmount) {
-					sender.addChatMessage(
-							new TextComponentString("§c" + I18n.translateToLocal("command.send.error.insufficient")));
+					sender.addChatMessage(new TextComponentString("§cError: insufficent coins."));
 					givePlayerCoins((EntityPlayerMP) sender, coinsFound);
 					return;
 				}
@@ -115,15 +110,13 @@ public class UCSend extends CommandBase implements ICommand {
 				coinsFound -= requestedSendAmount;
 				// send coins to recipient
 				givePlayerCoins(recipient, requestedSendAmount);
-				sender.addChatMessage(new TextComponentString((requestedSendAmount) + " "
-						+ I18n.translateToLocal("command.send.result.sender") + " " + args[0]));
-				recipient.addChatMessage(new TextComponentString((requestedSendAmount) + " "
-						+ I18n.translateToLocal("command.send.result.receiver") + " " + sender.getName()));
+				sender.addChatMessage(new TextComponentString(requestedSendAmount + " coin sent to " + " " + args[0]));
+				recipient.addChatMessage(
+						new TextComponentString(requestedSendAmount + " coin sent to you from " + sender.getName()));
 				// give sender back change
 				givePlayerCoins(player, coinsFound);
 			} else
-				sender.addChatMessage(
-						new TextComponentString("§c" + I18n.translateToLocal("command.send.error.incomplete")));
+				sender.addChatMessage(new TextComponentString("§cPlease specify recipient and amount."));
 		}
 	}
 

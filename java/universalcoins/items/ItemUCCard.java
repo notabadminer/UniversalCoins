@@ -36,8 +36,8 @@ public class ItemUCCard extends Item {
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand,
+			EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (world.isRemote)
 			return EnumActionResult.FAIL;
 		if (stack.getTagCompound() == null) {
@@ -53,7 +53,8 @@ public class ItemUCCard extends Item {
 
 	@Override
 	public void onCreated(ItemStack stack, World world, EntityPlayer entityPlayer) {
-		createNBT(stack, world, entityPlayer);
+		if (!world.isRemote)
+			createNBT(stack, world, entityPlayer);
 	}
 
 	protected void createNBT(ItemStack stack, World world, EntityPlayer entityPlayer) {

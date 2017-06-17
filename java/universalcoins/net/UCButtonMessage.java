@@ -13,6 +13,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import universalcoins.tileentity.TileATM;
 import universalcoins.tileentity.TilePackager;
+import universalcoins.tileentity.TilePowerReceiver;
+import universalcoins.tileentity.TilePowerTransmitter;
 import universalcoins.tileentity.TileSignal;
 import universalcoins.tileentity.TileTradeStation;
 import universalcoins.tileentity.TileVendor;
@@ -88,6 +90,12 @@ public class UCButtonMessage implements IMessage, IMessageHandler<UCButtonMessag
 		}
 		if (tileEntity instanceof TileVendor) {
 			((TileVendor) tileEntity).onButtonPressed(message.buttonId, message.shiftPressed);
+		}
+		if (tileEntity instanceof TilePowerReceiver) {
+			((TilePowerReceiver) tileEntity).onButtonPressed(message.buttonId, message.shiftPressed);
+		}
+		if (tileEntity instanceof TilePowerTransmitter) {
+			((TilePowerTransmitter) tileEntity).onButtonPressed(message.buttonId, message.shiftPressed);
 		}
 	}
 }

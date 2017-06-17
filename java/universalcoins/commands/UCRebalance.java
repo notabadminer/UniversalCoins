@@ -9,10 +9,8 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
 
@@ -20,12 +18,12 @@ public class UCRebalance extends CommandBase implements ICommand {
 
 	@Override
 	public String getCommandName() {
-		return I18n.translateToLocal("command.rebalance.name");
+		return "rebalance";
 	}
 
 	@Override
 	public String getCommandUsage(ICommandSender var1) {
-		return I18n.translateToLocal("command.rebalance.help");
+		return "/rebalance : consolidates inventory coins into largest values possible";
 	}
 
 	@Override

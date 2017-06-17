@@ -2,6 +2,7 @@ package universalcoins.tileentity;
 
 import cofh.api.energy.IEnergyProvider;
 import cofh.api.energy.IEnergyReceiver;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -17,11 +18,12 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
+import universalcoins.gui.PowerReceiverGUI;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.util.UniversalAccounts;
 import universalcoins.util.UniversalPower;
 
-public class TilePowerReceiver extends TileEntity implements ITickable, IInventory, IEnergyProvider {
+public class TilePowerReceiver extends TileProtected implements ITickable, IInventory, IEnergyProvider {
 
 	private ItemStack[] inventory = new ItemStack[3];
 	public static final int itemCardSlot = 0;
@@ -29,9 +31,11 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 	public static final int itemOutputSlot = 2;
 	public long coinSum = 0;
 	public int rfLevel = 0;
+	public int rfOutput = 0;
 	public long wrfLevel = 0;
 	public String blockOwner = "nobody";
 	public EnumFacing orientation = null;
+	public boolean publicAccess;
 
 	@Override
 	public void update() {
@@ -70,7 +74,6 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 		return stack;
 	}
 
-	@Override
 	public void setInventorySlotContents(int slot, ItemStack stack) {
 		inventory[slot] = stack;
 		int coinValue = 0;
@@ -94,11 +97,20 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 					break;
 				}
 			}
-			long depositAmount = Math.min(stack.stackSize, (Long.MAX_VALUE - coinSum) / coinValue);
-			inventory[slot].stackSize -= depositAmount;
-			coinSum += depositAmount * coinValue;
-			if (inventory[slot].stackSize == 0) {
-				inventory[slot] = null;
+			if (coinValue > 0) {
+				long depositAmount = Math.min(stack.stackSize, (Long.MAX_VALUE - coinSum) / coinValue);
+				inventory[slot].stackSize -= depositAmount;
+				coinSum += depositAmount * coinValue;
+				if (inventory[slot].stackSize == 0) {
+					inventory[slot] = null;
+				}
+			}
+			if (slot == itemCardSlot && inventory[itemCardSlot].getItem() == UniversalCoins.proxy.ender_card) {
+				if (!worldObj.isRemote && stack.hasTagCompound()) {
+					String accountNumber = stack.getTagCompound().getString("Account");
+					UniversalAccounts.getInstance().creditAccount(accountNumber, coinSum, false);
+					coinSum = 0;				
+				}
 			}
 		}
 	}
@@ -164,7 +176,7 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 		if (accountNumber == "") {
 			return false;
 		}
-		return UniversalAccounts.getInstance().creditAccount(accountNumber, i);
+		return UniversalAccounts.getInstance().creditAccount(accountNumber, i, false);
 	}
 
 	private boolean debitAccount(int i) {
@@ -174,7 +186,7 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 		if (accountNumber == "") {
 			return false;
 		}
-		return UniversalAccounts.getInstance().debitAccount(accountNumber, i);
+		return UniversalAccounts.getInstance().debitAccount(accountNumber, i, false);
 	}
 
 	public void sendPacket(int button, boolean shiftPressed) {
@@ -198,8 +210,8 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 	}
 
 	public void updateTE() {
-		markDirty();
-		worldObj.notifyBlockUpdate(getPos(), worldObj.getBlockState(pos), worldObj.getBlockState(pos), 3);
+		final IBlockState state = getWorld().getBlockState(getPos());
+		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
 	}
 
 	@Override
@@ -218,11 +230,13 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 		tagCompound.setTag("Inventory", itemList);
 		tagCompound.setLong("coinSum", coinSum);
 		tagCompound.setInteger("rfLevel", rfLevel);
+		tagCompound.setInteger("rfOutput", rfOutput);
 		tagCompound.setLong("wrfLevel", wrfLevel);
 		tagCompound.setString("blockOwner", blockOwner);
 		if (orientation != null) {
 			tagCompound.setInteger("orientation", orientation.ordinal());
 		}
+		tagCompound.setBoolean("publicAccess", publicAccess);
 
 		return tagCompound;
 	}
@@ -250,6 +264,11 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 			rfLevel = 0;
 		}
 		try {
+			rfOutput = tagCompound.getInteger("rfOutput");
+		} catch (Throwable ex2) {
+			rfOutput = 0;
+		}
+		try {
 			wrfLevel = tagCompound.getLong("wrfLevel");
 		} catch (Throwable ex2) {
 			wrfLevel = 0;
@@ -264,41 +283,50 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 		} catch (Throwable ex2) {
 			orientation = null;
 		}
+		try {
+			publicAccess = tagCompound.getBoolean("publicAccess");
+		} catch (Throwable ex2) {
+			publicAccess = false;
+		}
 	}
 
-	public void onButtonPressed(int buttonId) {
-		if (buttonId == 0) {
+	public void onButtonPressed(int buttonId, boolean shift) {
+		if (buttonId == PowerReceiverGUI.idCoinButton) {
 			fillOutputSlot();
+		}
+		if (buttonId == PowerReceiverGUI.idAccessModeButton && blockOwner.matches(blockOwner)) {
+			publicAccess ^= true;
 		}
 	}
 
 	public void fillOutputSlot() {
-		inventory[itemOutputSlot] = null;
-		if (coinSum > UniversalCoins.coinValues[4]) {
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.obsidian_coin);
-			 int amount = (int) Math.min(coinSum / UniversalCoins.coinValues[4], 64);
-			 inventory[itemOutputSlot].stackSize = amount;
-			 coinSum -= amount * UniversalCoins.coinValues[4];
-		} else if (coinSum > UniversalCoins.coinValues[3]) {
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.diamond_coin);
-			int amount  = (int) Math.min(coinSum / UniversalCoins.coinValues[3], 64);
-			inventory[itemOutputSlot].stackSize = amount;
-			 coinSum -= amount * UniversalCoins.coinValues[3];
-		} else if (coinSum > UniversalCoins.coinValues[2]) {
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.emerald_coin);
-			int amount  = (int) Math.min(coinSum / UniversalCoins.coinValues[2], 64);
-			inventory[itemOutputSlot].stackSize = amount;
-			 coinSum -= amount * UniversalCoins.coinValues[2];
-		} else if (coinSum > UniversalCoins.coinValues[1]) {
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.gold_coin);
-			int amount  = (int) Math.min(coinSum / UniversalCoins.coinValues[1], 64);
-			inventory[itemOutputSlot].stackSize = amount;
-			 coinSum -= amount * UniversalCoins.coinValues[1];
-		} else if (coinSum > UniversalCoins.coinValues[0]) {
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.iron_coin);
-			int amount  = (int) Math.min(coinSum / UniversalCoins.coinValues[0], 64);
-			inventory[itemOutputSlot].stackSize = amount;
-			 coinSum -= amount * UniversalCoins.coinValues[0];
+		if (inventory[itemOutputSlot] == null && coinSum > 0) {
+			if (coinSum > UniversalCoins.coinValues[4]) {
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.obsidian_coin);
+				int amount = (int) Math.min(coinSum / UniversalCoins.coinValues[4], 64);
+				inventory[itemOutputSlot].stackSize = amount;
+				coinSum -= amount * UniversalCoins.coinValues[4];
+			} else if (coinSum > UniversalCoins.coinValues[3]) {
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.diamond_coin);
+				int amount = (int) Math.min(coinSum / UniversalCoins.coinValues[3], 64);
+				inventory[itemOutputSlot].stackSize = amount;
+				coinSum -= amount * UniversalCoins.coinValues[3];
+			} else if (coinSum > UniversalCoins.coinValues[2]) {
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.emerald_coin);
+				int amount = (int) Math.min(coinSum / UniversalCoins.coinValues[2], 64);
+				inventory[itemOutputSlot].stackSize = amount;
+				coinSum -= amount * UniversalCoins.coinValues[2];
+			} else if (coinSum > UniversalCoins.coinValues[1]) {
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.gold_coin);
+				int amount = (int) Math.min(coinSum / UniversalCoins.coinValues[1], 64);
+				inventory[itemOutputSlot].stackSize = amount;
+				coinSum -= amount * UniversalCoins.coinValues[1];
+			} else if (coinSum > UniversalCoins.coinValues[0]) {
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.iron_coin);
+				int amount = (int) Math.min(coinSum / UniversalCoins.coinValues[0], 64);
+				inventory[itemOutputSlot].stackSize = amount;
+				coinSum -= amount * UniversalCoins.coinValues[0];
+			}
 		}
 	}
 
@@ -315,12 +343,12 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 
 	protected void buyPower() {
 		if (!UniversalCoins.powerBaseRecipeEnabled) {
-			//if we have no transmitter, we use infinite power
+			// if we have no transmitter, we use infinite power
 			if (rfLevel == 0 && debitAccount(UniversalCoins.rfRetailRate)) {
 				rfLevel += 10000;
 			} else if (rfLevel == 0 && coinSum - UniversalCoins.rfRetailRate >= 0) {
-					coinSum -= UniversalCoins.rfRetailRate;
-					rfLevel += 10000;
+				coinSum -= UniversalCoins.rfRetailRate;
+				rfLevel += 10000;
 			}
 			wrfLevel = UniversalPower.getInstance().getRFLevel();
 			return;
@@ -329,11 +357,11 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 				&& debitAccount(UniversalCoins.rfRetailRate)) {
 			UniversalPower.getInstance().extractEnergy(10, false);
 			rfLevel += 10000;
-		} else if (rfLevel == 0 && UniversalPower.getInstance().extractEnergy(10, true) > 0 
+		} else if (rfLevel == 0 && UniversalPower.getInstance().extractEnergy(10, true) > 0
 				&& coinSum - UniversalCoins.rfRetailRate >= 0) {
-				coinSum -= UniversalCoins.rfRetailRate;
-				UniversalPower.getInstance().extractEnergy(10, false);
-				rfLevel += 10000;
+			coinSum -= UniversalCoins.rfRetailRate;
+			UniversalPower.getInstance().extractEnergy(10, false);
+			rfLevel += 10000;
 		}
 		wrfLevel = UniversalPower.getInstance().getRFLevel();
 	}
@@ -342,8 +370,9 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 		if (orientation == null) {
 			return;
 		}
-		TileEntity tile = worldObj.getTileEntity(new BlockPos(pos.getX() + orientation.getFrontOffsetX(), pos.getY() + orientation.getFrontOffsetX(),
-				pos.getZ() + orientation.getFrontOffsetZ()));
+		rfOutput = 0;
+		TileEntity tile = worldObj.getTileEntity(new BlockPos(pos.getX() + orientation.getFrontOffsetX(),
+				pos.getY() + orientation.getFrontOffsetX(), pos.getZ() + orientation.getFrontOffsetZ()));
 		if (tile != null && tile instanceof IEnergyReceiver) {
 			IEnergyReceiver handler = (IEnergyReceiver) tile;
 			int maxRF = handler.receiveEnergy(orientation.getOpposite(), Math.min(1000, rfLevel), true);
@@ -356,14 +385,14 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 
 	public void resetPowerDirection() {
 		for (EnumFacing direction : EnumFacing.VALUES) {
-			TileEntity tile = worldObj.getTileEntity((new BlockPos(pos.getX() + direction.getFrontOffsetX(), pos.getY() + direction.getFrontOffsetX(),
-					pos.getZ() + direction.getFrontOffsetZ())));
+			TileEntity tile = worldObj.getTileEntity((new BlockPos(pos.getX() + direction.getFrontOffsetX(),
+					pos.getY() + direction.getFrontOffsetX(), pos.getZ() + direction.getFrontOffsetZ())));
 			if (tile instanceof IEnergyReceiver) {
 				orientation = direction;
 			}
 		}
 	}
-	
+
 	@Override
 	public ITextComponent getDisplayName() {
 		return new TextComponentString(UniversalCoins.proxy.power_receiver.getLocalizedName());
@@ -377,13 +406,13 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 	@Override
 	public void openInventory(EntityPlayer player) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -395,7 +424,7 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 	@Override
 	public void setField(int id, int value) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -407,6 +436,6 @@ public class TilePowerReceiver extends TileEntity implements ITickable, IInvento
 	@Override
 	public void clear() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

@@ -106,7 +106,7 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 				UniversalCoins.proxy.atm.getDefaultState().withProperty(BlockATM.FACING, EnumFacing.SOUTH), 2, 2, 4,
 				sbb);
 		// door
-		this.placeDoorCurrentPosition(world, sbb, random, 2, 1, 1, EnumFacing.NORTH);
+		this.func_189927_a(world, sbb, random, 2, 1, 1, EnumFacing.NORTH);
 		// torches
 		this.setBlockState(world, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 1,
 				2, 2, boundingBox);
@@ -118,10 +118,10 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		addSignText(world, boundingBox, 1, 2, 0);
 
 		// add stairs if needed
-		if (this.getBlockStateFromPos(world, 1, 0, -1, sbb).getMaterial() == Material.AIR
-				&& this.getBlockStateFromPos(world, 1, -1, -1, sbb).getMaterial() != Material.AIR) {
+		if (this.getBlockStateFromPos(world, 2, 0, -1, sbb).getMaterial() == Material.AIR
+				&& this.getBlockStateFromPos(world, 2, -1, -1, sbb).getMaterial() != Material.AIR) {
 			this.setBlockState(world,
-					Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH), 1, 0, -1,
+					Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH), 2, 0, -1,
 					sbb);
 		}
 

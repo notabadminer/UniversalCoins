@@ -21,24 +21,28 @@ public class UniversalAccounts {
 			return -1;
 	}
 
-	public boolean debitAccount(String accountNumber, long amount) {
+	public boolean debitAccount(String accountNumber, long amount, boolean simulate) {
 		if (hasKey(accountNumber)) {
 			long balance = getWorldLong(accountNumber);
 			if (amount <= balance) {
-				balance -= amount;
-				setWorldData(accountNumber, balance);
+				if (!simulate) {
+					balance -= amount;
+					setWorldData(accountNumber, balance);
+				}
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public boolean creditAccount(String accountNumber, long amount) {
+	public boolean creditAccount(String accountNumber, long amount, boolean simulate) {
 		if (hasKey(accountNumber)) {
 			long balance = getWorldLong(accountNumber);
-			if (Long.MAX_VALUE - balance > amount) {
-				balance += amount;
-				setWorldData(accountNumber, balance);
+			if (Long.MAX_VALUE - balance >= amount) {
+				if (!simulate) {
+					balance += amount;
+					setWorldData(accountNumber, balance);
+				}
 				return true;
 			}
 		}

@@ -1,5 +1,21 @@
 {
     "variants": {
-        "normal": { "model": "universalcoins:standing_ucsign" }
+	    "normal": { "model": "universalcoins:wall_ucsign" },
+        "rotation=0": { "model": "universalcoins:standing_ucsign" },
+        "rotation=1": { "model": "universalcoins:standing_ucsign" },
+        "rotation=2": { "model": "universalcoins:standing_ucsign" },
+        "rotation=3": { "model": "universalcoins:standing_ucsign" },
+        "rotation=4": { "model": "universalcoins:standing_ucsign" },
+        "rotation=5": { "model": "universalcoins:standing_ucsign" },
+        "rotation=6": { "model": "universalcoins:standing_ucsign" },
+        "rotation=7": { "model": "universalcoins:standing_ucsign" },
+        "rotation=8": { "model": "universalcoins:standing_ucsign" },
+        "rotation=9": { "model": "universalcoins:standing_ucsign" },
+        "rotation=10": { "model": "universalcoins:standing_ucsign" },
+        "rotation=11": { "model": "universalcoins:standing_ucsign" },
+        "rotation=12": { "model": "universalcoins:standing_ucsign" },
+        "rotation=13": { "model": "universalcoins:standing_ucsign" },
+        "rotation=14": { "model": "universalcoins:standing_ucsign" },
+        "rotation=15": { "model": "universalcoins:standing_ucsign" }
     }
 }

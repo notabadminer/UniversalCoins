@@ -1,5 +1,6 @@
 package universalcoins.tileentity;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -17,6 +18,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.TradeStationGUI;
 import universalcoins.gui.VendorBuyGUI;
@@ -164,9 +166,12 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	}
 
 	public int retrieveCoins(int coinField, int buttonClickedID, boolean shiftPressed) {
-		if (buttonClickedID > 9)
-			buttonClickedID -= 10;
-		int absoluteButton = buttonClickedID - TradeStationGUI.idCoinButton;
+		int absoluteButton = 0;
+		if (buttonClickedID > 9) {
+			absoluteButton = buttonClickedID - 12;
+		} else {
+			absoluteButton = buttonClickedID - 3;
+		}
 		Item itemOnButton = null;
 		switch (absoluteButton) {
 		case 0:
@@ -709,8 +714,8 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	}
 
 	public void updateTE() {
-		this.markDirty();
-		worldObj.notifyBlockUpdate(getPos(), worldObj.getBlockState(pos), worldObj.getBlockState(pos), 3);
+		final IBlockState state = getWorld().getBlockState(getPos());
+		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
 	}
 
 	public void sendButtonMessage(int button, boolean shiftPressed) {
@@ -784,52 +789,52 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 			sellButtonActive = false;
 		}
 		try {
-			ironCoinBtnActive = tagCompound.getBoolean("CoinButtonActive");
+			ironCoinBtnActive = tagCompound.getBoolean("ironCoinBtnActive");
 		} catch (Throwable ex2) {
 			ironCoinBtnActive = false;
 		}
 		try {
-			goldCoinBtnActive = tagCompound.getBoolean("SmallStackButtonActive");
+			goldCoinBtnActive = tagCompound.getBoolean("goldCoinBtnActive");
 		} catch (Throwable ex2) {
 			goldCoinBtnActive = false;
 		}
 		try {
-			emeraldCoinBtnActive = tagCompound.getBoolean("LargeStackButtonActive");
+			emeraldCoinBtnActive = tagCompound.getBoolean("emeraldCoinBtnActive");
 		} catch (Throwable ex2) {
 			emeraldCoinBtnActive = false;
 		}
 		try {
-			diamondCoinBtnActive = tagCompound.getBoolean("SmallBagButtonActive");
+			diamondCoinBtnActive = tagCompound.getBoolean("diamondCoinBtnActive");
 		} catch (Throwable ex2) {
 			diamondCoinBtnActive = false;
 		}
 		try {
-			obsidianCoinBtnActive = tagCompound.getBoolean("LargeBagButtonActive");
+			obsidianCoinBtnActive = tagCompound.getBoolean("obsidianCoinBtnActive");
 		} catch (Throwable ex2) {
 			obsidianCoinBtnActive = false;
 		}
 		try {
-			uironCoinBtnActive = tagCompound.getBoolean("UserCoinButtonActive");
+			uironCoinBtnActive = tagCompound.getBoolean("uironCoinBtnActive");
 		} catch (Throwable ex2) {
 			uironCoinBtnActive = false;
 		}
 		try {
-			ugoldCoinBtnActive = tagCompound.getBoolean("UserSmallStackButtonActive");
+			ugoldCoinBtnActive = tagCompound.getBoolean("ugoldCoinBtnActive");
 		} catch (Throwable ex2) {
 			ugoldCoinBtnActive = false;
 		}
 		try {
-			uemeraldCoinBtnActive = tagCompound.getBoolean("UserLargeStackButtonActive");
+			uemeraldCoinBtnActive = tagCompound.getBoolean("uemeraldCoinBtnActive");
 		} catch (Throwable ex2) {
 			uemeraldCoinBtnActive = false;
 		}
 		try {
-			udiamondCoinBtnActive = tagCompound.getBoolean("UserSmallBagButtonActive");
+			udiamondCoinBtnActive = tagCompound.getBoolean("udiamondCoinBtnActive");
 		} catch (Throwable ex2) {
 			udiamondCoinBtnActive = false;
 		}
 		try {
-			uobsidianCoinBtnActive = tagCompound.getBoolean("UserLargeBagButtonActive");
+			uobsidianCoinBtnActive = tagCompound.getBoolean("uobsidianCoinBtnActive");
 		} catch (Throwable ex2) {
 			uobsidianCoinBtnActive = false;
 		}
@@ -879,16 +884,16 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 		tagCompound.setBoolean("InventoryFull", inventoryFullWarning);
 		tagCompound.setBoolean("BuyButtonActive", buyButtonActive);
 		tagCompound.setBoolean("SellButtonActive", sellButtonActive);
-		tagCompound.setBoolean("CoinButtonActive", ironCoinBtnActive);
-		tagCompound.setBoolean("SmallStackButtonActive", goldCoinBtnActive);
-		tagCompound.setBoolean("LargeStackButtonActive", emeraldCoinBtnActive);
-		tagCompound.setBoolean("SmallBagButtonActive", diamondCoinBtnActive);
-		tagCompound.setBoolean("LargeBagButtonActive", obsidianCoinBtnActive);
-		tagCompound.setBoolean("UserCoinButtonActive", uironCoinBtnActive);
-		tagCompound.setBoolean("UserSmallStackButtonActive", ugoldCoinBtnActive);
-		tagCompound.setBoolean("UserLargeStackButtonActive", uemeraldCoinBtnActive);
-		tagCompound.setBoolean("UserSmallBagButtonActive", udiamondCoinBtnActive);
-		tagCompound.setBoolean("UserLargeBagButtonActive", uobsidianCoinBtnActive);
+		tagCompound.setBoolean("ironCoinBtnActive", ironCoinBtnActive);
+		tagCompound.setBoolean("goldCoinBtnActive", goldCoinBtnActive);
+		tagCompound.setBoolean("emeraldCoinBtnActive", emeraldCoinBtnActive);
+		tagCompound.setBoolean("diamondCoinBtnActive", diamondCoinBtnActive);
+		tagCompound.setBoolean("obsidianCoinBtnActive", obsidianCoinBtnActive);
+		tagCompound.setBoolean("uironCoinBtnActive", uironCoinBtnActive);
+		tagCompound.setBoolean("ugoldCoinBtnActive", ugoldCoinBtnActive);
+		tagCompound.setBoolean("uemeraldCoinBtnActive", uemeraldCoinBtnActive);
+		tagCompound.setBoolean("udiamondCoinBtnActive", udiamondCoinBtnActive);
+		tagCompound.setBoolean("uobsidianCoinBtnActive", uobsidianCoinBtnActive);
 		tagCompound.setInteger("TextColor", textColor);
 		tagCompound.setInteger("remoteX", remoteX);
 		tagCompound.setInteger("remoteY", remoteY);
@@ -963,14 +968,14 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	public void debitUserAccount(int amount) {
 		if (inventory[itemUserCardSlot] != null && inventory[itemUserCardSlot].hasTagCompound() && !worldObj.isRemote) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
-			UniversalAccounts.getInstance().debitAccount(accountNumber, amount);
+			UniversalAccounts.getInstance().debitAccount(accountNumber, amount, false);
 		}
 	}
 
 	public void creditUserAccount(int amount) {
 		if (inventory[itemUserCardSlot] != null && inventory[itemUserCardSlot].hasTagCompound() && !worldObj.isRemote) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
-			UniversalAccounts.getInstance().creditAccount(accountNumber, amount);
+			UniversalAccounts.getInstance().creditAccount(accountNumber, amount, false);
 		}
 	}
 
@@ -985,14 +990,14 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	public void debitOwnerAccount(int amount) {
 		if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			UniversalAccounts.getInstance().debitAccount(accountNumber, amount);
+			UniversalAccounts.getInstance().debitAccount(accountNumber, amount, false);
 		}
 	}
 
 	public void creditOwnerAccount(int amount) {
 		if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
-			UniversalAccounts.getInstance().creditAccount(accountNumber, amount);
+			UniversalAccounts.getInstance().creditAccount(accountNumber, amount, false);
 		}
 	}
 
