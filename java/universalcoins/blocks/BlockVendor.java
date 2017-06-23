@@ -77,7 +77,7 @@ public class BlockVendor extends BlockProtected {
 			TileVendor tentity = (TileVendor) tileEntity;
 			if (tentity.inUse) {
 				if (!world.isRemote) {
-					player.addChatMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
+					player.sendMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
 				}
 				return true;
 			} else {
@@ -117,7 +117,8 @@ public class BlockVendor extends BlockProtected {
 	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
 			boolean willHarvest) {
 		if (willHarvest)
-			return true; // If it will harvest, delay deletion of the block until after getDrops
+			return true; // If it will harvest, delay deletion of the block
+							// until after getDrops
 		return super.removedByPlayer(state, world, pos, player, willHarvest);
 	}
 

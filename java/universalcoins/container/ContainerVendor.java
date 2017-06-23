@@ -81,17 +81,16 @@ public class ContainerVendor extends Container {
 					return null;
 				}
 			}
-
-			if (stackInSlot.stackSize == 0) {
+			if (stackInSlot.getCount() == 0) {
 				slotObject.putStack(null);
 			} else {
 				slotObject.onSlotChanged();
 			}
 
-			if (stackInSlot.stackSize == stack.stackSize) {
+			if (stackInSlot.getCount() == stack.getCount()) {
 				return null;
 			}
-			slotObject.onPickupFromSlot(player, stackInSlot);
+			slotObject.onTake(player, stackInSlot);
 		}
 
 		return stack;
@@ -105,8 +104,7 @@ public class ContainerVendor extends Container {
 
 		if (this.lastOoStock != this.tileEntity.ooStockWarning || this.lastOoCoins != this.tileEntity.ooCoinsWarning
 				|| this.lastInvFull != this.tileEntity.inventoryFullWarning
-				|| this.lastCoinSum != this.tileEntity.coinSum
-				|| this.lastUserCoinSum != this.tileEntity.userCoinSum
+				|| this.lastCoinSum != this.tileEntity.coinSum || this.lastUserCoinSum != this.tileEntity.userCoinSum
 				|| this.lastItemPrice != this.tileEntity.itemPrice || this.lastSellMode != this.tileEntity.sellMode
 				|| this.lastTextColor != this.tileEntity.textColor
 				|| this.lastIronCoinBtnActive != this.tileEntity.ironCoinBtnActive

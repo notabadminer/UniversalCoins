@@ -80,7 +80,7 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	private int remoteZ = 0;
 
 	public void updateEntity() {
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			activateRetrieveButtons();
 			activateUserRetrieveButtons();
 			activateBuyButton();
@@ -91,7 +91,7 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	}
 
 	public void inUseCleanup() {
-		if (worldObj.isRemote)
+		if (world.isRemote)
 			return;
 		inUse = false;
 	}
@@ -101,7 +101,7 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 				|| (inventory[itemUserCardSlot] != null && getUserAccountBalance() > itemPrice
 						&& (!ooStockWarning || infiniteMode))) {
 			if (inventory[itemOutputSlot] != null) {
-				if (inventory[itemOutputSlot].getMaxStackSize() == inventory[itemOutputSlot].stackSize) {
+				if (inventory[itemOutputSlot].getMaxStackSize() == inventory[itemOutputSlot].getCount()) {
 					buyButtonActive = false;
 					return;
 				}
@@ -684,7 +684,7 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
-		return worldObj.getTileEntity(pos) == this
+		return world.getTileEntity(pos) == this
 				&& entityplayer.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
 	}
 
@@ -940,7 +940,7 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 			for (int i = itemStorageSlot1; i <= itemStorageSlot9; i++) {
 				if (inventory[i] == null) {
 					loadRemoteChunk(remoteX, remoteY, remoteZ);
-					TileEntity te = worldObj.getTileEntity(new BlockPos(remoteX, remoteY, remoteZ));
+					TileEntity te = world.getTileEntity(new BlockPos(remoteX, remoteY, remoteZ));
 					if (te != null && te instanceof TileEntityChest) {
 						TileEntityChest chest = (TileEntityChest) te;
 						for (int j = 0; j < chest.getSizeInventory(); j++) {
@@ -958,7 +958,7 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	}
 
 	public long getUserAccountBalance() {
-		if (inventory[itemUserCardSlot] != null && inventory[itemUserCardSlot].hasTagCompound() && !worldObj.isRemote) {
+		if (inventory[itemUserCardSlot] != null && inventory[itemUserCardSlot].hasTagCompound() && !world.isRemote) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
 			return UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 		}
@@ -966,21 +966,21 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	}
 
 	public void debitUserAccount(int amount) {
-		if (inventory[itemUserCardSlot] != null && inventory[itemUserCardSlot].hasTagCompound() && !worldObj.isRemote) {
+		if (inventory[itemUserCardSlot] != null && inventory[itemUserCardSlot].hasTagCompound() && !world.isRemote) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
 			UniversalAccounts.getInstance().debitAccount(accountNumber, amount, false);
 		}
 	}
 
 	public void creditUserAccount(int amount) {
-		if (inventory[itemUserCardSlot] != null && inventory[itemUserCardSlot].hasTagCompound() && !worldObj.isRemote) {
+		if (inventory[itemUserCardSlot] != null && inventory[itemUserCardSlot].hasTagCompound() && !world.isRemote) {
 			String accountNumber = inventory[itemUserCardSlot].getTagCompound().getString("Account");
 			UniversalAccounts.getInstance().creditAccount(accountNumber, amount, false);
 		}
 	}
 
 	public long getOwnerAccountBalance() {
-		if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
+		if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !world.isRemote) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 			return UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 		}
@@ -988,22 +988,22 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	}
 
 	public void debitOwnerAccount(int amount) {
-		if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
+		if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !world.isRemote) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 			UniversalAccounts.getInstance().debitAccount(accountNumber, amount, false);
 		}
 	}
 
 	public void creditOwnerAccount(int amount) {
-		if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
+		if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !world.isRemote) {
 			String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 			UniversalAccounts.getInstance().creditAccount(accountNumber, amount, false);
 		}
 	}
 
 	private void loadRemoteChunk(int x, int y, int z) {
-		Chunk ch = worldObj.getChunkFromChunkCoords(x, y);
-		worldObj.getChunkProvider().provideChunk(ch.xPosition, ch.zPosition);
+		Chunk ch = world.getChunkFromChunkCoords(x, y);
+		world.getChunkProvider().provideChunk(ch.xPosition, ch.zPosition);
 	}
 
 	public void onButtonPressed(int buttonId, boolean shiftPressed) {

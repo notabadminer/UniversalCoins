@@ -77,16 +77,16 @@ public class ContainerVendorSell extends Container {
 				}
 			}
 
-			if (stackInSlot.stackSize == 0) {
+			if (stackInSlot.getCount() == 0) {
 				slotObject.putStack(null);
 			} else {
 				slotObject.onSlotChanged();
 			}
 
-			if (stackInSlot.stackSize == stack.stackSize) {
+			if (stackInSlot.getCount() == stack.getCount()) {
 				return null;
 			}
-			slotObject.onPickupFromSlot(player, stackInSlot);
+			slotObject.onTake(player, stackInSlot);
 		}
 
 		return stack;
@@ -97,8 +97,6 @@ public class ContainerVendorSell extends Container {
 	 */
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
-
-
 
 		if (this.lastUserCoinSum != this.tileEntity.userCoinSum || this.lastItemPrice != this.tileEntity.itemPrice
 				|| this.lastOoStock != this.tileEntity.ooStockWarning

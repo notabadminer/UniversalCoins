@@ -55,30 +55,30 @@ public class PowerReceiverGUI extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
-		fontRendererObj.drawString(tEntity.getName(), 6, 5, 4210752);
-		fontRendererObj.drawString(I18n.format("container.inventory"), 6, 92, 4210752);
+		fontRenderer.drawString(tEntity.getName(), 6, 5, 4210752);
+		fontRenderer.drawString(I18n.format("container.inventory"), 6, 92, 4210752);
 
 		// display world rf level
 
 		String formattedwrf = formatter.format(tEntity.wrfLevel);
-		int wrfLength = fontRendererObj.getStringWidth(formattedwrf + " kRF");
-		fontRendererObj.drawString(formattedwrf + " kRF", 162 - wrfLength, 23, 4210752);
+		int wrfLength = fontRenderer.getStringWidth(formattedwrf + " kRF");
+		fontRenderer.drawString(formattedwrf + " kRF", 162 - wrfLength, 23, 4210752);
 
 		// display rf level
-		fontRendererObj.drawString("Stored", 16, 41, 4210752);
+		fontRenderer.drawString("Stored", 16, 41, 4210752);
 		String formattedrf = formatter.format(tEntity.rfLevel);
-		int rfLength = fontRendererObj.getStringWidth(formattedrf + " RF");
-		fontRendererObj.drawString(formattedrf + " RF", 142 - rfLength, 41, 4210752);
+		int rfLength = fontRenderer.getStringWidth(formattedrf + " RF");
+		fontRenderer.drawString(formattedrf + " RF", 142 - rfLength, 41, 4210752);
 
 		// display rf output
-		fontRendererObj.drawString("Output", 18, 58, 4210752);
+		fontRenderer.drawString("Output", 18, 58, 4210752);
 		String formattedrfOutput = formatter.format(tEntity.rfOutput);
-		int rfOutputLength = fontRendererObj.getStringWidth(formattedrfOutput + " RF/t");
-		fontRendererObj.drawString(formattedrfOutput + " RF/t", 142 - rfOutputLength, 59, 4210752);
+		int rfOutputLength = fontRenderer.getStringWidth(formattedrfOutput + " RF/t");
+		fontRenderer.drawString(formattedrfOutput + " RF/t", 142 - rfOutputLength, 59, 4210752);
 		// display coin balance
 		String formattedBalance = formatter.format(tEntity.coinSum);
-		int balLength = fontRendererObj.getStringWidth(formattedBalance);
-		fontRendererObj.drawString(formattedBalance, 142 - balLength, 76, 4210752);
+		int balLength = fontRenderer.getStringWidth(formattedBalance);
+		fontRenderer.drawString(formattedBalance, 142 - balLength, 76, 4210752);
 	}
 
 	protected void actionPerformed(GuiButton button) {

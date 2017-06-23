@@ -29,8 +29,7 @@ public class TradeStationGUI extends GuiContainer {
 	public static final int idAccessModeButton = 9;
 
 	public String[] autoLabels = { I18n.format("tradestation.gui.autolabel.off"),
-			I18n.format("tradestation.gui.autolabel.buy"),
-			I18n.format("tradestation.gui.autolabel.sell") };
+			I18n.format("tradestation.gui.autolabel.buy"), I18n.format("tradestation.gui.autolabel.sell") };
 
 	public TradeStationGUI(InventoryPlayer inventoryPlayer, TileTradeStation parTileEntity) {
 		super(new ContainerTradeStation(inventoryPlayer, parTileEntity));
@@ -84,27 +83,27 @@ public class TradeStationGUI extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(tileEntity.getName(), 6, 5, 4210752);
+		fontRenderer.drawString(tileEntity.getName(), 6, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
-		fontRendererObj.drawString(I18n.format("container.inventory"), 6, ySize - 96 + 2, 4210752);
-		fontRendererObj.drawString(String.valueOf(tileEntity.coinSum), 114, 57, 4210752);
+		fontRenderer.drawString(I18n.format("container.inventory"), 6, ySize - 96 + 2, 4210752);
+		fontRenderer.drawString(String.valueOf(tileEntity.coinSum), 114, 57, 4210752);
 		String priceInLocal = I18n.format("general.label.price");
-		int stringWidth = fontRendererObj.getStringWidth(priceInLocal);
-		fontRendererObj.drawString(priceInLocal, 48 - stringWidth, 57, 4210752);
+		int stringWidth = fontRenderer.getStringWidth(priceInLocal);
+		fontRenderer.drawString(priceInLocal, 48 - stringWidth, 57, 4210752);
 		if (tileEntity.itemPrice > 0) {
 			if (sellButton.isMouseOver() || !UniversalCoins.tradeStationBuyEnabled) {
 				int sellPrice = (int) (tileEntity.itemPrice * UniversalCoins.itemSellRatio);
-				fontRendererObj.drawString(String.valueOf(sellPrice), 48, 57, 4210752);
+				fontRenderer.drawString(String.valueOf(sellPrice), 48, 57, 4210752);
 			} else {
-				fontRendererObj.drawString(String.valueOf(tileEntity.itemPrice), 48, 57, 4210752);
+				fontRenderer.drawString(String.valueOf(tileEntity.itemPrice), 48, 57, 4210752);
 			}
 		} else {
-			fontRendererObj.drawString(I18n.format("tradestation.gui.warning.noitem"), 48, 57, 4210752);
+			fontRenderer.drawString(I18n.format("tradestation.gui.warning.noitem"), 48, 57, 4210752);
 		}
 		// display only if auto buy/sell enabled
 		if (tileEntity.autoModeButtonActive) {
-			fontRendererObj.drawString(I18n.format("tradestation.gui.label.autobuy"), 6, 74, 4210752);
-			fontRendererObj.drawString(autoLabels[tileEntity.autoMode], 38, 87, 4210752);
+			fontRenderer.drawString(I18n.format("tradestation.gui.label.autobuy"), 6, 74, 4210752);
+			fontRenderer.drawString(autoLabels[tileEntity.autoMode], 38, 87, 4210752);
 		}
 	}
 
@@ -136,7 +135,7 @@ public class TradeStationGUI extends GuiContainer {
 		if (tileEntity.coinMode > 0) {
 			this.drawTexturedModalRect(x + xHighlight[tileEntity.coinMode], y + 94, 184, 15, 16, 2);
 		}
-		
+
 		if (tileEntity.publicAccess) {
 			accessModeButton.displayString = I18n.format("general.label.public");
 		} else {

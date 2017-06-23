@@ -46,7 +46,7 @@ public class UCPackagerServerMessage implements IMessage, IMessageHandler<UCPack
 
 	@Override
 	public IMessage onMessage(UCPackagerServerMessage message, MessageContext ctx) {
-		World world = ctx.getServerHandler().playerEntity.worldObj;
+		World world = ctx.getServerHandler().player.world;
 
 		TileEntity tileEntity = world.getTileEntity(new BlockPos(message.x, message.y, message.z));
 		if (tileEntity instanceof TilePackager) {

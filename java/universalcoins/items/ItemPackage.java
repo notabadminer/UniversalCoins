@@ -2,6 +2,9 @@ package universalcoins.items;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -23,32 +26,33 @@ public class ItemPackage extends Item {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		NBTTagList tagList = stack.getTagCompound().getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 			// byte slot = tag.getByte("Slot");
 			int itemCount = ItemStack.loadItemStackFromNBT(tag).stackSize;
 			String itemName = ItemStack.loadItemStackFromNBT(tag).getDisplayName();
-			list.add(itemCount + " " + itemName);
+			tooltip.add(itemCount + " " + itemName);
 		}
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (stack.getTagCompound() != null) {
+	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
+			EnumFacing facing, float hitX, float hitY, float hitZ) {
+		if (player.getActiveItemStack().getTagCompound() != null) {
 			// TODO unpack items and destroy package
-			NBTTagList tagList = stack.getTagCompound().getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
+			NBTTagList tagList = player.getActiveItemStack().getTagCompound().getTagList("Inventory",
+					Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < tagList.tagCount(); i++) {
 				NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 				if (player.inventory.getFirstEmptyStack() != -1) {
 					player.inventory.addItemStackToInventory(ItemStack.loadItemStackFromNBT(tag));
 				} else {
 					// spawn in world
-					EntityItem entityItem = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(),
+					EntityItem entityItem = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(),
 							ItemStack.loadItemStackFromNBT(tag));
-					world.spawnEntityInWorld(entityItem);
+					worldIn.spawnEntity(entityItem);
 				}
 			}
 			// destroy package
@@ -56,5 +60,4 @@ public class ItemPackage extends Item {
 		}
 		return EnumActionResult.SUCCESS;
 	}
-
 }

@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
@@ -17,21 +18,21 @@ import universalcoins.util.UniversalAccounts;
 public class ItemEnderCard extends ItemUCCard {
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand,
+	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
 			EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (world.isRemote)
+		if (worldIn.isRemote)
 			return EnumActionResult.FAIL;
-		if (stack.getTagCompound() == null) {
-			createNBT(stack, world, player);
+		if (player.getActiveItemStack().getTagCompound() == null) {
+			createNBT(player.getActiveItemStack(), worldIn, player);
 		}
 		DecimalFormat formatter = new DecimalFormat("#,###,###,###");
-		ItemStack[] inventory = player.inventory.mainInventory;
-		String accountNumber = stack.getTagCompound().getString("Account");
+		NonNullList<ItemStack> inventory = player.inventory.mainInventory;
+		String accountNumber = player.getActiveItemStack().getTagCompound().getString("Account");
 		long accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 		int coinValue = 0;
 		int depositAmount = 0;
 		int coinsDeposited = 0;
-		for (int i = 0; i < inventory.length; i++) {
+		for (int i = 0; i < inventory.size(); i++) {
 			ItemStack instack = player.inventory.getStackInSlot(i);
 			coinValue = 0;
 			if (instack != null) {
@@ -57,26 +58,26 @@ public class ItemEnderCard extends ItemUCCard {
 					return EnumActionResult.FAIL;
 				if (coinValue == 0)
 					continue;
-				if (Long.MAX_VALUE - accountBalance > coinValue * instack.stackSize) {
-					depositAmount = instack.stackSize;
+				if (Long.MAX_VALUE - accountBalance > coinValue * instack.getCount()) {
+					depositAmount = instack.getCount();
 				} else {
 					depositAmount = (int) (Long.MAX_VALUE - accountBalance) / coinValue;
 				}
 				UniversalAccounts.getInstance().creditAccount(accountNumber, coinValue * depositAmount, false);
 				coinsDeposited += coinValue * depositAmount;
-				inventory[i].stackSize -= depositAmount;
-				if (inventory[i].stackSize == 0) {
+				inventory.get(i).shrink(depositAmount);
+				if (inventory.get(i).getCount() == 0) {
 					player.inventory.setInventorySlotContents(i, null);
 					player.inventoryContainer.detectAndSendChanges();
 				}
 			}
 		}
 		if (coinsDeposited > 0) {
-			player.addChatMessage(new TextComponentString(I18n.translateToLocal("item.card.deposit") + " "
+			player.sendMessage(new TextComponentString(I18n.translateToLocal("item.card.deposit") + " "
 					+ formatter.format(coinsDeposited) + " " + I18n.translateToLocal(
 							coinsDeposited > 1 ? "general.currency.multiple" : "general.currency.single")));
 		}
-		player.addChatMessage(new TextComponentString(I18n.translateToLocal("item.card.balance") + " "
+		player.sendMessage(new TextComponentString(I18n.translateToLocal("item.card.balance") + " "
 				+ formatter.format(UniversalAccounts.getInstance().getAccountBalance(accountNumber))));
 		return EnumActionResult.FAIL;
 	}

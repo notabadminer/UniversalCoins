@@ -58,27 +58,27 @@ public class SignalGUI extends GuiContainer {
 
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(tEntity.getName(), 8, 5, 4210752);
+		fontRenderer.drawString(tEntity.getName(), 8, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
-		fontRendererObj.drawString(I18n.format("container.inventory"), 8, 96, 4210752);
+		fontRenderer.drawString(I18n.format("container.inventory"), 8, 96, 4210752);
 		String feeLabel = I18n.format("signal.label.fee");
-		int stringWidth = fontRendererObj.getStringWidth(feeLabel);
-		fontRendererObj.drawString(feeLabel, 92 - stringWidth, 28, 4210752);
+		int stringWidth = fontRenderer.getStringWidth(feeLabel);
+		fontRenderer.drawString(feeLabel, 92 - stringWidth, 28, 4210752);
 		// draw fee right aligned
 		String fee = String.valueOf(formatter.format(tEntity.fee));
-		stringWidth = fontRendererObj.getStringWidth(fee);
-		fontRendererObj.drawString(fee, 138 - stringWidth, 28, 4210752);
+		stringWidth = fontRenderer.getStringWidth(fee);
+		fontRenderer.drawString(fee, 138 - stringWidth, 28, 4210752);
 		String durationLabel = I18n.format("signal.label.duration");
-		stringWidth = fontRendererObj.getStringWidth(durationLabel);
-		fontRendererObj.drawString(durationLabel, 92 - stringWidth, 50, 4210752);
+		stringWidth = fontRenderer.getStringWidth(durationLabel);
+		fontRenderer.drawString(durationLabel, 92 - stringWidth, 50, 4210752);
 		// draw signal duration right aligned
 		String duration = String.valueOf(formatter.format(tEntity.duration));
-		stringWidth = fontRendererObj.getStringWidth(duration);
-		fontRendererObj.drawString(duration, 138 - stringWidth, 50, 4210752);
+		stringWidth = fontRenderer.getStringWidth(duration);
+		fontRenderer.drawString(duration, 138 - stringWidth, 50, 4210752);
 		// draw coin sum right aligned
 		String coinSumString = String.valueOf(formatter.format(tEntity.coinSum));
-		stringWidth = fontRendererObj.getStringWidth(coinSumString);
-		fontRendererObj.drawString(coinSumString, 138 - stringWidth, 78, 4210752);
+		stringWidth = fontRenderer.getStringWidth(coinSumString);
+		fontRenderer.drawString(coinSumString, 138 - stringWidth, 78, 4210752);
 	}
 
 	@Override

@@ -56,7 +56,7 @@ public class BlockPowerReceiver extends BlockProtected {
 				return true;
 			}
 			if (!world.isRemote) {
-				player.addChatMessage(new TextComponentTranslation("chat.warning.private"));
+				player.sendMessage(new TextComponentTranslation("chat.warning.private"));
 			}
 		}
 		return false;
@@ -94,7 +94,8 @@ public class BlockPowerReceiver extends BlockProtected {
 	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
 			boolean willHarvest) {
 		if (willHarvest)
-			return true; // If it will harvest, delay deletion of the block until after getDrops
+			return true; // If it will harvest, delay deletion of the block
+							// until after getDrops
 		return super.removedByPlayer(state, world, pos, player, willHarvest);
 	}
 

@@ -1,19 +1,14 @@
 package universalcoins.blocks;
 
 import java.util.List;
-import java.util.Random;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityFlowerPot;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -22,8 +17,6 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.tileentity.TileTradeStation;
 
@@ -58,7 +51,7 @@ public class BlockTradeStation extends BlockProtected {
 			TileTradeStation tentity = (TileTradeStation) tileEntity;
 			if (tentity.inUse) {
 				if (!world.isRemote) {
-					player.addChatMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
+					player.sendMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
 				}
 				return true;
 			}
@@ -75,7 +68,7 @@ public class BlockTradeStation extends BlockProtected {
 					return true;
 				}
 				if (!world.isRemote) {
-					player.addChatMessage(new TextComponentString(I18n.translateToLocal("chat.warning.private")));
+					player.sendMessage(new TextComponentString(I18n.translateToLocal("chat.warning.private")));
 				}
 			}
 		}

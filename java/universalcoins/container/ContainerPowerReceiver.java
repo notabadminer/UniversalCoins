@@ -5,8 +5,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.tileentity.TilePowerReceiver;
 
 public class ContainerPowerReceiver extends Container {
@@ -76,16 +74,16 @@ public class ContainerPowerReceiver extends Container {
 				}
 			}
 
-			if (stackInSlot.stackSize == 0) {
+			if (stackInSlot.getCount() == 0) {
 				slotObject.putStack(null);
 			} else {
 				slotObject.onSlotChanged();
 			}
 
-			if (stackInSlot.stackSize == stack.stackSize) {
+			if (stackInSlot.getCount() == stack.getCount()) {
 				return null;
 			}
-			slotObject.onPickupFromSlot(player, stackInSlot);
+			slotObject.onTake(player, stackInSlot);
 		}
 
 		return stack;

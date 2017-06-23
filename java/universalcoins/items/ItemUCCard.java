@@ -3,6 +3,9 @@ package universalcoins.items;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -26,27 +29,27 @@ public class ItemUCCard extends Item {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		if (stack.getTagCompound() != null) {
-			list.add(stack.getTagCompound().getString("Name"));
-			list.add(stack.getTagCompound().getString("Account"));
+			tooltip.add(stack.getTagCompound().getString("Name"));
+			tooltip.add(stack.getTagCompound().getString("Account"));
 		} else {
-			list.add(I18n.translateToLocal("item.card.warning"));
+			tooltip.add(I18n.translateToLocal("item.card.warning"));
 		}
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand,
+	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
 			EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (world.isRemote)
+		if (worldIn.isRemote)
 			return EnumActionResult.FAIL;
-		if (stack.getTagCompound() == null) {
-			createNBT(stack, world, player);
+		if (player.getActiveItemStack().getTagCompound() == null) {
+			createNBT(player.getActiveItemStack(), worldIn, player);
 		}
 		long accountCoins = UniversalAccounts.getInstance()
-				.getAccountBalance(stack.getTagCompound().getString("Account"));
+				.getAccountBalance(player.getActiveItemStack().getTagCompound().getString("Account"));
 		DecimalFormat formatter = new DecimalFormat("###,###,###,###,###,###,###");
-		player.addChatMessage(new TextComponentString(
+		player.sendMessage(new TextComponentString(
 				I18n.translateToLocal("item.card.balance") + " " + formatter.format(accountCoins)));
 		return EnumActionResult.SUCCESS;
 	}

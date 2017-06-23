@@ -53,7 +53,7 @@ public class ATMWithdrawalMessage implements IMessage, IMessageHandler<ATMWithdr
 		if (ctx.side == Side.CLIENT) {
 			Minecraft.getMinecraft().addScheduledTask(task);
 		} else if (ctx.side == Side.SERVER) {
-			EntityPlayerMP playerEntity = ctx.getServerHandler().playerEntity;
+			EntityPlayerMP playerEntity = ctx.getServerHandler().player;
 			if (playerEntity == null) {
 				FMLLog.warning("onMessage-server: Player is null");
 				return null;
@@ -64,7 +64,7 @@ public class ATMWithdrawalMessage implements IMessage, IMessageHandler<ATMWithdr
 	}
 
 	private void processMessage(ATMWithdrawalMessage message, final MessageContext ctx) {
-		World world = ctx.getServerHandler().playerEntity.worldObj;
+		World world = ctx.getServerHandler().player.world;
 
 		TileEntity tileEntity = world.getTileEntity(new BlockPos(message.x, message.y, message.z));
 		if (tileEntity instanceof TileATM) {

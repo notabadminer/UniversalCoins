@@ -102,7 +102,7 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 		int accountCapacity = (int) (Long.MAX_VALUE - accountBalance > Integer.MAX_VALUE ? Integer.MAX_VALUE
 				: Long.MAX_VALUE - accountBalance);
 		debitAmount = Math.min(stack.stackSize, accountCapacity / coinValue);
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			UniversalAccounts.getInstance().debitAccount(accountNumber, debitAmount * coinValue, false);
 			updateAccountBalance();
 		}
@@ -150,7 +150,7 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 						inventory[slot] = null;
 					}
 					fillOutputSlot();
-					if (!worldObj.isRemote)
+					if (!world.isRemote)
 						updateAccountBalance();
 				}
 			}
@@ -196,9 +196,9 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
-		return worldObj.getTileEntity(pos) == this
-				&& entityplayer.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return world.getTileEntity(pos) == this
+				&& player.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
 	}
 
 	@Override
@@ -286,7 +286,7 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 	}
 
 	private String getPlayerUID(String playerName) {
-		EntityPlayer player = worldObj.getPlayerEntityByName(playerName);
+		EntityPlayer player = world.getPlayerEntityByName(playerName);
 		return player.getUniqueID().toString();
 	}
 

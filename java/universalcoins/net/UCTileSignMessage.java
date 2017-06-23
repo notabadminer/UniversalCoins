@@ -72,7 +72,7 @@ public class UCTileSignMessage implements IMessage, IMessageHandler<UCTileSignMe
 		if (ctx.side == Side.CLIENT) {
 			Minecraft.getMinecraft().addScheduledTask(task);
 		} else if (ctx.side == Side.SERVER) {
-			EntityPlayerMP playerEntity = ctx.getServerHandler().playerEntity;
+			EntityPlayerMP playerEntity = ctx.getServerHandler().player;
 			if (playerEntity == null) {
 				FMLLog.warning("onMessage-server: Player is null");
 				return null;
@@ -83,7 +83,7 @@ public class UCTileSignMessage implements IMessage, IMessageHandler<UCTileSignMe
 	}
 
 	private void processMessage(UCTileSignMessage message, final MessageContext ctx) {
-		TileEntity tileEntity = FMLClientHandler.instance().getClient().theWorld
+		TileEntity tileEntity = FMLClientHandler.instance().getClient().world
 				.getTileEntity(new BlockPos(message.xCoord, message.yCoord, message.zCoord));
 
 		if (tileEntity != null && tileEntity instanceof TileUCSign) {

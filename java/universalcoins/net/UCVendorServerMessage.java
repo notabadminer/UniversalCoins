@@ -63,7 +63,7 @@ public class UCVendorServerMessage implements IMessage, IMessageHandler<UCVendor
 		if (ctx.side == Side.CLIENT) {
 			Minecraft.getMinecraft().addScheduledTask(task);
 		} else if (ctx.side == Side.SERVER) {
-			EntityPlayerMP playerEntity = ctx.getServerHandler().playerEntity;
+			EntityPlayerMP playerEntity = ctx.getServerHandler().player;
 			if (playerEntity == null) {
 				return null;
 			}
@@ -73,7 +73,7 @@ public class UCVendorServerMessage implements IMessage, IMessageHandler<UCVendor
 	}
 
 	private void processMessage(UCVendorServerMessage message, final MessageContext ctx) {
-		World world = ctx.getServerHandler().playerEntity.worldObj;
+		World world = ctx.getServerHandler().player.world;
 
 		TileEntity tileEntity = world.getTileEntity(new BlockPos(message.x, message.y, message.z));
 		if (tileEntity instanceof TileVendor) {

@@ -2,6 +2,9 @@ package universalcoins.items;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -26,38 +29,35 @@ public class ItemLinkCard extends Item {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		if (stack.hasTagCompound()) {
-			list.add(I18n.translateToLocal("item.link_card.stored"));
+			tooltip.add(I18n.translateToLocal("item.link_card.stored"));
 		} else {
-			list.add(I18n.translateToLocal("item.link_card.blank"));
+			tooltip.add(I18n.translateToLocal("item.link_card.blank"));
 		}
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand,
+	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
 			EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (world.isRemote)
+		if (worldIn.isRemote)
 			return EnumActionResult.FAIL;
-		RayTraceResult movingobjectposition = this.rayTrace(world, player, true);
+		RayTraceResult movingobjectposition = this.rayTrace(worldIn, player, true);
 
-		if (movingobjectposition != null
-				&& movingobjectposition.typeOfHit ==  RayTraceResult.Type.BLOCK) {
+		if (movingobjectposition != null && movingobjectposition.typeOfHit == RayTraceResult.Type.BLOCK) {
 			BlockPos cursorPos = movingobjectposition.getBlockPos();
-			if (world.getTileEntity(cursorPos) instanceof TileEntityChest) {
+			if (worldIn.getTileEntity(cursorPos) instanceof TileEntityChest) {
 				// notify player we have a chest
-				player.addChatMessage(
-						new TextComponentString(I18n.translateToLocal("item.link_card.message.stored")
-								+ cursorPos.getX() + " " + cursorPos.getY() + " " + cursorPos.getZ()));
-				stack.getTagCompound().setIntArray("storageLocation",
+				player.sendMessage(new TextComponentString(I18n.translateToLocal("item.link_card.message.stored")
+						+ cursorPos.getX() + " " + cursorPos.getY() + " " + cursorPos.getZ()));
+				player.getActiveItemStack().getTagCompound().setIntArray("storageLocation",
 						new int[] { cursorPos.getX(), cursorPos.getY(), cursorPos.getZ() });
 			}
-			if (world.getTileEntity(cursorPos) instanceof TileVendor) {
-				TileVendor te = (TileVendor) world.getTileEntity(cursorPos);
-				if (stack.hasTagCompound()) {
-					int[] storageLocation = stack.getTagCompound().getIntArray("storageLocation");
-					player.addChatMessage(
-							new TextComponentString(I18n.translateToLocal("item.link_card.message.set")));
+			if (worldIn.getTileEntity(cursorPos) instanceof TileVendor) {
+				TileVendor te = (TileVendor) worldIn.getTileEntity(cursorPos);
+				if (player.getActiveItemStack().hasTagCompound()) {
+					int[] storageLocation = player.getActiveItemStack().getTagCompound().getIntArray("storageLocation");
+					player.sendMessage(new TextComponentString(I18n.translateToLocal("item.link_card.message.set")));
 					te.setRemoteStorage(storageLocation);
 					player.inventory.decrStackSize(player.inventory.currentItem, 1);
 				}

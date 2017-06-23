@@ -27,12 +27,11 @@ public class ItemVendorWrench extends Item {
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand,
+	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
 			EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (!world.isRemote) {
-			world.getMinecraftServer()
-					.addChatMessage(new TextComponentString("Wrench used by " + player.getDisplayName() + " in World "
-							+ world.provider.getDimension() + " at " + hitX + " " + hitY + " " + hitZ));
+		if (!worldIn.isRemote) {
+			worldIn.getMinecraftServer().sendMessage(new TextComponentString("Wrench used by " + player.getDisplayName()
+					+ " in World " + worldIn.provider.getDimension() + " at " + hitX + " " + hitY + " " + hitZ));
 		}
 		return EnumActionResult.SUCCESS;
 	}

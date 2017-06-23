@@ -55,20 +55,20 @@ public class PowerTransmitterGUI extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
-		fontRendererObj.drawString(tEntity.getName(), 6, 5, 4210752);
+		fontRenderer.drawString(tEntity.getName(), 6, 5, 4210752);
 
-		fontRendererObj.drawString(I18n.format("container.inventory"), 6, 63, 4210752);
+		fontRenderer.drawString(I18n.format("container.inventory"), 6, 63, 4210752);
 
 		// display rf sold
 		String formattedkrf = formatter.format(tEntity.krfSold);
-		int rfLength = fontRendererObj.getStringWidth(formattedkrf + " kRF");
+		int rfLength = fontRenderer.getStringWidth(formattedkrf + " kRF");
 		String overage = (tEntity.krfSold == Integer.MAX_VALUE ? "+" : "");
-		fontRendererObj.drawString(formattedkrf + " kRF", 130 - rfLength, 26, 4210752);
+		fontRenderer.drawString(formattedkrf + " kRF", 130 - rfLength, 26, 4210752);
 
 		// display coin balance
 		String formattedBalance = formatter.format(tEntity.coinSum);
-		int balLength = fontRendererObj.getStringWidth(formattedBalance);
-		fontRendererObj.drawString(formattedBalance, 131 - balLength, 48, 4210752);
+		int balLength = fontRenderer.getStringWidth(formattedBalance);
+		fontRenderer.drawString(formattedBalance, 131 - balLength, 48, 4210752);
 	}
 
 	protected void actionPerformed(GuiButton button) {

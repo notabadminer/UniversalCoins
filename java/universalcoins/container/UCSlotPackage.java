@@ -21,7 +21,7 @@ public class UCSlotPackage extends Slot {
 	}
 
 	public ItemStack decrStackSize(int par1) {
-		if (getStack() != null && getStack().stackSize != par1) {
+		if (getStack() != null && getStack().getCount() != par1) {
 			return new ItemStack(getStack().getItem(), -1);
 		}
 		return inventory.decrStackSize(getSlotIndex(), par1);

@@ -35,14 +35,14 @@ public class VendorBuyGUI extends GuiContainer {
 				I18n.format("general.button.sell"));
 		retrIronCoinBtn = new GuiCoinButton(idIronCoinBtn, 60 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18, 18,
 				"", 0);
-		retrGoldCoinBtn = new GuiCoinButton(idGoldCoinBtn, 78 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18,
-				18, "", 1);
-		retrEmeraldCoinBtn = new GuiCoinButton(idEmeraldCoinBtn, 96 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18,
-				18, "", 2);
-		retrDiamondCoinBtn = new GuiCoinButton(idDiamondCoinBtn, 114 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18, 18,
-				"", 3);
-		retrObsidianCoinBtn = new GuiCoinButton(idObsidianCoinBtn, 132 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18, 18,
-				"", 4);
+		retrGoldCoinBtn = new GuiCoinButton(idGoldCoinBtn, 78 + (width - xSize) / 2, 82 + (height - ySize) / 2, 18, 18,
+				"", 1);
+		retrEmeraldCoinBtn = new GuiCoinButton(idEmeraldCoinBtn, 96 + (width - xSize) / 2, 82 + (height - ySize) / 2,
+				18, 18, "", 2);
+		retrDiamondCoinBtn = new GuiCoinButton(idDiamondCoinBtn, 114 + (width - xSize) / 2, 82 + (height - ySize) / 2,
+				18, 18, "", 3);
+		retrObsidianCoinBtn = new GuiCoinButton(idObsidianCoinBtn, 132 + (width - xSize) / 2, 82 + (height - ySize) / 2,
+				18, 18, "", 4);
 		buttonList.clear();
 		buttonList.add(sellButton);
 		buttonList.add(retrIronCoinBtn);
@@ -73,11 +73,11 @@ public class VendorBuyGUI extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(tileEntity.getName(), 6, 5, 4210752);
+		fontRenderer.drawString(tileEntity.getName(), 6, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
-		fontRendererObj.drawString(I18n.format("container.inventory"), 8, 106, 4210752);
-		fontRendererObj.drawString(String.valueOf(tileEntity.itemPrice), 48, 29, 4210752);
-		fontRendererObj.drawString(String.valueOf(tileEntity.userCoinSum), 63, 69, 4210752);
+		fontRenderer.drawString(I18n.format("container.inventory"), 8, 106, 4210752);
+		fontRenderer.drawString(String.valueOf(tileEntity.itemPrice), 48, 29, 4210752);
+		fontRenderer.drawString(String.valueOf(tileEntity.userCoinSum), 63, 69, 4210752);
 	}
 
 	protected void actionPerformed(GuiButton button) {

@@ -29,7 +29,6 @@ public class ContainerATM extends Container {
 		addSlotToContainer(new UCSlotCoinInput(tEntity, tEntity.itemCoinSlot, 172, 40));
 		addSlotToContainer(new UCSlotCard(tEntity, tEntity.itemCardSlot, 172, 60));
 
-
 		// commonly used vanilla code that adds the player's inventory
 		bindPlayerInventory(inventoryPlayer);
 	}
@@ -82,16 +81,16 @@ public class ContainerATM extends Container {
 				}
 			}
 
-			if (stackInSlot.stackSize == 0) {
+			if (stackInSlot.getCount() == 0) {
 				slotObject.putStack(null);
 			} else {
 				slotObject.onSlotChanged();
 			}
 
-			if (stackInSlot.stackSize == stack.stackSize) {
+			if (stackInSlot.getCount() == stack.getCount()) {
 				return null;
 			}
-			slotObject.onPickupFromSlot(player, stackInSlot);
+			slotObject.onTake(player, stackInSlot);
 			tEntity.fillCoinSlot();
 		}
 

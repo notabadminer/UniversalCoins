@@ -75,7 +75,7 @@ public class BlockSafe extends BlockProtected {
 		onBlockDestroyedByExplosion(world, pos, explosion);
 		EntityItem entityItem = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(this, 1));
 		if (!world.isRemote)
-			world.spawnEntityInWorld(entityItem);
+			world.spawnEntity(entityItem);
 	}
 
 	/**

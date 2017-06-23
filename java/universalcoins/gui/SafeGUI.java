@@ -33,13 +33,13 @@ public class SafeGUI extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
-		fontRendererObj.drawString(tEntity.getName(), 6, 5, 4210752);
+		fontRenderer.drawString(tEntity.getName(), 6, 5, 4210752);
 
-		fontRendererObj.drawString(I18n.format("container.inventory"), 6, 58, 4210752);
+		fontRenderer.drawString(I18n.format("container.inventory"), 6, 58, 4210752);
 
 		// display player account balance
 		String formattedBalance = formatter.format(tEntity.accountBalance);
-		int balLength = fontRendererObj.getStringWidth(formattedBalance);
-		fontRendererObj.drawString(formattedBalance, 154 - balLength, 22, 4210752);
+		int balLength = fontRenderer.getStringWidth(formattedBalance);
+		fontRenderer.drawString(formattedBalance, 154 - balLength, 22, 4210752);
 	}
 }

@@ -106,7 +106,7 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 				UniversalCoins.proxy.atm.getDefaultState().withProperty(BlockATM.FACING, EnumFacing.SOUTH), 2, 2, 4,
 				sbb);
 		// door
-		this.func_189927_a(world, sbb, random, 2, 1, 1, EnumFacing.NORTH);
+		this.createVillageDoor(world, sbb, random, 2, 1, 1, EnumFacing.NORTH);
 		// torches
 		this.setBlockState(world, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 1,
 				2, 2, boundingBox);

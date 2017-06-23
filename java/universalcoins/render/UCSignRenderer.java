@@ -7,6 +7,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -138,8 +139,8 @@ public class UCSignRenderer extends TileEntitySpecialRenderer<TileEntitySign> {
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntitySign te, double x, double y, double z, float partialTicks,
-			int destroyStage) {
+	public void render(TileEntitySign te, double x, double y, double z, float partialTicks, int destroyStage,
+			float alpha) {
 		this.renderTileEntityAt((TileUCSign) te, x, y, z, partialTicks, destroyStage);
 
 	}

@@ -47,10 +47,8 @@ public class VendorGUI extends GuiContainer {
 		y = (height - ySize) / 2;
 		modeButton = new GuiSlimButton(idModeButton, 8 + x, 35 + y, 62, 12,
 				I18n.format("vending.gui.button.mode.sell"));
-		updateButton = new GuiSlimButton(idUpdateButton, 79 + x, 35 + y, 44, 12,
-				I18n.format("general.button.edit"));
-		setButton = new GuiSlimButton(idSetButton, 124 + x, 35 + y, 44, 12,
-				I18n.format("general.button.save"));
+		updateButton = new GuiSlimButton(idUpdateButton, 79 + x, 35 + y, 44, 12, I18n.format("general.button.edit"));
+		setButton = new GuiSlimButton(idSetButton, 124 + x, 35 + y, 44, 12, I18n.format("general.button.save"));
 		retrIronCoinBtn = new GuiCoinButton(idIronCoinBtn, 56 + x, 74 + y, 18, 18, "", 0);
 		retrGoldCoinBtn = new GuiCoinButton(idGoldCoinBtn, 74 + x, 74 + y, 18, 18, "", 1);
 		retrEmeraldCoinBtn = new GuiCoinButton(idEmeraldCoinBtn, 92 + x, 74 + y, 18, 18, "", 2);
@@ -71,7 +69,7 @@ public class VendorGUI extends GuiContainer {
 		buttonList.add(tColorMinButton);
 		buttonList.add(tColorPlusButton);
 
-		itemPriceField = new GuiTextField(0, this.fontRendererObj, 82, 21, 86, 15);
+		itemPriceField = new GuiTextField(0, this.fontRenderer, 82, 21, 86, 15);
 		itemPriceField.setFocused(false);
 		itemPriceField.setMaxStringLength(10);
 		itemPriceField.setEnableBackgroundDrawing(false);
@@ -109,23 +107,23 @@ public class VendorGUI extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(tileEntity.getName(), 6, 5, 4210752);
+		fontRenderer.drawString(tileEntity.getName(), 6, 5, 4210752);
 		String priceInLocal = I18n.format("general.label.price");
-		int stringWidth = fontRendererObj.getStringWidth(priceInLocal);
-		fontRendererObj.drawString(priceInLocal, 78 - stringWidth, 22, 4210752);
+		int stringWidth = fontRenderer.getStringWidth(priceInLocal);
+		fontRenderer.drawString(priceInLocal, 78 - stringWidth, 22, 4210752);
 		// draw itemprice
 		if (!textActive) {
 			String iSum = String.valueOf(tileEntity.itemPrice);
-			stringWidth = fontRendererObj.getStringWidth(iSum);
-			fontRendererObj.drawString(iSum, 82, 22, 4210752);
+			stringWidth = fontRenderer.getStringWidth(iSum);
+			fontRenderer.drawString(iSum, 82, 22, 4210752);
 		} else
 			itemPriceField.drawTextBox();
 		// draw coinsum
 		String cSum = String.valueOf(tileEntity.coinSum);
-		stringWidth = fontRendererObj.getStringWidth(cSum);
-		fontRendererObj.drawString(cSum, 145 - stringWidth, 60, 4210752);
+		stringWidth = fontRenderer.getStringWidth(cSum);
+		fontRenderer.drawString(cSum, 145 - stringWidth, 60, 4210752);
 		// draw sign text color
-		fontRendererObj.drawString(Integer.toHexString(tileEntity.textColor), 23, 81, 4210752);
+		fontRenderer.drawString(Integer.toHexString(tileEntity.textColor), 23, 81, 4210752);
 	}
 
 	protected void actionPerformed(GuiButton button) {

@@ -18,9 +18,9 @@ public class VendorBlockRenderer extends TileEntitySpecialRenderer {
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntity tileentity, double posX, double posY, double posZ, float f,
-			int p_180535_9_) {
-		TileVendor tVendor = (TileVendor) tileentity;
+	public void renderTileEntityFast(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage,
+			float partial, net.minecraft.client.renderer.BufferBuilder buffer) {
+		TileVendor tVendor = (TileVendor) te;
 
 		if (tVendor == null || tVendor.getBlockType() == null) {
 			return;
@@ -31,16 +31,16 @@ public class VendorBlockRenderer extends TileEntitySpecialRenderer {
 		if (itemstack == null) {
 			return;
 		}
-		EntityItem entity = new EntityItem(null, posX, posY, posZ, itemstack);
+		EntityItem entity = new EntityItem(null, x, y, z, itemstack);
 
 		entity.hoverStart = 0;
 
 		GlStateManager.pushMatrix();
-		GlStateManager.translate((float) posX + 0.5F, (float) posY + 0.15F, (float) posZ + 0.5F);
+		GlStateManager.translate((float) x + 0.5F, (float) y + 0.15F, (float) z + 0.5F);
 
 		try {
 			// render trade item
-			renderer.doRender(entity, 0, 0, 0, 0, Minecraft.getMinecraft().thePlayer.ticksExisted);
+			renderer.doRender(entity, 0, 0, 0, 0, Minecraft.getMinecraft().player.ticksExisted);
 		} catch (Throwable e) {
 		}
 		GlStateManager.popMatrix();

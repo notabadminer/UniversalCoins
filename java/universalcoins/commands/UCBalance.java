@@ -10,20 +10,18 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
-import universalcoins.Achievements;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UniversalAccounts;
 
 public class UCBalance extends CommandBase implements ICommand {
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "balance";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender var1) {
+	public String getUsage(ICommandSender var1) {
 		return "/balance : returns player inventory and account coin balances";
 	}
 
@@ -40,23 +38,23 @@ public class UCBalance extends CommandBase implements ICommand {
 			String playerAcct = UniversalAccounts.getInstance().getPlayerAccount(uuid);
 			long accountBalance = UniversalAccounts.getInstance().getAccountBalance(playerAcct);
 			DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
-			sender.addChatMessage(new TextComponentString("Inventory:" + formatter.format(playerCoins)));
+			sender.sendMessage(new TextComponentString("Inventory:" + formatter.format(playerCoins)));
 			if (accountBalance != -1) {
-				sender.addChatMessage(new TextComponentString("Account:" + formatter.format(accountBalance)));
+				sender.sendMessage(new TextComponentString("Account:" + formatter.format(accountBalance)));
 			}
-			// achievement stuff
-			if (playerCoins > 1000 || accountBalance > 1000) {
-				((EntityPlayerMP) sender).addStat(Achievements.achThousand, 1);
-			}
-			if (playerCoins > 1000000 || accountBalance > 1000000) {
-				((EntityPlayerMP) sender).addStat(Achievements.achMillion, 1);
-			}
-			if (playerCoins > 1000000000 || accountBalance > 1000000000) {
-				((EntityPlayerMP) sender).addStat(Achievements.achBillion, 1);
-			}
-			if (playerCoins == Integer.MAX_VALUE || accountBalance == Integer.MAX_VALUE) {
-				((EntityPlayerMP) sender).addStat(Achievements.achMaxed, 1);
-			}
+//			// achievement stuff
+//			if (playerCoins > 1000 || accountBalance > 1000) {
+//				((EntityPlayerMP) sender).addStat(Achievements.achThousand, 1);
+//			}
+//			if (playerCoins > 1000000 || accountBalance > 1000000) {
+//				((EntityPlayerMP) sender).addStat(Achievements.achMillion, 1);
+//			}
+//			if (playerCoins > 1000000000 || accountBalance > 1000000000) {
+//				((EntityPlayerMP) sender).addStat(Achievements.achBillion, 1);
+//			}
+//			if (playerCoins == Integer.MAX_VALUE || accountBalance == Integer.MAX_VALUE) {
+//				((EntityPlayerMP) sender).addStat(Achievements.achMaxed, 1);
+//			}
 		}
 	}
 
@@ -67,19 +65,19 @@ public class UCBalance extends CommandBase implements ICommand {
 			if (stack != null) {
 				switch (stack.getUnlocalizedName()) {
 				case "item.iron_coin":
-					coinsFound += stack.stackSize * UniversalCoins.coinValues[0];
+					coinsFound += stack.getCount() * UniversalCoins.coinValues[0];
 					break;
 				case "item.gold_coin":
-					coinsFound += stack.stackSize * UniversalCoins.coinValues[1];
+					coinsFound += stack.getCount() * UniversalCoins.coinValues[1];
 					break;
 				case "item.emerald_coin":
-					coinsFound += stack.stackSize * UniversalCoins.coinValues[2];
+					coinsFound += stack.getCount() * UniversalCoins.coinValues[2];
 					break;
 				case "item.diamond_coin":
-					coinsFound += stack.stackSize * UniversalCoins.coinValues[3];
+					coinsFound += stack.getCount() * UniversalCoins.coinValues[3];
 					break;
 				case "item.obsidian_coin":
-					coinsFound += stack.stackSize * UniversalCoins.coinValues[4];
+					coinsFound += stack.getCount() * UniversalCoins.coinValues[4];
 					break;
 				}
 			}

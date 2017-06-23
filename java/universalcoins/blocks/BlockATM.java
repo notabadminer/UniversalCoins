@@ -53,7 +53,7 @@ public class BlockATM extends BlockProtected {
 		if (tileEntity != null && tileEntity instanceof TileATM) {
 			if (((TileATM) tileEntity).inUse) {
 				if (!world.isRemote) {
-					player.addChatMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
+					player.sendMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
 				}
 				return true;
 			} else {

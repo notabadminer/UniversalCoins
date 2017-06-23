@@ -14,7 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
 import universalcoins.util.UCItemPricer;
 
 public class UCCommand extends CommandBase implements ICommand {
@@ -23,17 +22,17 @@ public class UCCommand extends CommandBase implements ICommand {
 	DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "universalcoins";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender icommandsender) {
+	public String getUsage(ICommandSender icommandsender) {
 		return "/universalcoins help";
 	}
 
 	@Override
-	public List getCommandAliases() {
+	public List getAliases() {
 		List aliases = new ArrayList();
 		aliases.add("uc");
 		return aliases;
@@ -43,18 +42,18 @@ public class UCCommand extends CommandBase implements ICommand {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args.length <= 0) {
-			throw new WrongUsageException(this.getCommandUsage(sender));
+			throw new WrongUsageException(this.getUsage(sender));
 		} else if (args[0].matches("help")) {
-			sender.addChatMessage(new TextComponentString("Usage: /uc <command option> <arguments>"));
-			sender.addChatMessage(new TextComponentString("Available command options:"));
-			sender.addChatMessage(new TextComponentString("/uc get : Get price of item held in main hand."));
-			sender.addChatMessage(new TextComponentString("/uc set <price> : Set price of item held in main hand."));
-			sender.addChatMessage(
+			sender.sendMessage(new TextComponentString("Usage: /uc <command option> <arguments>"));
+			sender.sendMessage(new TextComponentString("Available command options:"));
+			sender.sendMessage(new TextComponentString("/uc get : Get price of item held in main hand."));
+			sender.sendMessage(new TextComponentString("/uc set <price> : Set price of item held in main hand."));
+			sender.sendMessage(
 					new TextComponentString("/uc reload : Reload pricelists. This will reset any unsaved changes."));
-			sender.addChatMessage(new TextComponentString(
+			sender.sendMessage(new TextComponentString(
 					"/uc reset : Reset all prices to defaults. Will not override items not priced by default"));
-			sender.addChatMessage(new TextComponentString("/uc save : Save pricelists."));
-			sender.addChatMessage(new TextComponentString("/uc update : rerun auto-pricing"));
+			sender.sendMessage(new TextComponentString("/uc save : Save pricelists."));
+			sender.sendMessage(new TextComponentString("/uc update : rerun auto-pricing"));
 		} else if (args[0].matches("reload")) {
 			UCItemPricer.getInstance().loadConfigs();
 		} else if (args[0].matches("get")) {
@@ -67,14 +66,13 @@ public class UCCommand extends CommandBase implements ICommand {
 					price = UCItemPricer.getInstance().getItemPrice(stack);
 					stackName = getPlayerItem(sender).getDisplayName();
 				} else {
-					sender.addChatMessage(new TextComponentString("§cError: no item found in hand."));
+					sender.sendMessage(new TextComponentString("§cError: no item found in hand."));
 				}
 
 				if (price == -1) {
-					sender.addChatMessage(new TextComponentString("§cNo price set for" + " " + stackName));
+					sender.sendMessage(new TextComponentString("§cNo price set for" + " " + stackName));
 				} else
-					sender.addChatMessage(
-							new TextComponentString("§a" + stackName + " = " + formatter.format(price)));
+					sender.sendMessage(new TextComponentString("§a" + stackName + " = " + formatter.format(price)));
 			}
 		} else if (args[0].matches("set")) {
 			// set item price
@@ -84,7 +82,7 @@ public class UCCommand extends CommandBase implements ICommand {
 				try {
 					price = Integer.parseInt(args[1]);
 				} catch (NumberFormatException e) {
-					sender.addChatMessage(new TextComponentString("§cError: invalid price"));
+					sender.sendMessage(new TextComponentString("§cError: invalid price"));
 					return;
 				}
 				ItemStack stack = getPlayerItem(sender);
@@ -93,30 +91,30 @@ public class UCCommand extends CommandBase implements ICommand {
 				}
 
 				if (result == true) {
-					sender.addChatMessage(new TextComponentString("Price set to " + formatter.format(price)));
+					sender.sendMessage(new TextComponentString("Price set to " + formatter.format(price)));
 					if (firstChange) {
-						sender.addChatMessage(new TextComponentString("Changes will not be saved"));
-						sender.addChatMessage(new TextComponentString("Run \"/uc save\" to save changes"));
-						sender.addChatMessage(new TextComponentString("Run \"/uc reload\" to undo changes"));
+						sender.sendMessage(new TextComponentString("Changes will not be saved"));
+						sender.sendMessage(new TextComponentString("Run \"/uc save\" to save changes"));
+						sender.sendMessage(new TextComponentString("Run \"/uc reload\" to undo changes"));
 						firstChange = false;
 					}
 				} else {
-					sender.addChatMessage(new TextComponentString("§cFailed to set price."));
+					sender.sendMessage(new TextComponentString("§cFailed to set price."));
 				}
 			} else
-				sender.addChatMessage(new TextComponentString("Please specify price."));
+				sender.sendMessage(new TextComponentString("Please specify price."));
 		} else if (args[0].matches("reload")) {
 			UCItemPricer.getInstance().loadConfigs();
-			sender.addChatMessage(new TextComponentString("§aAll changes since last save have been reset."));
+			sender.sendMessage(new TextComponentString("§aAll changes since last save have been reset."));
 		} else if (args[0].matches("reset")) {
 			UCItemPricer.getInstance().resetDefaults();
-			sender.addChatMessage(new TextComponentString("§aPrice defaults reloaded."));
+			sender.sendMessage(new TextComponentString("§aPrice defaults reloaded."));
 		} else if (args[0].matches("save")) {
 			UCItemPricer.getInstance().savePriceLists();
-			sender.addChatMessage(new TextComponentString("§aChanges will be saved."));
+			sender.sendMessage(new TextComponentString("§aChanges will be saved."));
 		} else if (args[0].matches("update")) {
 			UCItemPricer.getInstance().updatePriceLists();
-			sender.addChatMessage(new TextComponentString("§aPrices updated."));
+			sender.sendMessage(new TextComponentString("§aPrices updated."));
 		}
 	}
 
@@ -130,8 +128,7 @@ public class UCCommand extends CommandBase implements ICommand {
 	}
 
 	@Override
-	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args,
-			BlockPos pos) {
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
 		if (args.length == 1) {
 			List<String> options = new ArrayList<String>();
 			options.add("help");

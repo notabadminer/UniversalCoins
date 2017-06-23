@@ -35,8 +35,7 @@ public class VendorWrenchGUI extends GuiContainer {
 		super.initGui();
 		infinite = tileEntity.infiniteMode;
 		infiniteButton = new GuiSlimButton(idInfiniteButton, 9 + (width - xSize) / 2, 54 + (height - ySize) / 2, 148,
-				12, infinite ? I18n.format("vendor.wrench.infiniteon")
-						: I18n.format("vendor.wrench.infiniteoff"));
+				12, infinite ? I18n.format("vendor.wrench.infiniteon") : I18n.format("vendor.wrench.infiniteoff"));
 		editButton = new GuiSlimButton(idEditButton, 68 + (width - xSize) / 2, 34 + (height - ySize) / 2, 40, 12,
 				I18n.format("general.button.edit"));
 		applyButton = new GuiSlimButton(idApplyButton, 110 + (width - xSize) / 2, 34 + (height - ySize) / 2, 40, 12,
@@ -46,7 +45,7 @@ public class VendorWrenchGUI extends GuiContainer {
 		buttonList.add(applyButton);
 		buttonList.add(infiniteButton);
 
-		blockOwnerField = new GuiTextField(0, this.fontRendererObj, 12, 20, 138, 13);
+		blockOwnerField = new GuiTextField(0, this.fontRenderer, 12, 20, 138, 13);
 		blockOwnerField.setFocused(false);
 		blockOwnerField.setMaxStringLength(100);
 		blockOwnerField.setText(tileEntity.blockOwner);
@@ -66,7 +65,7 @@ public class VendorWrenchGUI extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(I18n.format("vendor.wrench.owner"), 6, 5, 4210752);
+		fontRenderer.drawString(I18n.format("vendor.wrench.owner"), 6, 5, 4210752);
 		blockOwnerField.drawTextBox();
 	}
 

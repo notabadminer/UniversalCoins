@@ -3,10 +3,14 @@ package universalcoins.items;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.translation.I18n;
+import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
 
 public class ItemCoin extends Item {
@@ -16,10 +20,10 @@ public class ItemCoin extends Item {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		DecimalFormat formatter = new DecimalFormat("###,###,###,###,###");
-		list.add(formatter.format(stack.stackSize * UniversalCoins.coinValues[0]) + " "
-				+ (stack.stackSize * UniversalCoins.coinValues[0] > 1
+		tooltip.add(formatter.format(stack.getCount() * UniversalCoins.coinValues[0]) + " "
+				+ (stack.getCount() * UniversalCoins.coinValues[0] > 1
 						? I18n.translateToLocal("general.currency.multiple")
 						: I18n.translateToLocal("general.currency.single")));
 	}

@@ -5,9 +5,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.tileentity.TileTradeStation;
 
 public class ContainerTradeStation extends Container {
@@ -77,16 +74,16 @@ public class ContainerTradeStation extends Container {
 				}
 			}
 
-			if (stackInSlot.stackSize == 0) {
+			if (stackInSlot.getCount() == 0) {
 				slotObject.putStack(null);
 			} else {
 				slotObject.onSlotChanged();
 			}
 
-			if (stackInSlot.stackSize == stack.stackSize) {
+			if (stackInSlot.getCount() == stack.getCount()) {
 				return null;
 			}
-			slotObject.onPickupFromSlot(player, stackInSlot);
+			slotObject.onTake(player, stackInSlot);
 		}
 		tileEntity.update();
 		return stack;
@@ -109,7 +106,7 @@ public class ContainerTradeStation extends Container {
 				|| this.lastCoinMode != this.tileEntity.coinMode
 				|| this.lastPublicAccess != this.tileEntity.publicAccess) {
 			tileEntity.updateTE();
-			
+
 			this.lastCoinSum = this.tileEntity.coinSum;
 			this.lastItemPrice = this.tileEntity.itemPrice;
 			this.lastBuyButtonActive = this.tileEntity.buyButtonActive;

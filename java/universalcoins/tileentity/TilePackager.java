@@ -91,13 +91,13 @@ public class TilePackager extends TileProtected implements IInventory {
 			packageSize = 0;
 			for (int i = 0; i < 4; i++) {
 				if (inventory[i] != null) {
-					if (worldObj.getPlayerEntityByName(playerName).inventory.getFirstEmptyStack() != -1) {
-						worldObj.getPlayerEntityByName(playerName).inventory.addItemStackToInventory(inventory[i]);
+					if (world.getPlayerEntityByName(playerName).inventory.getFirstEmptyStack() != -1) {
+						world.getPlayerEntityByName(playerName).inventory.addItemStackToInventory(inventory[i]);
 					} else {
 						// spawn in world
-						EntityItem entityItem = new EntityItem(worldObj, pos.getX(), pos.getY(), pos.getZ(),
+						EntityItem entityItem = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(),
 								inventory[i]);
-						worldObj.spawnEntityInWorld(entityItem);
+						world.spawnEntity(entityItem);
 					}
 					inventory[i] = null;
 				}
@@ -107,13 +107,13 @@ public class TilePackager extends TileProtected implements IInventory {
 			packageSize = 1;
 			for (int i = 0; i < 2; i++) {
 				if (inventory[i] != null) {
-					if (worldObj.getPlayerEntityByName(playerName).inventory.getFirstEmptyStack() != -1) {
-						worldObj.getPlayerEntityByName(playerName).inventory.addItemStackToInventory(inventory[i]);
+					if (world.getPlayerEntityByName(playerName).inventory.getFirstEmptyStack() != -1) {
+						world.getPlayerEntityByName(playerName).inventory.addItemStackToInventory(inventory[i]);
 					} else {
 						// spawn in world
-						EntityItem entityItem = new EntityItem(worldObj, pos.getX(), pos.getY(), pos.getZ(),
+						EntityItem entityItem = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(),
 								inventory[i]);
-						worldObj.spawnEntityInWorld(entityItem);
+						world.spawnEntity(entityItem);
 					}
 					inventory[i] = null;
 				}
@@ -125,7 +125,7 @@ public class TilePackager extends TileProtected implements IInventory {
 	}
 
 	public void inUseCleanup() {
-		if (worldObj.isRemote)
+		if (world.isRemote)
 			return;
 		inUse = false;
 	}
@@ -150,7 +150,7 @@ public class TilePackager extends TileProtected implements IInventory {
 
 	public void checkCard() {
 		cardAvailable = false;
-		if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !worldObj.isRemote) {
+		if (inventory[itemCardSlot] != null && inventory[itemCardSlot].hasTagCompound() && !world.isRemote) {
 			String account = inventory[itemCardSlot].getTagCompound().getString("Account");
 			long accountBalance = UniversalAccounts.getInstance().getAccountBalance(account);
 			if (accountBalance > packageCost[packageSize]) {
@@ -161,7 +161,7 @@ public class TilePackager extends TileProtected implements IInventory {
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
-		return worldObj.getTileEntity(pos) == this
+		return world.getTileEntity(pos) == this
 				&& entityplayer.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
 	}
 
@@ -298,11 +298,11 @@ public class TilePackager extends TileProtected implements IInventory {
 	public ItemStack decrStackSize(int slot, int size) {
 		ItemStack stack = getStackInSlot(slot);
 		if (stack != null) {
-			if (stack.stackSize <= size) {
+			if (stack.getCount() <= size) {
 				inventory[slot] = null;
 			} else {
 				stack = stack.splitStack(size);
-				if (stack.stackSize == 0) {
+				if (stack.getCount() == 0) {
 					inventory[slot] = null;
 				}
 			}
@@ -374,7 +374,7 @@ public class TilePackager extends TileProtected implements IInventory {
 					inventory[slot] = null;
 				}
 				if (slot == itemCardSlot && inventory[itemCardSlot].getItem() == UniversalCoins.proxy.ender_card) {
-					if (!worldObj.isRemote && stack.hasTagCompound()) {
+					if (!world.isRemote && stack.hasTagCompound()) {
 						String accountNumber = stack.getTagCompound().getString("Account");
 						UniversalAccounts.getInstance().creditAccount(accountNumber, coinSum, false);
 						coinSum = 0;
@@ -382,15 +382,15 @@ public class TilePackager extends TileProtected implements IInventory {
 				}
 			}
 		}
-		if (slot == itemCardSlot && !worldObj.isRemote) {
+		if (slot == itemCardSlot && !world.isRemote) {
 			checkCard();
 		}
 	}
 
 	public void sendPackage(String packageTarget) {
-		if (worldObj.isRemote)
+		if (world.isRemote)
 			return;
-		EntityPlayer player = worldObj.getPlayerEntityByName(packageTarget);
+		EntityPlayer player = world.getPlayerEntityByName(packageTarget);
 		if (player != null) {
 			if (player.inventory.getFirstEmptyStack() != -1) {
 				player.inventory.addItemStackToInventory(inventory[itemPackageInputSlot]);
@@ -399,9 +399,9 @@ public class TilePackager extends TileProtected implements IInventory {
 				float rx = rand.nextFloat() * 0.8F + 0.1F;
 				float ry = rand.nextFloat() * 0.8F + 0.1F;
 				float rz = rand.nextFloat() * 0.8F + 0.1F;
-				EntityItem entityItem = new EntityItem(worldObj, player.posX + rx, player.posY + ry, player.posZ + rz,
+				EntityItem entityItem = new EntityItem(world, player.posX + rx, player.posY + ry, player.posZ + rz,
 						inventory[itemPackageInputSlot]);
-				worldObj.spawnEntityInWorld(entityItem);
+				world.spawnEntity(entityItem);
 			}
 			player.addChatMessage(
 					new TextComponentString("�c" + playerName + I18n.translateToLocal("packager.message.sent")));
@@ -412,7 +412,7 @@ public class TilePackager extends TileProtected implements IInventory {
 	public void playerLookup(String player, boolean tabPressed) {
 		if (tabPressed) {
 			List<String> players = new ArrayList<String>();
-			for (EntityPlayer p : (List<EntityPlayer>) worldObj.playerEntities) {
+			for (EntityPlayer p : (List<EntityPlayer>) world.playerEntities) {
 				players.add(p.getDisplayName().getUnformattedText());
 			}
 			String test[] = new String[1];
@@ -422,7 +422,7 @@ public class TilePackager extends TileProtected implements IInventory {
 				packageTarget = match.get(0).toString();
 			}
 		} else {
-			if (worldObj.getPlayerEntityByName(player) != null) {
+			if (world.getPlayerEntityByName(player) != null) {
 				packageTarget = player;
 			} else {
 				packageTarget = "";

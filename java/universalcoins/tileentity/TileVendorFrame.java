@@ -1,6 +1,5 @@
 package universalcoins.tileentity;
 
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -39,8 +38,8 @@ public class TileVendorFrame extends TileVendor {
 				signText[0] = "&" + Integer.toHexString(textColor)
 						+ (I18n.translateToLocal("sign.warning.inventoryfull"));
 			}
-			if (inventory[itemTradeSlot].stackSize > 1) {
-				signText[1] = "&" + Integer.toHexString(textColor) + inventory[itemTradeSlot].stackSize + " "
+			if (inventory[itemTradeSlot].getCount() > 1) {
+				signText[1] = "&" + Integer.toHexString(textColor) + inventory[itemTradeSlot].getCount() + " "
 						+ inventory[itemTradeSlot].getDisplayName();
 			} else {
 				signText[1] = "&" + Integer.toHexString(textColor) + inventory[itemTradeSlot].getDisplayName();
@@ -74,7 +73,7 @@ public class TileVendorFrame extends TileVendor {
 
 			// find and update all signs
 			TileEntity te;
-			te = super.worldObj.getTileEntity(new BlockPos(pos.getX(), pos.getY() - 1, pos.getZ()));
+			te = super.world.getTileEntity(new BlockPos(pos.getX(), pos.getY() - 1, pos.getZ()));
 			if (te != null && te instanceof TileUCSign) {
 				TileUCSign tesign = (TileUCSign) te;
 				for (int i = 0; i < 4; i++) {
@@ -83,7 +82,7 @@ public class TileVendorFrame extends TileVendor {
 				tesign.updateSign();
 				tesign.markDirty();
 			}
-			te = super.worldObj.getTileEntity(new BlockPos(pos.getX(), pos.getY() + 1, pos.getZ()));
+			te = super.world.getTileEntity(new BlockPos(pos.getX(), pos.getY() + 1, pos.getZ()));
 			if (te != null && te instanceof TileUCSign) {
 				TileUCSign tesign = (TileUCSign) te;
 				for (int i = 0; i < 4; i++) {

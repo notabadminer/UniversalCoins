@@ -19,8 +19,8 @@ public class UCMobDropEventHandler {
 
 	@SubscribeEvent
 	public void onEntityDrop(LivingDropsEvent event) {
-		if (event.getSource().getEntity() != null
-				&& event.getSource().getEntity().toString().contains("EntityPlayerMP")) {
+		if (event.getSource().getTrueSource() != null
+				&& event.getSource().getTrueSource().toString().contains("EntityPlayerMP")) {
 			int chance = UniversalCoins.mobDropChance == 0 ? 0 : random.nextInt(UniversalCoins.mobDropChance);
 			int randomDropValue = random.nextInt(UniversalCoins.mobDropMax) + 1;
 
@@ -37,43 +37,43 @@ public class UCMobDropEventHandler {
 
 			// drop coins
 			if ((event.getEntity() instanceof EntityMob || event.getEntity() instanceof EntityWither
-					|| event.getEntity() instanceof EntityDragon) && !event.getEntity().worldObj.isRemote
+					|| event.getEntity() instanceof EntityDragon) && !event.getEntity().world.isRemote
 					&& chance == 0) {
 				while (dropped > 0) {
 					ItemStack stack = null;
 					if (dropped > UniversalCoins.coinValues[4]) {
 						stack = new ItemStack(UniversalCoins.proxy.obsidian_coin, 1);
-						stack.stackSize = (int) Math.floor(dropped / UniversalCoins.coinValues[4]);
-						dropped -= stack.stackSize * UniversalCoins.coinValues[4];
+						stack.setCount((int) Math.floor(dropped / UniversalCoins.coinValues[4]));
+						dropped -= stack.getCount() * UniversalCoins.coinValues[4];
 					} else if (dropped > UniversalCoins.coinValues[3]) {
 						stack = new ItemStack(UniversalCoins.proxy.diamond_coin, 1);
-						stack.stackSize = (int) Math.floor(dropped / UniversalCoins.coinValues[3]);
-						dropped -= stack.stackSize * UniversalCoins.coinValues[3];
+						stack.setCount((int) Math.floor(dropped / UniversalCoins.coinValues[3]));
+						dropped -= stack.getCount() * UniversalCoins.coinValues[3];
 					} else if (dropped > UniversalCoins.coinValues[2]) {
 						stack = new ItemStack(UniversalCoins.proxy.emerald_coin, 1);
-						stack.stackSize = (int) Math.floor(dropped / UniversalCoins.coinValues[2]);
-						dropped -= stack.stackSize * UniversalCoins.coinValues[2];
+						stack.setCount((int) Math.floor(dropped / UniversalCoins.coinValues[2]));
+						dropped -= stack.getCount() * UniversalCoins.coinValues[2];
 					} else if (dropped > UniversalCoins.coinValues[1]) {
 						stack = new ItemStack(UniversalCoins.proxy.gold_coin, 1);
-						stack.stackSize = (int) Math.floor(dropped / UniversalCoins.coinValues[1]);
-						dropped -= stack.stackSize * UniversalCoins.coinValues[1];
+						stack.setCount((int) Math.floor(dropped / UniversalCoins.coinValues[1]));
+						dropped -= stack.getCount() * UniversalCoins.coinValues[1];
 					} else if (dropped > UniversalCoins.coinValues[0]) {
 						stack = new ItemStack(UniversalCoins.proxy.iron_coin, 1);
-						stack.stackSize = (int) Math.floor(dropped / UniversalCoins.coinValues[0]);
-						dropped -= stack.stackSize * UniversalCoins.coinValues[0];
+						stack.setCount((int) Math.floor(dropped / UniversalCoins.coinValues[0]));
+						dropped -= stack.getCount() * UniversalCoins.coinValues[0];
 					}
 
 					if (stack == null)
 						return;
 
-					World world = event.getEntity().worldObj;
+					World world = event.getEntity().world;
 					Random rand = new Random();
 					float rx = rand.nextFloat() * 0.8F + 0.1F;
 					float ry = rand.nextFloat() * 0.8F + 0.1F;
 					float rz = rand.nextFloat() * 0.8F + 0.1F;
 					EntityItem entityItem = new EntityItem(world, (event.getEntity()).posX + rx,
 							(event.getEntity()).posY + ry, (event.getEntity()).posZ + rz, stack);
-					world.spawnEntityInWorld(entityItem);
+					world.spawnEntity(entityItem);
 				}
 			}
 		}

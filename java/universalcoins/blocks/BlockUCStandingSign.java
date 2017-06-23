@@ -6,7 +6,6 @@ import net.minecraft.block.BlockStandingSign;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
@@ -30,7 +29,8 @@ public class BlockUCStandingSign extends BlockStandingSign {
 		this.signEntityClass = tileEntity;
 		float f = 0.25F;
 		float f1 = 1.0F;
-		//this.setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, f1, 0.5F + f);
+		// this.setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, f1, 0.5F +
+		// f);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(ROTATION, Integer.valueOf(0)));
 	}
 
@@ -54,7 +54,7 @@ public class BlockUCStandingSign extends BlockStandingSign {
 			throw new RuntimeException(exception);
 		}
 	}
-	
+
 	@Override
 	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
 		String ownerName = ((TileUCSign) world.getTileEntity(pos)).blockOwner;
@@ -66,13 +66,13 @@ public class BlockUCStandingSign extends BlockStandingSign {
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
-			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		TileEntity tileEntity = world.getTileEntity(pos);
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		TileEntity tileEntity = worldIn.getTileEntity(pos);
 		if (tileEntity != null && tileEntity instanceof TileUCSign) {
 			TileUCSign tentity = (TileUCSign) tileEntity;
-			if (player.getName().matches(tentity.blockOwner)) {
-				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
+			if (playerIn.getName().matches(tentity.blockOwner)) {
+				playerIn.openGui(UniversalCoins.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
 			}
 			return true;
 		}
@@ -80,7 +80,8 @@ public class BlockUCStandingSign extends BlockStandingSign {
 	}
 
 	@Override
-	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
+			boolean willHarvest) {
 		String ownerName = ((TileUCSign) world.getTileEntity(pos)).blockOwner;
 		if (player.capabilities.isCreativeMode) {
 			super.removedByPlayer(state, world, pos, player, willHarvest);

@@ -4,8 +4,6 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import universalcoins.Achievements;
-import universalcoins.UniversalCoins;
 import universalcoins.blocks.BlockATM;
 import universalcoins.blocks.BlockPackager;
 import universalcoins.blocks.BlockPowerReceiver;
@@ -50,25 +48,25 @@ public class CommonProxy {
 	public static Block vendor = new BlockVendor().setUnlocalizedName("vendor");
 	public static Block vendor_frame = new BlockVendorFrame().setUnlocalizedName("vendor_frame");
 	public static Block packager = new BlockPackager().setUnlocalizedName("packager");
-	public static Block standing_ucsign = new BlockUCStandingSign(TileUCSign.class).setUnlocalizedName("standing_ucsign");
+	public static Block standing_ucsign = new BlockUCStandingSign(TileUCSign.class)
+			.setUnlocalizedName("standing_ucsign");
 	public static Block wall_ucsign = new BlockUCWallSign(TileUCSign.class).setUnlocalizedName("wall_ucsign");
 	public static Block power_transmitter = new BlockPowerTransmitter().setUnlocalizedName("power_transmitter");
 	public static Block power_receiver = new BlockPowerReceiver().setUnlocalizedName("power_receiver");
 	public static Block atm = new BlockATM().setUnlocalizedName("atm");
 
 	public void registerBlocks() {
-		//GameRegistry.register(tradestation, new ResourceLocation("universalcoins:tradestation"));
-		GameRegistry.registerBlock(tradestation, tradestation.getUnlocalizedName().substring(5));
-		GameRegistry.registerBlock(safe, safe.getUnlocalizedName().substring(5));
-		GameRegistry.registerBlock(signalblock, signalblock.getUnlocalizedName().substring(5));
-		GameRegistry.registerBlock(vendor, vendor.getUnlocalizedName().substring(5));
-		GameRegistry.registerBlock(vendor_frame, vendor_frame.getUnlocalizedName().substring(5));
-		GameRegistry.registerBlock(packager, packager.getUnlocalizedName().substring(5));
-		GameRegistry.registerBlock(standing_ucsign, standing_ucsign.getUnlocalizedName().substring(5));
-		GameRegistry.registerBlock(wall_ucsign, wall_ucsign.getUnlocalizedName().substring(5));
-		GameRegistry.registerBlock(power_transmitter, power_transmitter.getUnlocalizedName().substring(5));
-		GameRegistry.registerBlock(power_receiver, power_receiver.getUnlocalizedName().substring(5));
-		GameRegistry.registerBlock(atm, atm.getUnlocalizedName().substring(5));
+		GameRegistry.register(tradestation, new ResourceLocation("universalcoins:tradestation"));
+		GameRegistry.register(safe, new ResourceLocation("universalcoins:safe"));
+		GameRegistry.register(signalblock, new ResourceLocation("universalcoins:signalblock"));
+		GameRegistry.register(vendor, new ResourceLocation("universalcoins:vendor"));
+		GameRegistry.register(vendor_frame, new ResourceLocation("universalcoins:vendor_frame"));
+		GameRegistry.register(packager, new ResourceLocation("universalcoins:packager"));
+		GameRegistry.register(standing_ucsign, new ResourceLocation("universalcoins:standing_ucsign"));
+		GameRegistry.register(wall_ucsign, new ResourceLocation("universalcoins:wall_ucsign"));
+		GameRegistry.register(power_transmitter, new ResourceLocation("universalcoins:power_transmitter"));
+		GameRegistry.register(power_receiver, new ResourceLocation("universalcoins:power_receiver"));
+		GameRegistry.register(atm, new ResourceLocation("universalcoins:atm"));
 	}
 
 	public void registerItems() {
@@ -84,15 +82,6 @@ public class CommonProxy {
 		GameRegistry.register(uc_sign, new ResourceLocation("universalcoins:uc_sign"));
 		GameRegistry.register(vendor_wrench, new ResourceLocation("universalcoins:vendor_wrench"));
 		GameRegistry.register(catalog, new ResourceLocation("universalcoins:catalog"));
-	}
-
-	public void registerAchievements() {
-		Achievements.init();
-		Achievements.achCoin.registerStat();
-		Achievements.achThousand.registerStat();
-		Achievements.achMillion.registerStat();
-		Achievements.achBillion.registerStat();
-		Achievements.achMaxed.registerStat();
 	}
 
 	public void registerRenderers() {

@@ -65,7 +65,7 @@ public class ATMGUI extends GuiContainer {
 		buttonList.add(buttonThree);
 		buttonList.add(buttonFour);
 
-		textField = new GuiTextField(0, this.fontRendererObj, 1, 1, 100, 13);
+		textField = new GuiTextField(0, this.fontRenderer, 1, 1, 100, 13);
 		textField.setFocused(false);
 		textField.setMaxStringLength(9);
 		textField.setText("0");
@@ -90,18 +90,18 @@ public class ATMGUI extends GuiContainer {
 				String authString = I18n.format("atm.auth.access");
 				if (authString.startsWith("C:"))
 					authString = authString.substring(2);
-				int stringLength = fontRendererObj.getStringWidth(authString);
+				int stringLength = fontRenderer.getStringWidth(authString);
 				int cx = width / 2 - stringLength / 2;
-				fontRendererObj.drawString(authString, cx, y + 52, 4210752);
+				fontRenderer.drawString(authString, cx, y + 52, 4210752);
 			}
 			if (barProgress > 130) {
 				if (!tEntity.accountNumber.matches("none")) {
 					String authString = I18n.format("atm.auth.success");
 					if (authString.startsWith("C:"))
 						authString = authString.substring(2);
-					int stringLength = fontRendererObj.getStringWidth(authString);
+					int stringLength = fontRenderer.getStringWidth(authString);
 					int cx = width / 2 - stringLength / 2;
-					fontRendererObj.drawString(authString, cx, y + 72, 4210752);
+					fontRenderer.drawString(authString, cx, y + 72, 4210752);
 					if (barProgress > 170) {
 						menuState = 2;
 						barProgress = 0;
@@ -110,9 +110,9 @@ public class ATMGUI extends GuiContainer {
 					String authString = I18n.format("atm.auth.fail");
 					if (authString.startsWith("C:"))
 						authString = authString.substring(2);
-					int stringLength = fontRendererObj.getStringWidth(authString);
+					int stringLength = fontRenderer.getStringWidth(authString);
 					int cx = width / 2 - stringLength / 2;
-					fontRendererObj.drawString(authString, cx, y + 72, 4210752);
+					fontRenderer.drawString(authString, cx, y + 72, 4210752);
 					if (barProgress > 170) {
 						menuState = 15;
 						barProgress = 0;
@@ -129,12 +129,12 @@ public class ATMGUI extends GuiContainer {
 
 		DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
 		if (menuState == 4 || menuState == 5) {
-			fontRendererObj.drawString(formatter.format(tEntity.accountBalance), x + 34, y + 52, 4210752);
+			fontRenderer.drawString(formatter.format(tEntity.accountBalance), x + 34, y + 52, 4210752);
 		}
 		if (menuState == 6) {
 			// display account balance
-			fontRendererObj.drawString(formatter.format(tEntity.accountBalance), x + 34, y + 32, 4210752);
-			fontRendererObj.drawString(textField.getText() + drawCursor(), x + 34, y + 52, 4210752);
+			fontRenderer.drawString(formatter.format(tEntity.accountBalance), x + 34, y + 32, 4210752);
+			fontRenderer.drawString(textField.getText() + drawCursor(), x + 34, y + 52, 4210752);
 		}
 		if (menuState == 10 && tEntity.accountError) {
 			barProgress++;
@@ -176,9 +176,9 @@ public class ATMGUI extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 		// draw text and stuff here
 		// the parameters for drawString are: string, x, y, color
-		fontRendererObj.drawString(tEntity.getName(), 6, 5, 4210752);
+		fontRenderer.drawString(tEntity.getName(), 6, 5, 4210752);
 		// draws "Inventory" or your regional equivalent
-		fontRendererObj.drawString(I18n.format("container.inventory"), 6, ySize - 96 + 2, 4210752);
+		fontRenderer.drawString(I18n.format("container.inventory"), 6, ySize - 96 + 2, 4210752);
 		drawMenu(menuState);
 	}
 
@@ -472,11 +472,11 @@ public class ATMGUI extends GuiContainer {
 			menuString = I18n.format("atm." + menuStateName[state] + endString[x]);
 			if (menuString.startsWith("C:")) { // center text
 				menuString = menuString.substring(2);// strip centering flag
-				int stringLength = fontRendererObj.getStringWidth(menuString);
+				int stringLength = fontRenderer.getStringWidth(menuString);
 				int cx = xSize / 2 - stringLength / 2;
-				fontRendererObj.drawString(menuString, cx, lineCoords[x], 4210752);
+				fontRenderer.drawString(menuString, cx, lineCoords[x], 4210752);
 			} else { // draw normally
-				fontRendererObj.drawString(menuString, 34, lineCoords[x], 4210752);
+				fontRenderer.drawString(menuString, 34, lineCoords[x], 4210752);
 			}
 		}
 	}

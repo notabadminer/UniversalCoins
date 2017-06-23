@@ -42,9 +42,9 @@ public class UCSignEditGUI extends GuiScreen {
 	}
 
 	public void onGuiClosed() {
-		if (mc.thePlayer != null) {
+		if (mc.player != null) {
 			Keyboard.enableRepeatEvents(false);
-			tileSign.blockOwner = this.mc.thePlayer.getName();
+			tileSign.blockOwner = this.mc.player.getName();
 			tileSign.sendServerUpdateMessage();
 			this.tileSign.setEditable(true);
 		}
@@ -86,7 +86,7 @@ public class UCSignEditGUI extends GuiScreen {
 		}
 
 		if (ChatAllowedCharacters.isAllowedCharacter(typedChar)
-				&& this.fontRendererObj.getStringWidth(s + typedChar) <= 180) {
+				&& this.fontRenderer.getStringWidth(s + typedChar) <= 180) {
 			s = s + typedChar;
 		}
 
@@ -102,7 +102,7 @@ public class UCSignEditGUI extends GuiScreen {
 	 */
 	public void drawScreen(int par1, int par2, float par3) {
 		this.drawDefaultBackground();
-		this.drawCenteredString(this.fontRendererObj, this.screenTitle, this.width / 2, 40, 16777215);
+		this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 40, 16777215);
 		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/sign.png");
 		Minecraft.getMinecraft().renderEngine.bindTexture(texture);
 		int xSize = 100;
@@ -120,16 +120,16 @@ public class UCSignEditGUI extends GuiScreen {
 		// draw active line indicator
 		if (tileSign.lineBeingEdited != -1) {
 			if (tileSign.signText[tileSign.lineBeingEdited].getUnformattedText().length() > 15) {
-				fontRendererObj.drawString("> ", (this.width - 90) / 2 - 8,
+				fontRenderer.drawString("> ", (this.width - 90) / 2 - 8,
 						this.height / 2 + lineOffset[tileSign.lineBeingEdited], 0x000000);
-				fontRendererObj.drawString(" <", (this.width + 90) / 2,
+				fontRenderer.drawString(" <", (this.width + 90) / 2,
 						this.height / 2 + lineOffset[tileSign.lineBeingEdited], 0x000000);
 			} else {
-				int stringLength = fontRendererObj
+				int stringLength = fontRenderer
 						.getStringWidth(tileSign.signText[tileSign.lineBeingEdited].getUnformattedText());
-				fontRendererObj.drawString("> ", (this.width - stringLength) / 2 - 8,
+				fontRenderer.drawString("> ", (this.width - stringLength) / 2 - 8,
 						this.height / 2 + lineOffset[tileSign.lineBeingEdited], 0x000000);
-				fontRendererObj.drawString(" <", (this.width + stringLength) / 2,
+				fontRenderer.drawString(" <", (this.width + stringLength) / 2,
 						this.height / 2 + lineOffset[tileSign.lineBeingEdited], 0x000000);
 			}
 		}
@@ -142,8 +142,8 @@ public class UCSignEditGUI extends GuiScreen {
 			} else {
 				displayString = tileSign.signText[i].getUnformattedText();
 			}
-			int stringLength = fontRendererObj.getStringWidth(displayString);
-			fontRendererObj.drawString(displayString, (this.width - stringLength) / 2, this.height / 2 + lineOffset[i],
+			int stringLength = fontRenderer.getStringWidth(displayString);
+			fontRenderer.drawString(displayString, (this.width - stringLength) / 2, this.height / 2 + lineOffset[i],
 					0x000000);
 		}
 
