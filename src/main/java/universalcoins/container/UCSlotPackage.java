@@ -17,7 +17,7 @@ public class UCSlotPackage extends Slot {
 			return true;
 		}
 		Item itemInStack = par1ItemStack.getItem();
-		return (itemInStack == UniversalCoins.proxy.uc_package);
+		return (itemInStack == UniversalCoins.Items.uc_package);
 	}
 
 	public ItemStack decrStackSize(int par1) {

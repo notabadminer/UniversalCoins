@@ -134,7 +134,7 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 
 	@Override
 	public String getName() {
-		return UniversalCoins.proxy.atm.getLocalizedName();
+		return UniversalCoins.Blocks.atm.getLocalizedName();
 	}
 
 	@Override
@@ -281,7 +281,7 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 		// function6 - destroy invalid card
 		if (functionId == 1) {
 			accountNumber = UniversalAccounts.getInstance().getOrCreatePlayerAccount(playerUID);
-			inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.uc_card, 1);
+			inventory[itemCardSlot] = new ItemStack(UniversalCoins.Items.uc_card, 1);
 			inventory[itemCardSlot].setTagCompound(new NBTTagCompound());
 			inventory[itemCardSlot].getTagCompound().setString("Name", playerName);
 			inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
@@ -292,7 +292,7 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 		if (functionId == 2) {
 			if (!(UniversalAccounts.getInstance().getPlayerAccount(playerUID).matches(""))) {
 				UniversalAccounts.getInstance().transferPlayerAccount(playerUID);
-				inventory[itemCardSlot] = new ItemStack(UniversalCoins.proxy.uc_card, 1);
+				inventory[itemCardSlot] = new ItemStack(UniversalCoins.Items.uc_card, 1);
 				inventory[itemCardSlot].setTagCompound(new NBTTagCompound());
 				inventory[itemCardSlot].getTagCompound().setString("Name", playerName);
 				inventory[itemCardSlot].getTagCompound().setString("Owner", playerUID);
@@ -344,27 +344,27 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 	public void fillCoinSlot() {
 		if (inventory[itemCoinSlot] == null && coinWithdrawalAmount > 0) {
 			if (coinWithdrawalAmount > UniversalCoins.coinValues[4]) {
-				inventory[itemCoinSlot] = new ItemStack(UniversalCoins.proxy.obsidian_coin);
+				inventory[itemCoinSlot] = new ItemStack(UniversalCoins.Items.obsidian_coin);
 				inventory[itemCoinSlot]
 						.setCount((int) Math.min(coinWithdrawalAmount / UniversalCoins.coinValues[4], 64));
 				coinWithdrawalAmount -= inventory[itemCoinSlot].getCount() * UniversalCoins.coinValues[4];
 			} else if (coinWithdrawalAmount > UniversalCoins.coinValues[3]) {
-				inventory[itemCoinSlot] = new ItemStack(UniversalCoins.proxy.diamond_coin);
+				inventory[itemCoinSlot] = new ItemStack(UniversalCoins.Items.diamond_coin);
 				inventory[itemCoinSlot]
 						.setCount((int) Math.min(coinWithdrawalAmount / UniversalCoins.coinValues[3], 64));
 				coinWithdrawalAmount -= inventory[itemCoinSlot].getCount() * UniversalCoins.coinValues[3];
 			} else if (coinWithdrawalAmount > UniversalCoins.coinValues[2]) {
-				inventory[itemCoinSlot] = new ItemStack(UniversalCoins.proxy.emerald_coin);
+				inventory[itemCoinSlot] = new ItemStack(UniversalCoins.Items.emerald_coin);
 				inventory[itemCoinSlot]
 						.setCount((int) Math.min(coinWithdrawalAmount / UniversalCoins.coinValues[2], 64));
 				coinWithdrawalAmount -= inventory[itemCoinSlot].getCount() * UniversalCoins.coinValues[2];
 			} else if (coinWithdrawalAmount > UniversalCoins.coinValues[1]) {
-				inventory[itemCoinSlot] = new ItemStack(UniversalCoins.proxy.gold_coin);
+				inventory[itemCoinSlot] = new ItemStack(UniversalCoins.Items.gold_coin);
 				inventory[itemCoinSlot]
 						.setCount((int) Math.min(coinWithdrawalAmount / UniversalCoins.coinValues[1], 64));
 				coinWithdrawalAmount -= inventory[itemCoinSlot].getCount() * UniversalCoins.coinValues[1];
 			} else if (coinWithdrawalAmount > UniversalCoins.coinValues[0]) {
-				inventory[itemCoinSlot] = new ItemStack(UniversalCoins.proxy.iron_coin);
+				inventory[itemCoinSlot] = new ItemStack(UniversalCoins.Items.iron_coin);
 				inventory[itemCoinSlot]
 						.setCount((int) Math.min(coinWithdrawalAmount / UniversalCoins.coinValues[0], 64));
 				coinWithdrawalAmount -= inventory[itemCoinSlot].getCount() * UniversalCoins.coinValues[0];
@@ -378,7 +378,7 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 
 	@Override
 	public ITextComponent getDisplayName() {
-		return new TextComponentString(UniversalCoins.proxy.atm.getLocalizedName());
+		return new TextComponentString(UniversalCoins.Blocks.atm.getLocalizedName());
 	}
 
 	@Override

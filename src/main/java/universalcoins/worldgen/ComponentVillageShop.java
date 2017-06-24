@@ -125,22 +125,22 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 		this.setBlockState(world, iblockstate4, 0, 5, 7, sbb);
 		// signs
 		this.fillWithBlocks(world, sbb, 1, 1, 1, 1, 1, 6,
-				UniversalCoins.proxy.wall_ucsign.getDefaultState().withProperty(BlockUCWallSign.FACING,
+				UniversalCoins.Blocks.wall_ucsign.getDefaultState().withProperty(BlockUCWallSign.FACING,
 						EnumFacing.EAST),
-				UniversalCoins.proxy.wall_ucsign.getDefaultState().withProperty(BlockUCWallSign.FACING,
+				UniversalCoins.Blocks.wall_ucsign.getDefaultState().withProperty(BlockUCWallSign.FACING,
 						EnumFacing.EAST),
 				false);
 		this.fillWithBlocks(world, sbb, 4, 1, 1, 4, 1, 6,
-				UniversalCoins.proxy.wall_ucsign.getDefaultState().withProperty(BlockUCWallSign.FACING,
+				UniversalCoins.Blocks.wall_ucsign.getDefaultState().withProperty(BlockUCWallSign.FACING,
 						EnumFacing.WEST),
-				UniversalCoins.proxy.wall_ucsign.getDefaultState().withProperty(BlockUCWallSign.FACING,
+				UniversalCoins.Blocks.wall_ucsign.getDefaultState().withProperty(BlockUCWallSign.FACING,
 						EnumFacing.WEST),
 				false);
 		// vending blocks
-		this.fillWithBlocks(world, sbb, 0, 2, 1, 0, 2, 6, UniversalCoins.proxy.vendor.getDefaultState(),
-				UniversalCoins.proxy.vendor.getDefaultState(), false);
-		this.fillWithBlocks(world, sbb, 5, 2, 1, 5, 2, 6, UniversalCoins.proxy.vendor.getDefaultState(),
-				UniversalCoins.proxy.vendor.getDefaultState(), false);
+		this.fillWithBlocks(world, sbb, 0, 2, 1, 0, 2, 6, UniversalCoins.Blocks.vendor.getDefaultState(),
+				UniversalCoins.Blocks.vendor.getDefaultState(), false);
+		this.fillWithBlocks(world, sbb, 5, 2, 1, 5, 2, 6, UniversalCoins.Blocks.vendor.getDefaultState(),
+				UniversalCoins.Blocks.vendor.getDefaultState(), false);
 
 		// list of items
 		List<Item> saleItems = new ArrayList();

@@ -39,7 +39,7 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 
 	@Override
 	public void update() {
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			buyPower();
 			sendPower();
 		}
@@ -62,11 +62,11 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	public ItemStack decrStackSize(int slot, int size) {
 		ItemStack stack = getStackInSlot(slot);
 		if (stack != null) {
-			if (stack.stackSize <= size) {
+			if (stack.getCount() <= size) {
 				setInventorySlotContents(slot, null);
 			} else {
 				stack = stack.splitStack(size);
-				if (stack.stackSize == 0) {
+				if (stack.getCount() == 0) {
 					setInventorySlotContents(slot, null);
 				}
 			}
@@ -98,18 +98,18 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 				}
 			}
 			if (coinValue > 0) {
-				long depositAmount = Math.min(stack.stackSize, (Long.MAX_VALUE - coinSum) / coinValue);
-				inventory[slot].stackSize -= depositAmount;
+				int depositAmount = (int) Math.min(stack.getCount(), (Long.MAX_VALUE - coinSum) / coinValue);
+				inventory[slot].shrink(depositAmount);
 				coinSum += depositAmount * coinValue;
-				if (inventory[slot].stackSize == 0) {
+				if (inventory[slot].getCount() == 0) {
 					inventory[slot] = null;
 				}
 			}
-			if (slot == itemCardSlot && inventory[itemCardSlot].getItem() == UniversalCoins.proxy.ender_card) {
-				if (!worldObj.isRemote && stack.hasTagCompound()) {
+			if (slot == itemCardSlot && inventory[itemCardSlot].getItem() == UniversalCoins.Items.ender_card) {
+				if (!world.isRemote && stack.hasTagCompound()) {
 					String accountNumber = stack.getTagCompound().getString("Account");
 					UniversalAccounts.getInstance().creditAccount(accountNumber, coinSum, false);
-					coinSum = 0;				
+					coinSum = 0;
 				}
 			}
 		}
@@ -117,7 +117,7 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 
 	@Override
 	public String getName() {
-		return UniversalCoins.proxy.power_receiver.getLocalizedName();
+		return UniversalCoins.Blocks.power_receiver.getLocalizedName();
 	}
 
 	@Override
@@ -131,8 +131,8 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
-		return worldObj.getTileEntity(pos) == this
+	public boolean isUsableByPlayer(EntityPlayer entityplayer) {
+		return world.getTileEntity(pos) == this
 				&& entityplayer.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
 	}
 
@@ -157,7 +157,7 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	}
 
 	private long getAccountBalance() {
-		if (worldObj.isRemote || inventory[itemCardSlot] == null || !inventory[itemCardSlot].hasTagCompound()) {
+		if (world.isRemote || inventory[itemCardSlot] == null || !inventory[itemCardSlot].hasTagCompound()) {
 			return 0;
 		}
 		String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
@@ -168,8 +168,8 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	}
 
 	private boolean creditAccount(int i) {
-		if (worldObj.isRemote || inventory[itemCardSlot] == null
-				|| inventory[itemCardSlot].getItem() != UniversalCoins.proxy.ender_card
+		if (world.isRemote || inventory[itemCardSlot] == null
+				|| inventory[itemCardSlot].getItem() != UniversalCoins.Items.ender_card
 				|| !inventory[itemCardSlot].hasTagCompound())
 			return false;
 		String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
@@ -180,7 +180,7 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	}
 
 	private boolean debitAccount(int i) {
-		if (worldObj.isRemote || inventory[itemCardSlot] == null || !inventory[itemCardSlot].hasTagCompound())
+		if (world.isRemote || inventory[itemCardSlot] == null || !inventory[itemCardSlot].hasTagCompound())
 			return false;
 		String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
 		if (accountNumber == "") {
@@ -250,7 +250,7 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 			byte slot = tag.getByte("Slot");
 			if (slot >= 0 && slot < inventory.length) {
-				inventory[slot] = ItemStack.loadItemStackFromNBT(tag);
+				inventory[slot] = new ItemStack(tag);
 			}
 		}
 		try {
@@ -302,29 +302,29 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	public void fillOutputSlot() {
 		if (inventory[itemOutputSlot] == null && coinSum > 0) {
 			if (coinSum > UniversalCoins.coinValues[4]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.obsidian_coin);
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.obsidian_coin);
 				int amount = (int) Math.min(coinSum / UniversalCoins.coinValues[4], 64);
-				inventory[itemOutputSlot].stackSize = amount;
+				inventory[itemOutputSlot].setCount(amount);
 				coinSum -= amount * UniversalCoins.coinValues[4];
 			} else if (coinSum > UniversalCoins.coinValues[3]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.diamond_coin);
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.diamond_coin);
 				int amount = (int) Math.min(coinSum / UniversalCoins.coinValues[3], 64);
-				inventory[itemOutputSlot].stackSize = amount;
+				inventory[itemOutputSlot].setCount(amount);
 				coinSum -= amount * UniversalCoins.coinValues[3];
 			} else if (coinSum > UniversalCoins.coinValues[2]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.emerald_coin);
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.emerald_coin);
 				int amount = (int) Math.min(coinSum / UniversalCoins.coinValues[2], 64);
-				inventory[itemOutputSlot].stackSize = amount;
+				inventory[itemOutputSlot].setCount(amount);
 				coinSum -= amount * UniversalCoins.coinValues[2];
 			} else if (coinSum > UniversalCoins.coinValues[1]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.gold_coin);
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.gold_coin);
 				int amount = (int) Math.min(coinSum / UniversalCoins.coinValues[1], 64);
-				inventory[itemOutputSlot].stackSize = amount;
+				inventory[itemOutputSlot].setCount(amount);
 				coinSum -= amount * UniversalCoins.coinValues[1];
 			} else if (coinSum > UniversalCoins.coinValues[0]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.iron_coin);
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.iron_coin);
 				int amount = (int) Math.min(coinSum / UniversalCoins.coinValues[0], 64);
-				inventory[itemOutputSlot].stackSize = amount;
+				inventory[itemOutputSlot].setCount(amount);
 				coinSum -= amount * UniversalCoins.coinValues[0];
 			}
 		}
@@ -371,7 +371,7 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 			return;
 		}
 		rfOutput = 0;
-		TileEntity tile = worldObj.getTileEntity(new BlockPos(pos.getX() + orientation.getFrontOffsetX(),
+		TileEntity tile = world.getTileEntity(new BlockPos(pos.getX() + orientation.getFrontOffsetX(),
 				pos.getY() + orientation.getFrontOffsetX(), pos.getZ() + orientation.getFrontOffsetZ()));
 		if (tile != null && tile instanceof IEnergyReceiver) {
 			IEnergyReceiver handler = (IEnergyReceiver) tile;
@@ -385,7 +385,7 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 
 	public void resetPowerDirection() {
 		for (EnumFacing direction : EnumFacing.VALUES) {
-			TileEntity tile = worldObj.getTileEntity((new BlockPos(pos.getX() + direction.getFrontOffsetX(),
+			TileEntity tile = world.getTileEntity((new BlockPos(pos.getX() + direction.getFrontOffsetX(),
 					pos.getY() + direction.getFrontOffsetX(), pos.getZ() + direction.getFrontOffsetZ())));
 			if (tile instanceof IEnergyReceiver) {
 				orientation = direction;
@@ -395,7 +395,7 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 
 	@Override
 	public ITextComponent getDisplayName() {
-		return new TextComponentString(UniversalCoins.proxy.power_receiver.getLocalizedName());
+		return new TextComponentString(UniversalCoins.Blocks.power_receiver.getLocalizedName());
 	}
 
 	@Override
@@ -437,5 +437,11 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	public void clear() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -103,7 +103,7 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		fillWithAir(world, sbb, 2, 1, 1, 2, 2, 1);
 		// atm - meta, LR, TB, FB
 		this.setBlockState(world,
-				UniversalCoins.proxy.atm.getDefaultState().withProperty(BlockATM.FACING, EnumFacing.SOUTH), 2, 2, 4,
+				UniversalCoins.Blocks.atm.getDefaultState().withProperty(BlockATM.FACING, EnumFacing.SOUTH), 2, 2, 4,
 				sbb);
 		// door
 		this.createVillageDoor(world, sbb, random, 2, 1, 1, EnumFacing.NORTH);
@@ -113,7 +113,7 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		this.setBlockState(world, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH), 3,
 				2, 2, boundingBox);
 		// sign
-		this.setBlockState(world, UniversalCoins.proxy.wall_ucsign.getDefaultState()
+		this.setBlockState(world, UniversalCoins.Blocks.wall_ucsign.getDefaultState()
 				.withProperty(BlockUCWallSign.FACING, EnumFacing.SOUTH), 1, 2, 0, sbb);
 		addSignText(world, boundingBox, 1, 2, 0);
 

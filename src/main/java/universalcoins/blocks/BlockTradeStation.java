@@ -80,7 +80,7 @@ public class BlockTradeStation extends BlockProtected {
 		java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
 		TileTradeStation te = world.getTileEntity(pos) instanceof TileTradeStation
 				? (TileTradeStation) world.getTileEntity(pos) : null;
-		ItemStack stack = new ItemStack(UniversalCoins.proxy.tradestation, 1);
+		ItemStack stack = new ItemStack(UniversalCoins.Blocks.tradestation, 1);
 		if (te != null) {
 			NBTTagCompound tag = new NBTTagCompound();
 			NBTTagCompound tagCompound = new NBTTagCompound();

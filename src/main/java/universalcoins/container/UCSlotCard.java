@@ -17,7 +17,7 @@ public class UCSlotCard extends Slot {
 			return true;
 		}
 		Item itemInStack = par1ItemStack.getItem();
-		return (itemInStack == UniversalCoins.proxy.uc_card || itemInStack == UniversalCoins.proxy.ender_card);
+		return (itemInStack == UniversalCoins.Items.uc_card || itemInStack == UniversalCoins.Items.ender_card);
 	}
 
 	public ItemStack decrStackSize(int par1) {

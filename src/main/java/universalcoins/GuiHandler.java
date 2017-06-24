@@ -60,7 +60,7 @@ class GuiHandler implements IGuiHandler {
 		}
 		if (tileEntity instanceof TileVendor) {
 			if (player.getHeldItemMainhand() != null
-					&& player.getHeldItemMainhand().getItem() == UniversalCoins.proxy.vendor_wrench) {
+					&& player.getHeldItemMainhand().getItem() == UniversalCoins.Items.vendor_wrench) {
 				return new ContainerVendorWrench(player.inventory, (TileVendor) tileEntity);
 			}
 			if (((TileVendor) tileEntity).blockOwner == null
@@ -100,7 +100,7 @@ class GuiHandler implements IGuiHandler {
 		}
 		if (tileEntity instanceof TileVendor) {
 			if (player.getHeldItemMainhand() != null
-					&& player.getHeldItemMainhand().getItem() == UniversalCoins.proxy.vendor_wrench) {
+					&& player.getHeldItemMainhand().getItem() == UniversalCoins.Items.vendor_wrench) {
 				return new VendorWrenchGUI(player.inventory, (TileVendor) tileEntity);
 			}
 			if (((TileVendor) tileEntity).blockOwner == null

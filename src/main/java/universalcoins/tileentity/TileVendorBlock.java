@@ -56,7 +56,7 @@ public class TileVendorBlock extends TileVendor {
 			// }
 			// } else
 			// signText[2] = "";
-			if (inventory[itemTradeSlot].getItem() == UniversalCoins.proxy.uc_package) {
+			if (inventory[itemTradeSlot].getItem() == UniversalCoins.Items.uc_package) {
 				signText[2] = "&" + Integer.toHexString(textColor);
 				if (inventory[itemTradeSlot].getTagCompound() != null) {
 					NBTTagList tagList = inventory[itemTradeSlot].getTagCompound().getTagList("Inventory",
@@ -64,8 +64,8 @@ public class TileVendorBlock extends TileVendor {
 					for (int i = 0; i < tagList.tagCount(); i++) {
 						NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 						byte slot = tag.getByte("Slot");
-						int itemCount = ItemStack.loadItemStackFromNBT(tag).stackSize;
-						String itemName = ItemStack.loadItemStackFromNBT(tag).getDisplayName();
+						int itemCount = new ItemStack(tag).getCount();
+						String itemName = new ItemStack(tag).getDisplayName();
 						signText[2] += itemCount + ":" + itemName + " ";
 					}
 				}

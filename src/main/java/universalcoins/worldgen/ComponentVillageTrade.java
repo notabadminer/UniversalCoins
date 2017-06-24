@@ -106,7 +106,7 @@ public class ComponentVillageTrade extends StructureVillagePieces.Village {
 		fillWithAir(world, sbb, 4, 1, 2, 4, 2, 2);
 
 		// trade station
-		this.setBlockState(world, UniversalCoins.proxy.tradestation.getDefaultState(), 2, 1, 2, sbb);
+		this.setBlockState(world, UniversalCoins.Blocks.tradestation.getDefaultState(), 2, 1, 2, sbb);
 
 		// add stairs if needed
 		if (this.getBlockStateFromPos(world, 1, 0, -1, sbb).getMaterial() == Material.AIR

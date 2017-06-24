@@ -30,7 +30,7 @@ public class ContainerVendorBuy extends Container {
 
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
-		return tileEntity.isUseableByPlayer(player);
+		return tileEntity.isUsableByPlayer(player);
 	}
 
 	void bindPlayerInventory(InventoryPlayer inventoryPlayer) {

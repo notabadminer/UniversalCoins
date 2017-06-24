@@ -28,7 +28,7 @@ public class ContainerTradeStation extends Container {
 
 	@Override
 	public boolean canInteractWith(EntityPlayer entityplayer) {
-		return tileEntity.isUseableByPlayer(entityplayer);
+		return tileEntity.isUsableByPlayer(entityplayer);
 	}
 
 	void bindPlayerInventory(InventoryPlayer inventoryPlayer) {

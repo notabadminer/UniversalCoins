@@ -1,24 +1,49 @@
 package universalcoins;
 
+import static net.minecraftforge.fml.relauncher.Side.CLIENT;
+
+import java.lang.reflect.Field;
+
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import universalcoins.blocks.BlockATM;
+import universalcoins.blocks.BlockPackager;
+import universalcoins.blocks.BlockPowerReceiver;
+import universalcoins.blocks.BlockPowerTransmitter;
+import universalcoins.blocks.BlockSafe;
+import universalcoins.blocks.BlockSignal;
+import universalcoins.blocks.BlockTradeStation;
+import universalcoins.blocks.BlockUCStandingSign;
+import universalcoins.blocks.BlockUCWallSign;
+import universalcoins.blocks.BlockVendor;
+import universalcoins.blocks.BlockVendorFrame;
 import universalcoins.commands.UCBalance;
 import universalcoins.commands.UCCommand;
 import universalcoins.commands.UCGive;
@@ -30,7 +55,10 @@ import universalcoins.net.UCPackagerServerMessage;
 import universalcoins.net.UCSignServerMessage;
 import universalcoins.net.UCTileSignMessage;
 import universalcoins.net.UCVendorServerMessage;
-import universalcoins.proxy.CommonProxy;
+import universalcoins.render.SignalRenderer;
+import universalcoins.render.UCSignRenderer;
+import universalcoins.render.VendorBlockRenderer;
+import universalcoins.render.VendorFrameRenderer;
 import universalcoins.tileentity.TileATM;
 import universalcoins.tileentity.TilePackager;
 import universalcoins.tileentity.TilePowerReceiver;
@@ -59,8 +87,9 @@ import universalcoins.worldgen.VillageGenTrade;
  * 
  **/
 
-@Mod(modid = UniversalCoins.MODID, name = UniversalCoins.NAME, version = UniversalCoins.VERSION, acceptedMinecraftVersions = "@MC_VERSION@", 
-updateJSON = "https://raw.githubusercontent.com/notabadminer/UniversalCoins/master/version.json")
+@Mod(modid = UniversalCoins.MODID, name = UniversalCoins.NAME, version = UniversalCoins.VERSION, acceptedMinecraftVersions = "@MC_VERSION@", updateJSON = "https://raw.githubusercontent.com/notabadminer/UniversalCoins/master/version.json")
+
+@Mod.EventBusSubscriber
 public class UniversalCoins {
 	@Instance("universalcoins")
 	public static UniversalCoins instance;
@@ -70,42 +99,124 @@ public class UniversalCoins {
 
 	public static CreativeTabs tabUniversalCoins = new UCTab("tabUniversalCoins");
 
-	@SidedProxy(clientSide = "universalcoins.proxy.ClientProxy", serverSide = "universalcoins.proxy.CommonProxy")
-	public static CommonProxy proxy;
-
 	public static int[] coinValues;
-	public static Boolean blockProtection;
-	public static Boolean autoModeEnabled;
-	public static Boolean tradeStationRecipesEnabled;
-	public static Boolean vendorRecipesEnabled;
-	public static Boolean vendorFrameRecipesEnabled;
-	public static Boolean atmRecipeEnabled;
-	public static Boolean enderCardRecipeEnabled;
-	public static Boolean signalRecipeEnabled;
-	public static Boolean linkCardRecipeEnabled;
-	public static Boolean tradeStationBuyEnabled;
-	public static Boolean packagerRecipeEnabled;
-	public static Boolean mobsDropCoins;
-	public static Boolean coinsInMineshaft;
-	public static Boolean powerBaseRecipeEnabled;
-	public static Boolean powerReceiverRecipeEnabled;
-	public static Boolean coinsInDungeon;
-	public static Integer mobDropMax;
-	public static Integer mobDropChance;
-	public static Integer enderDragonMultiplier;
+	public static Boolean blockProtection, autoModeEnabled, tradeStationRecipesEnabled, vendorRecipesEnabled,
+			vendorFrameRecipesEnabled, atmRecipeEnabled, enderCardRecipeEnabled, signalRecipeEnabled,
+			linkCardRecipeEnabled, tradeStationBuyEnabled, packagerRecipeEnabled, mobsDropCoins, coinsInMineshaft,
+			powerBaseRecipeEnabled, powerReceiverRecipeEnabled, coinsInDungeon;
+	public static Integer mobDropMax, mobDropChance, enderDragonMultiplier, smallPackagePrice, medPackagePrice,
+			largePackagePrice, rfWholesaleRate, rfRetailRate, bankGenWeight, shopGenWeight, tradeGenWeight,
+			shopMinPrice, shopMaxPrice;
 	public static Double itemSellRatio;
-	public static Integer smallPackagePrice;
-	public static Integer medPackagePrice;
-	public static Integer largePackagePrice;
-	public static Integer rfWholesaleRate;
-	public static Integer rfRetailRate;
-	public static Integer bankGenWeight;
-	public static Integer shopGenWeight;
-	public static Integer tradeGenWeight;
-	public static Integer shopMinPrice;
-	public static Integer shopMaxPrice;
-
 	public static SimpleNetworkWrapper snw;
+
+	@ObjectHolder(UniversalCoins.MODID)
+	public static class Blocks {
+		public static Block tradestation = null;
+		public static Block safe = null;
+		public static Block signalblock = null;
+		public static Block vendor = null;
+		public static Block vendor_frame = null;
+		public static Block packager = null;
+		public static Block standing_ucsign = null;
+		public static Block wall_ucsign = null;
+		public static Block power_transmitter = null;
+		public static Block power_receiver = null;
+		public static Block atm = null;
+	}
+
+	@ObjectHolder(UniversalCoins.MODID)
+	public static class Items {
+		public static Item iron_coin = null;
+		public static Item gold_coin = null;
+		public static Item emerald_coin = null;
+		public static Item diamond_coin = null;
+		public static Item obsidian_coin = null;
+		public static Item uc_card = null;
+		public static Item uc_package = null;
+		public static Item ender_card = null;
+		public static Item link_card = null;
+		public static Item uc_sign = null;
+		public static Item vendor_wrench = null;
+		public static Item catalog = null;
+		public static Item tradestation = null;
+		public static Item safe = null;
+		public static Item signalblock = null;
+		public static Item vendor = null;
+		public static Item vendor_frame = null;
+		public static Item packager = null;
+		public static Item standing_ucsign = null;
+		public static Item wall_ucsign = null;
+		public static Item power_transmitter = null;
+		public static Item power_receiver = null;
+		public static Item atm = null;
+	}
+
+	@SubscribeEvent
+	public static void registerBlocks(RegistryEvent.Register<Block> event) {
+		event.getRegistry().registerAll(new BlockTradeStation().setRegistryName(MODID, "tradestation"),
+				new BlockSafe().setRegistryName(MODID, "safe"), new BlockSignal().setRegistryName(MODID, "signalblock"),
+				new BlockVendor().setRegistryName(MODID, "vendor"),
+				new BlockVendorFrame().setRegistryName(MODID, "vendor_frame"),
+				new BlockPackager().setRegistryName(MODID, "packager"),
+				new BlockUCStandingSign(TileUCSign.class).setRegistryName(MODID, "standing_ucsign"),
+				new BlockUCWallSign(TileUCSign.class).setRegistryName(MODID, "wall_ucsign"),
+				new BlockPowerTransmitter().setRegistryName(MODID, "power_transmitter"),
+				new BlockPowerReceiver().setRegistryName(MODID, "power_receiver"),
+				new BlockATM().setRegistryName(MODID, "atm"));
+
+		// register TileEntitys
+		GameRegistry.registerTileEntity(TileProtected.class, MODID + ".protected");
+		GameRegistry.registerTileEntity(TileTradeStation.class, MODID + ".tradestation");
+		GameRegistry.registerTileEntity(TileSafe.class, MODID + ".safe");
+		GameRegistry.registerTileEntity(TileSignal.class, MODID + ".signalblock");
+		GameRegistry.registerTileEntity(TileVendor.class, MODID + ".vendor");
+		GameRegistry.registerTileEntity(TileVendorBlock.class, MODID + ".vendor_block");
+		GameRegistry.registerTileEntity(TileVendorFrame.class, MODID + ".vendor_frame");
+		GameRegistry.registerTileEntity(TilePackager.class, MODID + ".packager");
+		GameRegistry.registerTileEntity(TileUCSign.class, MODID + ".ucsign");
+		GameRegistry.registerTileEntity(TilePowerTransmitter.class, MODID + ".power_transmitter");
+		GameRegistry.registerTileEntity(TilePowerReceiver.class, MODID + ".power_receiver");
+		GameRegistry.registerTileEntity(TileATM.class, MODID + ".atm");
+	}
+
+	@SubscribeEvent
+	public static void registerItems(RegistryEvent.Register<Item> event) {
+		// register ItemBlocks
+		Block[] blocks = { Blocks.atm, Blocks.packager, Blocks.power_receiver, Blocks.power_transmitter, Blocks.safe,
+				Blocks.signalblock, Blocks.tradestation, Blocks.vendor };
+		for (Block block : blocks)
+			event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
+
+		// register Items
+		event.getRegistry().register(Items.iron_coin);
+		event.getRegistry().register(Items.gold_coin);
+		event.getRegistry().register(Items.emerald_coin);
+		event.getRegistry().register(Items.diamond_coin);
+		event.getRegistry().register(Items.obsidian_coin);
+		event.getRegistry().register(Items.uc_card);
+		event.getRegistry().register(Items.ender_card);
+		event.getRegistry().register(Items.link_card);
+		event.getRegistry().register(Items.uc_package);
+		event.getRegistry().register(Items.uc_sign);
+		event.getRegistry().register(Items.vendor_wrench);
+		event.getRegistry().register(Items.catalog);
+	}
+
+	@SubscribeEvent
+	@SideOnly(CLIENT)
+	public static void registerModels(ModelRegistryEvent event) throws Exception {
+		for (Field f : Items.class.getDeclaredFields()) {
+			Item item = (Item) f.get(null);
+			ModelLoader.setCustomModelResourceLocation(item, 0,
+					new ModelResourceLocation(item.getRegistryName(), "inventory"));
+		}
+		ClientRegistry.bindTileEntitySpecialRenderer(TileSignal.class, new SignalRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileVendorBlock.class, new VendorBlockRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileVendorFrame.class, new VendorFrameRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileUCSign.class, new UCSignRenderer());
+
+	}
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -239,24 +350,7 @@ public class UniversalCoins {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		proxy.registerBlocks();
-		proxy.registerItems();
-		proxy.registerRenderers();
-
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
-
-		GameRegistry.registerTileEntity(TileProtected.class, "TileProtected");
-		GameRegistry.registerTileEntity(TileTradeStation.class, "TileTradeStation");
-		GameRegistry.registerTileEntity(TileSafe.class, "TileSafe");
-		GameRegistry.registerTileEntity(TileSignal.class, "TileSignal");
-		GameRegistry.registerTileEntity(TileVendor.class, "TileVendor");
-		GameRegistry.registerTileEntity(TileVendorBlock.class, "TileVendorBlock");
-		GameRegistry.registerTileEntity(TileVendorFrame.class, "TileVendorFrame");
-		GameRegistry.registerTileEntity(TilePackager.class, "TilePackager");
-		GameRegistry.registerTileEntity(TileUCSign.class, "TileUCSign");
-		GameRegistry.registerTileEntity(TilePowerTransmitter.class, "TilePowerTransmitter");
-		GameRegistry.registerTileEntity(TilePowerReceiver.class, "TilePowerReceiver");
-		GameRegistry.registerTileEntity(TileATM.class, "TileATM");
 
 		if (tradeStationRecipesEnabled) {
 			UCRecipeHelper.addTradeStationRecipe();
@@ -297,7 +391,6 @@ public class UniversalCoins {
 			VillageGenTrade villageHandler3 = new VillageGenTrade();
 			VillagerRegistry.instance().registerVillageCreationHandler(villageHandler3);
 		}
-
 	}
 
 	@EventHandler

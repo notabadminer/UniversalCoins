@@ -13,7 +13,7 @@ public class UCTab extends CreativeTabs {
 
 	@Override
 	public ItemStack getTabIconItem() {
-		return new ItemStack(UniversalCoins.proxy.tradestation);
+		return new ItemStack(UniversalCoins.Blocks.tradestation);
 	}
 
 }

@@ -71,7 +71,7 @@ public class BlockPowerTransmitter extends BlockProtected {
 		java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
 		TilePowerTransmitter te = world.getTileEntity(pos) instanceof TilePowerTransmitter
 				? (TilePowerTransmitter) world.getTileEntity(pos) : null;
-		ItemStack stack = new ItemStack(UniversalCoins.proxy.power_transmitter, 1);
+		ItemStack stack = new ItemStack(UniversalCoins.Blocks.power_transmitter, 1);
 		if (te != null) {
 			NBTTagCompound tag = new NBTTagCompound();
 			NBTTagCompound tagCompound = new NBTTagCompound();

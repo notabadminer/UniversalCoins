@@ -106,6 +106,6 @@ public class BlockUCWallSign extends BlockWallSign {
 
 	@Override
 	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-		return UniversalCoins.proxy.uc_sign;
+		return UniversalCoins.Items.uc_sign;
 	}
 }

@@ -76,16 +76,16 @@ public class TileUCSign extends TileEntitySign {
 		int[] itemCount = { 0, 0, 0, 0 };
 		int meta = super.getBlockMetadata();
 		if (meta == 2) {
-			tileEntity = worldObj.getTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ() + 1));
+			tileEntity = world.getTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ() + 1));
 		}
 		if (meta == 3) {
-			tileEntity = worldObj.getTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ() - 1));
+			tileEntity = world.getTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ() - 1));
 		}
 		if (meta == 4) {
-			tileEntity = worldObj.getTileEntity(new BlockPos(pos.getX() + 1, pos.getY(), pos.getZ()));
+			tileEntity = world.getTileEntity(new BlockPos(pos.getX() + 1, pos.getY(), pos.getZ()));
 		}
 		if (meta == 5) {
-			tileEntity = worldObj.getTileEntity(new BlockPos(pos.getX() - 1, pos.getY(), pos.getZ()));
+			tileEntity = world.getTileEntity(new BlockPos(pos.getX() - 1, pos.getY(), pos.getZ()));
 		}
 		if (tileEntity != null && tileEntity instanceof IInventory) {
 			IInventory inventory = (IInventory) tileEntity;
@@ -102,7 +102,7 @@ public class TileUCSign extends TileEntitySign {
 							}
 						}
 						if (itemName[j].matches(inventory.getStackInSlot(i).getDisplayName())) {
-							itemCount[j] += inventory.getStackInSlot(i).stackSize;
+							itemCount[j] += inventory.getStackInSlot(i).getCount();
 						}
 					}
 				}
@@ -133,7 +133,7 @@ public class TileUCSign extends TileEntitySign {
 									}
 								}
 								if (itemName[j].matches(inventory.getStackInSlot(i).getDisplayName())) {
-									itemCount[j] += inventory.getStackInSlot(i).stackSize;
+									itemCount[j] += inventory.getStackInSlot(i).getCount();
 								}
 							}
 						}

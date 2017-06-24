@@ -30,9 +30,8 @@ public class ItemPackage extends Item {
 		NBTTagList tagList = stack.getTagCompound().getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
-			// byte slot = tag.getByte("Slot");
-			int itemCount = ItemStack.loadItemStackFromNBT(tag).stackSize;
-			String itemName = ItemStack.loadItemStackFromNBT(tag).getDisplayName();
+			int itemCount = new ItemStack(tag).getCount();
+			String itemName = new ItemStack(tag).getDisplayName();
 			tooltip.add(itemCount + " " + itemName);
 		}
 	}
@@ -47,11 +46,11 @@ public class ItemPackage extends Item {
 			for (int i = 0; i < tagList.tagCount(); i++) {
 				NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 				if (player.inventory.getFirstEmptyStack() != -1) {
-					player.inventory.addItemStackToInventory(ItemStack.loadItemStackFromNBT(tag));
+					player.inventory.addItemStackToInventory(new ItemStack(tag));
 				} else {
 					// spawn in world
 					EntityItem entityItem = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(),
-							ItemStack.loadItemStackFromNBT(tag));
+							new ItemStack(tag));
 					worldIn.spawnEntity(entityItem);
 				}
 			}

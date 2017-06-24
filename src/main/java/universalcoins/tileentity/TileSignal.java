@@ -34,7 +34,7 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 
 	@Override
 	public void update() {
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			if (counter > 0) {
 				counter--;
 				secondsLeft = counter / 20;
@@ -111,17 +111,17 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 	private void updateNeighbors() {
 		this.blockType = this.getBlockType();
 		if (this.blockType instanceof BlockSignal) {
-			((BlockSignal) blockType).updatePower(worldObj, pos);
+			((BlockSignal) blockType).updatePower(world, pos);
 		}
 	}
 
-	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
-		return worldObj.getTileEntity(pos) == this
+	public boolean isUsableByPlayer(EntityPlayer entityplayer) {
+		return world.getTileEntity(pos) == this
 				&& entityplayer.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
 	}
 
 	public String getName() {
-		return this.hasCustomName() ? this.customName : UniversalCoins.proxy.signalblock.getLocalizedName();
+		return this.hasCustomName() ? this.customName : UniversalCoins.Blocks.signalblock.getLocalizedName();
 	}
 
 	public void setName(String name) {
@@ -195,7 +195,7 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 			byte slot = tag.getByte("Slot");
 			if (slot >= 0 && slot < inventory.length) {
-				inventory[slot] = ItemStack.loadItemStackFromNBT(tag);
+				inventory[slot] = new ItemStack(tag);
 			}
 		}
 		try {
@@ -252,11 +252,11 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 	public ItemStack decrStackSize(int slot, int size) {
 		ItemStack stack = getStackInSlot(slot);
 		if (stack != null) {
-			if (stack.stackSize <= size) {
+			if (stack.getCount() <= size) {
 				inventory[slot] = null;
 			} else {
 				stack = stack.splitStack(size);
-				if (stack.stackSize == 0) {
+				if (stack.getCount() == 0) {
 					inventory[slot] = null;
 				}
 			}
@@ -267,25 +267,25 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 	public void fillOutputSlot() {
 		if (inventory[itemOutputSlot] == null && coinSum > 0) {
 			if (coinSum > UniversalCoins.coinValues[4]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.obsidian_coin);
-				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[4], 64);
-				coinSum -= UniversalCoins.coinValues[4] * inventory[itemOutputSlot].stackSize;
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.obsidian_coin);
+				inventory[itemOutputSlot].setCount((int) Math.min(coinSum / UniversalCoins.coinValues[4], 64));
+				coinSum -= UniversalCoins.coinValues[4] * inventory[itemOutputSlot].getCount();
 			} else if (coinSum > UniversalCoins.coinValues[3]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.diamond_coin);
-				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[3], 64);
-				coinSum -= UniversalCoins.coinValues[3] * inventory[itemOutputSlot].stackSize;
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.diamond_coin);
+				inventory[itemOutputSlot].setCount((int) Math.min(coinSum / UniversalCoins.coinValues[3], 64));
+				coinSum -= UniversalCoins.coinValues[3] * inventory[itemOutputSlot].getCount();
 			} else if (coinSum > UniversalCoins.coinValues[2]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.emerald_coin);
-				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[2], 64);
-				coinSum -= UniversalCoins.coinValues[2] * inventory[itemOutputSlot].stackSize;
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.emerald_coin);
+				inventory[itemOutputSlot].setCount((int) Math.min(coinSum / UniversalCoins.coinValues[2], 64));
+				coinSum -= UniversalCoins.coinValues[2] * inventory[itemOutputSlot].getCount();
 			} else if (coinSum > UniversalCoins.coinValues[1]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.gold_coin);
-				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[1], 64);
-				coinSum -= UniversalCoins.coinValues[1] * inventory[itemOutputSlot].stackSize;
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.gold_coin);
+				inventory[itemOutputSlot].setCount((int) Math.min(coinSum / UniversalCoins.coinValues[1], 64));
+				coinSum -= UniversalCoins.coinValues[1] * inventory[itemOutputSlot].getCount();
 			} else if (coinSum > UniversalCoins.coinValues[0]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.iron_coin);
-				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[0], 64);
-				coinSum -= UniversalCoins.coinValues[0] * inventory[itemOutputSlot].stackSize;
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.iron_coin);
+				inventory[itemOutputSlot].setCount((int) Math.min(coinSum / UniversalCoins.coinValues[0], 64));
+				coinSum -= UniversalCoins.coinValues[0] * inventory[itemOutputSlot].getCount();
 			}
 		}
 	}
@@ -353,11 +353,17 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 
 	@Override
 	public ITextComponent getDisplayName() {
-		return new TextComponentString(UniversalCoins.proxy.signalblock.getLocalizedName());
+		return new TextComponentString(UniversalCoins.Blocks.signalblock.getLocalizedName());
 	}
 
 	@Override
 	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
+		return false;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
 		return false;
 	}
 }

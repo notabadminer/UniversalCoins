@@ -101,7 +101,7 @@ public class BlockPackager extends BlockProtected {
 		java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
 		TilePackager te = world.getTileEntity(pos) instanceof TilePackager ? (TilePackager) world.getTileEntity(pos)
 				: null;
-		ItemStack stack = new ItemStack(UniversalCoins.proxy.packager, 1);
+		ItemStack stack = new ItemStack(UniversalCoins.Blocks.packager, 1);
 		if (te != null) {
 			NBTTagCompound tag = new NBTTagCompound();
 			NBTTagCompound tagCompound = new NBTTagCompound();

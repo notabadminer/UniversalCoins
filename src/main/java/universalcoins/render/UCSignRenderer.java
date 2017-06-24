@@ -38,7 +38,7 @@ public class UCSignRenderer extends TileEntitySpecialRenderer<TileEntitySign> {
 		GlStateManager.pushMatrix();
 		float f = 0.6666667F;
 
-		if (block == UniversalCoins.proxy.standing_ucsign) {
+		if (block == UniversalCoins.Blocks.standing_ucsign) {
 			GlStateManager.translate((float) posX + 0.5F, (float) posY + 0.75F * f, (float) posZ + 0.5F);
 			float f1 = (float) (te.getBlockMetadata() * 360) / 16.0F;
 			GlStateManager.rotate(-f1, 0.0F, 1.0F, 0.0F);

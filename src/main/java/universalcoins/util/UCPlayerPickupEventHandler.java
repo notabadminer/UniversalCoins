@@ -20,18 +20,18 @@ public class UCPlayerPickupEventHandler {
 
 	@SubscribeEvent
 	public void onItemPickup(EntityItemPickupEvent event) {
-		if (event.getItem().getItem().getItem() == UniversalCoins.proxy.iron_coin
-				|| event.getItem().getItem().getItem() == UniversalCoins.proxy.gold_coin
-				|| event.getItem().getItem().getItem() == UniversalCoins.proxy.emerald_coin
-				|| event.getItem().getItem().getItem() == UniversalCoins.proxy.diamond_coin
-				|| event.getItem().getItem().getItem() == UniversalCoins.proxy.obsidian_coin) {
+		if (event.getItem().getItem().getItem() == UniversalCoins.Items.iron_coin
+				|| event.getItem().getItem().getItem() == UniversalCoins.Items.gold_coin
+				|| event.getItem().getItem().getItem() == UniversalCoins.Items.emerald_coin
+				|| event.getItem().getItem().getItem() == UniversalCoins.Items.diamond_coin
+				|| event.getItem().getItem().getItem() == UniversalCoins.Items.obsidian_coin) {
 			// event.getEntityPlayer().addStat(Achievements.achCoin, 1);
 			world = event.getEntityPlayer().world;
 			EntityPlayer player = event.getEntityPlayer();
 			NonNullList<ItemStack> inventory = player.inventory.mainInventory;
 			DecimalFormat formatter = new DecimalFormat("#,###,###,###");
 			for (int i = 0; i < inventory.size(); i++) {
-				if (inventory.get(i) != null && inventory.get(i).getItem() == UniversalCoins.proxy.ender_card) {
+				if (inventory.get(i) != null && inventory.get(i).getItem() == UniversalCoins.Items.ender_card) {
 					if (!inventory.get(i).hasTagCompound())
 						return; // card has not been initialized. Nothing we can
 								// do here

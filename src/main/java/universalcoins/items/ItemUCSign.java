@@ -39,10 +39,10 @@ public class ItemUCSign extends ItemSign {
 			} else {
 				if (facing == EnumFacing.UP) {
 					int i = MathHelper.floor((double) ((player.rotationYaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15;
-					worldIn.setBlockState(pos, UniversalCoins.proxy.standing_ucsign.getDefaultState()
+					worldIn.setBlockState(pos, UniversalCoins.Blocks.standing_ucsign.getDefaultState()
 							.withProperty(BlockUCStandingSign.ROTATION, Integer.valueOf(i)), 3);
 				} else {
-					worldIn.setBlockState(pos, UniversalCoins.proxy.wall_ucsign.getDefaultState()
+					worldIn.setBlockState(pos, UniversalCoins.Blocks.wall_ucsign.getDefaultState()
 							.withProperty(BlockUCWallSign.FACING, facing), 3);
 				}
 

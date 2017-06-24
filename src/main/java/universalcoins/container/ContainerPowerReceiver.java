@@ -28,7 +28,7 @@ public class ContainerPowerReceiver extends Container {
 
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
-		return tEntity.isUseableByPlayer(player);
+		return tEntity.isUsableByPlayer(player);
 	}
 
 	void bindPlayerInventory(InventoryPlayer inventoryPlayer) {

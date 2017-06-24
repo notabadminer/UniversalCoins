@@ -9,7 +9,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
@@ -49,11 +48,11 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 	public ItemStack decrStackSize(int slot, int size) {
 		ItemStack stack = getStackInSlot(slot);
 		if (stack != null) {
-			if (stack.stackSize <= size) {
+			if (stack.getCount() <= size) {
 				setInventorySlotContents(slot, null);
 			} else {
 				stack = stack.splitStack(size);
-				if (stack.stackSize == 0) {
+				if (stack.getCount() == 0) {
 					setInventorySlotContents(slot, null);
 				}
 			}
@@ -64,7 +63,7 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 	public void setInventorySlotContents(int slot, ItemStack stack) {
 		inventory[slot] = stack;
 		if (stack != null) {
-			if (slot == itemCardSlot && inventory[itemCardSlot].getItem() == UniversalCoins.proxy.ender_card) {
+			if (slot == itemCardSlot && inventory[itemCardSlot].getItem() == UniversalCoins.Items.ender_card) {
 				if (creditAccount(coinSum)) {
 					coinSum = 0;
 				}
@@ -74,7 +73,7 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 
 	@Override
 	public String getName() {
-		return UniversalCoins.proxy.power_transmitter.getLocalizedName();
+		return UniversalCoins.Blocks.power_transmitter.getLocalizedName();
 	}
 
 	@Override
@@ -88,8 +87,8 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
-		return worldObj.getTileEntity(pos) == this
+	public boolean isUsableByPlayer(EntityPlayer entityplayer) {
+		return world.getTileEntity(pos) == this
 				&& entityplayer.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
 	}
 
@@ -139,7 +138,7 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 	}
 
 	private long getAccountBalance() {
-		if (worldObj.isRemote || inventory[itemCardSlot] == null || !inventory[itemCardSlot].hasTagCompound()) {
+		if (world.isRemote || inventory[itemCardSlot] == null || !inventory[itemCardSlot].hasTagCompound()) {
 			return 0;
 		}
 		String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
@@ -150,8 +149,8 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 	}
 
 	private boolean creditAccount(long amount) {
-		if (worldObj.isRemote || inventory[itemCardSlot] == null
-				|| inventory[itemCardSlot].getItem() != UniversalCoins.proxy.ender_card
+		if (world.isRemote || inventory[itemCardSlot] == null
+				|| inventory[itemCardSlot].getItem() != UniversalCoins.Items.ender_card
 				|| !inventory[itemCardSlot].hasTagCompound())
 			return false;
 		String accountNumber = inventory[itemCardSlot].getTagCompound().getString("Account");
@@ -217,7 +216,7 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 			byte slot = tag.getByte("Slot");
 			if (slot >= 0 && slot < inventory.length) {
-				inventory[slot] = ItemStack.loadItemStackFromNBT(tag);
+				inventory[slot] = new ItemStack(tag);
 			}
 		}
 		try {
@@ -259,32 +258,32 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 	public void fillOutputSlot() {
 		if (inventory[itemOutputSlot] == null && coinSum > 0) {
 			if (coinSum > UniversalCoins.coinValues[4]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.obsidian_coin);
-				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[4], 64);
-				coinSum -= UniversalCoins.coinValues[4] * inventory[itemOutputSlot].stackSize;
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.obsidian_coin);
+				inventory[itemOutputSlot].setCount((int) Math.min(coinSum / UniversalCoins.coinValues[4], 64));
+				coinSum -= UniversalCoins.coinValues[4] * inventory[itemOutputSlot].getCount();
 			} else if (coinSum > UniversalCoins.coinValues[3]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.diamond_coin);
-				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[3], 64);
-				coinSum -= UniversalCoins.coinValues[3] * inventory[itemOutputSlot].stackSize;
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.diamond_coin);
+				inventory[itemOutputSlot].setCount((int) Math.min(coinSum / UniversalCoins.coinValues[3], 64));
+				coinSum -= UniversalCoins.coinValues[3] * inventory[itemOutputSlot].getCount();
 			} else if (coinSum > UniversalCoins.coinValues[2]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.emerald_coin);
-				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[2], 64);
-				coinSum -= UniversalCoins.coinValues[2] * inventory[itemOutputSlot].stackSize;
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.emerald_coin);
+				inventory[itemOutputSlot].setCount((int) Math.min(coinSum / UniversalCoins.coinValues[2], 64));
+				coinSum -= UniversalCoins.coinValues[2] * inventory[itemOutputSlot].getCount();
 			} else if (coinSum > UniversalCoins.coinValues[1]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.gold_coin);
-				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[1], 64);
-				coinSum -= UniversalCoins.coinValues[1] * inventory[itemOutputSlot].stackSize;
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.gold_coin);
+				inventory[itemOutputSlot].setCount((int) Math.min(coinSum / UniversalCoins.coinValues[1], 64));
+				coinSum -= UniversalCoins.coinValues[1] * inventory[itemOutputSlot].getCount();
 			} else if (coinSum > UniversalCoins.coinValues[0]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.proxy.iron_coin);
-				inventory[itemOutputSlot].stackSize = (int) Math.min(coinSum / UniversalCoins.coinValues[0], 64);
-				coinSum -= UniversalCoins.coinValues[0] * inventory[itemOutputSlot].stackSize;
+				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.iron_coin);
+				inventory[itemOutputSlot].setCount((int) Math.min(coinSum / UniversalCoins.coinValues[0], 64));
+				coinSum -= UniversalCoins.coinValues[0] * inventory[itemOutputSlot].getCount();
 			}
 		}
 	}
 
 	@Override
 	public ITextComponent getDisplayName() {
-		return new TextComponentString(UniversalCoins.proxy.power_transmitter.getLocalizedName());
+		return new TextComponentString(UniversalCoins.Blocks.power_transmitter.getLocalizedName());
 	}
 
 	@Override
@@ -326,6 +325,12 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 	public void clear() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

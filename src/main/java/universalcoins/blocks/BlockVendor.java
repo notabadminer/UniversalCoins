@@ -101,7 +101,7 @@ public class BlockVendor extends BlockProtected {
 		java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
 		TileVendorBlock te = world.getTileEntity(pos) instanceof TileVendorBlock
 				? (TileVendorBlock) world.getTileEntity(pos) : null;
-		ItemStack stack = new ItemStack(UniversalCoins.proxy.vendor, 1);
+		ItemStack stack = new ItemStack(UniversalCoins.Blocks.vendor, 1);
 		if (te != null) {
 			NBTTagCompound tag = new NBTTagCompound();
 			NBTTagCompound tagCompound = new NBTTagCompound();
