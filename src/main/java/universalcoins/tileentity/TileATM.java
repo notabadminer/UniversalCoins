@@ -186,7 +186,7 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 			byte slot = tag.getByte("Slot");
 			if (slot >= 0 && slot < inventory.length) {
-				inventory[slot] = ItemStack.loadItemStackFromNBT(tag);
+				inventory[slot].deserializeNBT(tag);
 			}
 		}
 		try {

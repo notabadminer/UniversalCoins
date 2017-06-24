@@ -95,8 +95,7 @@ public class TilePackager extends TileProtected implements IInventory {
 						world.getPlayerEntityByName(playerName).inventory.addItemStackToInventory(inventory[i]);
 					} else {
 						// spawn in world
-						EntityItem entityItem = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(),
-								inventory[i]);
+						EntityItem entityItem = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), inventory[i]);
 						world.spawnEntity(entityItem);
 					}
 					inventory[i] = null;
@@ -111,8 +110,7 @@ public class TilePackager extends TileProtected implements IInventory {
 						world.getPlayerEntityByName(playerName).inventory.addItemStackToInventory(inventory[i]);
 					} else {
 						// spawn in world
-						EntityItem entityItem = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(),
-								inventory[i]);
+						EntityItem entityItem = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), inventory[i]);
 						world.spawnEntity(entityItem);
 					}
 					inventory[i] = null;
@@ -160,7 +158,7 @@ public class TilePackager extends TileProtected implements IInventory {
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
+	public boolean isUsableByPlayer(EntityPlayer entityplayer) {
 		return world.getTileEntity(pos) == this
 				&& entityplayer.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
 	}
@@ -231,7 +229,7 @@ public class TilePackager extends TileProtected implements IInventory {
 			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 			byte slot = tag.getByte("Slot");
 			if (slot >= 0 && slot < inventory.length) {
-				inventory[slot] = ItemStack.loadItemStackFromNBT(tag);
+				inventory[slot].deserializeNBT(tag);
 			}
 		}
 		try {
@@ -403,7 +401,7 @@ public class TilePackager extends TileProtected implements IInventory {
 						inventory[itemPackageInputSlot]);
 				world.spawnEntity(entityItem);
 			}
-			player.addChatMessage(
+			player.sendMessage(
 					new TextComponentString("�c" + playerName + I18n.translateToLocal("packager.message.sent")));
 			inventory[itemPackageInputSlot] = null;
 		}

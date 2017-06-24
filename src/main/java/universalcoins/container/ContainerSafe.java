@@ -5,29 +5,22 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import universalcoins.tileentity.TileATM;
+import universalcoins.tileentity.TileSafe;
 
-public class ContainerATM extends Container {
-	private String lastPlayerName;
-	private String lastPlayerUID;
-	private boolean lastInUse;
-	private boolean lastDepositCoins;
-	private boolean lastWithdrawCoins;
-	private boolean lastAccountError;
-	private int lastCoinWithdrawalAmount;
-	private String lastCardOwner;
-	private String lastAccountNumber;
+public class ContainerSafe extends Container {
+	private String lastOwner;
 	private long lastAccountBalance;
-	private TileATM tEntity;
+	private TileSafe tEntity;
 
-	public ContainerATM(InventoryPlayer inventoryPlayer, TileATM tileEntity) {
+	public ContainerSafe(InventoryPlayer inventoryPlayer, TileSafe tileEntity) {
 		tEntity = tileEntity;
 		// the Slot constructor takes the IInventory and the slot number in that
 		// it binds to and the x-y coordinates it resides on-screen
-		addSlotToContainer(new UCSlotCoinInput(tEntity, tEntity.itemCoinSlot, 172, 40));
-		addSlotToContainer(new UCSlotCard(tEntity, tEntity.itemCardSlot, 172, 60));
+		addSlotToContainer(new UCSlotCoinInput(tileEntity, tEntity.itemInputSlot, 27, 37));
+		addSlotToContainer(new UCSlotOutput(tileEntity, tEntity.itemOutputSlot, 134, 37));
+
+		// now that the slots are updated, fill the slots
+		tEntity.fillOutputSlot();
 
 		// commonly used vanilla code that adds the player's inventory
 		bindPlayerInventory(inventoryPlayer);
@@ -35,18 +28,18 @@ public class ContainerATM extends Container {
 
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
-		return tEntity.isUseableByPlayer(player);
+		return tEntity.isUsableByPlayer(player);
 	}
 
 	void bindPlayerInventory(InventoryPlayer inventoryPlayer) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 9; j++) {
-				addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9, 18 + j * 18, 119 + i * 18));
+				addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9, 8 + j * 18, 70 + i * 18));
 			}
 		}
 
 		for (int i = 0; i < 9; i++) {
-			addSlotToContainer(new Slot(inventoryPlayer, i, 18 + i * 18, 177));
+			addSlotToContainer(new Slot(inventoryPlayer, i, 8 + i * 18, 128));
 		}
 	}
 
@@ -63,6 +56,8 @@ public class ContainerATM extends Container {
 			if (slot < 2) {
 				if (!this.mergeItemStack(stackInSlot, 2, 38, true)) {
 					return null;
+				} else {
+					tEntity.coinsTaken(stack);
 				}
 			}
 			// places it into the tileEntity is possible since its in the player
@@ -91,7 +86,6 @@ public class ContainerATM extends Container {
 				return null;
 			}
 			slotObject.onTake(player, stackInSlot);
-			tEntity.fillCoinSlot();
 		}
 
 		return stack;
@@ -103,36 +97,12 @@ public class ContainerATM extends Container {
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 
-		if (this.lastPlayerName != tEntity.playerName || this.lastPlayerUID != tEntity.playerUID
-				|| this.lastInUse != tEntity.inUse || this.lastDepositCoins != tEntity.depositCoins
-				|| this.lastWithdrawCoins != tEntity.withdrawCoins || this.lastAccountError != tEntity.accountError
-				|| this.lastCoinWithdrawalAmount != tEntity.coinWithdrawalAmount
-				|| this.lastCardOwner != tEntity.cardOwner || this.lastAccountNumber != tEntity.accountNumber
-				|| this.lastAccountBalance != tEntity.accountBalance) {
+		if (this.lastOwner != tEntity.blockOwner || this.lastAccountBalance != tEntity.accountBalance) {
 			tEntity.updateTE();
 		}
 
-		this.lastPlayerName = tEntity.playerName;
-		this.lastPlayerUID = tEntity.playerUID;
-		this.lastInUse = tEntity.inUse;
-		this.lastDepositCoins = tEntity.depositCoins;
-		this.lastWithdrawCoins = tEntity.withdrawCoins;
-		this.lastAccountError = tEntity.accountError;
-		this.lastCoinWithdrawalAmount = tEntity.coinWithdrawalAmount;
-		this.lastCardOwner = tEntity.cardOwner;
-		this.lastAccountNumber = tEntity.accountNumber;
+		this.lastOwner = tEntity.blockOwner;
 		this.lastAccountBalance = tEntity.accountBalance;
 
-	}
-
-	@SideOnly(Side.CLIENT)
-	public void updateProgressBar(int par1, int par2) {
-		if (par1 == 0) {
-			// this.tileEntity.autoMode = par2;
-		}
-	}
-
-	public void onContainerClosed(EntityPlayer par1EntityPlayer) {
-		this.tEntity.inUseCleanup();
 	}
 }
