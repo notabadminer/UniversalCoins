@@ -20,7 +20,5 @@ build
 # other
 eclipse
 run
+*.db
 
-*.db
-src/main/resources/assets/universalcoins/textures/items/Thumbs.db
-*.db

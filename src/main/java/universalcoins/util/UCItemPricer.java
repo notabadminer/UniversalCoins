@@ -353,7 +353,7 @@ public class UCItemPricer {
 	}
 
 	private void autoPriceCraftedItems() {
-		FMLLog.info("in autoPriceCraftedItems");
+		// FMLLog.info("in autoPriceCraftedItems");
 		List<IRecipe> allrecipes = GameData.getRecipeRegistry().getValues();
 		boolean priceUpdate = false;
 
@@ -368,19 +368,20 @@ public class UCItemPricer {
 				int itemCost = 0;
 				boolean validRecipe = true;
 				ItemStack output = irecipe.getRecipeOutput();
-				FMLLog.info("Recipe output: " + output.getDisplayName());
+				// FMLLog.info("Recipe output: " + output.getDisplayName());
 				if (output == null || output.getItem() == Items.AIR) {
 					continue;
 				}
 				if (UCItemPricer.getInstance().getItemPrice(output) != -1) {
-					FMLLog.info("recipe output price already set.");
+					// FMLLog.info("recipe output price already set.");
 					continue;
 				}
-				FMLLog.info("Starting pricing recipe for " + output.getDisplayName());
+				// FMLLog.info("Starting pricing recipe for " +
+				// output.getDisplayName());
 				NonNullList<Ingredient> recipeItems = irecipe.getIngredients();
 				for (int i = 0; i < recipeItems.size(); i++) {
 					ItemStack stack = null;
-					FMLLog.info("Ingredient: " + recipeItems.get(i));
+					// FMLLog.info("Ingredient: " + recipeItems.get(i));
 					if (recipeItems.get(i) instanceof OreIngredient) {
 						OreIngredient test = (OreIngredient) recipeItems.get(i);
 						stack = test.getMatchingStacks()[0]; // TODO iterate and
@@ -399,13 +400,16 @@ public class UCItemPricer {
 					}
 					if (stack == null)
 						continue;
-					FMLLog.info("recipe ingredient " + i + " " + stack.getDisplayName());
-					FMLLog.info("price: " + UCItemPricer.getInstance().getItemPrice(stack));
+					// FMLLog.info("recipe ingredient " + i + " " +
+					// stack.getDisplayName());
+					// FMLLog.info("price: " +
+					// UCItemPricer.getInstance().getItemPrice(stack));
 					if (UCItemPricer.getInstance().getItemPrice(stack) != -1) {
 						itemCost += UCItemPricer.getInstance().getItemPrice(stack);
 					} else {
 						validRecipe = false;
-						FMLLog.info("can't price " + output.getDisplayName());
+						// FMLLog.info("can't price " +
+						// output.getDisplayName());
 						break;
 					}
 				}
@@ -415,7 +419,8 @@ public class UCItemPricer {
 						itemCost = itemCost / output.getCount();
 					}
 					try {
-						FMLLog.info("Setting price of " + output.getDisplayName() + " to " + itemCost);
+						// FMLLog.info("Setting price of " +
+						// output.getDisplayName() + " to " + itemCost);
 						UCItemPricer.getInstance().setItemPrice(output, itemCost);
 					} catch (Exception e) {
 						FMLLog.warning("Universal Coins Autopricer: Failed to set item price.");
@@ -517,7 +522,7 @@ public class UCItemPricer {
 	private void updatePotions() {
 		for (PotionType potiontype : PotionType.REGISTRY) {
 			String potion = potiontype.getRegistryName().toString();
-			FMLLog.info("Potion: " + potion);
+			// FMLLog.info("Potion: " + potion);
 			String[] modName = potion.split("\\W", 3);
 			ucModnameMap.put(potion, modName[0]);
 			if (!ucPriceMap.containsKey(potion)) {

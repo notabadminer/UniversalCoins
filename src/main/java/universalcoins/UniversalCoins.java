@@ -18,7 +18,6 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -41,6 +40,8 @@ import universalcoins.blocks.BlockPowerTransmitter;
 import universalcoins.blocks.BlockSafe;
 import universalcoins.blocks.BlockSignal;
 import universalcoins.blocks.BlockTradeStation;
+import universalcoins.blocks.BlockUCStandingSign;
+import universalcoins.blocks.BlockUCWallSign;
 import universalcoins.blocks.BlockVendor;
 import universalcoins.blocks.BlockVendorFrame;
 import universalcoins.commands.UCBalance;
@@ -147,21 +148,37 @@ public class UniversalCoins {
 		public static final Item uc_sign = null;
 		public static final Item vendor_wrench = null;
 		public static final Item catalog = null;
+		public static final Item tradestation = null;
+		public static final Item safe = null;
+		public static final Item signalblock = null;
+		public static final Item vendor_block = null;
+		public static final Item vendor_frame = null;
+		public static final Item packager = null;
+		public static final Item power_transmitter = null;
+		public static final Item power_receiver = null;
+		public static final Item atm = null;
 	}
 
 	@SubscribeEvent
 	public static void registerBlocks(RegistryEvent.Register<Block> event) {
-		FMLLog.info("Registering Blocks");
-		event.getRegistry().registerAll(new BlockATM().setRegistryName(MODID, "atm"),
-				new BlockPackager().setRegistryName(MODID, "packager"),
-				new BlockPowerReceiver().setRegistryName(MODID, "power_receiver"),
-				new BlockPowerTransmitter().setRegistryName(MODID, "power_transmitter"),
-				new BlockSafe().setRegistryName(MODID, "safe"), new BlockSignal().setRegistryName(MODID, "signalblock"),
-				new BlockTradeStation().setRegistryName(MODID, "tradestation"),
-				new BlockVendor().setRegistryName(MODID, "vendor_block"),
-				new BlockVendorFrame().setRegistryName(MODID, "vendor_frame"));
+		event.getRegistry().registerAll(new BlockATM().setRegistryName(MODID, "atm").setUnlocalizedName(MODID + ".atm"),
+				new BlockPackager().setRegistryName(MODID, "packager").setUnlocalizedName(MODID + ".packager"),
+				new BlockPowerReceiver().setRegistryName(MODID, "power_receiver")
+						.setUnlocalizedName(MODID + ".power_receiver"),
+				new BlockPowerTransmitter().setRegistryName(MODID, "power_transmitter")
+						.setUnlocalizedName(MODID + ".power_transmitter"),
+				new BlockSafe().setRegistryName(MODID, "safe").setUnlocalizedName(MODID + ".safe"),
+				new BlockSignal().setRegistryName(MODID, "signalblock").setUnlocalizedName(MODID + ".signalblock"),
+				new BlockTradeStation().setRegistryName(MODID, "tradestation")
+						.setUnlocalizedName(MODID + ".tradestation"),
+				new BlockVendor().setRegistryName(MODID, "vendor_block").setUnlocalizedName(MODID + ".vendor_block"),
+				new BlockVendorFrame().setRegistryName(MODID, "vendor_frame")
+						.setUnlocalizedName(MODID + ".vendor_frame"),
+				new BlockUCWallSign(TileUCSign.class).setRegistryName(MODID, "wall_ucsign")
+						.setUnlocalizedName(MODID + ".wall_ucsign"),
+				new BlockUCStandingSign(TileUCSign.class).setRegistryName(MODID, "standing_ucsign")
+						.setUnlocalizedName(MODID + ".standing_ucsign"));
 
-		FMLLog.info("Registering TileEntities");
 		// register TileEntitys
 		GameRegistry.registerTileEntity(TileProtected.class, MODID + ".protected");
 		GameRegistry.registerTileEntity(TileTradeStation.class, MODID + ".tradestation");
@@ -180,25 +197,28 @@ public class UniversalCoins {
 	@SubscribeEvent
 	public static void registerItems(RegistryEvent.Register<Item> event) {
 		// register Items
-		FMLLog.info("Registering Items");
-		event.getRegistry().registerAll(new ItemFourthCoin().setRegistryName(MODID, "diamond_coin"),
-				new ItemThirdCoin().setRegistryName(MODID, "emerald_coin"),
-				new ItemEnderCard().setRegistryName(MODID, "ender_card"),
-				new ItemSecondCoin().setRegistryName(MODID, "gold_coin"),
-				new ItemCoin().setRegistryName(MODID, "iron_coin"),
-				new ItemLinkCard().setRegistryName(MODID, "link_card"),
-				new ItemFifthCoin().setRegistryName(MODID, "obsidian_coin"),
-				new ItemUCCard().setRegistryName(MODID, "uc_card"), new ItemCatalog().setRegistryName(MODID, "catalog"),
-				new ItemPackage().setRegistryName(MODID, "uc_package"),
-				new ItemUCSign().setRegistryName(MODID, "uc_sign"),
-				new ItemVendorWrench().setRegistryName(MODID, "vendor_wrench"));
+		event.getRegistry().registerAll(
+				new ItemCoin().setRegistryName(MODID, "iron_coin").setUnlocalizedName(MODID + ".iron_coin"),
+				new ItemSecondCoin().setRegistryName(MODID, "gold_coin").setUnlocalizedName(MODID + ".gold_coin"),
+				new ItemThirdCoin().setRegistryName(MODID, "emerald_coin").setUnlocalizedName(MODID + ".emerald_coin"),
+				new ItemFourthCoin().setRegistryName(MODID, "diamond_coin").setUnlocalizedName(MODID + ".diamond_coin"),
+				new ItemFifthCoin().setRegistryName(MODID, "obsidian_coin")
+						.setUnlocalizedName(MODID + ".obsidian_coin"),
+				new ItemUCCard().setRegistryName(MODID, "uc_card").setUnlocalizedName(MODID + ".uc_card"),
+				new ItemEnderCard().setRegistryName(MODID, "ender_card").setUnlocalizedName(MODID + ".ender_card"),
+				new ItemLinkCard().setRegistryName(MODID, "link_card").setUnlocalizedName(MODID + ".link_card"),
+				new ItemCatalog().setRegistryName(MODID, "catalog").setUnlocalizedName(MODID + ".catalog"),
+				new ItemPackage().setRegistryName(MODID, "uc_package").setUnlocalizedName(MODID + ".uc_package"),
+				new ItemUCSign().setRegistryName(MODID, "uc_sign").setUnlocalizedName(MODID + ".uc_sign"),
+				new ItemVendorWrench().setRegistryName(MODID, "vendor_wrench")
+						.setUnlocalizedName(MODID + ".vendor_wrench"));
 
 		// register ItemBlocks
-		FMLLog.info("Registering ItemBlocks");
 		Block[] blocks = { Blocks.atm, Blocks.packager, Blocks.power_receiver, Blocks.power_transmitter, Blocks.safe,
-				Blocks.signalblock, Blocks.tradestation, Blocks.vendor_block };
+				Blocks.signalblock, Blocks.tradestation, Blocks.vendor_block, Blocks.vendor_frame };
 		for (Block block : blocks) {
-			event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
+			event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName())
+					.setUnlocalizedName(block.getUnlocalizedName()));
 		}
 	}
 

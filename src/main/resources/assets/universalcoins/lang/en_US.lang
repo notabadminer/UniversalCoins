@@ -1,27 +1,27 @@
 #####
 # Main
 #####
-item.iron_coin.name=Coin
-item.gold_coin.name=Gold Coin
-item.emerald_coin.name=Emerald Coin
-item.diamond_coin.name=Diamond Coin
-item.obsidian_coin.name=Obsidian Coin
-item.uc_card.name=UC Card
-item.ender_card.name=Ender Card
-item.link_card.name=Remote Storage Linking Card
-item.catalog.name=Selling Catalog
-item.vendor_wrench.name=Vendor Wrench
-tile.tradestation.name=Trade Station
-item.uc_sign.name=Advanced Sign
-item.uc_package.name=Package
-tile.safe.name=Ender Safe
-tile.vendor.name=Vendor Block
-tile.vendor_frame.name=Vendor Frame
-tile.signalblock.name=Redstone Signal Generator
-tile.packager.name=Packager
-tile.power_transmitter.name=RF Transmitter
-tile.power_receiver.name=RF Receiver
-tile.atm.name=ATM
+item.universalcoins.iron_coin.name=Coin
+item.universalcoins.gold_coin.name=Gold Coin
+item.universalcoins.emerald_coin.name=Emerald Coin
+item.universalcoins.diamond_coin.name=Diamond Coin
+item.universalcoins.obsidian_coin.name=Obsidian Coin
+item.universalcoins.uc_card.name=UC Card
+item.universalcoins.ender_card.name=Ender Card
+item.universalcoins.link_card.name=Remote Storage Linking Card
+item.universalcoins.catalog.name=Selling Catalog
+item.universalcoins.vendor_wrench.name=Vendor Wrench
+tile.universalcoins.tradestation.name=Trade Station
+item.universalcoins.uc_sign.name=Advanced Sign
+item.universalcoins.uc_package.name=Package
+tile.universalcoins.safe.name=Ender Safe
+tile.universalcoins.vendor_block.name=Vendor Block
+tile.universalcoins.vendor_frame.name=Vendor Frame
+tile.universalcoins.signalblock.name=Redstone Signal Generator
+tile.universalcoins.packager.name=Packager
+tile.universalcoins.power_transmitter.name=RF Transmitter
+tile.universalcoins.power_receiver.name=RF Receiver
+tile.universalcoins.atm.name=ATM
 itemGroup.tabUniversalCoins=Universal Coins
 
 #####
