@@ -45,18 +45,18 @@ public class BlockPowerTransmitter extends BlockProtected {
 		}
 	}
 
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
-			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		TileEntity te = world.getTileEntity(pos);
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		TileEntity te = worldIn.getTileEntity(pos);
 		if (te != null && te instanceof TilePowerTransmitter) {
 			TilePowerTransmitter tentity = (TilePowerTransmitter) te;
-			if (tentity.publicAccess || player.getName().matches(tentity.blockOwner)) {
-				tentity.blockOwner = player.getName();
-				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
+			if (tentity.publicAccess || playerIn.getName().matches(tentity.blockOwner)) {
+				tentity.blockOwner = playerIn.getName();
+				playerIn.openGui(UniversalCoins.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
 				return true;
 			}
-			if (!world.isRemote) {
-				player.sendMessage(new TextComponentTranslation("chat.warning.private"));
+			if (!worldIn.isRemote) {
+				playerIn.sendMessage(new TextComponentTranslation("chat.warning.private"));
 			}
 		}
 		return false;

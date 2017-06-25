@@ -48,7 +48,7 @@ public class ContainerVendorSell extends Container {
 
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slot) {
-		ItemStack stack = null;
+		ItemStack stack = ItemStack.EMPTY;
 		Slot slotObject = (Slot) inventorySlots.get(slot);
 		// null checks and checks if the item can be stacked (maxStackSize > 1)
 		if (slotObject != null && slotObject.getHasStack()) {
@@ -58,7 +58,7 @@ public class ContainerVendorSell extends Container {
 			// merges the item into player inventory since its in the tileEntity
 			if (slot < 5) {
 				if (!this.mergeItemStack(stackInSlot, 5, 41, true)) {
-					return null;
+					return ItemStack.EMPTY;
 				}
 			}
 			// places it into the tileEntity is possible since its in the player
@@ -73,18 +73,18 @@ public class ContainerVendorSell extends Container {
 					}
 				}
 				if (!foundSlot) {
-					return null;
+					return ItemStack.EMPTY;
 				}
 			}
 
 			if (stackInSlot.getCount() == 0) {
-				slotObject.putStack(null);
+				slotObject.putStack(ItemStack.EMPTY);
 			} else {
 				slotObject.onSlotChanged();
 			}
 
 			if (stackInSlot.getCount() == stack.getCount()) {
-				return null;
+				return ItemStack.EMPTY;
 			}
 			slotObject.onTake(player, stackInSlot);
 		}

@@ -47,19 +47,19 @@ public class BlockATM extends BlockProtected {
 		super.onBlockPlacedBy(world, pos, state, player, stack);
 	}
 
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
-			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		TileEntity tileEntity = world.getTileEntity(pos);
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		TileEntity tileEntity = worldIn.getTileEntity(pos);
 		if (tileEntity != null && tileEntity instanceof TileATM) {
 			if (((TileATM) tileEntity).inUse) {
-				if (!world.isRemote) {
-					player.sendMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
+				if (!worldIn.isRemote) {
+					playerIn.sendMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
 				}
 				return true;
 			} else {
-				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
-				((TileATM) tileEntity).playerName = player.getName();
-				((TileATM) tileEntity).playerUID = player.getUniqueID().toString();
+				playerIn.openGui(UniversalCoins.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+				((TileATM) tileEntity).playerName = playerIn.getName();
+				((TileATM) tileEntity).playerUID = playerIn.getUniqueID().toString();
 				((TileATM) tileEntity).inUse = true;
 				return true;
 			}

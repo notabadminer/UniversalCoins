@@ -28,7 +28,7 @@ public class BlockTradeStation extends BlockProtected {
 		setCreativeTab(UniversalCoins.tabUniversalCoins);
 		setResistance(6000.0F);
 	}
-	
+
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
 			ItemStack stack) {
 		super.onBlockPlacedBy(world, pos, state, player, stack);
@@ -44,31 +44,32 @@ public class BlockTradeStation extends BlockProtected {
 		}
 	}
 
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
-			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		TileEntity tileEntity = world.getTileEntity(pos);
+	@Override
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		TileEntity tileEntity = worldIn.getTileEntity(pos);
 		if (tileEntity != null && tileEntity instanceof TileTradeStation) {
 			TileTradeStation tentity = (TileTradeStation) tileEntity;
 			if (tentity.inUse) {
-				if (!world.isRemote) {
-					player.sendMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
+				if (!worldIn.isRemote) {
+					playerIn.sendMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
 				}
 				return true;
 			}
 			if (tentity.publicAccess) {
-				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
-				tentity.playerName = player.getName();
+				playerIn.openGui(UniversalCoins.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+				tentity.playerName = playerIn.getName();
 				tentity.inUse = true;
 				return true;
 			} else {
-				if (tentity.blockOwner.matches(player.getName())) {
-					player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
-					tentity.playerName = player.getName();
+				if (tentity.blockOwner.matches(playerIn.getName())) {
+					playerIn.openGui(UniversalCoins.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+					tentity.playerName = playerIn.getName();
 					tentity.inUse = true;
 					return true;
 				}
-				if (!world.isRemote) {
-					player.sendMessage(new TextComponentString(I18n.translateToLocal("chat.warning.private")));
+				if (!worldIn.isRemote) {
+					playerIn.sendMessage(new TextComponentString(I18n.translateToLocal("chat.warning.private")));
 				}
 			}
 		}
@@ -96,7 +97,8 @@ public class BlockTradeStation extends BlockProtected {
 	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
 			boolean willHarvest) {
 		if (willHarvest)
-			return true; // If it will harvest, delay deletion of the block until after getDrops
+			return true; // If it will harvest, delay deletion of the block
+							// until after getDrops
 		return super.removedByPlayer(state, world, pos, player, willHarvest);
 	}
 

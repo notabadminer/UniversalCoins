@@ -33,15 +33,15 @@ public class BlockSafe extends BlockProtected {
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 	}
 
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
-			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		TileEntity tileEntity = world.getTileEntity(pos);
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		TileEntity tileEntity = worldIn.getTileEntity(pos);
 		if (tileEntity != null && tileEntity instanceof TileSafe) {
 			TileSafe tentity = (TileSafe) tileEntity;
-			if (player.getName().matches(tentity.blockOwner)) {
-				if (!world.isRemote)
+			if (playerIn.getName().matches(tentity.blockOwner)) {
+				if (!worldIn.isRemote)
 					tentity.updateAccountBalance();
-				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
+				playerIn.openGui(UniversalCoins.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
 			}
 		}
 		return true;

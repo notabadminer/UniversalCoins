@@ -70,22 +70,22 @@ public class BlockVendor extends BlockProtected {
 		}
 	}
 
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
-			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		TileEntity tileEntity = world.getTileEntity(pos);
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		TileEntity tileEntity = worldIn.getTileEntity(pos);
 		if (tileEntity != null && tileEntity instanceof TileVendor) {
 			TileVendor tentity = (TileVendor) tileEntity;
 			if (tentity.inUse) {
-				if (!world.isRemote) {
-					player.sendMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
+				if (!worldIn.isRemote) {
+					playerIn.sendMessage(new TextComponentString(I18n.translateToLocal("chat.warning.inuse")));
 				}
 				return true;
 			} else {
 				tentity.updateEntity();
-				tentity.playerName = player.getName();
+				tentity.playerName = playerIn.getName();
 				tentity.inUse = true;
 				tentity.updateCoinsForPurchase();
-				player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
+				playerIn.openGui(UniversalCoins.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
 				return true;
 			}
 		}

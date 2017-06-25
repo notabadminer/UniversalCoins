@@ -38,9 +38,9 @@ public class UCBalance extends CommandBase implements ICommand {
 			String playerAcct = UniversalAccounts.getInstance().getPlayerAccount(uuid);
 			long accountBalance = UniversalAccounts.getInstance().getAccountBalance(playerAcct);
 			DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
-			sender.sendMessage(new TextComponentString("Inventory:" + formatter.format(playerCoins)));
+			sender.sendMessage(new TextComponentString("Inventory: " + formatter.format(playerCoins)));
 			if (accountBalance != -1) {
-				sender.sendMessage(new TextComponentString("Account:" + formatter.format(accountBalance)));
+				sender.sendMessage(new TextComponentString("Account: " + formatter.format(accountBalance)));
 			}
 //			// achievement stuff
 //			if (playerCoins > 1000 || accountBalance > 1000) {
@@ -64,19 +64,19 @@ public class UCBalance extends CommandBase implements ICommand {
 			ItemStack stack = player.inventory.getStackInSlot(i);
 			if (stack != null) {
 				switch (stack.getUnlocalizedName()) {
-				case "item.iron_coin":
+				case "item.universalcoins.iron_coin":
 					coinsFound += stack.getCount() * UniversalCoins.coinValues[0];
 					break;
-				case "item.gold_coin":
+				case "item.universalcoins.gold_coin":
 					coinsFound += stack.getCount() * UniversalCoins.coinValues[1];
 					break;
-				case "item.emerald_coin":
+				case "item.universalcoins.emerald_coin":
 					coinsFound += stack.getCount() * UniversalCoins.coinValues[2];
 					break;
-				case "item.diamond_coin":
+				case "item.universalcoins.diamond_coin":
 					coinsFound += stack.getCount() * UniversalCoins.coinValues[3];
 					break;
-				case "item.obsidian_coin":
+				case "item.universalcoins.obsidian_coin":
 					coinsFound += stack.getCount() * UniversalCoins.coinValues[4];
 					break;
 				}

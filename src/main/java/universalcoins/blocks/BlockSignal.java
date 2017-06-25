@@ -40,59 +40,59 @@ public class BlockSignal extends BlockProtected {
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 	}
 
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
-			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		if (player.isSneaking()) {
-			TileEntity te = world.getTileEntity(pos);
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		if (playerIn.isSneaking()) {
+			TileEntity te = worldIn.getTileEntity(pos);
 			if (te != null && te instanceof TileSignal) {
 				TileSignal tentity = (TileSignal) te;
-				if (player.getCommandSenderEntity().getName().matches(tentity.blockOwner)) {
-					player.openGui(UniversalCoins.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
+				if (playerIn.getCommandSenderEntity().getName().matches(tentity.blockOwner)) {
+					playerIn.openGui(UniversalCoins.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
 				}
 			}
 		} else {
 			// take coins and activate on click
-			NonNullList<ItemStack> inventory = player.inventory.mainInventory;
-			TileSignal tentity = (TileSignal) world.getTileEntity(pos);
+			NonNullList<ItemStack> inventory = playerIn.inventory.mainInventory;
+			TileSignal tentity = (TileSignal) worldIn.getTileEntity(pos);
 			int coinsFound = 0;
-			for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-				ItemStack stack = player.inventory.getStackInSlot(i);
+			for (int i = 0; i < playerIn.inventory.getSizeInventory(); i++) {
+				ItemStack stack = playerIn.inventory.getStackInSlot(i);
 				if (stack != null) {
 					switch (stack.getItem().getUnlocalizedName()) {
 					case "item.iron_coin":
 						coinsFound += stack.getCount() * UniversalCoins.coinValues[0];
-						player.inventory.setInventorySlotContents(i, null);
+						playerIn.inventory.setInventorySlotContents(i, null);
 						break;
 					case "item.gold_coin":
 						coinsFound += stack.getCount() * UniversalCoins.coinValues[1];
-						player.inventory.setInventorySlotContents(i, null);
+						playerIn.inventory.setInventorySlotContents(i, null);
 						break;
 					case "item.emerald_coin":
 						coinsFound += stack.getCount() * UniversalCoins.coinValues[2];
-						player.inventory.setInventorySlotContents(i, null);
+						playerIn.inventory.setInventorySlotContents(i, null);
 						break;
 					case "item.diamond_coin":
 						coinsFound += stack.getCount() * UniversalCoins.coinValues[3];
-						player.inventory.setInventorySlotContents(i, null);
+						playerIn.inventory.setInventorySlotContents(i, null);
 						break;
 					case "item.obsidian_coin":
 						coinsFound += stack.getCount() * UniversalCoins.coinValues[4];
-						player.inventory.setInventorySlotContents(i, null);
+						playerIn.inventory.setInventorySlotContents(i, null);
 						break;
 					}
 				}
 				if (coinsFound > tentity.fee)
 					break;
 			}
-			if (world.isRemote)
+			if (worldIn.isRemote)
 				return true; // we don't want to do the rest on client side
 			if (coinsFound < tentity.fee) {
-				player.sendMessage(new TextComponentString(I18n.translateToLocal("signal.message.notenough")));
+				playerIn.sendMessage(new TextComponentString(I18n.translateToLocal("signal.message.notenough")));
 			} else {
 				// we have enough coins to cover the fee so we pay it and
 				// return
 				// the change
-				player.sendMessage(new TextComponentString(I18n.translateToLocal("signal.message.activated")));
+				playerIn.sendMessage(new TextComponentString(I18n.translateToLocal("signal.message.activated")));
 				coinsFound -= tentity.fee;
 				tentity.activateSignal();
 			}
@@ -122,11 +122,11 @@ public class BlockSignal extends BlockProtected {
 				if (stack == null)
 					break;
 				// add a stack to the players inventory
-				if (player.inventory.getFirstEmptyStack() != -1) {
-					player.inventory.addItemStackToInventory(stack);
+				if (playerIn.inventory.getFirstEmptyStack() != -1) {
+					playerIn.inventory.addItemStackToInventory(stack);
 				} else {
-					for (int j = 0; j < player.inventory.getSizeInventory(); j++) {
-						ItemStack istack = player.inventory.getStackInSlot(j);
+					for (int j = 0; j < playerIn.inventory.getSizeInventory(); j++) {
+						ItemStack istack = playerIn.inventory.getStackInSlot(j);
 						if (istack != null && istack.getItem() == stack.getItem()) {
 							int amountToAdd = (int) Math.min(stack.getCount(),
 									istack.getMaxStackSize() - istack.getCount());
@@ -142,9 +142,9 @@ public class BlockSignal extends BlockProtected {
 						float rx = rand.nextFloat() * 0.8F + 0.1F;
 						float ry = rand.nextFloat() * 0.8F + 0.1F;
 						float rz = rand.nextFloat() * 0.8F + 0.1F;
-						EntityItem entityItem = new EntityItem(world, ((EntityPlayerMP) player).posX + rx,
-								((EntityPlayerMP) player).posY + ry, ((EntityPlayerMP) player).posZ + rz, stack);
-						world.spawnEntity(entityItem);
+						EntityItem entityItem = new EntityItem(worldIn, ((EntityPlayerMP) playerIn).posX + rx,
+								((EntityPlayerMP) playerIn).posY + ry, ((EntityPlayerMP) playerIn).posZ + rz, stack);
+						worldIn.spawnEntity(entityItem);
 					}
 				}
 			}
