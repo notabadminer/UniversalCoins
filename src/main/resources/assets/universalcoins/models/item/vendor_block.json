@@ -1,5 +1,5 @@
 {
-    "parent": "universalcoins:block/vendor",
+    "parent": "universalcoins:block/vendor_block",
     "display": {
         "thirdperson": {
             "rotation": [ 10, -45, 170 ],

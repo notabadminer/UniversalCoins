@@ -137,10 +137,10 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 						EnumFacing.WEST),
 				false);
 		// vending blocks
-		this.fillWithBlocks(world, sbb, 0, 2, 1, 0, 2, 6, UniversalCoins.Blocks.vendor.getDefaultState(),
-				UniversalCoins.Blocks.vendor.getDefaultState(), false);
-		this.fillWithBlocks(world, sbb, 5, 2, 1, 5, 2, 6, UniversalCoins.Blocks.vendor.getDefaultState(),
-				UniversalCoins.Blocks.vendor.getDefaultState(), false);
+		this.fillWithBlocks(world, sbb, 0, 2, 1, 0, 2, 6, UniversalCoins.Blocks.vendor_block.getDefaultState(),
+				UniversalCoins.Blocks.vendor_block.getDefaultState(), false);
+		this.fillWithBlocks(world, sbb, 5, 2, 1, 5, 2, 6, UniversalCoins.Blocks.vendor_block.getDefaultState(),
+				UniversalCoins.Blocks.vendor_block.getDefaultState(), false);
 
 		// list of items
 		List<Item> saleItems = new ArrayList();

@@ -18,6 +18,7 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -40,8 +41,6 @@ import universalcoins.blocks.BlockPowerTransmitter;
 import universalcoins.blocks.BlockSafe;
 import universalcoins.blocks.BlockSignal;
 import universalcoins.blocks.BlockTradeStation;
-import universalcoins.blocks.BlockUCStandingSign;
-import universalcoins.blocks.BlockUCWallSign;
 import universalcoins.blocks.BlockVendor;
 import universalcoins.blocks.BlockVendorFrame;
 import universalcoins.commands.UCBalance;
@@ -49,6 +48,18 @@ import universalcoins.commands.UCCommand;
 import universalcoins.commands.UCGive;
 import universalcoins.commands.UCRebalance;
 import universalcoins.commands.UCSend;
+import universalcoins.items.ItemCatalog;
+import universalcoins.items.ItemCoin;
+import universalcoins.items.ItemEnderCard;
+import universalcoins.items.ItemFifthCoin;
+import universalcoins.items.ItemFourthCoin;
+import universalcoins.items.ItemLinkCard;
+import universalcoins.items.ItemPackage;
+import universalcoins.items.ItemSecondCoin;
+import universalcoins.items.ItemThirdCoin;
+import universalcoins.items.ItemUCCard;
+import universalcoins.items.ItemUCSign;
+import universalcoins.items.ItemVendorWrench;
 import universalcoins.net.ATMWithdrawalMessage;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCPackagerServerMessage;
@@ -74,7 +85,6 @@ import universalcoins.tileentity.TileVendorFrame;
 import universalcoins.util.UCItemPricer;
 import universalcoins.util.UCMobDropEventHandler;
 import universalcoins.util.UCPlayerPickupEventHandler;
-import universalcoins.util.UCRecipeHelper;
 import universalcoins.worldgen.VillageGenBank;
 import universalcoins.worldgen.VillageGenShop;
 import universalcoins.worldgen.VillageGenTrade;
@@ -100,10 +110,8 @@ public class UniversalCoins {
 	public static CreativeTabs tabUniversalCoins = new UCTab("tabUniversalCoins");
 
 	public static int[] coinValues;
-	public static Boolean blockProtection, autoModeEnabled, tradeStationRecipesEnabled, vendorRecipesEnabled,
-			vendorFrameRecipesEnabled, atmRecipeEnabled, enderCardRecipeEnabled, signalRecipeEnabled,
-			linkCardRecipeEnabled, tradeStationBuyEnabled, packagerRecipeEnabled, mobsDropCoins, coinsInMineshaft,
-			powerBaseRecipeEnabled, powerReceiverRecipeEnabled, coinsInDungeon;
+	public static Boolean blockProtection, autoModeEnabled, tradeStationBuyEnabled, mobsDropCoins, coinsInMineshaft,
+			coinsInDungeon;
 	public static Integer mobDropMax, mobDropChance, enderDragonMultiplier, smallPackagePrice, medPackagePrice,
 			largePackagePrice, rfWholesaleRate, rfRetailRate, bankGenWeight, shopGenWeight, tradeGenWeight,
 			shopMinPrice, shopMaxPrice;
@@ -112,59 +120,48 @@ public class UniversalCoins {
 
 	@ObjectHolder(UniversalCoins.MODID)
 	public static class Blocks {
-		public static Block tradestation = null;
-		public static Block safe = null;
-		public static Block signalblock = null;
-		public static Block vendor = null;
-		public static Block vendor_frame = null;
-		public static Block packager = null;
-		public static Block standing_ucsign = null;
-		public static Block wall_ucsign = null;
-		public static Block power_transmitter = null;
-		public static Block power_receiver = null;
-		public static Block atm = null;
-	}
+		public static final Block tradestation = null;
+		public static final Block safe = null;
+		public static final Block signalblock = null;
+		public static final Block vendor_block = null;
+		public static final Block vendor_frame = null;
+		public static final Block packager = null;
+		public static final Block standing_ucsign = null;
+		public static final Block wall_ucsign = null;
+		public static final Block power_transmitter = null;
+		public static final Block power_receiver = null;
+		public static final Block atm = null;
+	};
 
 	@ObjectHolder(UniversalCoins.MODID)
 	public static class Items {
-		public static Item iron_coin = null;
-		public static Item gold_coin = null;
-		public static Item emerald_coin = null;
-		public static Item diamond_coin = null;
-		public static Item obsidian_coin = null;
-		public static Item uc_card = null;
-		public static Item uc_package = null;
-		public static Item ender_card = null;
-		public static Item link_card = null;
-		public static Item uc_sign = null;
-		public static Item vendor_wrench = null;
-		public static Item catalog = null;
-		public static Item tradestation = null;
-		public static Item safe = null;
-		public static Item signalblock = null;
-		public static Item vendor = null;
-		public static Item vendor_frame = null;
-		public static Item packager = null;
-		public static Item standing_ucsign = null;
-		public static Item wall_ucsign = null;
-		public static Item power_transmitter = null;
-		public static Item power_receiver = null;
-		public static Item atm = null;
+		public static final Item iron_coin = null;
+		public static final Item gold_coin = null;
+		public static final Item emerald_coin = null;
+		public static final Item diamond_coin = null;
+		public static final Item obsidian_coin = null;
+		public static final Item uc_card = null;
+		public static final Item uc_package = null;
+		public static final Item ender_card = null;
+		public static final Item link_card = null;
+		public static final Item uc_sign = null;
+		public static final Item vendor_wrench = null;
+		public static final Item catalog = null;
 	}
 
 	@SubscribeEvent
 	public static void registerBlocks(RegistryEvent.Register<Block> event) {
-		event.getRegistry().registerAll(new BlockTradeStation().setRegistryName(MODID, "tradestation"),
-				new BlockSafe().setRegistryName(MODID, "safe"), new BlockSignal().setRegistryName(MODID, "signalblock"),
-				new BlockVendor().setRegistryName(MODID, "vendor"),
-				new BlockVendorFrame().setRegistryName(MODID, "vendor_frame"),
+		FMLLog.info("Registering Blocks");
+		event.getRegistry().registerAll(new BlockATM().setRegistryName(MODID, "atm"),
 				new BlockPackager().setRegistryName(MODID, "packager"),
-				new BlockUCStandingSign(TileUCSign.class).setRegistryName(MODID, "standing_ucsign"),
-				new BlockUCWallSign(TileUCSign.class).setRegistryName(MODID, "wall_ucsign"),
-				new BlockPowerTransmitter().setRegistryName(MODID, "power_transmitter"),
 				new BlockPowerReceiver().setRegistryName(MODID, "power_receiver"),
-				new BlockATM().setRegistryName(MODID, "atm"));
+				new BlockPowerTransmitter().setRegistryName(MODID, "power_transmitter"),
+				new BlockSafe().setRegistryName(MODID, "safe"), new BlockSignal().setRegistryName(MODID, "signalblock"),
+				new BlockTradeStation().setRegistryName(MODID, "tradestation"),
+				new BlockVendor().setRegistryName(MODID, "vendor_block"),
+				new BlockVendorFrame().setRegistryName(MODID, "vendor_frame"));
 
+		FMLLog.info("Registering TileEntities");
 		// register TileEntitys
 		GameRegistry.registerTileEntity(TileProtected.class, MODID + ".protected");
 		GameRegistry.registerTileEntity(TileTradeStation.class, MODID + ".tradestation");
@@ -182,32 +179,35 @@ public class UniversalCoins {
 
 	@SubscribeEvent
 	public static void registerItems(RegistryEvent.Register<Item> event) {
-		// register ItemBlocks
-		Block[] blocks = { Blocks.atm, Blocks.packager, Blocks.power_receiver, Blocks.power_transmitter, Blocks.safe,
-				Blocks.signalblock, Blocks.tradestation, Blocks.vendor };
-		for (Block block : blocks)
-			event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
-
 		// register Items
-		event.getRegistry().register(Items.iron_coin);
-		event.getRegistry().register(Items.gold_coin);
-		event.getRegistry().register(Items.emerald_coin);
-		event.getRegistry().register(Items.diamond_coin);
-		event.getRegistry().register(Items.obsidian_coin);
-		event.getRegistry().register(Items.uc_card);
-		event.getRegistry().register(Items.ender_card);
-		event.getRegistry().register(Items.link_card);
-		event.getRegistry().register(Items.uc_package);
-		event.getRegistry().register(Items.uc_sign);
-		event.getRegistry().register(Items.vendor_wrench);
-		event.getRegistry().register(Items.catalog);
+		FMLLog.info("Registering Items");
+		event.getRegistry().registerAll(new ItemFourthCoin().setRegistryName(MODID, "diamond_coin"),
+				new ItemThirdCoin().setRegistryName(MODID, "emerald_coin"),
+				new ItemEnderCard().setRegistryName(MODID, "ender_card"),
+				new ItemSecondCoin().setRegistryName(MODID, "gold_coin"),
+				new ItemCoin().setRegistryName(MODID, "iron_coin"),
+				new ItemLinkCard().setRegistryName(MODID, "link_card"),
+				new ItemFifthCoin().setRegistryName(MODID, "obsidian_coin"),
+				new ItemUCCard().setRegistryName(MODID, "uc_card"), new ItemCatalog().setRegistryName(MODID, "catalog"),
+				new ItemPackage().setRegistryName(MODID, "uc_package"),
+				new ItemUCSign().setRegistryName(MODID, "uc_sign"),
+				new ItemVendorWrench().setRegistryName(MODID, "vendor_wrench"));
+
+		// register ItemBlocks
+		FMLLog.info("Registering ItemBlocks");
+		Block[] blocks = { Blocks.atm, Blocks.packager, Blocks.power_receiver, Blocks.power_transmitter, Blocks.safe,
+				Blocks.signalblock, Blocks.tradestation, Blocks.vendor_block };
+		for (Block block : blocks) {
+			event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
+		}
 	}
 
 	@SubscribeEvent
 	@SideOnly(CLIENT)
 	public static void registerModels(ModelRegistryEvent event) throws Exception {
-		for (Field f : Items.class.getDeclaredFields()) {
-			Item item = (Item) f.get(null);
+		Field[] fields = Items.class.getFields();
+		for (Field fid : fields) {
+			Item item = (Item) fid.get(null);
 			ModelLoader.setCustomModelResourceLocation(item, 0,
 					new ModelResourceLocation(item.getRegistryName(), "inventory"));
 		}
@@ -233,32 +233,6 @@ public class UniversalCoins {
 				"Set coin values. First value is not configureable and will be set to 1");
 		coinValues = coinProperty.getIntList();
 		coinValues[0] = 1; // Override any user set values.
-
-		// recipes
-		Property recipes = config.get("Recipes", "Trade Station Recipes", true);
-		recipes.setComment("Set to false to disable crafting recipes for selling catalog and trade station.");
-		tradeStationRecipesEnabled = recipes.getBoolean(true);
-		Property vendorRecipes = config.get("Recipes", "Vending Block Recipes", true);
-		vendorRecipes.setComment("Set to false to disable crafting recipes for vending blocks.");
-		vendorRecipesEnabled = vendorRecipes.getBoolean(true);
-		Property vendorFrameRecipe = config.get("Recipes", "Vending Frame Recipe", true);
-		vendorFrameRecipe.setComment("Set to false to disable crafting recipes for Vending Frame.");
-		vendorFrameRecipesEnabled = vendorFrameRecipe.getBoolean(true);
-		Property atmRecipe = config.get("Recipes", "ATM Recipe", true);
-		atmRecipe.setComment("Set to false to disable crafting recipes for ATM.");
-		atmRecipeEnabled = atmRecipe.getBoolean(true);
-		Property enderCardRecipe = config.get("Recipes", "Ender Card Recipe", true);
-		enderCardRecipe.setComment("Set to false to disable crafting recipes for Ender Card and Safe.");
-		enderCardRecipeEnabled = enderCardRecipe.getBoolean(true);
-		Property signalRecipe = config.get("Recipes", "Redstone Signal Generator Recipe", true);
-		signalRecipe.setComment("Set to false to disable crafting recipes for Redstone Signal Generator.");
-		signalRecipeEnabled = signalRecipe.getBoolean(true);
-		Property linkCardRecipe = config.get("Recipes", "Remote Storage Linking Card Recipe", true);
-		linkCardRecipe.setComment("Set to false to disable crafting recipes for Linking Card.");
-		linkCardRecipeEnabled = linkCardRecipe.getBoolean(true);
-		Property packagerRecipe = config.get("Recipes", "Packager Recipe", true);
-		packagerRecipe.setComment("Set to false to disable crafting recipes for Packager.");
-		packagerRecipeEnabled = packagerRecipe.getBoolean(true);
 
 		// loot
 		Property mobDrops = config.get("Loot", "Mob Drops", true,
@@ -297,12 +271,6 @@ public class UniversalCoins {
 		largePackagePrice = Math.max(1, Math.min(largePackage.getInt(40), 1000));
 
 		// rf utility (power company stuff)
-		Property rfBaseEnabled = config.get("RF Utility", "Power Base enabled", true);
-		rfBaseEnabled.setComment("Set to false to disable the power base block.");
-		powerBaseRecipeEnabled = rfBaseEnabled.getBoolean(true);
-		Property rfReceiverEnabled = config.get("RF Utility", "RF Blocks enabled", true);
-		rfReceiverEnabled.setComment("Set to false to disable the power receiver block.");
-		powerReceiverRecipeEnabled = rfReceiverEnabled.getBoolean(true);
 		Property rfWholesale = config.get("RF Utility", "Wholesale rate", 12);
 		rfWholesale.setComment("Set payment per 10 kRF of power sold. Default: 12");
 		rfWholesaleRate = Math.max(0, rfWholesale.getInt(12));
@@ -352,32 +320,6 @@ public class UniversalCoins {
 	public void init(FMLInitializationEvent event) {
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 
-		if (tradeStationRecipesEnabled) {
-			UCRecipeHelper.addTradeStationRecipe();
-		}
-		if (vendorRecipesEnabled) {
-			UCRecipeHelper.addVendingBlockRecipes();
-		}
-		if (vendorFrameRecipesEnabled) {
-			UCRecipeHelper.addVendingFrameRecipes();
-		}
-		if (atmRecipeEnabled) {
-			UCRecipeHelper.addCardStationRecipes();
-		}
-		if (enderCardRecipeEnabled) {
-			UCRecipeHelper.addEnderCardRecipes();
-			UCRecipeHelper.addBlockSafeRecipe();
-		}
-		if (signalRecipeEnabled) {
-			UCRecipeHelper.addSignalRecipes();
-		}
-		if (linkCardRecipeEnabled) {
-			UCRecipeHelper.addLinkCardRecipes();
-		}
-		if (packagerRecipeEnabled) {
-			UCRecipeHelper.addPackagerRecipes();
-		}
-		UCRecipeHelper.addSignRecipes();
 		// worldgen
 		if (bankGenWeight > 0) {
 			VillageGenBank villageHandler = new VillageGenBank();

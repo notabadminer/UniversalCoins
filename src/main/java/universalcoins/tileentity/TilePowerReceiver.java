@@ -342,17 +342,6 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	}
 
 	protected void buyPower() {
-		if (!UniversalCoins.powerBaseRecipeEnabled) {
-			// if we have no transmitter, we use infinite power
-			if (rfLevel == 0 && debitAccount(UniversalCoins.rfRetailRate)) {
-				rfLevel += 10000;
-			} else if (rfLevel == 0 && coinSum - UniversalCoins.rfRetailRate >= 0) {
-				coinSum -= UniversalCoins.rfRetailRate;
-				rfLevel += 10000;
-			}
-			wrfLevel = UniversalPower.getInstance().getRFLevel();
-			return;
-		}
 		if (rfLevel == 0 && UniversalPower.getInstance().extractEnergy(10, true) > 0
 				&& debitAccount(UniversalCoins.rfRetailRate)) {
 			UniversalPower.getInstance().extractEnergy(10, false);

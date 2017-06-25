@@ -21,20 +21,21 @@ import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.PotionType;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.FMLInjectionData;
 import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
+import net.minecraftforge.oredict.OreIngredient;
 
 public class UCItemPricer {
 
@@ -352,8 +353,8 @@ public class UCItemPricer {
 	}
 
 	private void autoPriceCraftedItems() {
-		// FMLLog.info("in autoPriceCraftedItems");
-		List<IRecipe> allrecipes = new ArrayList<IRecipe>(CraftingManager.REGISTRY.getRecipeList());
+		FMLLog.info("in autoPriceCraftedItems");
+		List<IRecipe> allrecipes = GameData.getRecipeRegistry().getValues();
 		boolean priceUpdate = false;
 
 		// we rerun multiple times if needed since recipe components might be
@@ -367,30 +368,44 @@ public class UCItemPricer {
 				int itemCost = 0;
 				boolean validRecipe = true;
 				ItemStack output = irecipe.getRecipeOutput();
-				if (output == null) {
-					// FMLLog.info("invalid recipe output");
+				FMLLog.info("Recipe output: " + output.getDisplayName());
+				if (output == null || output.getItem() == Items.AIR) {
 					continue;
 				}
 				if (UCItemPricer.getInstance().getItemPrice(output) != -1) {
-					// FMLLog.info("recipe output is already priced: " +
-					// output.getDisplayName());
+					FMLLog.info("recipe output price already set.");
 					continue;
 				}
-				// FMLLog.info("Starting pricing recipe for " +
-				// output.getDisplayName());
-				List recipeItems = getRecipeInputs(irecipe);
+				FMLLog.info("Starting pricing recipe for " + output.getDisplayName());
+				NonNullList<Ingredient> recipeItems = irecipe.getIngredients();
 				for (int i = 0; i < recipeItems.size(); i++) {
-					ItemStack stack = (ItemStack) recipeItems.get(i);
-					// FMLLog.info("recipe ingredient " + i + " " +
-					// stack.getDisplayName());
-					// FMLLog.info("price: " +
-					// UCItemPricer.getInstance().getItemPrice(stack));
+					ItemStack stack = null;
+					FMLLog.info("Ingredient: " + recipeItems.get(i));
+					if (recipeItems.get(i) instanceof OreIngredient) {
+						OreIngredient test = (OreIngredient) recipeItems.get(i);
+						stack = test.getMatchingStacks()[0]; // TODO iterate and
+																// check for
+																// priced items
+					} else {
+						if (recipeItems.get(i).getMatchingStacks().length > 0) {
+							stack = recipeItems.get(i).getMatchingStacks()[0]; // TODO
+																				// do
+																				// we
+																				// need
+																				// to
+																				// iterate
+																				// here?
+						}
+					}
+					if (stack == null)
+						continue;
+					FMLLog.info("recipe ingredient " + i + " " + stack.getDisplayName());
+					FMLLog.info("price: " + UCItemPricer.getInstance().getItemPrice(stack));
 					if (UCItemPricer.getInstance().getItemPrice(stack) != -1) {
 						itemCost += UCItemPricer.getInstance().getItemPrice(stack);
 					} else {
 						validRecipe = false;
-						// FMLLog.info("can't price " +
-						// output.getDisplayName());
+						FMLLog.info("can't price " + output.getDisplayName());
 						break;
 					}
 				}
@@ -400,8 +415,7 @@ public class UCItemPricer {
 						itemCost = itemCost / output.getCount();
 					}
 					try {
-						// FMLLog.info("Setting price of " +
-						// output.getDisplayName() + " to " + itemCost);
+						FMLLog.info("Setting price of " + output.getDisplayName() + " to " + itemCost);
 						UCItemPricer.getInstance().setItemPrice(output, itemCost);
 					} catch (Exception e) {
 						FMLLog.warning("Universal Coins Autopricer: Failed to set item price.");
@@ -409,85 +423,6 @@ public class UCItemPricer {
 				}
 			}
 		} while (priceUpdate == true);
-	}
-
-	public static List<ItemStack> getRecipeInputs(IRecipe recipe) {
-		ArrayList<ItemStack> recipeInputs = new ArrayList<ItemStack>();
-		if (recipe instanceof ShapedRecipes) {
-			ShapedRecipes shapedRecipe = (ShapedRecipes) recipe;
-			for (int i = 0; i < shapedRecipe.recipeItems.size(); i++) {
-				if (shapedRecipe.recipeItems[i] instanceof ItemStack) {
-					ItemStack itemStack = shapedRecipe.recipeItems[i].copy();
-					if (itemStack.getCount() > 1) {
-						itemStack.setCount(1);
-					}
-					recipeInputs.add(itemStack);
-				}
-			}
-		} else if (recipe instanceof ShapelessRecipes) {
-			ShapelessRecipes shapelessRecipe = (ShapelessRecipes) recipe;
-			for (Object object : shapelessRecipe.recipeItems) {
-				if (object instanceof ItemStack) {
-					ItemStack itemStack = ((ItemStack) object).copy();
-					if (itemStack.getCount() > 1) {
-						itemStack.setCount(1);
-					}
-					recipeInputs.add(itemStack);
-				}
-			}
-		} else if (recipe instanceof ShapedOreRecipe) {
-			ShapedOreRecipe shapedOreRecipe = (ShapedOreRecipe) recipe;
-			for (int i = 0; i < shapedOreRecipe.getInput().length; i++) {
-				if (shapedOreRecipe.getInput()[i] instanceof ArrayList) {
-					ArrayList test = (ArrayList) shapedOreRecipe.getInput()[i];
-					if (test.size() > 0) {
-						boolean arrayListHasPricedItem = false;
-						for (int j = 0; j < test.size(); j++) {
-							if (UCItemPricer.getInstance().getItemPrice((ItemStack) test.get(j)) > 0) {
-								recipeInputs.add((ItemStack) test.get(j));
-								arrayListHasPricedItem = true;
-								break;
-							}
-						}
-						// everything is invalid, just add one
-						if (!arrayListHasPricedItem) {
-							recipeInputs.add((ItemStack) test.get(0));
-						}
-					}
-				} else if (shapedOreRecipe.getInput()[i] instanceof ItemStack) {
-					ItemStack itemStack = ((ItemStack) shapedOreRecipe.getInput()[i]).copy();
-					if (itemStack.getCount() > 1) {
-						itemStack.setCount(1);
-					}
-					recipeInputs.add(itemStack);
-				}
-			}
-		} else if (recipe instanceof ShapelessOreRecipe) {
-			ShapelessOreRecipe shapelessOreRecipe = (ShapelessOreRecipe) recipe;
-			for (Object object : shapelessOreRecipe.getInput()) {
-				if (object instanceof ArrayList) {
-					ArrayList test = (ArrayList) object;
-					boolean arrayListHasPricedItem = false;
-					for (int j = 0; j < test.size(); j++) {
-						if (UCItemPricer.getInstance().getItemPrice((ItemStack) test.get(j)) > 0) {
-							recipeInputs.add((ItemStack) test.get(j));
-							arrayListHasPricedItem = true;
-							break;
-						}
-					}
-					// everything is invalid, just add one
-					if (!arrayListHasPricedItem && test.size() > 0)
-						recipeInputs.add((ItemStack) test.get(0));
-				} else if (object instanceof ItemStack) {
-					ItemStack itemStack = ((ItemStack) object).copy();
-					if (itemStack.getCount() > 1) {
-						itemStack.setCount(1);
-					}
-					recipeInputs.add(itemStack);
-				}
-			}
-		}
-		return recipeInputs;
 	}
 
 	private void autoPriceSmeltedItems() {
@@ -554,7 +489,9 @@ public class UCItemPricer {
 			} else {
 				modName = modNameArray[0];
 			}
-			addItemToPriceMap(modName, stack);
+			if (stack.getItem() != Item.getItemFromBlock(Blocks.AIR)) {
+				addItemToPriceMap(modName, stack);
+			}
 		}
 	}
 
