@@ -13,7 +13,7 @@ public class UCSlotGhost extends Slot {
 
 	@Override
 	public boolean canTakeStack(EntityPlayer player) {
-		this.putStack(null);
+		this.putStack(ItemStack.EMPTY);
 		return false;
 	}
 
@@ -21,11 +21,10 @@ public class UCSlotGhost extends Slot {
 	public boolean isItemValid(ItemStack stack) {
 		// copy itemstack held
 		if (stack != null) {
-			this.putStack(null); // we have to set the stack to null if
-									// something is there else we crash
+			this.putStack(ItemStack.EMPTY);
 			this.putStack(stack.copy());
 		} else {
-			this.putStack(null);
+			this.putStack(ItemStack.EMPTY);
 		}
 		// return false so user keeps itemstack
 		return false;

@@ -81,7 +81,7 @@ public class BlockVendor extends BlockProtected {
 				}
 				return true;
 			} else {
-				tentity.updateEntity();
+				tentity.update();
 				tentity.playerName = playerIn.getName();
 				tentity.inUse = true;
 				tentity.updateCoinsForPurchase();

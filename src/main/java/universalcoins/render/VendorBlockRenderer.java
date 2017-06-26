@@ -2,7 +2,7 @@ package universalcoins.render;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RenderEntityItem;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -11,15 +11,11 @@ import universalcoins.tileentity.TileVendor;
 
 public class VendorBlockRenderer extends TileEntitySpecialRenderer {
 
-	RenderEntityItem renderer = new RenderEntityItem(Minecraft.getMinecraft().getRenderManager(),
-			Minecraft.getMinecraft().getRenderItem());
-
 	public VendorBlockRenderer() {
 	}
 
 	@Override
-	public void renderTileEntityFast(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage,
-			float partial, net.minecraft.client.renderer.BufferBuilder buffer) {
+	public void render(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
 		TileVendor tVendor = (TileVendor) te;
 
 		if (tVendor == null || tVendor.getBlockType() == null) {
@@ -28,7 +24,7 @@ public class VendorBlockRenderer extends TileEntitySpecialRenderer {
 
 		ItemStack itemstack = tVendor.getSellItem();
 
-		if (itemstack == null) {
+		if (itemstack.isEmpty()) {
 			return;
 		}
 		EntityItem entity = new EntityItem(null, x, y, z, itemstack);
@@ -40,7 +36,8 @@ public class VendorBlockRenderer extends TileEntitySpecialRenderer {
 
 		try {
 			// render trade item
-			renderer.doRender(entity, 0, 0, 0, 0, Minecraft.getMinecraft().player.ticksExisted);
+			Minecraft.getMinecraft().getRenderManager().doRenderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F,
+					Minecraft.getMinecraft().player.ticksExisted, false);
 		} catch (Throwable e) {
 		}
 		GlStateManager.popMatrix();

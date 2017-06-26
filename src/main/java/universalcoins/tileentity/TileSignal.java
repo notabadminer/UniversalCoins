@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
@@ -19,8 +20,7 @@ import universalcoins.blocks.BlockSignal;
 import universalcoins.net.UCButtonMessage;
 
 public class TileSignal extends TileProtected implements IInventory, ITickable {
-
-	private ItemStack[] inventory = new ItemStack[1];
+	private NonNullList<ItemStack> inventory = NonNullList.<ItemStack> withSize(1, ItemStack.EMPTY);
 	public static final int itemOutputSlot = 0;
 	public String blockOwner = "";
 	public int coinSum = 0;
@@ -166,8 +166,8 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
-		for (int i = 0; i < inventory.length; i++) {
-			ItemStack stack = inventory[i];
+		for (int i = 0; i < inventory.size(); i++) {
+			ItemStack stack = inventory.get(i);
 			if (stack != null) {
 				NBTTagCompound tag = new NBTTagCompound();
 				tag.setByte("Slot", (byte) i);
@@ -194,8 +194,8 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 			byte slot = tag.getByte("Slot");
-			if (slot >= 0 && slot < inventory.length) {
-				inventory[slot] = new ItemStack(tag);
+			if (slot >= 0 && slot < inventory.size()) {
+				inventory.set(slot, new ItemStack(tag));
 			}
 		}
 		try {
@@ -237,15 +237,15 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 
 	@Override
 	public int getSizeInventory() {
-		return inventory.length;
+		return inventory.size();
 	}
 
 	@Override
 	public ItemStack getStackInSlot(int i) {
-		if (i >= inventory.length) {
+		if (i >= inventory.size()) {
 			return null;
 		}
-		return inventory[i];
+		return inventory.get(i);
 	}
 
 	@Override
@@ -253,11 +253,11 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 		ItemStack stack = getStackInSlot(slot);
 		if (stack != null) {
 			if (stack.getCount() <= size) {
-				inventory[slot] = null;
+				inventory.set(slot, ItemStack.EMPTY);
 			} else {
 				stack = stack.splitStack(size);
 				if (stack.getCount() == 0) {
-					inventory[slot] = null;
+					inventory.set(slot, ItemStack.EMPTY);
 				}
 			}
 		}
@@ -265,27 +265,27 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 	}
 
 	public void fillOutputSlot() {
-		if (inventory[itemOutputSlot] == null && coinSum > 0) {
+		if (inventory.get(itemOutputSlot) == null && coinSum > 0) {
 			if (coinSum > UniversalCoins.coinValues[4]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.obsidian_coin);
-				inventory[itemOutputSlot].setCount((int) Math.min(coinSum / UniversalCoins.coinValues[4], 64));
-				coinSum -= UniversalCoins.coinValues[4] * inventory[itemOutputSlot].getCount();
+				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.obsidian_coin));
+				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[4], 64));
+				coinSum -= UniversalCoins.coinValues[4] * inventory.get(itemOutputSlot).getCount();
 			} else if (coinSum > UniversalCoins.coinValues[3]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.diamond_coin);
-				inventory[itemOutputSlot].setCount((int) Math.min(coinSum / UniversalCoins.coinValues[3], 64));
-				coinSum -= UniversalCoins.coinValues[3] * inventory[itemOutputSlot].getCount();
+				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.diamond_coin));
+				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[3], 64));
+				coinSum -= UniversalCoins.coinValues[3] * inventory.get(itemOutputSlot).getCount();
 			} else if (coinSum > UniversalCoins.coinValues[2]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.emerald_coin);
-				inventory[itemOutputSlot].setCount((int) Math.min(coinSum / UniversalCoins.coinValues[2], 64));
-				coinSum -= UniversalCoins.coinValues[2] * inventory[itemOutputSlot].getCount();
+				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.emerald_coin));
+				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[2], 64));
+				coinSum -= UniversalCoins.coinValues[2] * inventory.get(itemOutputSlot).getCount();
 			} else if (coinSum > UniversalCoins.coinValues[1]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.gold_coin);
-				inventory[itemOutputSlot].setCount((int) Math.min(coinSum / UniversalCoins.coinValues[1], 64));
-				coinSum -= UniversalCoins.coinValues[1] * inventory[itemOutputSlot].getCount();
+				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.gold_coin));
+				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[1], 64));
+				coinSum -= UniversalCoins.coinValues[1] * inventory.get(itemOutputSlot).getCount();
 			} else if (coinSum > UniversalCoins.coinValues[0]) {
-				inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.iron_coin);
-				inventory[itemOutputSlot].setCount((int) Math.min(coinSum / UniversalCoins.coinValues[0], 64));
-				coinSum -= UniversalCoins.coinValues[0] * inventory[itemOutputSlot].getCount();
+				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.iron_coin));
+				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[0], 64));
+				coinSum -= UniversalCoins.coinValues[0] * inventory.get(itemOutputSlot).getCount();
 			}
 		}
 	}

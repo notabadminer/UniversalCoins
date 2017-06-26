@@ -3,27 +3,29 @@ package universalcoins.render;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import universalcoins.tileentity.TileVendorFrame;
 
 public class VendorFrameRenderer extends TileEntitySpecialRenderer {
-	RenderItem itemRenderer = Minecraft.getMinecraft().getRenderItem();
 
 	public VendorFrameRenderer() {
 	}
 
 	@Override
-	public void renderTileEntityFast(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage,
-			float partial, net.minecraft.client.renderer.BufferBuilder buffer) {
-		GlStateManager.pushMatrix();
-
-		// render trade item or block
+	public void render(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+		// get trade item or block
 		ItemStack itemstack = ((TileVendorFrame) te).getSellItem();
+
+		// exit if nothing is set
+		if (itemstack.isEmpty()) {
+			return;
+		}
+
+		GlStateManager.pushMatrix();
+		GlStateManager.disableLighting();
 
 		// adjust block rotation based on block meta
 		int meta = 0;
@@ -47,21 +49,14 @@ public class VendorFrameRenderer extends TileEntitySpecialRenderer {
 		}
 		GlStateManager.translate((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F);
 		GlStateManager.rotate(correction, 0F, 1F, 0F);
-		GlStateManager.translate(-0.5F, -0.5F, -0.5F);
-
-		if (itemstack != null) {
-			ItemStack visStack = itemstack.copy();
-			visStack.setCount(1);
-			GlStateManager.translate(0.5F, 0.5F, 0.0635F);
-			GlStateManager.scale(0.5F, 0.5F, 0.5F);
-			EntityItem entityitem = new EntityItem(null, 0, 0, 0, visStack);
-			entityitem.hoverStart = 0.0F;
-			GlStateManager.pushAttrib();
-			RenderHelper.enableStandardItemLighting();
-			this.itemRenderer.renderItem(entityitem.getItem(), ItemCameraTransforms.TransformType.FIXED);
-			RenderHelper.disableStandardItemLighting();
-			GlStateManager.popAttrib();
-		}
+		GlStateManager.translate(-0.0F, -0.0F, -0.45F);
+		GlStateManager.scale(0.5F, 0.5F, 0.5F);
+		GlStateManager.pushAttrib();
+		RenderHelper.enableStandardItemLighting();
+		Minecraft.getMinecraft().getRenderItem().renderItem(itemstack, ItemCameraTransforms.TransformType.FIXED);
+		RenderHelper.disableStandardItemLighting();
+		GlStateManager.popAttrib();
+		GlStateManager.enableLighting();
 		GlStateManager.popMatrix();
 	}
 }

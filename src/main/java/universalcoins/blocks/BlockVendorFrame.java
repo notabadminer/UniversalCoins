@@ -73,6 +73,7 @@ public class BlockVendorFrame extends BlockProtected {
 
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
 			ItemStack stack) {
+		world.setBlockState(pos, state.withProperty(FACING, player.getHorizontalFacing()), 2);
 		super.onBlockPlacedBy(world, pos, state, player, stack);
 		if (world.isRemote)
 			return;

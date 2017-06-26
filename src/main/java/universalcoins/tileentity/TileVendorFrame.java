@@ -21,7 +21,7 @@ public class TileVendorFrame extends TileVendor {
 
 	public void updateSigns() {
 
-		if (inventory[itemTradeSlot] != null) {
+		if (!inventory.get(itemTradeSlot).isEmpty()) {
 
 			signText[0] = sellMode ? "&" + Integer.toHexString(textColor) + "Selling"
 					: "&" + Integer.toHexString(textColor) + "Buying";
@@ -38,15 +38,15 @@ public class TileVendorFrame extends TileVendor {
 				signText[0] = "&" + Integer.toHexString(textColor)
 						+ (I18n.translateToLocal("sign.warning.inventoryfull"));
 			}
-			if (inventory[itemTradeSlot].getCount() > 1) {
-				signText[1] = "&" + Integer.toHexString(textColor) + inventory[itemTradeSlot].getCount() + " "
-						+ inventory[itemTradeSlot].getDisplayName();
+			if (inventory.get(itemTradeSlot).getCount() > 1) {
+				signText[1] = "&" + Integer.toHexString(textColor) + inventory.get(itemTradeSlot).getCount() + " "
+						+ inventory.get(itemTradeSlot).getDisplayName();
 			} else {
-				signText[1] = "&" + Integer.toHexString(textColor) + inventory[itemTradeSlot].getDisplayName();
+				signText[1] = "&" + Integer.toHexString(textColor) + inventory.get(itemTradeSlot).getDisplayName();
 			}
-			if (inventory[itemTradeSlot].isItemEnchanted()) {
+			if (inventory.get(itemTradeSlot).isItemEnchanted()) {
 				signText[2] = "&" + Integer.toHexString(textColor);
-				NBTTagList tagList = inventory[itemTradeSlot].getEnchantmentTagList();
+				NBTTagList tagList = inventory.get(itemTradeSlot).getEnchantmentTagList();
 				for (int i = 0; i < tagList.tagCount(); i++) {
 					NBTTagCompound enchant = ((NBTTagList) tagList).getCompoundTagAt(i);
 					// signText[2] =
@@ -55,10 +55,10 @@ public class TileVendorFrame extends TileVendor {
 				}
 			} else
 				signText[2] = "";
-			if (inventory[itemTradeSlot].getItem() == UniversalCoins.Items.uc_package) {
-				if (inventory[itemTradeSlot].getTagCompound() != null) {
+			if (inventory.get(itemTradeSlot).getItem() == UniversalCoins.Items.uc_package) {
+				if (inventory.get(itemTradeSlot).getTagCompound() != null) {
 					signText[2] = "&" + Integer.toHexString(textColor);
-					NBTTagList tagList = inventory[itemTradeSlot].getTagCompound().getTagList("Inventory",
+					NBTTagList tagList = inventory.get(itemTradeSlot).getTagCompound().getTagList("Inventory",
 							Constants.NBT.TAG_COMPOUND);
 					for (int i = 0; i < tagList.tagCount(); i++) {
 						NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);

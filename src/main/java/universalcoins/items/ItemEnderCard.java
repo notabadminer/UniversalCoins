@@ -13,6 +13,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
+import universalcoins.util.CoinUtils;
 import universalcoins.util.UniversalAccounts;
 
 public class ItemEnderCard extends ItemUCCard {
@@ -34,42 +35,23 @@ public class ItemEnderCard extends ItemUCCard {
 		int coinsDeposited = 0;
 		for (int i = 0; i < inventory.size(); i++) {
 			ItemStack instack = player.inventory.getStackInSlot(i);
-			coinValue = 0;
-			if (instack != null) {
-				switch (instack.getUnlocalizedName()) {
-				case "item.iron_coin":
-					coinValue = UniversalCoins.coinValues[0];
-					break;
-				case "item.gold_coin":
-					coinValue = UniversalCoins.coinValues[1];
-					break;
-				case "item.emerald_coin":
-					coinValue = UniversalCoins.coinValues[2];
-					break;
-				case "item.diamond_coin":
-					coinValue = UniversalCoins.coinValues[3];
-					break;
-				case "item.obsidian_coin":
-					coinValue = UniversalCoins.coinValues[4];
-					break;
-				}
-				if (accountBalance == -1)
-					// get out of here if the card is invalid
-					return EnumActionResult.FAIL;
-				if (coinValue == 0)
-					continue;
-				if (Long.MAX_VALUE - accountBalance > coinValue * instack.getCount()) {
-					depositAmount = instack.getCount();
-				} else {
-					depositAmount = (int) (Long.MAX_VALUE - accountBalance) / coinValue;
-				}
-				UniversalAccounts.getInstance().creditAccount(accountNumber, coinValue * depositAmount, false);
-				coinsDeposited += coinValue * depositAmount;
-				inventory.get(i).shrink(depositAmount);
-				if (inventory.get(i).getCount() == 0) {
-					player.inventory.setInventorySlotContents(i, null);
-					player.inventoryContainer.detectAndSendChanges();
-				}
+			coinValue = CoinUtils.getCoinValue(instack);
+			if (accountBalance == -1)
+				// get out of here if the card is invalid
+				return EnumActionResult.FAIL;
+			if (coinValue == 0)
+				continue;
+			if (Long.MAX_VALUE - accountBalance > coinValue * instack.getCount()) {
+				depositAmount = instack.getCount();
+			} else {
+				depositAmount = (int) (Long.MAX_VALUE - accountBalance) / coinValue;
+			}
+			UniversalAccounts.getInstance().creditAccount(accountNumber, coinValue * depositAmount, false);
+			coinsDeposited += coinValue * depositAmount;
+			inventory.get(i).shrink(depositAmount);
+			if (inventory.get(i).getCount() == 0) {
+				player.inventory.setInventorySlotContents(i, null);
+				player.inventoryContainer.detectAndSendChanges();
 			}
 		}
 		if (coinsDeposited > 0) {

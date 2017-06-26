@@ -17,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.util.UniversalAccounts;
 
@@ -63,9 +64,9 @@ public class ItemUCCard extends Item {
 	protected void createNBT(ItemStack stack, World world, EntityPlayer entityPlayer) {
 		String accountNumber = UniversalAccounts.getInstance()
 				.getOrCreatePlayerAccount(entityPlayer.getPersistentID().toString());
-		stack.setTagCompound(new NBTTagCompound());
-		stack.getTagCompound().setString("Name", entityPlayer.getName());
-		stack.getTagCompound().setString("Owner", entityPlayer.getPersistentID().toString());
-		stack.getTagCompound().setString("Account", accountNumber);
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setString("Name", entityPlayer.getName());
+		tag.setString("Account", accountNumber);
+		stack.setTagCompound(tag);
 	}
 }

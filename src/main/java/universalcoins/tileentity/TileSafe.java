@@ -17,6 +17,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import universalcoins.UniversalCoins;
+import universalcoins.util.CoinUtils;
 import universalcoins.util.UniversalAccounts;
 
 public class TileSafe extends TileProtected implements IInventory, ISidedInventory {
@@ -80,23 +81,7 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 
 	public void coinsTaken(ItemStack stack) {
 		int coinValue = 0;
-		switch (stack.getUnlocalizedName()) {
-		case "item.iron_coin":
-			coinValue = UniversalCoins.coinValues[0];
-			break;
-		case "item.gold_coin":
-			coinValue = UniversalCoins.coinValues[1];
-			break;
-		case "item.emerald_coin":
-			coinValue = UniversalCoins.coinValues[2];
-			break;
-		case "item.diamond_coin":
-			coinValue = UniversalCoins.coinValues[3];
-			break;
-		case "item.obsidian_coin":
-			coinValue = UniversalCoins.coinValues[4];
-			break;
-		}
+		coinValue = CoinUtils.getCoinValue(stack);
 		int debitAmount = 0;
 		int accountCapacity = (int) (Long.MAX_VALUE - accountBalance > Integer.MAX_VALUE ? Integer.MAX_VALUE
 				: Long.MAX_VALUE - accountBalance);

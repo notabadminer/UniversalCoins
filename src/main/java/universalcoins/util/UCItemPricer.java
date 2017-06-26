@@ -216,7 +216,7 @@ public class UCItemPricer {
 	}
 
 	public int getItemPrice(ItemStack itemStack) {
-		if (itemStack == ItemStack.EMPTY) {
+		if (itemStack.isEmpty()) {
 			return -1;
 		}
 		int ItemPrice = -1;
