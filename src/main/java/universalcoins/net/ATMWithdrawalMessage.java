@@ -55,7 +55,7 @@ public class ATMWithdrawalMessage implements IMessage, IMessageHandler<ATMWithdr
 		} else if (ctx.side == Side.SERVER) {
 			EntityPlayerMP playerEntity = ctx.getServerHandler().player;
 			if (playerEntity == null) {
-				FMLLog.warning("onMessage-server: Player is null");
+				FMLLog.log.warn("onMessage-server: Player is null");
 				return null;
 			}
 			playerEntity.getServerWorld().addScheduledTask(task);

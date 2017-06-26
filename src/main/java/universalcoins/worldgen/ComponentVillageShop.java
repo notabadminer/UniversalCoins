@@ -85,8 +85,8 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 		// clear doorway and path
 		fillWithAir(world, sbb, 2, 1, 0, 3, 1, 7);
 		// top
-		fillWithBlocks(world, sbb, 1, 5, 1, 4, 5, 6, Blocks.GLASS.getDefaultState(), Blocks.GLASS.getDefaultState(),
-				false);
+		fillWithBlocks(world, sbb, 1, 5, 1, 4, 5, 6, Blocks.STAINED_GLASS.getStateFromMeta(15),
+				Blocks.STAINED_GLASS.getStateFromMeta(15), false);
 		// top front
 		IBlockState iblockstate = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
 				EnumFacing.NORTH);

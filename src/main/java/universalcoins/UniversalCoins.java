@@ -98,7 +98,7 @@ import universalcoins.worldgen.VillageGenTrade;
  * 
  **/
 
-@Mod(modid = UniversalCoins.MODID, name = UniversalCoins.NAME, version = UniversalCoins.VERSION, acceptedMinecraftVersions = "@MC_VERSION@", updateJSON = "https://raw.githubusercontent.com/notabadminer/UniversalCoins/master/version.json")
+@Mod(modid = UniversalCoins.MODID, name = UniversalCoins.NAME, version = UniversalCoins.VERSION, acceptedMinecraftVersions = "@MC_VERSION@", updateJSON = "https://raw.githubusercontent.com/notabadminer/UniversalCoins/master/version.json", dependencies = "required-after:forge@14.21.0.2368,)")
 
 @Mod.EventBusSubscriber
 public class UniversalCoins {

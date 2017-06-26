@@ -65,15 +65,10 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 	@Override
 	public ItemStack decrStackSize(int slot, int size) {
 		ItemStack stack = getStackInSlot(slot);
-		if (stack != null) {
-			if (stack.getCount() <= size) {
-				setInventorySlotContents(slot, null);
-			} else {
-				stack = stack.splitStack(size);
-				if (stack.getCount() == 0) {
-					setInventorySlotContents(slot, null);
-				}
-			}
+		if (size < stack.getCount()) {
+			stack = stack.splitStack(size);
+		} else {
+			setInventorySlotContents(slot, ItemStack.EMPTY);
 		}
 		fillCoinSlot();
 		return stack;
@@ -93,18 +88,22 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 	@Override
 	public void setInventorySlotContents(int slot, ItemStack stack) {
 		inventory.set(slot, stack);
-		int coinValue = 0;
-		coinValue = CoinUtils.getCoinValue(stack);
-		long depositAmount = Math.min(stack.getCount(), (Long.MAX_VALUE - accountBalance) / coinValue);
-		if (!world.isRemote) {
-			UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue, false);
-			accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
-		}
-		ItemStack newStack = inventory.get(slot);
-		newStack.shrink((int) depositAmount);
-		inventory.set(slot, newStack);
-		if (inventory.get(slot).getCount() == 0) {
-			inventory.set(slot, ItemStack.EMPTY);
+		if (slot == itemCoinSlot) {
+			int coinValue = 0;
+			coinValue = CoinUtils.getCoinValue(stack);
+			if (coinValue > 0) {
+				long depositAmount = Math.min(stack.getCount(), (Long.MAX_VALUE - accountBalance) / coinValue);
+				if (!world.isRemote) {
+					UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue, false);
+					accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
+				}
+				ItemStack newStack = inventory.get(slot);
+				newStack.shrink((int) depositAmount);
+				inventory.set(slot, newStack);
+				if (inventory.get(slot).getCount() == 0) {
+					inventory.set(slot, ItemStack.EMPTY);
+				}
+			}
 		}
 		if (slot == itemCardSlot && !world.isRemote) {
 			if (!inventory.get(itemCardSlot).hasTagCompound()) {
@@ -313,7 +312,7 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 			}
 		}
 		if (functionId == 6) {
-			inventory.remove(itemCardSlot);
+			inventory.set(itemCardSlot, ItemStack.EMPTY);
 			inUseCleanup();
 		}
 	}

@@ -78,7 +78,7 @@ public class ATMGUI extends GuiContainer {
 		int x = (width - xSize) / 2;
 		int y = (height - ySize) / 2;
 		this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
-		if (menuState == 0 && super.inventorySlots.getSlot(tEntity.itemCardSlot).getStack() != null) {
+		if (menuState == 0 && !super.inventorySlots.getSlot(tEntity.itemCardSlot).getStack().isEmpty()) {
 			menuState = 2;
 		}
 		if (menuState == 1) {
@@ -121,7 +121,7 @@ public class ATMGUI extends GuiContainer {
 			}
 		}
 
-		if (menuState == 2 && tEntity.getStackInSlot(tEntity.itemCardSlot) != null
+		if (menuState == 2 && !tEntity.getStackInSlot(tEntity.itemCardSlot).isEmpty()
 				&& (!tEntity.getStackInSlot(tEntity.itemCardSlot).hasTagCompound() || tEntity.accountBalance == -1)) {
 			tEntity.sendButtonMessage(6, false); // message to destroy card
 			menuState = 13;

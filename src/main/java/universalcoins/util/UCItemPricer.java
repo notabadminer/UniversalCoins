@@ -25,6 +25,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
@@ -32,10 +33,10 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.FMLInjectionData;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.OreIngredient;
+import net.minecraftforge.registries.IForgeRegistryModifiable;
 
 public class UCItemPricer {
 
@@ -353,8 +354,8 @@ public class UCItemPricer {
 	}
 
 	private void autoPriceCraftedItems() {
-		// FMLLog.info("in autoPriceCraftedItems");
-		List<IRecipe> allrecipes = GameData.getRecipeRegistry().getValues();
+		// FMLLog.log.info("in autoPriceCraftedItems");
+		Set<ResourceLocation> recipeResourceLocations = CraftingManager.REGISTRY.getKeys();
 		boolean priceUpdate = false;
 
 		// we rerun multiple times if needed since recipe components might be
@@ -364,7 +365,8 @@ public class UCItemPricer {
 			// loopCount++;
 			// FMLLog.info("priceUpdate loop: " + loopCount);
 			priceUpdate = false;
-			for (IRecipe irecipe : allrecipes) {
+			for (ResourceLocation rloc : recipeResourceLocations) {
+				IRecipe irecipe = CraftingManager.getRecipe(rloc);
 				int itemCost = 0;
 				boolean validRecipe = true;
 				ItemStack output = irecipe.getRecipeOutput();
@@ -376,7 +378,7 @@ public class UCItemPricer {
 					// FMLLog.info("recipe output price already set.");
 					continue;
 				}
-				// FMLLog.info("Starting pricing recipe for " +
+				// FMLLog.log.info("Starting pricing for " +
 				// output.getDisplayName());
 				NonNullList<Ingredient> recipeItems = irecipe.getIngredients();
 				for (int i = 0; i < recipeItems.size(); i++) {

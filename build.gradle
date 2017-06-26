@@ -21,7 +21,7 @@ compileJava {
 }
 
 minecraft {
-    version = "1.12-14.21.0.2343"
+    version = "1.12-14.21.0.2368"
     runDir = "run"
 	
 	// replacing
@@ -34,7 +34,7 @@ minecraft {
     // stable_#            stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20170617"
+    mappings = "snapshot_20170624"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
