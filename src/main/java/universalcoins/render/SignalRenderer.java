@@ -15,8 +15,8 @@ public class SignalRenderer extends TileEntitySpecialRenderer {
 	public SignalRenderer() {
 	}
 
-	public void renderTileEntityAt(TileEntity tileentity, double posX, double posY, double posZ, float p_180535_8_,
-			int p_180535_9_) {
+	public void render(TileEntity tileentity, double x, double y, double z, float partialTicks, int destroyStage,
+			float alpha) {
 		TileSignal te = (TileSignal) tileentity;
 
 		// adjust block rotation based on block meta
@@ -43,7 +43,7 @@ public class SignalRenderer extends TileEntitySpecialRenderer {
 		if (meta == 5) {
 			correction = -90.0F;
 		}
-		GlStateManager.translate((float) posX + 0.5F, (float) posY + 0.5F, (float) posZ + 0.5F);
+		GlStateManager.translate((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F);
 		GlStateManager.rotate(-correction, 0.0F, 1.0F, 0.0F);
 		GlStateManager.translate(-0.5F, -0.5F, -0.5F);
 

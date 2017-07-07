@@ -23,7 +23,7 @@ import universalcoins.UniversalCoins;
 import universalcoins.gui.VendorBuyGUI;
 import universalcoins.gui.VendorGUI;
 import universalcoins.gui.VendorSellGUI;
-import universalcoins.items.ItemEnderCard;
+import universalcoins.item.ItemEnderCard;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCVendorServerMessage;
 import universalcoins.util.CoinUtils;

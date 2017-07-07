@@ -21,7 +21,7 @@ import net.minecraft.world.gen.structure.StructureVillagePieces;
 import net.minecraft.world.gen.structure.StructureVillagePieces.Start;
 import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
-import universalcoins.blocks.BlockUCWallSign;
+import universalcoins.block.BlockUCWallSign;
 import universalcoins.tileentity.TileVendor;
 import universalcoins.util.UCItemPricer;
 

@@ -87,11 +87,11 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 				}
 
 				buyButtonActive = (UniversalCoins.tradeStationBuyEnabled
-						&& (inventory.get(itemOutputSlot) == ItemStack.EMPTY
+						&& (inventory.get(itemOutputSlot).isEmpty()
 								|| (inventory.get(itemOutputSlot)).getItem() == inventory.get(itemInputSlot).getItem()
 										&& inventory.get(itemOutputSlot).getCount() < inventory.get(itemInputSlot)
 												.getMaxStackSize())
-						&& (coinSum >= itemPrice || (inventory.get(itemCardSlot) != ItemStack.EMPTY && !world.isRemote
+						&& (coinSum >= itemPrice || (!inventory.get(itemCardSlot).isEmpty() && !world.isRemote
 								&& getAccountBalance() > itemPrice)));
 			}
 		}

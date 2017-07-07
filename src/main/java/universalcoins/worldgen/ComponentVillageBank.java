@@ -19,8 +19,8 @@ import net.minecraft.world.gen.structure.StructureVillagePieces;
 import net.minecraft.world.gen.structure.StructureVillagePieces.Start;
 import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
-import universalcoins.blocks.BlockATM;
-import universalcoins.blocks.BlockUCWallSign;
+import universalcoins.block.BlockATM;
+import universalcoins.block.BlockUCWallSign;
 import universalcoins.tileentity.TileUCSign;
 
 public class ComponentVillageBank extends StructureVillagePieces.Village {

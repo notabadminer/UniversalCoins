@@ -16,7 +16,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
-import universalcoins.blocks.BlockSignal;
+import universalcoins.block.BlockSignal;
 import universalcoins.net.UCButtonMessage;
 
 public class TileSignal extends TileProtected implements IInventory, ITickable {
@@ -265,28 +265,27 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 	}
 
 	public void fillOutputSlot() {
-		if (inventory.get(itemOutputSlot) == null && coinSum > 0) {
-			if (coinSum > UniversalCoins.coinValues[4]) {
-				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.obsidian_coin));
-				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[4], 64));
-				coinSum -= UniversalCoins.coinValues[4] * inventory.get(itemOutputSlot).getCount();
-			} else if (coinSum > UniversalCoins.coinValues[3]) {
-				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.diamond_coin));
-				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[3], 64));
-				coinSum -= UniversalCoins.coinValues[3] * inventory.get(itemOutputSlot).getCount();
-			} else if (coinSum > UniversalCoins.coinValues[2]) {
-				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.emerald_coin));
-				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[2], 64));
-				coinSum -= UniversalCoins.coinValues[2] * inventory.get(itemOutputSlot).getCount();
-			} else if (coinSum > UniversalCoins.coinValues[1]) {
-				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.gold_coin));
-				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[1], 64));
-				coinSum -= UniversalCoins.coinValues[1] * inventory.get(itemOutputSlot).getCount();
-			} else if (coinSum > UniversalCoins.coinValues[0]) {
-				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.iron_coin));
-				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[0], 64));
-				coinSum -= UniversalCoins.coinValues[0] * inventory.get(itemOutputSlot).getCount();
-			}
+		inventory.set(itemOutputSlot, ItemStack.EMPTY);
+		if (coinSum > UniversalCoins.coinValues[4]) {
+			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.obsidian_coin));
+			inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[4], 64));
+			coinSum -= UniversalCoins.coinValues[4] * inventory.get(itemOutputSlot).getCount();
+		} else if (coinSum > UniversalCoins.coinValues[3]) {
+			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.diamond_coin));
+			inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[3], 64));
+			coinSum -= UniversalCoins.coinValues[3] * inventory.get(itemOutputSlot).getCount();
+		} else if (coinSum > UniversalCoins.coinValues[2]) {
+			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.emerald_coin));
+			inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[2], 64));
+			coinSum -= UniversalCoins.coinValues[2] * inventory.get(itemOutputSlot).getCount();
+		} else if (coinSum > UniversalCoins.coinValues[1]) {
+			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.gold_coin));
+			inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[1], 64));
+			coinSum -= UniversalCoins.coinValues[1] * inventory.get(itemOutputSlot).getCount();
+		} else if (coinSum > UniversalCoins.coinValues[0]) {
+			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.iron_coin));
+			inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[0], 64));
+			coinSum -= UniversalCoins.coinValues[0] * inventory.get(itemOutputSlot).getCount();
 		}
 	}
 

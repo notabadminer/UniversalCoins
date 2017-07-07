@@ -11,6 +11,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.util.Constants;
@@ -21,7 +22,7 @@ import universalcoins.util.CoinUtils;
 import universalcoins.util.UniversalAccounts;
 
 public class TileSafe extends TileProtected implements IInventory, ISidedInventory {
-	private ItemStack[] inventory = new ItemStack[2];
+	private NonNullList<ItemStack> inventory = NonNullList.<ItemStack> withSize(2, ItemStack.EMPTY);
 	public static final int itemInputSlot = 0;
 	public static final int itemOutputSlot = 1;
 	public String blockOwner = "nobody";
@@ -51,27 +52,27 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 
 	@Override
 	public int getSizeInventory() {
-		return inventory.length;
+		return inventory.size();
 	}
 
 	@Override
 	public ItemStack getStackInSlot(int slot) {
-		if (slot >= inventory.length) {
-			return null;
+		if (slot >= inventory.size()) {
+			return ItemStack.EMPTY;
 		}
-		return inventory[slot];
+		return inventory.get(slot);
 	}
 
 	@Override
 	public ItemStack decrStackSize(int slot, int size) {
 		ItemStack stack = getStackInSlot(slot);
-		if (stack != null) {
+		if (stack != ItemStack.EMPTY) {
 			if (stack.getCount() <= size) {
-				setInventorySlotContents(slot, null);
+				setInventorySlotContents(slot, ItemStack.EMPTY);
 			} else {
 				stack = stack.splitStack(size);
 				if (stack.getCount() == 0) {
-					setInventorySlotContents(slot, null);
+					setInventorySlotContents(slot, ItemStack.EMPTY);
 				}
 			}
 		}
@@ -100,64 +101,62 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 
 	@Override
 	public void setInventorySlotContents(int slot, ItemStack stack) {
-		inventory[slot] = stack;
+		inventory.set(slot, stack);
 		int coinValue = 0;
-		if (stack != null) {
-			if (slot == itemInputSlot) {
-				switch (stack.getUnlocalizedName()) {
-				case "item.iron_coin":
-					coinValue = UniversalCoins.coinValues[0];
-					break;
-				case "item.gold_coin":
-					coinValue = UniversalCoins.coinValues[1];
-					break;
-				case "item.emerald_coin":
-					coinValue = UniversalCoins.coinValues[2];
-					break;
-				case "item.diamond_coin":
-					coinValue = UniversalCoins.coinValues[3];
-					break;
-				case "item.obsidian_coin":
-					coinValue = UniversalCoins.coinValues[4];
-					break;
+		if (slot == itemInputSlot) {
+			switch (stack.getUnlocalizedName()) {
+			case "item.universalcoins.iron_coin":
+				coinValue = UniversalCoins.coinValues[0];
+				break;
+			case "item.universalcoins.gold_coin":
+				coinValue = UniversalCoins.coinValues[1];
+				break;
+			case "item.universalcoins.emerald_coin":
+				coinValue = UniversalCoins.coinValues[2];
+				break;
+			case "item.universalcoins.diamond_coin":
+				coinValue = UniversalCoins.coinValues[3];
+				break;
+			case "item.universalcoins.obsidian_coin":
+				coinValue = UniversalCoins.coinValues[4];
+				break;
+			}
+			if (coinValue > 0) {
+				int accountCapacity = (int) (Long.MAX_VALUE - accountBalance > Integer.MAX_VALUE ? Integer.MAX_VALUE
+						: Long.MAX_VALUE - accountBalance);
+				int depositAmount = Math.min(accountCapacity / coinValue, stack.getCount());
+				if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
+					// Only deposit on server side, otherwise we deposit
+					// twice.
+					UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue, false);
 				}
-				if (coinValue > 0) {
-					int accountCapacity = (int) (Long.MAX_VALUE - accountBalance > Integer.MAX_VALUE ? Integer.MAX_VALUE
-							: Long.MAX_VALUE - accountBalance);
-					int depositAmount = Math.min(accountCapacity / coinValue, stack.getCount());
-					if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
-						// Only deposit on server side, otherwise we deposit
-						// twice.
-						UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue, false);
-					}
-					inventory[slot].shrink(depositAmount);
-					if (inventory[slot].getCount() == 0) {
-						inventory[slot] = null;
-					}
-					fillOutputSlot();
-					if (!world.isRemote)
-						updateAccountBalance();
+				inventory.get(slot).shrink(depositAmount);
+				if (inventory.get(slot).getCount() == 0) {
+					inventory.set(slot, ItemStack.EMPTY);
 				}
+				fillOutputSlot();
+				if (!world.isRemote)
+					updateAccountBalance();
 			}
 		}
 	}
 
 	public void fillOutputSlot() {
 		if (accountBalance > UniversalCoins.coinValues[4]) {
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.obsidian_coin);
-			inventory[itemOutputSlot].setCount((int) Math.min(accountBalance / UniversalCoins.coinValues[4], 64));
+			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.obsidian_coin));
+			inventory.get(itemOutputSlot).setCount((int) Math.min(accountBalance / UniversalCoins.coinValues[4], 64));
 		} else if (accountBalance > UniversalCoins.coinValues[3]) {
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.diamond_coin);
-			inventory[itemOutputSlot].setCount((int) Math.min(accountBalance / UniversalCoins.coinValues[3], 64));
+			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.diamond_coin));
+			inventory.get(itemOutputSlot).setCount((int) Math.min(accountBalance / UniversalCoins.coinValues[3], 64));
 		} else if (accountBalance > UniversalCoins.coinValues[2]) {
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.emerald_coin);
-			inventory[itemOutputSlot].setCount((int) Math.min(accountBalance / UniversalCoins.coinValues[2], 64));
+			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.emerald_coin));
+			inventory.get(itemOutputSlot).setCount((int) Math.min(accountBalance / UniversalCoins.coinValues[2], 64));
 		} else if (accountBalance > UniversalCoins.coinValues[1]) {
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.gold_coin);
-			inventory[itemOutputSlot].setCount((int) Math.min(accountBalance / UniversalCoins.coinValues[1], 64));
+			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.gold_coin));
+			inventory.get(itemOutputSlot).setCount((int) Math.min(accountBalance / UniversalCoins.coinValues[1], 64));
 		} else if (accountBalance > UniversalCoins.coinValues[0]) {
-			inventory[itemOutputSlot] = new ItemStack(UniversalCoins.Items.iron_coin);
-			inventory[itemOutputSlot].setCount((int) Math.min(accountBalance / UniversalCoins.coinValues[0], 64));
+			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.iron_coin));
+			inventory.get(itemOutputSlot).setCount((int) Math.min(accountBalance / UniversalCoins.coinValues[0], 64));
 		}
 	}
 
@@ -196,14 +195,12 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
-		for (int i = 0; i < inventory.length; i++) {
-			ItemStack stack = inventory[i];
-			if (stack != null) {
-				NBTTagCompound tag = new NBTTagCompound();
-				tag.setByte("Slot", (byte) i);
-				stack.writeToNBT(tag);
-				itemList.appendTag(tag);
-			}
+		for (int i = 0; i < inventory.size(); i++) {
+			ItemStack stack = inventory.get(i);
+			NBTTagCompound tag = new NBTTagCompound();
+			tag.setByte("Slot", (byte) i);
+			stack.writeToNBT(tag);
+			itemList.appendTag(tag);
 		}
 		tagCompound.setTag("Inventory", itemList);
 		tagCompound.setString("Owner", blockOwner);
@@ -221,8 +218,8 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 			byte slot = tag.getByte("Slot");
-			if (slot >= 0 && slot < inventory.length) {
-				inventory[slot] = new ItemStack(tag);
+			if (slot >= 0 && slot < inventory.size()) {
+				inventory.set(slot, new ItemStack(tag));
 			}
 		}
 		try {
@@ -257,7 +254,7 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		readFromNBT(pkt.getNbtCompound());
 		if (accountBalance == 0)
-			inventory[itemOutputSlot] = null;
+			inventory.set(itemOutputSlot, ItemStack.EMPTY);
 	}
 
 	public void updateTE() {
@@ -277,8 +274,7 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		return inventory.get(index);
 	}
 
 	@Override

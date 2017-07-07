@@ -1,6 +1,7 @@
 package universalcoins;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -18,8 +19,8 @@ import universalcoins.container.ContainerVendorSell;
 import universalcoins.container.ContainerVendorWrench;
 import universalcoins.gui.ATMGUI;
 import universalcoins.gui.PackagerGUI;
-import universalcoins.gui.PowerTransmitterGUI;
 import universalcoins.gui.PowerReceiverGUI;
+import universalcoins.gui.PowerTransmitterGUI;
 import universalcoins.gui.SafeGUI;
 import universalcoins.gui.SignalGUI;
 import universalcoins.gui.TradeStationGUI;
@@ -59,7 +60,7 @@ class GuiHandler implements IGuiHandler {
 			return new ContainerPackager(player.inventory, (TilePackager) tileEntity);
 		}
 		if (tileEntity instanceof TileVendor) {
-			if (player.getHeldItemMainhand() != null
+			if (player.getHeldItemMainhand() != ItemStack.EMPTY
 					&& player.getHeldItemMainhand().getItem() == UniversalCoins.Items.vendor_wrench) {
 				return new ContainerVendorWrench(player.inventory, (TileVendor) tileEntity);
 			}
@@ -99,7 +100,7 @@ class GuiHandler implements IGuiHandler {
 			return new PackagerGUI(player.inventory, (TilePackager) tileEntity);
 		}
 		if (tileEntity instanceof TileVendor) {
-			if (player.getHeldItemMainhand() != null
+			if (player.getHeldItemMainhand() != ItemStack.EMPTY
 					&& player.getHeldItemMainhand().getItem() == UniversalCoins.Items.vendor_wrench) {
 				return new VendorWrenchGUI(player.inventory, (TileVendor) tileEntity);
 			}

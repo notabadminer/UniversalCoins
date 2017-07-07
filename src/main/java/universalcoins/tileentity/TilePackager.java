@@ -347,11 +347,13 @@ public class TilePackager extends TileProtected implements IInventory {
 	@Override
 	public void setInventorySlotContents(int slot, ItemStack stack) {
 		inventory.set(slot, stack);
-		int coinValue = 0;
-		coinValue = CoinUtils.getCoinValue(stack);
-		int depositAmount = (int) Math.min(stack.getCount(), (Long.MAX_VALUE - coinSum) / coinValue);
-		inventory.get(slot).shrink(depositAmount);
-		coinSum += depositAmount * coinValue;
+		if (slot == itemCoinSlot) {
+			int coinValue = 0;
+			coinValue = CoinUtils.getCoinValue(stack);
+			int depositAmount = (int) Math.min(stack.getCount(), (Long.MAX_VALUE - coinSum) / coinValue);
+			inventory.get(slot).shrink(depositAmount);
+			coinSum += depositAmount * coinValue;
+		}
 		if (inventory.get(slot).getCount() == 0) {
 			inventory.set(slot, ItemStack.EMPTY);
 		}

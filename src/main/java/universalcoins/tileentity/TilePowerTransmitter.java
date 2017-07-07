@@ -49,11 +49,11 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 		ItemStack stack = getStackInSlot(slot);
 		if (stack != null) {
 			if (stack.getCount() <= size) {
-				setInventorySlotContents(slot, null);
+				setInventorySlotContents(slot, ItemStack.EMPTY);
 			} else {
 				stack = stack.splitStack(size);
 				if (stack.getCount() == 0) {
-					setInventorySlotContents(slot, null);
+					setInventorySlotContents(slot, ItemStack.EMPTY);
 				}
 			}
 		}
@@ -62,11 +62,9 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 
 	public void setInventorySlotContents(int slot, ItemStack stack) {
 		inventory.set(slot, stack);
-		if (stack != null) {
-			if (slot == itemCardSlot && inventory.get(itemCardSlot).getItem() == UniversalCoins.Items.ender_card) {
-				if (creditAccount(coinSum)) {
-					coinSum = 0;
-				}
+		if (slot == itemCardSlot && inventory.get(itemCardSlot).getItem() == UniversalCoins.Items.ender_card) {
+			if (creditAccount(coinSum)) {
+				coinSum = 0;
 			}
 		}
 	}
@@ -191,12 +189,10 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 		NBTTagList itemList = new NBTTagList();
 		for (int i = 0; i < inventory.size(); i++) {
 			ItemStack stack = inventory.get(i);
-			if (stack != null) {
-				NBTTagCompound tag = new NBTTagCompound();
-				tag.setByte("Slot", (byte) i);
-				stack.writeToNBT(tag);
-				itemList.appendTag(tag);
-			}
+			NBTTagCompound tag = new NBTTagCompound();
+			tag.setByte("Slot", (byte) i);
+			stack.writeToNBT(tag);
+			itemList.appendTag(tag);
 		}
 		tagCompound.setTag("Inventory", itemList);
 		tagCompound.setLong("coinSum", coinSum);
@@ -256,28 +252,27 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 	}
 
 	public void fillOutputSlot() {
-		if (inventory.get(itemOutputSlot) == null && coinSum > 0) {
-			if (coinSum > UniversalCoins.coinValues[4]) {
-				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.obsidian_coin));
-				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[4], 64));
-				coinSum -= UniversalCoins.coinValues[4] * inventory.get(itemOutputSlot).getCount();
-			} else if (coinSum > UniversalCoins.coinValues[3]) {
-				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.diamond_coin));
-				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[3], 64));
-				coinSum -= UniversalCoins.coinValues[3] * inventory.get(itemOutputSlot).getCount();
-			} else if (coinSum > UniversalCoins.coinValues[2]) {
-				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.emerald_coin));
-				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[2], 64));
-				coinSum -= UniversalCoins.coinValues[2] * inventory.get(itemOutputSlot).getCount();
-			} else if (coinSum > UniversalCoins.coinValues[1]) {
-				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.gold_coin));
-				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[1], 64));
-				coinSum -= UniversalCoins.coinValues[1] * inventory.get(itemOutputSlot).getCount();
-			} else if (coinSum > UniversalCoins.coinValues[0]) {
-				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.iron_coin));
-				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[0], 64));
-				coinSum -= UniversalCoins.coinValues[0] * inventory.get(itemOutputSlot).getCount();
-			}
+		inventory.set(itemOutputSlot, ItemStack.EMPTY);
+		if (coinSum > UniversalCoins.coinValues[4]) {
+			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.obsidian_coin));
+			inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[4], 64));
+			coinSum -= UniversalCoins.coinValues[4] * inventory.get(itemOutputSlot).getCount();
+		} else if (coinSum > UniversalCoins.coinValues[3]) {
+			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.diamond_coin));
+			inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[3], 64));
+			coinSum -= UniversalCoins.coinValues[3] * inventory.get(itemOutputSlot).getCount();
+		} else if (coinSum > UniversalCoins.coinValues[2]) {
+			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.emerald_coin));
+			inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[2], 64));
+			coinSum -= UniversalCoins.coinValues[2] * inventory.get(itemOutputSlot).getCount();
+		} else if (coinSum > UniversalCoins.coinValues[1]) {
+			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.gold_coin));
+			inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[1], 64));
+			coinSum -= UniversalCoins.coinValues[1] * inventory.get(itemOutputSlot).getCount();
+		} else if (coinSum > UniversalCoins.coinValues[0]) {
+			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.iron_coin));
+			inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[0], 64));
+			coinSum -= UniversalCoins.coinValues[0] * inventory.get(itemOutputSlot).getCount();
 		}
 	}
 
