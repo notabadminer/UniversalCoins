@@ -17,8 +17,6 @@ import net.minecraft.util.text.TextComponentString;
 import universalcoins.util.UCItemPricer;
 
 public class UCCommand extends CommandBase implements ICommand {
-
-	private boolean firstChange = true;
 	DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
 
 	@Override
@@ -58,7 +56,7 @@ public class UCCommand extends CommandBase implements ICommand {
 			UCItemPricer.getInstance().loadConfigs();
 		} else if (args[0].matches("get")) {
 			// get item price
-			if (args.length > 1) {
+			if (args.length == 1) {
 				int price = -1;
 				String stackName = "";
 				ItemStack stack = getPlayerItem(sender);
@@ -92,12 +90,6 @@ public class UCCommand extends CommandBase implements ICommand {
 
 				if (result == true) {
 					sender.sendMessage(new TextComponentString("Price set to " + formatter.format(price)));
-					if (firstChange) {
-						sender.sendMessage(new TextComponentString("Changes will not be saved"));
-						sender.sendMessage(new TextComponentString("Run \"/uc save\" to save changes"));
-						sender.sendMessage(new TextComponentString("Run \"/uc reload\" to undo changes"));
-						firstChange = false;
-					}
 				} else {
 					sender.sendMessage(new TextComponentString("§cFailed to set price."));
 				}

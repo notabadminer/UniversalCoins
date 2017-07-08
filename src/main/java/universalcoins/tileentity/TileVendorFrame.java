@@ -16,7 +16,7 @@ public class TileVendorFrame extends TileVendor {
 
 	@Override
 	public String getName() {
-		return I18n.translateToLocal("tile.vendor_frame.name");
+		return I18n.translateToLocal("tile.universalcoins.vendor_frame.name");
 	}
 
 	public void updateSigns() {

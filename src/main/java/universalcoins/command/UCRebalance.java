@@ -42,25 +42,25 @@ public class UCRebalance extends UCCommandBase implements ICommand {
 					ItemStack stack = player.inventory.getStackInSlot(i);
 					if (stack != null) {
 						switch (stack.getUnlocalizedName()) {
-						case "item.iron_coin":
+						case "item.universalcoins.iron_coin":
 							coinsFound += stack.getCount() * UniversalCoins.coinValues[0];
-							player.inventory.setInventorySlotContents(i, null);
+							player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
 							break;
-						case "item.gold_coin":
+						case "item.universalcoins.gold_coin":
 							coinsFound += stack.getCount() * UniversalCoins.coinValues[1];
-							player.inventory.setInventorySlotContents(i, null);
+							player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
 							break;
-						case "item.emerald_coin":
+						case "item.universalcoins.emerald_coin":
 							coinsFound += stack.getCount() * UniversalCoins.coinValues[2];
-							player.inventory.setInventorySlotContents(i, null);
+							player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
 							break;
-						case "item.diamond_coin":
+						case "item.universalcoins.diamond_coin":
 							coinsFound += stack.getCount() * UniversalCoins.coinValues[3];
-							player.inventory.setInventorySlotContents(i, null);
+							player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
 							break;
-						case "item.obsidian_coin":
+						case "item.universalcoins.obsidian_coin":
 							coinsFound += stack.getCount() * UniversalCoins.coinValues[4];
-							player.inventory.setInventorySlotContents(i, null);
+							player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
 							break;
 						}
 					}

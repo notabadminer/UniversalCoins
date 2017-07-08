@@ -16,6 +16,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.net.ATMWithdrawalMessage;
 import universalcoins.net.UCButtonMessage;
@@ -89,9 +90,8 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 	public void setInventorySlotContents(int slot, ItemStack stack) {
 		inventory.set(slot, stack);
 		if (slot == itemCoinSlot) {
-			int coinValue = 0;
-			coinValue = CoinUtils.getCoinValue(stack);
-			if (coinValue > 0) {
+			int coinValue = CoinUtils.getCoinValue(stack);
+			if (depositCoins && coinValue > 0) {
 				long depositAmount = Math.min(stack.getCount(), (Long.MAX_VALUE - accountBalance) / coinValue);
 				if (!world.isRemote) {
 					UniversalAccounts.getInstance().creditAccount(accountNumber, depositAmount * coinValue, false);
@@ -105,7 +105,9 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 				}
 			}
 		}
-		if (slot == itemCardSlot && !world.isRemote) {
+		if (slot == itemCardSlot && !world.isRemote)
+
+		{
 			if (!inventory.get(itemCardSlot).hasTagCompound()) {
 				return;
 			}
@@ -264,7 +266,11 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 		// function6 - destroy invalid card
 		if (functionId == 1) {
 			accountNumber = UniversalAccounts.getInstance().getOrCreatePlayerAccount(playerUID);
-			inventory.set(itemCardSlot, new ItemStack(UniversalCoins.Items.uc_card, 1));
+			if (UniversalAccounts.getInstance().getAccountBalance(accountNumber) > 1000000) {
+				inventory.set(itemCardSlot, new ItemStack(UniversalCoins.Items.ender_card, 1));
+			} else {
+				inventory.set(itemCardSlot, new ItemStack(UniversalCoins.Items.uc_card, 1));
+			}
 			inventory.get(itemCardSlot).setTagCompound(new NBTTagCompound());
 			inventory.get(itemCardSlot).getTagCompound().setString("Name", playerName);
 			inventory.get(itemCardSlot).getTagCompound().setString("Owner", playerUID);
@@ -325,28 +331,28 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 	}
 
 	public void fillCoinSlot() {
-		if (inventory.get(itemCoinSlot) == null && coinWithdrawalAmount > 0) {
-			if (coinWithdrawalAmount > UniversalCoins.coinValues[4]) {
+		if (inventory.get(itemCoinSlot) == ItemStack.EMPTY && coinWithdrawalAmount > 0) {
+			if (coinWithdrawalAmount >= UniversalCoins.coinValues[4]) {
 				inventory.set(itemCoinSlot, new ItemStack(UniversalCoins.Items.obsidian_coin));
 				inventory.get(itemCoinSlot)
 						.setCount((int) Math.min(coinWithdrawalAmount / UniversalCoins.coinValues[4], 64));
 				coinWithdrawalAmount -= inventory.get(itemCoinSlot).getCount() * UniversalCoins.coinValues[4];
-			} else if (coinWithdrawalAmount > UniversalCoins.coinValues[3]) {
+			} else if (coinWithdrawalAmount >= UniversalCoins.coinValues[3]) {
 				inventory.set(itemCoinSlot, new ItemStack(UniversalCoins.Items.diamond_coin));
 				inventory.get(itemCoinSlot)
 						.setCount((int) Math.min(coinWithdrawalAmount / UniversalCoins.coinValues[3], 64));
 				coinWithdrawalAmount -= inventory.get(itemCoinSlot).getCount() * UniversalCoins.coinValues[3];
-			} else if (coinWithdrawalAmount > UniversalCoins.coinValues[2]) {
+			} else if (coinWithdrawalAmount >= UniversalCoins.coinValues[2]) {
 				inventory.set(itemCoinSlot, new ItemStack(UniversalCoins.Items.emerald_coin));
 				inventory.get(itemCoinSlot)
 						.setCount((int) Math.min(coinWithdrawalAmount / UniversalCoins.coinValues[2], 64));
 				coinWithdrawalAmount -= inventory.get(itemCoinSlot).getCount() * UniversalCoins.coinValues[2];
-			} else if (coinWithdrawalAmount > UniversalCoins.coinValues[1]) {
+			} else if (coinWithdrawalAmount >= UniversalCoins.coinValues[1]) {
 				inventory.set(itemCoinSlot, new ItemStack(UniversalCoins.Items.gold_coin));
 				inventory.get(itemCoinSlot)
 						.setCount((int) Math.min(coinWithdrawalAmount / UniversalCoins.coinValues[1], 64));
 				coinWithdrawalAmount -= inventory.get(itemCoinSlot).getCount() * UniversalCoins.coinValues[1];
-			} else if (coinWithdrawalAmount > UniversalCoins.coinValues[0]) {
+			} else if (coinWithdrawalAmount >= UniversalCoins.coinValues[0]) {
 				inventory.set(itemCoinSlot, new ItemStack(UniversalCoins.Items.iron_coin));
 				inventory.get(itemCoinSlot)
 						.setCount((int) Math.min(coinWithdrawalAmount / UniversalCoins.coinValues[0], 64));
@@ -372,13 +378,11 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 
 	@Override
 	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -390,13 +394,11 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 
 	@Override
 	public void openInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -408,7 +410,6 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 
 	@Override
 	public void setField(int id, int value) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -420,7 +421,6 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -430,7 +430,6 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

@@ -22,6 +22,15 @@ public class SafeGUI extends GuiContainer {
 		ySize = 152;
 	}
 
+	/**
+	 * Draws the screen and all the components in it.
+	 */
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		this.drawDefaultBackground();
+		super.drawScreen(mouseX, mouseY, partialTicks);
+		this.renderHoveredToolTip(mouseX, mouseY);
+	}
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		final ResourceLocation texture = new ResourceLocation("universalcoins", "textures/gui/safe.png");

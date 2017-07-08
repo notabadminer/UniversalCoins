@@ -1,7 +1,5 @@
 package universalcoins.block;
 
-import java.util.List;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
@@ -15,6 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
@@ -97,10 +96,9 @@ public class BlockPackager extends BlockProtected {
 	}
 
 	@Override
-	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-		java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
-		TilePackager te = world.getTileEntity(pos) instanceof TilePackager ? (TilePackager) world.getTileEntity(pos)
-				: null;
+	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state,
+			int fortune) {
+		TileEntity te = world.getTileEntity(pos);
 		ItemStack stack = new ItemStack(UniversalCoins.Blocks.packager, 1);
 		if (te != null) {
 			NBTTagCompound tag = new NBTTagCompound();
@@ -109,23 +107,6 @@ public class BlockPackager extends BlockProtected {
 			tagCompound.setTag("BlockEntityTag", tag);
 			stack.setTagCompound(tagCompound);
 		}
-		ret.add(stack);
-		return ret;
-	}
-
-	@Override
-	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
-			boolean willHarvest) {
-		if (willHarvest)
-			return true; // If it will harvest, delay deletion of the block
-							// until after getDrops
-		return super.removedByPlayer(state, world, pos, player, willHarvest);
-	}
-
-	@Override
-	public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te,
-			ItemStack tool) {
-		super.harvestBlock(world, player, pos, state, te, tool);
-		world.setBlockToAir(pos);
+		drops.add(stack);
 	}
 }

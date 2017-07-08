@@ -1,6 +1,5 @@
 package universalcoins.block;
 
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
@@ -238,9 +237,9 @@ public class BlockSignal extends BlockProtected {
 	}
 
 	@Override
-	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-		java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
-		TileSignal te = world.getTileEntity(pos) instanceof TileSignal ? (TileSignal) world.getTileEntity(pos) : null;
+	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state,
+			int fortune) {
+		TileEntity te = world.getTileEntity(pos);
 		ItemStack stack = new ItemStack(UniversalCoins.Blocks.signalblock, 1);
 		if (te != null) {
 			NBTTagCompound tag = new NBTTagCompound();
@@ -249,23 +248,6 @@ public class BlockSignal extends BlockProtected {
 			tagCompound.setTag("BlockEntityTag", tag);
 			stack.setTagCompound(tagCompound);
 		}
-		ret.add(stack);
-		return ret;
-	}
-
-	@Override
-	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
-			boolean willHarvest) {
-		if (willHarvest)
-			return true; // If it will harvest, delay deletion of the block
-							// until after getDrops
-		return super.removedByPlayer(state, world, pos, player, willHarvest);
-	}
-
-	@Override
-	public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te,
-			ItemStack tool) {
-		super.harvestBlock(world, player, pos, state, te, tool);
-		world.setBlockToAir(pos);
+		drops.add(stack);
 	}
 }

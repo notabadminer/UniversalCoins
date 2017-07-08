@@ -650,7 +650,7 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	}
 
 	public String getName() {
-		return null;
+		return UniversalCoins.Blocks.vendor_block.getLocalizedName();
 	}
 
 	@Override
@@ -1021,7 +1021,7 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 
 	@Override
 	public ITextComponent getDisplayName() {
-		return new TextComponentString(UniversalCoins.Blocks.tradestation.getLocalizedName());
+		return new TextComponentString(UniversalCoins.Blocks.vendor_block.getLocalizedName());
 	}
 
 	@Override

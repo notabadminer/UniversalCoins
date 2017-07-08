@@ -91,7 +91,6 @@ public class ContainerATM extends Container {
 				return ItemStack.EMPTY;
 			}
 			slotObject.onTake(player, stackInSlot);
-			tEntity.fillCoinSlot();
 		}
 
 		return stack;

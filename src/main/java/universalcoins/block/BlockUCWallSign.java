@@ -58,11 +58,13 @@ public class BlockUCWallSign extends BlockWallSign {
 
 	@Override
 	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
-		String ownerName = ((TileUCSign) world.getTileEntity(pos)).blockOwner;
-		if (player.getDisplayName().equals(ownerName)) {
-			this.setHardness(1.0F);
-		} else {
-			this.setHardness(-1.0F);
+		if (UniversalCoins.blockProtection) {
+			String ownerName = ((TileUCSign) world.getTileEntity(pos)).blockOwner;
+			if (player.getDisplayName().equals(ownerName)) {
+				this.setHardness(1.0F);
+			} else {
+				this.setHardness(-1.0F);
+			}
 		}
 	}
 
@@ -88,7 +90,7 @@ public class BlockUCWallSign extends BlockWallSign {
 			super.removedByPlayer(state, world, pos, player, willHarvest);
 			return true;
 		}
-		if (player.getDisplayName().equals(ownerName) && !world.isRemote) {
+		if (player.getName().contentEquals(ownerName) && !world.isRemote) {
 			super.removedByPlayer(state, world, pos, player, willHarvest);
 			return true;
 		}

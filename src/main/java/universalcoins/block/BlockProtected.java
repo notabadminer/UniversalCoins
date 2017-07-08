@@ -1,5 +1,7 @@
 package universalcoins.block;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -20,28 +22,20 @@ public class BlockProtected extends BlockContainer {
 		super(materialIn);
 	}
 
-	/**
-	 * Called before a block is broken. Return true to prevent default block
-	 * harvesting.
-	 *
-	 * Note: In SMP, this is called on both client and server sides!
-	 *
-	 * @param itemstack
-	 *            The current ItemStack
-	 * @param pos
-	 *            Block's position in world
-	 * @param player
-	 *            The Player that is wielding the item
-	 * @return True to prevent harvesting, false to continue as normal
-	 */
-	public boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, EntityPlayer player) {
+	@Override
+	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
+			boolean willHarvest) {
 		if (UniversalCoins.blockProtection) {
 			TileProtected tileEntity = (TileProtected) player.getEntityWorld().getTileEntity(pos);
 			if (!player.capabilities.isCreativeMode && !tileEntity.blockOwner.equals(player.getName())) {
-				return true;
+				return false;
 			}
 		}
-		return false;
+		if (willHarvest)
+			return true; // If it will harvest, delay deletion of the block
+							// until after getDrops
+		this.onBlockHarvested(world, pos, state, player);
+		return world.setBlockState(pos, net.minecraft.init.Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
 	}
 
 	@Override
@@ -69,5 +63,24 @@ public class BlockProtected extends BlockContainer {
 		EntityItem entityItem = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(this, 1));
 		if (!world.isRemote)
 			world.spawnEntity(entityItem);
+	}
+
+	@Override
+	public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state,
+			@Nullable TileEntity te, ItemStack stack) {
+		super.harvestBlock(worldIn, player, pos, state, (TileEntity) null, stack);
+		worldIn.setBlockToAir(pos);
+	}
+
+	@Override
+	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
+		if (UniversalCoins.blockProtection) {
+			String ownerName = ((TileProtected) world.getTileEntity(pos)).blockOwner;
+			if (!player.capabilities.isCreativeMode && !player.getName().contentEquals(ownerName)) {
+				this.setHardness(-1.0F);
+			} else {
+				this.setHardness(1.0F);
+			}
+		}
 	}
 }

@@ -14,11 +14,6 @@ public class TileVendorBlock extends TileVendor {
 
 	String signText[] = { "", "", "", "" };
 
-	@Override
-	public String getName() {
-		return I18n.translateToLocal("tile.vendor.name");
-	}
-
 	public void updateSigns() {
 
 		if (!inventory.get(itemTradeSlot).isEmpty()) {

@@ -37,6 +37,15 @@ public class ATMGUI extends GuiContainer {
 		ySize = 201;
 	}
 
+	/**
+	 * Draws the screen and all the components in it.
+	 */
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		this.drawDefaultBackground();
+		super.drawScreen(mouseX, mouseY, partialTicks);
+		this.renderHoveredToolTip(mouseX, mouseY);
+	}
+
 	@Override
 	protected void keyTyped(char c, int i) {
 		if (menuState == 6) {
