@@ -1,7 +1,5 @@
 package universalcoins.tileentity;
 
-import cofh.api.energy.IEnergyProvider;
-import cofh.api.energy.IEnergyReceiver;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -17,7 +15,12 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.PowerReceiverGUI;
 import universalcoins.net.UCButtonMessage;
@@ -25,22 +28,26 @@ import universalcoins.util.CoinUtils;
 import universalcoins.util.UniversalAccounts;
 import universalcoins.util.UniversalPower;
 
-public class TilePowerReceiver extends TileProtected implements ITickable, IInventory, IEnergyProvider {
+public class TilePowerReceiver extends TileProtected implements ITickable, IInventory, IEnergyStorage {
 	private NonNullList<ItemStack> inventory = NonNullList.<ItemStack> withSize(3, ItemStack.EMPTY);
 	public static final int itemCardSlot = 0;
 	public static final int itemCoinSlot = 1;
 	public static final int itemOutputSlot = 2;
 	public long coinSum = 0;
-	public int rfLevel = 0;
-	public int rfOutput = 0;
-	public long wrfLevel = 0;
+	public int feLevel = 0;
+	public int feOutput = 0;
+	public long wfeLevel = 0;
 	public String blockOwner = "nobody";
 	public EnumFacing orientation = null;
 	public boolean publicAccess;
 
+	@CapabilityInject(IEnergyStorage.class)
+	public static Capability<IEnergyStorage> CAPABILITY_FORGE_ENERGYSTORAGE = null;
+
 	@Override
 	public void update() {
 		if (!world.isRemote) {
+			FMLLog.log.info("in update");
 			buyPower();
 			sendPower();
 		}
@@ -124,21 +131,6 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 		return false;
 	}
 
-	@Override
-	public boolean canConnectEnergy(EnumFacing from) {
-		return true;
-	}
-
-	@Override
-	public int getEnergyStored(EnumFacing from) {
-		return rfLevel;
-	}
-
-	@Override
-	public int getMaxEnergyStored(EnumFacing from) {
-		return Integer.MAX_VALUE;
-	}
-
 	private long getAccountBalance() {
 		if (world.isRemote || inventory.get(itemCardSlot) == null || !inventory.get(itemCardSlot).hasTagCompound()) {
 			return 0;
@@ -210,9 +202,9 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 		}
 		tagCompound.setTag("Inventory", itemList);
 		tagCompound.setLong("coinSum", coinSum);
-		tagCompound.setInteger("rfLevel", rfLevel);
-		tagCompound.setInteger("rfOutput", rfOutput);
-		tagCompound.setLong("wrfLevel", wrfLevel);
+		tagCompound.setInteger("feLevel", feLevel);
+		tagCompound.setInteger("feOutput", feOutput);
+		tagCompound.setLong("wfeLevel", wfeLevel);
 		tagCompound.setString("blockOwner", blockOwner);
 		if (orientation != null) {
 			tagCompound.setInteger("orientation", orientation.ordinal());
@@ -240,19 +232,19 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 			coinSum = 0;
 		}
 		try {
-			rfLevel = tagCompound.getInteger("rfLevel");
+			feLevel = tagCompound.getInteger("feLevel");
 		} catch (Throwable ex2) {
-			rfLevel = 0;
+			feLevel = 0;
 		}
 		try {
-			rfOutput = tagCompound.getInteger("rfOutput");
+			feOutput = tagCompound.getInteger("feOutput");
 		} catch (Throwable ex2) {
-			rfOutput = 0;
+			feOutput = 0;
 		}
 		try {
-			wrfLevel = tagCompound.getLong("wrfLevel");
+			wfeLevel = tagCompound.getLong("wfeLevel");
 		} catch (Throwable ex2) {
-			wrfLevel = 0;
+			wfeLevel = 0;
 		}
 		try {
 			blockOwner = tagCompound.getString("blockOwner");
@@ -280,7 +272,7 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 		}
 	}
 
-	public void fillOutputSlot() {
+	protected void fillOutputSlot() {
 		inventory.set(itemOutputSlot, ItemStack.EMPTY);
 		if (coinSum > UniversalCoins.coinValues[4]) {
 			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.obsidian_coin));
@@ -305,54 +297,48 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 		}
 	}
 
-	@Override
-	public int extractEnergy(EnumFacing from, int maxExtract, boolean simulate) {
-		if (!simulate) {
-			rfLevel -= maxExtract;
-			if (coinSum - UniversalCoins.rfRetailRate >= 0) {
-				coinSum -= UniversalCoins.rfRetailRate;
-			}
-		}
-		return Math.min(rfLevel, 1000);
-	}
-
 	protected void buyPower() {
-		if (rfLevel == 0 && UniversalPower.getInstance().extractEnergy(10, true) > 0
+		if (feLevel == 0 && UniversalPower.getInstance().extractEnergy(10, true) > 0
 				&& debitAccount(UniversalCoins.rfRetailRate)) {
 			UniversalPower.getInstance().extractEnergy(10, false);
-			rfLevel += 10000;
-		} else if (rfLevel == 0 && UniversalPower.getInstance().extractEnergy(10, true) > 0
+			feLevel += 10000;
+		} else if (feLevel == 0 && UniversalPower.getInstance().extractEnergy(10, true) > 0
 				&& coinSum - UniversalCoins.rfRetailRate >= 0) {
 			coinSum -= UniversalCoins.rfRetailRate;
 			UniversalPower.getInstance().extractEnergy(10, false);
-			rfLevel += 10000;
+			feLevel += 10000;
 		}
-		wrfLevel = UniversalPower.getInstance().getRFLevel();
+		wfeLevel = UniversalPower.getInstance().getFeLevel();
 	}
 
 	protected void sendPower() {
 		if (orientation == null) {
+			resetPowerDirection();
 			return;
 		}
-		rfOutput = 0;
+		FMLLog.log.info("in sendPower");
+		feOutput = 0;
 		TileEntity tile = world.getTileEntity(new BlockPos(pos.getX() + orientation.getFrontOffsetX(),
 				pos.getY() + orientation.getFrontOffsetX(), pos.getZ() + orientation.getFrontOffsetZ()));
-		if (tile != null && tile instanceof IEnergyReceiver) {
-			IEnergyReceiver handler = (IEnergyReceiver) tile;
-			int maxRF = handler.receiveEnergy(orientation.getOpposite(), Math.min(1000, rfLevel), true);
-			rfLevel -= handler.receiveEnergy(orientation.getOpposite(), maxRF, false);
-
+		if (tile != null && tile.hasCapability(CapabilityEnergy.ENERGY, orientation)) {
+			FMLLog.log.info("sending power");
+			int maxFE = tile.getCapability(CapabilityEnergy.ENERGY, orientation).receiveEnergy(Math.min(1000, feLevel), true);
+			FMLLog.log.info("maxFE: " + maxFE);
+			feLevel -= tile.getCapability(CapabilityEnergy.ENERGY, orientation).receiveEnergy(maxFE, false);
 		} else {
+			FMLLog.log.info("invalid direction");
 			orientation = null;
 		}
 	}
 
-	public void resetPowerDirection() {
+	protected void resetPowerDirection() {
+		FMLLog.log.info("in resetPowerDirection");
 		for (EnumFacing direction : EnumFacing.VALUES) {
 			TileEntity tile = world.getTileEntity((new BlockPos(pos.getX() + direction.getFrontOffsetX(),
 					pos.getY() + direction.getFrontOffsetX(), pos.getZ() + direction.getFrontOffsetZ())));
-			if (tile instanceof IEnergyReceiver) {
+			if (tile != null && tile.hasCapability(CapabilityEnergy.ENERGY, direction)) {
 				orientation = direction;
+				FMLLog.log.info("set power direction: " + orientation.getName());
 			}
 		}
 	}
@@ -369,14 +355,10 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 
 	@Override
 	public void openInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -399,13 +381,63 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public int receiveEnergy(int maxReceive, boolean simulate) {
+		return 0;
+	}
+
+	@Override
+	public int extractEnergy(int maxExtract, boolean simulate) {
+		FMLLog.log.info("in extractEnergy");
+		if (!simulate) {
+			feLevel -= maxExtract;
+			if (coinSum - UniversalCoins.rfRetailRate >= 0) {
+				coinSum -= UniversalCoins.rfRetailRate;
+			}
+		}
+		return Math.min(feLevel, 1000);
+	}
+
+	@Override
+	public int getEnergyStored() {
+		return feLevel;
+	}
+
+	@Override
+	public int getMaxEnergyStored() {
+		return Integer.MAX_VALUE;
+	}
+
+	@Override
+	public boolean canExtract() {
+		return feLevel > 0;
+	}
+
+	@Override
+	public boolean canReceive() {
+		return false;
+	}
+
+	@Override
+	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+		if (capability == CapabilityEnergy.ENERGY) {
+			return true;
+		}
+		return super.hasCapability(capability, facing);
+	}
+
+	@Override
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+		if (capability == CapabilityEnergy.ENERGY) {
+			return (T) this;
+		}
+		return super.getCapability(capability, facing);
 	}
 }

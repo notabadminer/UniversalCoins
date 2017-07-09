@@ -96,15 +96,15 @@ public class ContainerPowerReceiver extends Container {
 		super.detectAndSendChanges();
 
 		if (this.lastOwner != tEntity.blockOwner || this.lastCoinSum != tEntity.coinSum
-				|| this.lastrfLevel != tEntity.rfLevel || this.lastrfOutput != tEntity.rfOutput
-				|| this.lastwrfLevel != tEntity.wrfLevel || this.lastPublicAccess != this.tEntity.publicAccess) {
+				|| this.lastrfLevel != tEntity.feLevel || this.lastrfOutput != tEntity.feOutput
+				|| this.lastwrfLevel != tEntity.wfeLevel || this.lastPublicAccess != this.tEntity.publicAccess) {
 			tEntity.updateTE();
 
 			this.lastOwner = tEntity.blockOwner;
 			this.lastCoinSum = tEntity.coinSum;
-			this.lastrfLevel = tEntity.rfLevel;
-			this.lastrfOutput = tEntity.rfOutput;
-			this.lastwrfLevel = tEntity.wrfLevel;
+			this.lastrfLevel = tEntity.feLevel;
+			this.lastrfOutput = tEntity.feOutput;
+			this.lastwrfLevel = tEntity.wfeLevel;
 			this.lastPublicAccess = this.tEntity.publicAccess;
 		}
 	}

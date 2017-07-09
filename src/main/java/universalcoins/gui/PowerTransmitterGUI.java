@@ -69,10 +69,10 @@ public class PowerTransmitterGUI extends GuiContainer {
 		fontRenderer.drawString(I18n.format("container.inventory"), 6, 63, 4210752);
 
 		// display rf sold
-		String formattedkrf = formatter.format(tEntity.krfSold);
-		int rfLength = fontRenderer.getStringWidth(formattedkrf + " kRF");
-		String overage = (tEntity.krfSold == Integer.MAX_VALUE ? "+" : "");
-		fontRenderer.drawString(formattedkrf + " kRF", 130 - rfLength, 26, 4210752);
+		String formattedkfe = formatter.format(tEntity.kfeSold);
+		int feLength = fontRenderer.getStringWidth(formattedkfe + " kFE");
+		String overage = (tEntity.kfeSold == Integer.MAX_VALUE ? "+" : "");
+		fontRenderer.drawString(formattedkfe + " kFE", 130 - feLength, 26, 4210752);
 
 		// display coin balance
 		String formattedBalance = formatter.format(tEntity.coinSum);

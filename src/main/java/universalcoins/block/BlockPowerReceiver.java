@@ -66,13 +66,6 @@ public class BlockPowerReceiver extends BlockProtected {
 	}
 
 	@Override
-	public boolean eventReceived(IBlockState state, World world, BlockPos pos, int id, int param) {
-		TilePowerReceiver tileentity = (TilePowerReceiver) world.getTileEntity(pos);
-		tileentity.resetPowerDirection();
-		return tileentity == null ? false : tileentity.receiveClientEvent(id, param);
-	}
-
-	@Override
 	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state,
 			int fortune) {
 		TileEntity te = world.getTileEntity(pos);

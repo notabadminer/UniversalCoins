@@ -1,6 +1,5 @@
 package universalcoins.tileentity;
 
-import cofh.api.energy.IEnergyReceiver;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -13,23 +12,30 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.PowerTransmitterGUI;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.util.UniversalAccounts;
 import universalcoins.util.UniversalPower;
 
-public class TilePowerTransmitter extends TileProtected implements IInventory, IEnergyReceiver {
+public class TilePowerTransmitter extends TileProtected implements IInventory, IEnergyStorage {
 	private NonNullList<ItemStack> inventory = NonNullList.<ItemStack> withSize(2, ItemStack.EMPTY);
 	public static final int itemCardSlot = 0;
 	public static final int itemOutputSlot = 1;
 	public long coinSum = 0;
-	public int rfLevel = 0;
-	public int rfOutput = 0;
-	public int krfSold = 0;
+	public int feLevel = 0;
+	public int feOutput = 0;
+	public int kfeSold = 0;
 	public String blockOwner = "nobody";
 	public boolean publicAccess;
+
+	@CapabilityInject(IEnergyStorage.class)
+	public static Capability<IEnergyStorage> CAPABILITY_FORGE_ENERGYSTORAGE = null;
 
 	@Override
 	public int getSizeInventory() {
@@ -95,46 +101,6 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 		return false;
 	}
 
-	@Override
-	public boolean canConnectEnergy(EnumFacing from) {
-		return true;
-	}
-
-	@Override
-	public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
-		if (!simulate) {
-			int rfChunks = 0;
-			rfLevel += maxReceive;
-			if (rfLevel >= 10000) {
-				// calculate how many 10k chunks we can sell
-				rfChunks = (int) Math.floor(rfLevel / 10000);
-				boolean playerCredited = false;
-				if (creditAccount(UniversalCoins.rfWholesaleRate * rfChunks)) {
-					krfSold += Math.min(10 * rfChunks, Integer.MAX_VALUE - krfSold);
-					UniversalPower.getInstance().receiveEnergy(10 * rfChunks, false);
-					rfLevel -= 10000 * rfChunks;
-				} else if (coinSum + UniversalCoins.rfWholesaleRate * rfChunks <= Integer.MAX_VALUE) {
-					coinSum += UniversalCoins.rfWholesaleRate * rfChunks;
-					krfSold += Math.min(10 * rfChunks, Integer.MAX_VALUE - krfSold);
-					UniversalPower.getInstance().receiveEnergy(10 * rfChunks, false);
-					rfLevel -= 10000 * rfChunks;
-				}
-			}
-		}
-
-		return maxReceive;
-	}
-
-	@Override
-	public int getEnergyStored(EnumFacing from) {
-		return rfLevel;
-	}
-
-	@Override
-	public int getMaxEnergyStored(EnumFacing from) {
-		return Integer.MAX_VALUE;
-	}
-
 	private long getAccountBalance() {
 		if (world.isRemote || inventory.get(itemCardSlot) == null || !inventory.get(itemCardSlot).hasTagCompound()) {
 			return 0;
@@ -196,8 +162,8 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 		}
 		tagCompound.setTag("Inventory", itemList);
 		tagCompound.setLong("coinSum", coinSum);
-		tagCompound.setInteger("rfLevel", rfLevel);
-		tagCompound.setInteger("krfSold", krfSold);
+		tagCompound.setInteger("feLevel", feLevel);
+		tagCompound.setInteger("kfeSold", kfeSold);
 		tagCompound.setString("blockOwner", blockOwner);
 		tagCompound.setBoolean("publicAccess", publicAccess);
 		return tagCompound;
@@ -221,14 +187,14 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 			coinSum = 0;
 		}
 		try {
-			rfLevel = tagCompound.getInteger("rfLevel");
+			feLevel = tagCompound.getInteger("feLevel");
 		} catch (Throwable ex2) {
-			rfLevel = 0;
+			feLevel = 0;
 		}
 		try {
-			krfSold = tagCompound.getInteger("krfSold");
+			kfeSold = tagCompound.getInteger("kfeSold");
 		} catch (Throwable ex2) {
-			krfSold = 0;
+			kfeSold = 0;
 		}
 		try {
 			blockOwner = tagCompound.getString("blockOwner");
@@ -328,4 +294,69 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 		return false;
 	}
 
+	@Override
+	public int receiveEnergy(int maxReceive, boolean simulate) {
+		if (!simulate) {
+			int rfChunks = 0;
+			feLevel += maxReceive;
+			if (feLevel >= 10000) {
+				// calculate how many 10k chunks we can sell
+				rfChunks = (int) Math.floor(feLevel / 10000);
+				boolean playerCredited = false;
+				if (creditAccount(UniversalCoins.rfWholesaleRate * rfChunks)) {
+					kfeSold += Math.min(10 * rfChunks, Integer.MAX_VALUE - kfeSold);
+					UniversalPower.getInstance().receiveEnergy(10 * rfChunks, false);
+					feLevel -= 10000 * rfChunks;
+				} else if (coinSum + UniversalCoins.rfWholesaleRate * rfChunks <= Integer.MAX_VALUE) {
+					coinSum += UniversalCoins.rfWholesaleRate * rfChunks;
+					kfeSold += Math.min(10 * rfChunks, Integer.MAX_VALUE - kfeSold);
+					UniversalPower.getInstance().receiveEnergy(10 * rfChunks, false);
+					feLevel -= 10000 * rfChunks;
+				}
+			}
+		}
+
+		return maxReceive;
+	}
+
+	@Override
+	public int extractEnergy(int maxExtract, boolean simulate) {
+		return 0;
+	}
+
+	@Override
+	public int getEnergyStored() {
+		return feLevel;
+	}
+
+	@Override
+	public int getMaxEnergyStored() {
+		return Integer.MAX_VALUE;
+	}
+
+	@Override
+	public boolean canExtract() {
+		return false;
+	}
+
+	@Override
+	public boolean canReceive() {
+		return true;
+	}
+
+	@Override
+	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+		if (capability == CapabilityEnergy.ENERGY) {
+			return true;
+		}
+		return super.hasCapability(capability, facing);
+	}
+
+	@Override
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+		if (capability == CapabilityEnergy.ENERGY) {
+			return (T) this;
+		}
+		return super.getCapability(capability, facing);
+	}
 }

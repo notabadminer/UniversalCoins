@@ -95,12 +95,12 @@ public class ContainerPowerTransmitter extends Container {
 		super.detectAndSendChanges();
 
 		if (this.lastOwner != tEntity.blockOwner || this.lastCoinSum != tEntity.coinSum
-				|| this.lastrfLevel != tEntity.rfLevel || this.lastPublicAccess != this.tEntity.publicAccess) {
+				|| this.lastrfLevel != tEntity.feLevel || this.lastPublicAccess != this.tEntity.publicAccess) {
 			tEntity.updateTE();
 
 			this.lastOwner = tEntity.blockOwner;
 			this.lastCoinSum = tEntity.coinSum;
-			this.lastrfLevel = tEntity.rfLevel;
+			this.lastrfLevel = tEntity.feLevel;
 			this.lastPublicAccess = this.tEntity.publicAccess;
 		}
 	}

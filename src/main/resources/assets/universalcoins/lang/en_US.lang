@@ -19,8 +19,8 @@ tile.universalcoins.vendor_block.name=Vendor Block
 tile.universalcoins.vendor_frame.name=Vendor Frame
 tile.universalcoins.signalblock.name=Redstone Signal Generator
 tile.universalcoins.packager.name=Packager
-tile.universalcoins.power_transmitter.name=RF Transmitter
-tile.universalcoins.power_receiver.name=RF Receiver
+tile.universalcoins.power_transmitter.name=FE Transmitter
+tile.universalcoins.power_receiver.name=FE Receiver
 tile.universalcoins.atm.name=ATM
 itemGroup.tabUniversalCoins=Universal Coins
 

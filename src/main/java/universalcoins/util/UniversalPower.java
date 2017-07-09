@@ -16,7 +16,7 @@ public class UniversalPower {
 
 	}
 
-	public long getRFLevel() {
+	public long getFeLevel() {
 		if (hasKey("power")) {
 			return getWorldLong("power");
 		} else
