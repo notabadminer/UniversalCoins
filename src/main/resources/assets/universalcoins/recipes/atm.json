@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "ICI",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "C": {
+      "item": "universalcoins:ender_card"
+    }
+  },
+  "result": {
+    "item": "universalcoins:atm"
+  }
+}
+public static void addBlockSafeRecipe() {
+		GameRegistry.addShapedRecipe(new ItemStack(Meconomy.proxy.safe),
+				new Object[] { "III", "IEI", "III", 'I', Items.IRON_INGOT, 'E', Meconomy.proxy.ender_card });
+	}

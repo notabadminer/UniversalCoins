@@ -279,37 +279,31 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 
 	@Override
 	public void openInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public int getField(int id) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public void setField(int id, int value) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public int getFieldCount() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -320,7 +314,6 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

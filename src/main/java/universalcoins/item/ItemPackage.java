@@ -32,7 +32,9 @@ public class ItemPackage extends Item {
 			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 			int itemCount = new ItemStack(tag).getCount();
 			String itemName = new ItemStack(tag).getDisplayName();
-			tooltip.add(itemCount + " " + itemName);
+			if (itemCount > 0) {
+				tooltip.add(itemCount + " " + itemName);
+			}
 		}
 	}
 
@@ -40,22 +42,24 @@ public class ItemPackage extends Item {
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
 			EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (player.getActiveItemStack().getTagCompound() != null) {
-			// TODO unpack items and destroy package
 			NBTTagList tagList = player.getActiveItemStack().getTagCompound().getTagList("Inventory",
 					Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < tagList.tagCount(); i++) {
 				NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
-				if (player.inventory.getFirstEmptyStack() != -1) {
-					player.inventory.addItemStackToInventory(new ItemStack(tag));
-				} else {
-					// spawn in world
-					EntityItem entityItem = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(),
-							new ItemStack(tag));
-					worldIn.spawnEntity(entityItem);
+				ItemStack stack = new ItemStack(tag);
+				if (stack != ItemStack.EMPTY) {
+					if (player.inventory.getFirstEmptyStack() != -1) {
+						player.inventory.addItemStackToInventory(stack);
+					} else {
+						// spawn in world
+						EntityItem entityItem = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(),
+								stack);
+						worldIn.spawnEntity(entityItem);
+					}
 				}
 			}
 			// destroy package
-			player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+			player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY);
 		}
 		return EnumActionResult.SUCCESS;
 	}

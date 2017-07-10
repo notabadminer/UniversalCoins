@@ -251,9 +251,12 @@ public class UCItemPricer {
 		if (itemPrice == -1) {
 			int[] id = OreDictionary.getOreIDs(itemStack);
 			if (id.length > 0) {
-				itemName = OreDictionary.getOreName(id[0]);
-				if (ucPriceMap.get(itemName) != null) {
-					itemPrice = ucPriceMap.get(itemName);
+				NonNullList<ItemStack> oreStacks = OreDictionary.getOres(OreDictionary.getOreName(id[0]));
+				for (ItemStack oreStack : oreStacks) {
+					itemName = oreStack.getItem().getRegistryName().toString();
+					if (ucPriceMap.get(itemName + ".0") != null) {
+						itemPrice = ucPriceMap.get(itemName + ".0");
+					}
 				}
 			}
 		}
@@ -571,7 +574,8 @@ public class UCItemPricer {
 			List<ItemStack> test = OreDictionary.getOres(ore);
 			int itemValue = -1;
 			for (int j = 0; j < test.size(); j++) {
-				// FMLLog.log.info("ore item:" + test.get(j).getItem().getRegistryName());
+				// FMLLog.log.info("ore item:" +
+				// test.get(j).getItem().getRegistryName());
 				int subItemValue = getItemPrice(test.get(j));
 				// FMLLog.log.info("sub item price:" + subItemValue);
 				if (subItemValue > 0) {

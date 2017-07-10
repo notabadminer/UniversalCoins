@@ -372,7 +372,6 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 
 	@Override
 	public int[] getSlotsForFace(EnumFacing side) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -388,8 +387,7 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		return inventory.get(index);
 	}
 
 	@Override
@@ -404,7 +402,6 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 
 	@Override
 	public int getField(int id) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -415,7 +412,6 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 
 	@Override
 	public int getFieldCount() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

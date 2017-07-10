@@ -1026,47 +1026,39 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 
 	@Override
 	public void openInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public int getField(int id) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public void setField(int id, int value) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public int getFieldCount() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		return inventory.get(index);
 	}
 }

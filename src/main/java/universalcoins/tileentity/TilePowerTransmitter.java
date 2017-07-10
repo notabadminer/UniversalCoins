@@ -17,6 +17,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.PowerTransmitterGUI;
 import universalcoins.net.UCButtonMessage;
@@ -45,7 +46,7 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 	@Override
 	public ItemStack getStackInSlot(int slot) {
 		if (slot >= inventory.size()) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		return inventory.get(slot);
 	}
@@ -53,7 +54,7 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 	@Override
 	public ItemStack decrStackSize(int slot, int size) {
 		ItemStack stack = getStackInSlot(slot);
-		if (stack != null) {
+		if (stack != ItemStack.EMPTY) {
 			if (stack.getCount() <= size) {
 				setInventorySlotContents(slot, ItemStack.EMPTY);
 			} else {
@@ -113,7 +114,7 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 	}
 
 	private boolean creditAccount(long amount) {
-		if (world.isRemote || inventory.get(itemCardSlot) == null
+		if (world.isRemote || inventory.get(itemCardSlot) == ItemStack.EMPTY
 				|| inventory.get(itemCardSlot).getItem() != UniversalCoins.Items.ender_card
 				|| !inventory.get(itemCardSlot).hasTagCompound())
 			return false;
@@ -217,28 +218,29 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 		}
 	}
 
-	public void fillOutputSlot() {
-		inventory.set(itemOutputSlot, ItemStack.EMPTY);
-		if (coinSum > UniversalCoins.coinValues[4]) {
-			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.obsidian_coin));
-			inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[4], 64));
-			coinSum -= UniversalCoins.coinValues[4] * inventory.get(itemOutputSlot).getCount();
-		} else if (coinSum > UniversalCoins.coinValues[3]) {
-			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.diamond_coin));
-			inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[3], 64));
-			coinSum -= UniversalCoins.coinValues[3] * inventory.get(itemOutputSlot).getCount();
-		} else if (coinSum > UniversalCoins.coinValues[2]) {
-			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.emerald_coin));
-			inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[2], 64));
-			coinSum -= UniversalCoins.coinValues[2] * inventory.get(itemOutputSlot).getCount();
-		} else if (coinSum > UniversalCoins.coinValues[1]) {
-			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.gold_coin));
-			inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[1], 64));
-			coinSum -= UniversalCoins.coinValues[1] * inventory.get(itemOutputSlot).getCount();
-		} else if (coinSum > UniversalCoins.coinValues[0]) {
-			inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.iron_coin));
-			inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[0], 64));
-			coinSum -= UniversalCoins.coinValues[0] * inventory.get(itemOutputSlot).getCount();
+	private void fillOutputSlot() {
+		if (inventory.get(itemOutputSlot).isEmpty()) {
+			if (coinSum >= UniversalCoins.coinValues[4]) {
+				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.obsidian_coin));
+				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[4], 64));
+				coinSum -= UniversalCoins.coinValues[4] * inventory.get(itemOutputSlot).getCount();
+			} else if (coinSum >= UniversalCoins.coinValues[3]) {
+				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.diamond_coin));
+				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[3], 64));
+				coinSum -= UniversalCoins.coinValues[3] * inventory.get(itemOutputSlot).getCount();
+			} else if (coinSum >= UniversalCoins.coinValues[2]) {
+				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.emerald_coin));
+				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[2], 64));
+				coinSum -= UniversalCoins.coinValues[2] * inventory.get(itemOutputSlot).getCount();
+			} else if (coinSum >= UniversalCoins.coinValues[1]) {
+				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.gold_coin));
+				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[1], 64));
+				coinSum -= UniversalCoins.coinValues[1] * inventory.get(itemOutputSlot).getCount();
+			} else if (coinSum >= UniversalCoins.coinValues[0]) {
+				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.iron_coin));
+				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[0], 64));
+				coinSum -= UniversalCoins.coinValues[0] * inventory.get(itemOutputSlot).getCount();
+			}
 		}
 	}
 
@@ -254,43 +256,36 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 
 	@Override
 	public void openInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public int getField(int id) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public void setField(int id, int value) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public int getFieldCount() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -341,7 +336,7 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 
 	@Override
 	public boolean canReceive() {
-		return true;
+		return feLevel < Integer.MAX_VALUE;
 	}
 
 	@Override

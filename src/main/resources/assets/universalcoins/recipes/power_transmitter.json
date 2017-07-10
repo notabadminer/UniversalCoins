@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "MRM",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    },
+    "M": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "item": "universalcoins:power_transmitter"
+  }
+}
