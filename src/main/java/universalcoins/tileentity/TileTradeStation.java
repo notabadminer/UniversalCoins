@@ -213,7 +213,8 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 				inventory.set(itemOutputSlot, new ItemStack(inventory.get(itemInputSlot).getItem(), amount,
 						inventory.get(itemInputSlot).getItemDamage()));
 			}
-			if (UCItemPricer.getInstance().hasEnchantment(inventory.get(itemInputSlot))) {
+			if (UCItemPricer.getInstance().hasEnchantment(inventory.get(itemInputSlot))
+					|| UCItemPricer.getInstance().hasPotion(inventory.get(itemInputSlot))) {
 				inventory.get(itemOutputSlot).setTagCompound(inventory.get(itemInputSlot).getTagCompound());
 			}
 		} else if (inventory.get(itemOutputSlot).getItem() == inventory.get(itemInputSlot).getItem()

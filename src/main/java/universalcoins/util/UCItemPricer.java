@@ -36,8 +36,6 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
-import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.FMLInjectionData;
@@ -77,7 +75,6 @@ public class UCItemPricer {
 			priceCoins();
 			priceCraftedItems();
 			priceSmeltedItems();
-			pricePotions();
 			writePriceLists();
 		} else {
 			try {
@@ -261,8 +258,7 @@ public class UCItemPricer {
 		if (itemStack.hasTagCompound()) {
 			NBTTagCompound tagCompound = itemStack.getTagCompound();
 			String potionName = tagCompound.getString("Potion");
-			if (potionName != "") {
-				FMLLog.log.info("potion: " + potionName);
+			if (potionName != "" && !tagCompound.hasKey("CustomPotionEffects")) {
 				if (ucPriceMap.get(potionName) != null) {
 					int potionPrice = ucPriceMap.get(potionName);
 					if (potionPrice == -1) {
@@ -276,14 +272,11 @@ public class UCItemPricer {
 			if (hasEnchantment(itemStack)) {
 				ArrayList<String> enchantments = getEnchantmentList(itemStack);
 				for (String enchant : enchantments) {
-					FMLLog.log.info("enchantment: " + enchant);
 					ResourceLocation enchantRL = getEnchantmentByName(enchant);
 					if (enchantRL != null
 							&& ucPriceMap.get(enchantRL + enchant.substring(enchant.length() - 2)) != null) {
-						FMLLog.log.info("enchantmentRL: " + enchantRL);
 
 						int enchantPrice = ucPriceMap.get(enchantRL + enchant.substring(enchant.length() - 2));
-						FMLLog.log.info("price: " + enchantPrice);
 						if (enchantPrice == -1) {
 							return -1;
 						}
@@ -374,9 +367,6 @@ public class UCItemPricer {
 				price = ucPriceMap.get(keyName);
 			}
 			if (price > 0) {
-				if (keyName.startsWith("tile.") || keyName.startsWith("item.")) {
-					keyName = keyName.substring(5);
-				}
 				// TODO update potion handling
 				if (keyName.contains("potion") || keyName.contains("splash_potion")
 						|| keyName.contains("lingering_potion")) {
@@ -481,7 +471,8 @@ public class UCItemPricer {
 						// output.getDisplayName() + " to " + itemCost);
 						UCItemPricer.getInstance().setItemPrice(output, itemCost);
 					} catch (Exception e) {
-						FMLLog.log.warn("Universal Coins Autopricer: Failed to set item price: " + output.getUnlocalizedName());
+						FMLLog.log.warn(
+								"Universal Coins Autopricer: Failed to set item price: " + output.getUnlocalizedName());
 					}
 				}
 			}
@@ -495,13 +486,6 @@ public class UCItemPricer {
 		for (int i = 0; i < coins.length; i++) {
 			int itemPrice = UniversalCoins.coinValues[i];
 			ucPriceMap.put(coins[i].getRegistryName() + ".0", itemPrice);
-		}
-	}
-
-	private void pricePotions() { // TODO makey it workey
-		List<IBrewingRecipe> recipes = BrewingRecipeRegistry.getRecipes();
-		for (IBrewingRecipe recipe : recipes) {
-			// FMLLog.log.info("Potion recipe: " + recipe);
 		}
 	}
 
@@ -675,8 +659,21 @@ public class UCItemPricer {
 	public boolean hasPotion(ItemStack stack) {
 		if (stack.hasTagCompound()) {
 			NBTTagCompound tagCompound = stack.getTagCompound();
-			return tagCompound.hasKey("Potion");
+			if (!tagCompound.hasKey("CustomPotionEffects")) {
+				return tagCompound.hasKey("Potion");
+			}
 		}
 		return false;
+	}
+
+	public String getPotion(ItemStack stack) {
+		if (stack.hasTagCompound()) {
+			NBTTagCompound tagCompound = stack.getTagCompound();
+			String potion = tagCompound.getString("Potion");
+			if (!tagCompound.hasKey("CustomPotionEffects") && !potion.contentEquals("")) {
+				return potion;
+			}
+		}
+		return "";
 	}
 }
