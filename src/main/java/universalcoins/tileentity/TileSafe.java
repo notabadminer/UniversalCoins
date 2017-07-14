@@ -4,6 +4,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -56,11 +57,8 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 	}
 
 	@Override
-	public ItemStack getStackInSlot(int slot) {
-		if (slot >= inventory.size()) {
-			return ItemStack.EMPTY;
-		}
-		return inventory.get(slot);
+	public ItemStack getStackInSlot(int index) {
+		return inventory.get(index);
 	}
 
 	@Override
@@ -195,14 +193,7 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
-		for (int i = 0; i < inventory.size(); i++) {
-			ItemStack stack = inventory.get(i);
-			NBTTagCompound tag = new NBTTagCompound();
-			tag.setByte("Slot", (byte) i);
-			stack.writeToNBT(tag);
-			itemList.appendTag(tag);
-		}
-		tagCompound.setTag("Inventory", itemList);
+		ItemStackHelper.saveAllItems(tagCompound, this.inventory);
 		tagCompound.setString("Owner", blockOwner);
 		tagCompound.setString("AccountNumber", accountNumber);
 		tagCompound.setLong("Balance", accountBalance);
@@ -213,15 +204,8 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
-
-		NBTTagList tagList = tagCompound.getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
-		for (int i = 0; i < tagList.tagCount(); i++) {
-			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
-			byte slot = tag.getByte("Slot");
-			if (slot >= 0 && slot < inventory.size()) {
-				inventory.set(slot, new ItemStack(tag));
-			}
-		}
+		this.inventory = NonNullList.<ItemStack> withSize(this.getSizeInventory(), ItemStack.EMPTY);
+		ItemStackHelper.loadAllItems(tagCompound, this.inventory);
 		try {
 			blockOwner = tagCompound.getString("Owner");
 		} catch (Throwable ex2) {

@@ -46,7 +46,7 @@ public class ItemUCSign extends ItemSign {
 							.withProperty(BlockUCWallSign.FACING, facing), 3);
 				}
 
-				player.getActiveItemStack().shrink(1);
+				player.getHeldItem(hand).shrink(1);
 				TileEntity tileentity = worldIn.getTileEntity(pos);
 
 				if (tileentity instanceof TileUCSign) {

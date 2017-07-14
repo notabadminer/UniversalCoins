@@ -3,16 +3,18 @@ package universalcoins.container;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.tileentity.TileTradeStation;
 
 public class ContainerTradeStation extends Container {
 	private TileTradeStation tileEntity;
 	private long lastCoinSum;
 	private int lastItemPrice, lastAutoMode, lastCoinMode;
-	private boolean lastBuyButtonActive, lastSellButtonActive, lastIronBtnActive, lastGoldBtnActive,
-			lastEmeraldBtnActive, lastDiamondBtnActive, lastObsidianBtnActive, lastInUse, lastPublicAccess;
+	private boolean lastBuyButtonActive, lastPublicAccess;
 
 	public ContainerTradeStation(InventoryPlayer inventoryPlayer, TileTradeStation tEntity) {
 		tileEntity = tEntity;
@@ -89,38 +91,50 @@ public class ContainerTradeStation extends Container {
 		return stack;
 	}
 
+	@SideOnly(Side.CLIENT)
+	@Override
+	public void updateProgressBar(int id, int data) {
+		this.tileEntity.setField(id, data);
+	}
+
 	/**
 	 * Looks for changes made in the container, sends them to every listener.
 	 */
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 
-		if (this.lastCoinSum != this.tileEntity.coinSum || this.lastItemPrice != this.tileEntity.itemPrice
-				|| this.lastBuyButtonActive != this.tileEntity.buyButtonActive
-				|| this.lastSellButtonActive != this.tileEntity.sellButtonActive
-				|| this.lastIronBtnActive != this.tileEntity.ironCoinBtnActive
-				|| this.lastGoldBtnActive != this.tileEntity.goldCoinBtnActive
-				|| this.lastEmeraldBtnActive != this.tileEntity.emeraldCoinBtnActive
-				|| this.lastDiamondBtnActive != this.tileEntity.diamondCoinBtnActive
-				|| this.lastInUse != this.tileEntity.inUse || this.lastAutoMode != this.tileEntity.autoMode
-				|| this.lastCoinMode != this.tileEntity.coinMode
-				|| this.lastPublicAccess != this.tileEntity.publicAccess) {
-			tileEntity.updateTE();
+		for (int i = 0; i < this.listeners.size(); ++i) {
+			IContainerListener icontainerlistener = this.listeners.get(i);
 
-			this.lastCoinSum = this.tileEntity.coinSum;
-			this.lastItemPrice = this.tileEntity.itemPrice;
-			this.lastBuyButtonActive = this.tileEntity.buyButtonActive;
-			this.lastSellButtonActive = this.tileEntity.sellButtonActive;
-			this.lastIronBtnActive = this.tileEntity.ironCoinBtnActive;
-			this.lastGoldBtnActive = this.tileEntity.goldCoinBtnActive;
-			this.lastEmeraldBtnActive = this.tileEntity.emeraldCoinBtnActive;
-			this.lastDiamondBtnActive = this.tileEntity.diamondCoinBtnActive;
-			this.lastObsidianBtnActive = this.tileEntity.obsidianCoinBtnActive;
-			this.lastInUse = this.tileEntity.inUse;
-			this.lastAutoMode = this.tileEntity.autoMode;
-			this.lastCoinMode = this.tileEntity.coinMode;
-			this.lastPublicAccess = this.tileEntity.publicAccess;
+			if (this.lastCoinSum != this.tileEntity.getField(0)) {
+				tileEntity.updateTE();
+			}
+
+			if (this.lastItemPrice != this.tileEntity.getField(1)) {
+				tileEntity.updateTE();
+			}
+
+			if (this.lastAutoMode != this.tileEntity.getField(2)) {
+				icontainerlistener.sendWindowProperty(this, 2, this.tileEntity.getField(2));
+			}
+			if (this.lastCoinMode != this.tileEntity.getField(3)) {
+				icontainerlistener.sendWindowProperty(this, 3, this.tileEntity.getField(3));
+			}
+			
+			if (this.lastPublicAccess != (this.tileEntity.getField(4) == 0 ? false : true)) {
+				icontainerlistener.sendWindowProperty(this, 4, this.tileEntity.getField(4));
+			}
+			if (this.lastBuyButtonActive != (this.tileEntity.getField(5) == 0 ? false : true)) {
+				icontainerlistener.sendWindowProperty(this, 5, this.tileEntity.getField(5));
+			}
 		}
+
+		this.lastCoinSum = this.tileEntity.getField(0);
+		this.lastItemPrice = this.tileEntity.getField(1);
+		this.lastAutoMode = this.tileEntity.getField(2);
+		this.lastCoinMode = this.tileEntity.getField(3);
+		this.lastPublicAccess = this.tileEntity.getField(4) == 0;
+		this.lastBuyButtonActive = this.tileEntity.getField(5) == 0;
 	}
 
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {

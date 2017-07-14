@@ -132,8 +132,9 @@ public class PackagerGUI extends GuiContainer {
 
 		if (sendMode) {
 			this.drawTexturedModalRect(x + 3, y + 20, 0, 190, 169, 40);
-			if (tEntity.packageTarget != "")
+			if (!tEntity.packageTarget.contentEquals("")) {
 				packageReceiverField.setText(tEntity.packageTarget);
+			}
 			fontRenderer.drawString(packageReceiverField.getText(), x + 30, y + 30, 4210752);
 			buyButton.displayString = I18n.format("general.button.send");
 			buyButton.enabled = canSend();
@@ -293,11 +294,13 @@ public class PackagerGUI extends GuiContainer {
 
 	@Override
 	protected void keyTyped(char c, int i) throws IOException {
+
 		if (packageReceiverField.isFocused()) {
 			if (packageReceiverField.getText().contains("Enter ")) {
 				packageReceiverField.setText("");
 			}
 			packageReceiverField.textboxKeyTyped(c, i);
+
 			if (c == KeyEvent.VK_TAB) {
 				tEntity.sendServerUpdateMessage(packageReceiverField.getText(), true);
 			} else {
@@ -306,13 +309,15 @@ public class PackagerGUI extends GuiContainer {
 		} else {
 			super.keyTyped(c, i);
 		}
+
 		if (c == KeyEvent.VK_ESCAPE) {
 			super.keyTyped(c, i);
 		}
 	}
 
 	private boolean canSend() {
-		if (tEntity.getStackInSlot(tEntity.itemPackageInputSlot) != null && !tEntity.packageTarget.contentEquals("")) {
+		if (!tEntity.getStackInSlot(tEntity.itemPackageInputSlot).isEmpty()
+				&& tEntity.getWorld().getPlayerEntityByName(tEntity.packageTarget) != null) {
 			return true;
 		}
 		return false;

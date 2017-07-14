@@ -1,5 +1,7 @@
 package universalcoins.tileentity;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -14,7 +16,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import universalcoins.UniversalCoins;
 import universalcoins.net.UCSignServerMessage;
-import universalcoins.net.UCTileSignMessage;
 
 public class TileUCSign extends TileEntitySign {
 
@@ -25,24 +26,29 @@ public class TileUCSign extends TileEntitySign {
 		super.readFromNBT(tagCompound);
 
 		for (int i = 0; i < 4; ++i) {
-			String s = ITextComponent.Serializer.componentToJson(this.signText[i]);
-			tagCompound.setString("Text" + (i + 1), s);
-		}
-		try {
-			blockOwner = tagCompound.getString("blockOwner");
-		} catch (Throwable ex2) {
-			blockOwner = "";
+			String s = tagCompound.getString("Text" + (i + 1));
+			ITextComponent itextcomponent = ITextComponent.Serializer.jsonToComponent(s);
+
+			this.signText[i] = itextcomponent;
+
+			try {
+				blockOwner = tagCompound.getString("blockOwner");
+			} catch (Throwable ex) {
+				blockOwner = "";
+			}
 		}
 	}
 
+	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
+
 		for (int i = 0; i < 4; ++i) {
 			String s = ITextComponent.Serializer.componentToJson(this.signText[i]);
 			tagCompound.setString("Text" + (i + 1), s);
 		}
-		tagCompound.setString("blockOwner", blockOwner);
 
+		tagCompound.setString("blockOwner", blockOwner);
 		return tagCompound;
 	}
 
@@ -56,37 +62,25 @@ public class TileUCSign extends TileEntitySign {
 	}
 
 	@Override
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+		readFromNBT(pkt.getNbtCompound());
+	}
+
+	@Nullable
+	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
-		ITextComponent[] aITextComponent = new ITextComponent[4];
-		System.arraycopy(this.signText, 0, aITextComponent, 0, 4);
-		SPacketUpdateTileEntity p = new SPacketUpdateTileEntity(pos, getBlockMetadata(), getTileData());
-		return p;
+		return new SPacketUpdateTileEntity(this.pos, 9, this.getUpdateTag());
 	}
 
-	// required for sync on chunk load
+	@Override
 	public NBTTagCompound getUpdateTag() {
-		NBTTagCompound nbt = new NBTTagCompound();
-		writeToNBT(nbt);
-		return nbt;
+		return this.writeToNBT(new NBTTagCompound());
 	}
 
-	public void scanChestContents() {
-		TileEntity tileEntity = null;
+	public void scanChestContents(IBlockState state, BlockPos fromPos) {
+		TileEntity tileEntity = world.getTileEntity(fromPos);
 		String[] itemName = { "", "", "", "" };
 		int[] itemCount = { 0, 0, 0, 0 };
-		int meta = super.getBlockMetadata();
-		if (meta == 2) {
-			tileEntity = world.getTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ() + 1));
-		}
-		if (meta == 3) {
-			tileEntity = world.getTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ() - 1));
-		}
-		if (meta == 4) {
-			tileEntity = world.getTileEntity(new BlockPos(pos.getX() + 1, pos.getY(), pos.getZ()));
-		}
-		if (meta == 5) {
-			tileEntity = world.getTileEntity(new BlockPos(pos.getX() - 1, pos.getY(), pos.getZ()));
-		}
 		if (tileEntity != null && tileEntity instanceof IInventory) {
 			IInventory inventory = (IInventory) tileEntity;
 			for (int i = 0; i < inventory.getSizeInventory(); i++) {
@@ -101,7 +95,10 @@ public class TileUCSign extends TileEntitySign {
 								itemName[j] = inventory.getStackInSlot(i).getDisplayName();
 							}
 						}
-						if (itemName[j].matches(inventory.getStackInSlot(i).getDisplayName())) {
+						if (itemName[j].contentEquals(inventory.getStackInSlot(i).getDisplayName())) {
+							if (itemName[j].contentEquals("Air")) {
+								itemCount[j]++;
+							}
 							itemCount[j] += inventory.getStackInSlot(i).getCount();
 						}
 					}
@@ -132,7 +129,10 @@ public class TileUCSign extends TileEntitySign {
 										itemName[j] = inventory.getStackInSlot(i).getDisplayName();
 									}
 								}
-								if (itemName[j].matches(inventory.getStackInSlot(i).getDisplayName())) {
+								if (itemName[j].contentEquals(inventory.getStackInSlot(i).getDisplayName())) {
+									if (itemName[j].contentEquals("Air")) {
+										itemCount[j]++;
+									}
 									itemCount[j] += inventory.getStackInSlot(i).getCount();
 								}
 							}
@@ -140,16 +140,20 @@ public class TileUCSign extends TileEntitySign {
 					}
 				}
 			}
+
 			// update sign with info collected
 			for (int i = 0; i < itemName.length; i++) {
-				if (itemName[i] != "") {
-					ITextComponent itextcomponent = ITextComponent.Serializer
-							.jsonToComponent(itemCount[i] + " " + itemName[i]);
-					signText[i] = itextcomponent;
+				if (itemName[i].contentEquals("Air")) {
+					signText[i] = new TextComponentString(itemCount[i] + " Empty Slots");
+
+				} else if (!itemName[i].contentEquals("")) {
+					signText[i] = new TextComponentString(itemCount[i] + " " + itemName[i]);
 				} else {
-					signText[i] = new TextComponentString("");
+					{
+						signText[i] = new TextComponentString("");
+					}
+					this.updateSign();
 				}
-				this.updateSign();
 			}
 		}
 	}

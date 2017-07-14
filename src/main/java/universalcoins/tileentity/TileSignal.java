@@ -3,6 +3,7 @@ package universalcoins.tileentity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -166,14 +167,7 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
-		for (int i = 0; i < inventory.size(); i++) {
-			ItemStack stack = inventory.get(i);
-			NBTTagCompound tag = new NBTTagCompound();
-			tag.setByte("Slot", (byte) i);
-			stack.writeToNBT(tag);
-			itemList.appendTag(tag);
-		}
-		tagCompound.setTag("Inventory", itemList);
+		ItemStackHelper.saveAllItems(tagCompound, this.inventory);
 		tagCompound.setString("blockOwner", blockOwner);
 		tagCompound.setInteger("coinSum", coinSum);
 		tagCompound.setInteger("fee", fee);
@@ -187,15 +181,8 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
-
-		NBTTagList tagList = tagCompound.getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
-		for (int i = 0; i < tagList.tagCount(); i++) {
-			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
-			byte slot = tag.getByte("Slot");
-			if (slot >= 0 && slot < inventory.size()) {
-				inventory.set(slot, new ItemStack(tag));
-			}
-		}
+		this.inventory = NonNullList.<ItemStack> withSize(this.getSizeInventory(), ItemStack.EMPTY);
+		ItemStackHelper.loadAllItems(tagCompound, this.inventory);
 		try {
 			blockOwner = tagCompound.getString("blockOwner");
 		} catch (Throwable ex2) {
@@ -239,11 +226,8 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 	}
 
 	@Override
-	public ItemStack getStackInSlot(int i) {
-		if (i >= inventory.size()) {
-			return null;
-		}
-		return inventory.get(i);
+	public ItemStack getStackInSlot(int index) {
+		return inventory.get(index);
 	}
 
 	@Override

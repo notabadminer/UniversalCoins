@@ -43,12 +43,12 @@ public class ItemUCCard extends Item {
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
 			EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (worldIn.isRemote)
-			return EnumActionResult.FAIL;
+			return EnumActionResult.SUCCESS;
 		if (player.getActiveItemStack().getTagCompound() == null) {
-			createNBT(player.getActiveItemStack(), worldIn, player);
+			createNBT(player.getHeldItem(hand), worldIn, player);
 		}
 		long accountCoins = UniversalAccounts.getInstance()
-				.getAccountBalance(player.getActiveItemStack().getTagCompound().getString("Account"));
+				.getAccountBalance(player.getHeldItem(hand).getTagCompound().getString("Account"));
 		DecimalFormat formatter = new DecimalFormat("###,###,###,###,###,###,###");
 		player.sendMessage(new TextComponentString(
 				I18n.translateToLocal("item.card.balance") + " " + formatter.format(accountCoins)));
@@ -66,6 +66,7 @@ public class ItemUCCard extends Item {
 				.getOrCreatePlayerAccount(entityPlayer.getPersistentID().toString());
 		NBTTagCompound tag = new NBTTagCompound();
 		tag.setString("Name", entityPlayer.getName());
+		tag.setString("Owner", entityPlayer.getPersistentID().toString());
 		tag.setString("Account", accountNumber);
 		stack.setTagCompound(tag);
 	}

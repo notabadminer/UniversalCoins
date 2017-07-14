@@ -22,7 +22,7 @@ public class ItemEnderCard extends ItemUCCard {
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
 			EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (worldIn.isRemote)
-			return EnumActionResult.FAIL;
+			return EnumActionResult.SUCCESS;
 		if (player.getActiveItemStack().getTagCompound() == null) {
 			createNBT(player.getActiveItemStack(), worldIn, player);
 		}
@@ -38,7 +38,7 @@ public class ItemEnderCard extends ItemUCCard {
 			coinValue = CoinUtils.getCoinValue(instack);
 			if (accountBalance == -1)
 				// get out of here if the card is invalid
-				return EnumActionResult.FAIL;
+				return EnumActionResult.SUCCESS;
 			if (coinValue == 0)
 				continue;
 			if (Long.MAX_VALUE - accountBalance > coinValue * instack.getCount()) {
@@ -50,7 +50,7 @@ public class ItemEnderCard extends ItemUCCard {
 			coinsDeposited += coinValue * depositAmount;
 			inventory.get(i).shrink(depositAmount);
 			if (inventory.get(i).getCount() == 0) {
-				player.inventory.setInventorySlotContents(i, null);
+				player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
 				player.inventoryContainer.detectAndSendChanges();
 			}
 		}
@@ -61,7 +61,7 @@ public class ItemEnderCard extends ItemUCCard {
 		}
 		player.sendMessage(new TextComponentString(I18n.translateToLocal("item.card.balance") + " "
 				+ formatter.format(UniversalAccounts.getInstance().getAccountBalance(accountNumber))));
-		return EnumActionResult.FAIL;
+		return EnumActionResult.SUCCESS;
 	}
 
 }

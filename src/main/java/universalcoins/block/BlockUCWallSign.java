@@ -97,12 +97,13 @@ public class BlockUCWallSign extends BlockWallSign {
 		return false;
 	}
 
-	// @Override
-	public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock) {
+	@Override
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+		EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
 		TileEntity tileEntity = worldIn.getTileEntity(pos);
-		if (neighborBlock.getLocalizedName().matches("Chest") && tileEntity != null
-				&& tileEntity instanceof TileUCSign) {
-			((TileUCSign) tileEntity).scanChestContents();
+
+		if (tileEntity != null && tileEntity instanceof TileUCSign) {
+			((TileUCSign) tileEntity).scanChestContents(state, fromPos);
 		}
 	}
 

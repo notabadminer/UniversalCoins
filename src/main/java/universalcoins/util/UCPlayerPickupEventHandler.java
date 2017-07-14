@@ -46,19 +46,19 @@ public class UCPlayerPickupEventHandler {
 					int depositAmount = 0;
 					int stackSize = event.getItem().getItem().getCount();
 					switch (event.getItem().getItem().getUnlocalizedName()) {
-					case "item.iron_coin":
+					case "item.universalcoins.iron_coin":
 						coinValue = UniversalCoins.coinValues[0];
 						break;
-					case "item.gold_coin":
+					case "item.universalcoins.gold_coin":
 						coinValue = UniversalCoins.coinValues[1];
 						break;
-					case "item.emerald_coin":
+					case "item.universalcoins.emerald_coin":
 						coinValue = UniversalCoins.coinValues[2];
 						break;
-					case "item.diamond_coin":
+					case "item.universalcoins.diamond_coin":
 						coinValue = UniversalCoins.coinValues[3];
 						break;
-					case "item.obsidian_coin":
+					case "item.universalcoins.obsidian_coin":
 						coinValue = UniversalCoins.coinValues[4];
 						break;
 					}

@@ -9,6 +9,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -20,7 +21,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCPackagerServerMessage;
@@ -49,6 +49,7 @@ public class TilePackager extends TileProtected implements IInventory {
 	}
 
 	public void onButtonPressed(int buttonId, boolean shiftPressed) {
+		checkCard();
 		if (buttonId == 0) {
 			if (shiftPressed) {
 				sendPackage(packageTarget);
@@ -57,7 +58,7 @@ public class TilePackager extends TileProtected implements IInventory {
 			if (coinSum < packageCost[packageSize] && !cardAvailable) {
 				return;
 			}
-			if (getStackInSlot(itemOutputSlot) == ItemStack.EMPTY) {
+			if (getStackInSlot(itemOutputSlot).isEmpty()) {
 
 				NBTTagList itemList = new NBTTagList();
 				NBTTagCompound tagCompound = new NBTTagCompound();
@@ -76,7 +77,7 @@ public class TilePackager extends TileProtected implements IInventory {
 					tagCompound.setTag("Inventory", itemList);
 					getStackInSlot(itemOutputSlot).setTagCompound(tagCompound);
 					if (cardAvailable) {
-						String account = getStackInSlot(itemCardSlot).getTagCompound().getString("accountNumber");
+						String account = getStackInSlot(itemCardSlot).getTagCompound().getString("Account");
 						UniversalAccounts.getInstance().debitAccount(account, packageCost[packageSize], false);
 					} else {
 						coinSum -= packageCost[packageSize];
@@ -151,7 +152,8 @@ public class TilePackager extends TileProtected implements IInventory {
 
 	public void checkCard() {
 		cardAvailable = false;
-		if (getStackInSlot(itemCardSlot) != null && getStackInSlot(itemCardSlot).hasTagCompound() && !world.isRemote) {
+		if (!getStackInSlot(itemCardSlot).isEmpty() && getStackInSlot(itemCardSlot).hasTagCompound()
+				&& !world.isRemote) {
 			String account = getStackInSlot(itemCardSlot).getTagCompound().getString("Account");
 			long accountBalance = UniversalAccounts.getInstance().getAccountBalance(account);
 			if (accountBalance > packageCost[packageSize]) {
@@ -200,14 +202,7 @@ public class TilePackager extends TileProtected implements IInventory {
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
-		for (int i = 0; i < inventory.size(); i++) {
-			ItemStack stack = getStackInSlot(i);
-			NBTTagCompound tag = new NBTTagCompound();
-			tag.setByte("Slot", (byte) i);
-			stack.writeToNBT(tag);
-			itemList.appendTag(tag);
-		}
-		tagCompound.setTag("Inventory", itemList);
+		ItemStackHelper.saveAllItems(tagCompound, this.inventory);
 		tagCompound.setLong("coinSum", coinSum);
 		tagCompound.setBoolean("cardAvailable", cardAvailable);
 		tagCompound.setString("customName", customName);
@@ -224,15 +219,8 @@ public class TilePackager extends TileProtected implements IInventory {
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
-
-		NBTTagList tagList = tagCompound.getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
-		for (int i = 0; i < tagList.tagCount(); i++) {
-			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
-			byte slot = tag.getByte("Slot");
-			if (slot >= 0 && slot < inventory.size()) {
-				getStackInSlot(slot).deserializeNBT(tag);
-			}
-		}
+		this.inventory = NonNullList.<ItemStack> withSize(this.getSizeInventory(), ItemStack.EMPTY);
+		ItemStackHelper.loadAllItems(tagCompound, this.inventory);
 		try {
 			coinSum = tagCompound.getLong("coinSum");
 		} catch (Throwable ex2) {
@@ -286,11 +274,8 @@ public class TilePackager extends TileProtected implements IInventory {
 	}
 
 	@Override
-	public ItemStack getStackInSlot(int i) {
-		if (i >= inventory.size()) {
-			return ItemStack.EMPTY;
-		}
-		return inventory.get(i);
+	public ItemStack getStackInSlot(int index) {
+		return inventory.get(index);
 	}
 
 	@Override
@@ -347,11 +332,12 @@ public class TilePackager extends TileProtected implements IInventory {
 	public void setInventorySlotContents(int slot, ItemStack stack) {
 		inventory.set(slot, stack);
 		if (slot == itemCoinSlot) {
-			int coinValue = 0;
-			coinValue = CoinUtils.getCoinValue(stack);
-			int depositAmount = (int) Math.min(stack.getCount(), (Long.MAX_VALUE - coinSum) / coinValue);
-			getStackInSlot(slot).shrink(depositAmount);
-			coinSum += depositAmount * coinValue;
+			int coinValue = CoinUtils.getCoinValue(stack);
+			if (coinValue > 0) {
+				int depositAmount = (int) Math.min(stack.getCount(), (Long.MAX_VALUE - coinSum) / coinValue);
+				getStackInSlot(slot).shrink(depositAmount);
+				coinSum += depositAmount * coinValue;
+			}
 		}
 		if (getStackInSlot(slot).getCount() == 0) {
 			inventory.set(slot, ItemStack.EMPTY);
@@ -385,29 +371,24 @@ public class TilePackager extends TileProtected implements IInventory {
 				world.spawnEntity(entityItem);
 			}
 			player.sendMessage(
-					new TextComponentString("ï¿½c" + playerName + I18n.translateToLocal("packager.message.sent")));
+					new TextComponentString("§a" + playerName + I18n.translateToLocal("packager.message.sent")));
 			inventory.set(itemPackageInputSlot, ItemStack.EMPTY);
 		}
 	}
 
-	public void playerLookup(String player, boolean tabPressed) {
+	public void playerLookup(String playerName, boolean tabPressed) {
 		if (tabPressed) {
 			List<String> players = new ArrayList<String>();
 			for (EntityPlayer p : (List<EntityPlayer>) world.playerEntities) {
 				players.add(p.getDisplayName().getUnformattedText());
 			}
-			String test[] = new String[1];
-			test[0] = player;
+			String test[] = { playerName };
 			List match = CommandBase.getListOfStringsMatchingLastWord(test, players);
 			if (match.size() > 0) {
 				packageTarget = match.get(0).toString();
 			}
 		} else {
-			if (world.getPlayerEntityByName(player) != null) {
-				packageTarget = player;
-			} else {
-				packageTarget = "";
-			}
+			packageTarget = playerName;
 		}
 	}
 

@@ -113,16 +113,16 @@ public class UCSignRenderer extends TileEntitySpecialRenderer<TileEntitySign> {
 					// display a subset of string while scrolling through entire
 					// string
 					String subset = "";
-					if (counter / 10 < s.length() - 8) {
-						subset = s.substring(Math.min(counter / 10, s.length() - 15),
-								Math.min(counter / 10 + 15, s.length()));
+					if (counter / 30 < s.length() - 8) {
+						subset = s.substring(Math.min(counter / 30, s.length() - 15),
+								Math.min(counter / 30 + 15, s.length()));
 					} else {
 						subset = s.substring(0, 15);
 					}
 					fontrenderer.drawString(subset, -fontrenderer.getStringWidth(subset) / 2,
 							i * 10 - te.signText.length * 5, colors[colorCode]);
 					counter++;
-					if (counter / 10 > s.length() + 8)
+					if (counter / 30 > s.length() + 8)
 						counter = 0;
 				}
 			}

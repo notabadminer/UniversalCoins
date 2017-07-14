@@ -3,6 +3,7 @@ package universalcoins.tileentity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -57,11 +58,8 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	}
 
 	@Override
-	public ItemStack getStackInSlot(int slot) {
-		if (slot >= inventory.size()) {
-			return ItemStack.EMPTY;
-		}
-		return inventory.get(slot);
+	public ItemStack getStackInSlot(int index) {
+		return inventory.get(index);
 	}
 
 	@Override
@@ -87,19 +85,18 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 			coinValue = CoinUtils.getCoinValue(stack);
 			if (coinValue > 0) {
 				int depositAmount = (int) Math.min(stack.getCount(), (Long.MAX_VALUE - coinSum) / coinValue);
-				inventory.get(slot).shrink(depositAmount);
+				getStackInSlot(slot).shrink(depositAmount);
 				coinSum += depositAmount * coinValue;
-				if (inventory.get(slot).getCount() == 0) {
+				if (getStackInSlot(slot).getCount() == 0) {
 					inventory.set(slot, ItemStack.EMPTY);
 				}
 			}
 		}
-		if (slot == itemCardSlot && inventory.get(itemCardSlot).getItem() == UniversalCoins.Items.ender_card) {
-			if (!world.isRemote && stack.hasTagCompound()) {
-				String accountNumber = stack.getTagCompound().getString("Account");
-				UniversalAccounts.getInstance().creditAccount(accountNumber, coinSum, false);
+		if (slot == itemCardSlot && getStackInSlot(itemCardSlot).getItem() == UniversalCoins.Items.ender_card
+				&& !world.isRemote && stack.hasTagCompound()) {
+			String accountNumber = stack.getTagCompound().getString("Account");
+			if (UniversalAccounts.getInstance().creditAccount(accountNumber, coinSum, false))
 				coinSum = 0;
-			}
 		}
 	}
 
@@ -130,10 +127,10 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	}
 
 	private long getAccountBalance() {
-		if (world.isRemote || inventory.get(itemCardSlot) == null || !inventory.get(itemCardSlot).hasTagCompound()) {
+		if (world.isRemote || getStackInSlot(itemCardSlot) == null || !getStackInSlot(itemCardSlot).hasTagCompound()) {
 			return 0;
 		}
-		String accountNumber = inventory.get(itemCardSlot).getTagCompound().getString("Account");
+		String accountNumber = getStackInSlot(itemCardSlot).getTagCompound().getString("Account");
 		if (accountNumber == "") {
 			return 0;
 		}
@@ -141,11 +138,11 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	}
 
 	private boolean creditAccount(int i) {
-		if (world.isRemote || inventory.get(itemCardSlot) == null
-				|| inventory.get(itemCardSlot).getItem() != UniversalCoins.Items.ender_card
-				|| !inventory.get(itemCardSlot).hasTagCompound())
+		if (world.isRemote || getStackInSlot(itemCardSlot) == null
+				|| getStackInSlot(itemCardSlot).getItem() != UniversalCoins.Items.ender_card
+				|| !getStackInSlot(itemCardSlot).hasTagCompound())
 			return false;
-		String accountNumber = inventory.get(itemCardSlot).getTagCompound().getString("Account");
+		String accountNumber = getStackInSlot(itemCardSlot).getTagCompound().getString("Account");
 		if (accountNumber == "") {
 			return false;
 		}
@@ -153,9 +150,9 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	}
 
 	private boolean debitAccount(int i) {
-		if (world.isRemote || inventory.get(itemCardSlot) == null || !inventory.get(itemCardSlot).hasTagCompound())
+		if (world.isRemote || getStackInSlot(itemCardSlot) == null || !getStackInSlot(itemCardSlot).hasTagCompound())
 			return false;
-		String accountNumber = inventory.get(itemCardSlot).getTagCompound().getString("Account");
+		String accountNumber = getStackInSlot(itemCardSlot).getTagCompound().getString("Account");
 		if (accountNumber == "") {
 			return false;
 		}
@@ -191,14 +188,7 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
-		for (int i = 0; i < inventory.size(); i++) {
-			ItemStack stack = inventory.get(i);
-			NBTTagCompound tag = new NBTTagCompound();
-			tag.setByte("Slot", (byte) i);
-			stack.writeToNBT(tag);
-			itemList.appendTag(tag);
-		}
-		tagCompound.setTag("Inventory", itemList);
+		ItemStackHelper.saveAllItems(tagCompound, this.inventory);
 		tagCompound.setLong("coinSum", coinSum);
 		tagCompound.setInteger("feLevel", feLevel);
 		tagCompound.setInteger("feOutput", feOutput);
@@ -215,15 +205,8 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
-
-		NBTTagList tagList = tagCompound.getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
-		for (int i = 0; i < tagList.tagCount(); i++) {
-			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
-			byte slot = tag.getByte("Slot");
-			if (slot >= 0 && slot < inventory.size()) {
-				inventory.set(slot, new ItemStack(tag));
-			}
-		}
+		this.inventory = NonNullList.<ItemStack> withSize(this.getSizeInventory(), ItemStack.EMPTY);
+		ItemStackHelper.loadAllItems(tagCompound, this.inventory);
 		try {
 			coinSum = tagCompound.getLong("coinSum");
 		} catch (Throwable ex2) {
@@ -271,27 +254,27 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	}
 
 	private void fillOutputSlot() {
-		if (inventory.get(itemOutputSlot).isEmpty()) {
+		if (getStackInSlot(itemOutputSlot).isEmpty()) {
 			if (coinSum >= UniversalCoins.coinValues[4]) {
 				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.obsidian_coin));
-				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[4], 64));
-				coinSum -= UniversalCoins.coinValues[4] * inventory.get(itemOutputSlot).getCount();
+				getStackInSlot(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[4], 64));
+				coinSum -= UniversalCoins.coinValues[4] * getStackInSlot(itemOutputSlot).getCount();
 			} else if (coinSum >= UniversalCoins.coinValues[3]) {
 				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.diamond_coin));
-				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[3], 64));
-				coinSum -= UniversalCoins.coinValues[3] * inventory.get(itemOutputSlot).getCount();
+				getStackInSlot(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[3], 64));
+				coinSum -= UniversalCoins.coinValues[3] * getStackInSlot(itemOutputSlot).getCount();
 			} else if (coinSum >= UniversalCoins.coinValues[2]) {
 				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.emerald_coin));
-				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[2], 64));
-				coinSum -= UniversalCoins.coinValues[2] * inventory.get(itemOutputSlot).getCount();
+				getStackInSlot(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[2], 64));
+				coinSum -= UniversalCoins.coinValues[2] * getStackInSlot(itemOutputSlot).getCount();
 			} else if (coinSum >= UniversalCoins.coinValues[1]) {
 				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.gold_coin));
-				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[1], 64));
-				coinSum -= UniversalCoins.coinValues[1] * inventory.get(itemOutputSlot).getCount();
+				getStackInSlot(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[1], 64));
+				coinSum -= UniversalCoins.coinValues[1] * getStackInSlot(itemOutputSlot).getCount();
 			} else if (coinSum >= UniversalCoins.coinValues[0]) {
 				inventory.set(itemOutputSlot, new ItemStack(UniversalCoins.Items.iron_coin));
-				inventory.get(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[0], 64));
-				coinSum -= UniversalCoins.coinValues[0] * inventory.get(itemOutputSlot).getCount();
+				getStackInSlot(itemOutputSlot).setCount((int) Math.min(coinSum / UniversalCoins.coinValues[0], 64));
+				coinSum -= UniversalCoins.coinValues[0] * getStackInSlot(itemOutputSlot).getCount();
 			}
 		}
 	}
@@ -349,7 +332,7 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
-		return inventory.get(index);
+		return getStackInSlot(index);
 	}
 
 	@Override

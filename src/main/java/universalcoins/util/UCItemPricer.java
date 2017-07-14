@@ -65,15 +65,15 @@ public class UCItemPricer {
 		if (!new File(configPath).exists()) {
 			// FMLLog.log.info("Universal Coins: Loading default prices");
 			updateItems();
+			updateEnchantments();
+			updatePotions();
+			updateOreDictionary();
 			try {
 				loadDefaults();
 			} catch (IOException e) {
 				FMLLog.log.warn("Universal Coins: Failed to load default configs");
 				e.printStackTrace();
 			}
-			updatePotions();
-			updateEnchantments();
-			updateOreDictionary();
 			priceCoins();
 			priceCraftedItems();
 			priceSmeltedItems();
@@ -223,7 +223,6 @@ public class UCItemPricer {
 	}
 
 	public int getItemPrice(ItemStack itemStack) {
-		// FMLLog.log.info("in getItemPrice");
 		if (itemStack.isEmpty()) {
 			return -1;
 		}
@@ -239,13 +238,10 @@ public class UCItemPricer {
 				itemName = itemStack.getItem().getRegistryName() + "." + itemStack.getItemDamage();
 			}
 		} catch (Exception e) {
-			// FMLLog.log.info("failed to set itemName");
 			return -1;
 		}
-		// FMLLog.log.info("Checking price of " + itemName);
 		if (ucPriceMap.get(itemName) != null) {
 			itemPrice = ucPriceMap.get(itemName);
-			// FMLLog.log.info(itemName + "=" + itemPrice);
 		}
 		// lookup item in oreDictionary if not priced
 		if (itemPrice == -1) {
@@ -265,8 +261,8 @@ public class UCItemPricer {
 		if (itemStack.hasTagCompound()) {
 			NBTTagCompound tagCompound = itemStack.getTagCompound();
 			String potionName = tagCompound.getString("Potion");
-			// FMLLog.log.info("potion string: " + potionName);
 			if (potionName != "") {
+				FMLLog.log.info("potion: " + potionName);
 				if (ucPriceMap.get(potionName) != null) {
 					int potionPrice = ucPriceMap.get(potionName);
 					if (potionPrice == -1) {
@@ -277,14 +273,23 @@ public class UCItemPricer {
 					itemPrice = -1;
 				}
 			}
-			if (itemStack.isItemEnchanted()) {
+			if (hasEnchantment(itemStack)) {
 				ArrayList<String> enchantments = getEnchantmentList(itemStack);
 				for (String enchant : enchantments) {
-					if (ucPriceMap.get(enchant) != null) {
-						int enchantPrice = ucPriceMap.get(enchant);
+					FMLLog.log.info("enchantment: " + enchant);
+					ResourceLocation enchantRL = getEnchantmentByName(enchant);
+					if (enchantRL != null
+							&& ucPriceMap.get(enchantRL + enchant.substring(enchant.length() - 2)) != null) {
+						FMLLog.log.info("enchantmentRL: " + enchantRL);
+
+						int enchantPrice = ucPriceMap.get(enchantRL + enchant.substring(enchant.length() - 2));
+						FMLLog.log.info("price: " + enchantPrice);
+						if (enchantPrice == -1) {
+							return -1;
+						}
 						itemPrice += enchantPrice;
 					} else {
-						itemPrice = -1;
+						return -1;
 					}
 
 				}
@@ -372,7 +377,7 @@ public class UCItemPricer {
 				if (keyName.startsWith("tile.") || keyName.startsWith("item.")) {
 					keyName = keyName.substring(5);
 				}
-				// TODO deal with potions
+				// TODO update potion handling
 				if (keyName.contains("potion") || keyName.contains("splash_potion")
 						|| keyName.contains("lingering_potion")) {
 					String[] splitKeyName = keyName.split("\\W", 2);
@@ -476,7 +481,7 @@ public class UCItemPricer {
 						// output.getDisplayName() + " to " + itemCost);
 						UCItemPricer.getInstance().setItemPrice(output, itemCost);
 					} catch (Exception e) {
-						FMLLog.log.warn("Universal Coins Autopricer: Failed to set item price.");
+						FMLLog.log.warn("Universal Coins Autopricer: Failed to set item price: " + output.getUnlocalizedName());
 					}
 				}
 			}
@@ -546,7 +551,7 @@ public class UCItemPricer {
 						if (stack != null) {
 							String previousName = previousStack.getDisplayName();
 							String currentName = stack.getDisplayName();
-							if (currentName.matches(baseName) || currentName.matches(previousName)
+							if (currentName.contentEquals(baseName) || currentName.contentEquals(previousName)
 									|| currentName.contains("" + i)) {
 								break;
 							}
@@ -607,6 +612,16 @@ public class UCItemPricer {
 				}
 			}
 		}
+	}
+
+	private ResourceLocation getEnchantmentByName(String name) {
+		Map<String, ResourceLocation> enchantMap = new HashMap<String, ResourceLocation>(0);
+
+		for (ResourceLocation enchantment : Enchantment.REGISTRY.getKeys()) {
+			enchantMap.put(Enchantment.getEnchantmentByLocation(enchantment.toString()).getName(), enchantment);
+		}
+
+		return enchantMap.get(name.substring(0, name.length() - 2));
 	}
 
 	private void addItemToPriceMap(ItemStack stack) {

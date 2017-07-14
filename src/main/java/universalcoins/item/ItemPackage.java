@@ -15,6 +15,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -41,25 +42,24 @@ public class ItemPackage extends Item {
 	@Override
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
 			EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (player.getActiveItemStack().getTagCompound() != null) {
-			NBTTagList tagList = player.getActiveItemStack().getTagCompound().getTagList("Inventory",
+		if (player.getHeldItem(hand).getTagCompound() != null) {
+			NBTTagList tagList = player.getHeldItem(hand).getTagCompound().getTagList("Inventory",
 					Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < tagList.tagCount(); i++) {
 				NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 				ItemStack stack = new ItemStack(tag);
-				if (stack != ItemStack.EMPTY) {
+				if (!stack.isEmpty()) {
 					if (player.inventory.getFirstEmptyStack() != -1) {
 						player.inventory.addItemStackToInventory(stack);
 					} else {
 						// spawn in world
-						EntityItem entityItem = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(),
-								stack);
+						EntityItem entityItem = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
 						worldIn.spawnEntity(entityItem);
 					}
 				}
 			}
 			// destroy package
-			player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY);
+			player.setHeldItem(hand, ItemStack.EMPTY);
 		}
 		return EnumActionResult.SUCCESS;
 	}
