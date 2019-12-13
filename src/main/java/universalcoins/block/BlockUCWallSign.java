@@ -60,7 +60,7 @@ public class BlockUCWallSign extends BlockWallSign {
 	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
 		if (UniversalCoins.blockProtection) {
 			String ownerName = ((TileUCSign) world.getTileEntity(pos)).blockOwner;
-			if (player.getDisplayName().equals(ownerName)) {
+			if (player.getDisplayName().toString().matches(ownerName)) {
 				this.setHardness(1.0F);
 			} else {
 				this.setHardness(-1.0F);

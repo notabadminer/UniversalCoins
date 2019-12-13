@@ -15,7 +15,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.TradeStationGUI;
 import universalcoins.net.UCButtonMessage;
@@ -24,7 +23,7 @@ import universalcoins.util.UCItemPricer;
 import universalcoins.util.UniversalAccounts;
 
 public class TileTradeStation extends TileProtected implements IInventory, ISidedInventory {
-	private NonNullList<ItemStack> inventory = NonNullList.<ItemStack> withSize(4, ItemStack.EMPTY);
+	private NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(4, ItemStack.EMPTY);
 	public static final int itemInputSlot = 0;
 	public static final int itemOutputSlot = 1;
 	public static final int itemCardSlot = 2;
@@ -389,7 +388,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
-		this.inventory = NonNullList.<ItemStack> withSize(this.getSizeInventory(), ItemStack.EMPTY);
+		this.inventory = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
 		ItemStackHelper.loadAllItems(tagCompound, this.inventory);
 		try {
 			autoMode = tagCompound.getInteger("AutoMode");

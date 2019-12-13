@@ -23,22 +23,6 @@ public class BlockProtected extends BlockContainer {
 	}
 
 	@Override
-	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
-			boolean willHarvest) {
-		if (UniversalCoins.blockProtection) {
-			TileProtected tileEntity = (TileProtected) player.getEntityWorld().getTileEntity(pos);
-			if (!player.capabilities.isCreativeMode && !tileEntity.blockOwner.equals(player.getName())) {
-				return false;
-			}
-		}
-		if (willHarvest)
-			return true; // If it will harvest, delay deletion of the block
-							// until after getDrops
-		this.onBlockHarvested(world, pos, state, player);
-		return world.setBlockState(pos, net.minecraft.init.Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
-	}
-
-	@Override
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
 			ItemStack stack) {
 		if (world.isRemote)
@@ -66,14 +50,8 @@ public class BlockProtected extends BlockContainer {
 	}
 
 	@Override
-	public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state,
-			@Nullable TileEntity te, ItemStack stack) {
-		super.harvestBlock(worldIn, player, pos, state, (TileEntity) null, stack);
-		worldIn.setBlockToAir(pos);
-	}
-
-	@Override
 	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
+
 		if (UniversalCoins.blockProtection) {
 			String ownerName = ((TileProtected) world.getTileEntity(pos)).blockOwner;
 			if (!player.capabilities.isCreativeMode && !player.getName().contentEquals(ownerName)) {
@@ -83,4 +61,22 @@ public class BlockProtected extends BlockContainer {
 			}
 		}
 	}
+
+	/* ===================== needed for data store =================== */
+	@Override
+	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
+			boolean willHarvest) {
+		if (willHarvest)
+			return true; // If it will harvest, delay deletion of the block until after getDrops
+		return super.removedByPlayer(state, world, pos, player, willHarvest);
+	}
+
+	@Override
+	public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te,
+			ItemStack tool) {
+		super.harvestBlock(world, player, pos, state, te, tool);
+		world.setBlockToAir(pos);
+	}
+	/* ===================== /needed for data store =================== */
+
 }

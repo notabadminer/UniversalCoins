@@ -56,7 +56,7 @@ public class BlockUCStandingSign extends BlockStandingSign {
 	@Override
 	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
 		String ownerName = ((TileUCSign) world.getTileEntity(pos)).blockOwner;
-		if (player.getDisplayName().equals(ownerName)) {
+		if (player.getDisplayName().toString().matches(ownerName)) {
 			this.setHardness(1.0F);
 		} else {
 			this.setHardness(-1.0F);
@@ -85,7 +85,7 @@ public class BlockUCStandingSign extends BlockStandingSign {
 			super.removedByPlayer(state, world, pos, player, willHarvest);
 			return true;
 		}
-		if (player.getDisplayName().equals(ownerName) && !world.isRemote) {
+		if (player.getDisplayName().toString().matches(ownerName) && !world.isRemote) {
 			super.removedByPlayer(state, world, pos, player, willHarvest);
 			return true;
 		}

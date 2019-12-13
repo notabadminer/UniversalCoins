@@ -153,14 +153,6 @@ public class BlockSignal extends BlockProtected {
 	}
 
 	@Override
-	public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {
-		world.setBlockToAir(pos);
-		onBlockDestroyedByExplosion(world, pos, explosion);
-		EntityItem entityItem = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(this, 1));
-		if (!world.isRemote)
-			world.spawnEntity(entityItem);
-	}
-
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
 			ItemStack stack) {
 		world.setBlockState(pos, state.withProperty(FACING, player.getHorizontalFacing().getOpposite()), 2);

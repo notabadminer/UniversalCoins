@@ -42,17 +42,27 @@ public class UCBalance extends CommandBase implements ICommand {
 			if (accountBalance != -1) {
 				sender.sendMessage(new TextComponentString("Account: " + formatter.format(accountBalance)));
 			}
-//			// achievement stuff
-//			if (playerCoins > 1000 || accountBalance > 1000) {
+			
+			// achievement stuff		
+//			if (accountBalance > 1000) {
 //				((EntityPlayerMP) sender).addStat(Achievements.achThousand, 1);
 //			}
-//			if (playerCoins > 1000000 || accountBalance > 1000000) {
+//			if (accountBalance > 1000000) {
 //				((EntityPlayerMP) sender).addStat(Achievements.achMillion, 1);
 //			}
-//			if (playerCoins > 1000000000 || accountBalance > 1000000000) {
+//			if (accountBalance > 1000000000) {
 //				((EntityPlayerMP) sender).addStat(Achievements.achBillion, 1);
 //			}
-//			if (playerCoins == Integer.MAX_VALUE || accountBalance == Integer.MAX_VALUE) {
+//			if (accountBalance > 1000000000000) {
+//				((EntityPlayerMP) sender).addStat(Achievements.achTrillion, 1);
+//			}
+//			if (accountBalance > 1000000000000000) {
+//				((EntityPlayerMP) sender).addStat(Achievements.achQuadrillion, 1);
+//			}
+//			if (accountBalance > 1000000000000000000) {
+//					((EntityPlayerMP) sender).addStat(Achievements.achQuintillion, 1);
+//				}
+//			if (playerCoins == Long.MAX_VALUE || accountBalance == Long.MAX_VALUE) {
 //				((EntityPlayerMP) sender).addStat(Achievements.achMaxed, 1);
 //			}
 		}

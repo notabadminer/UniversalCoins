@@ -1,7 +1,5 @@
 package universalcoins.block;
 
-import java.util.List;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -39,10 +37,11 @@ public class BlockTradeStation extends BlockProtected {
 		if (te instanceof TileTradeStation) {
 			TileTradeStation tentity = (TileTradeStation) te;
 			tentity.blockOwner = player.getName();
+			if (stack.hasDisplayName()) {
+				tentity.setName(stack.getDisplayName());
+			}
 		}
-		if (stack.hasDisplayName()) {
-			((TileTradeStation) world.getTileEntity(pos)).setName(stack.getDisplayName());
-		}
+
 	}
 
 	@Override
@@ -76,7 +75,7 @@ public class BlockTradeStation extends BlockProtected {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state,
 			int fortune) {

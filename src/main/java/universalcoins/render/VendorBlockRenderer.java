@@ -36,7 +36,7 @@ public class VendorBlockRenderer extends TileEntitySpecialRenderer {
 
 		try {
 			// render trade item
-			Minecraft.getMinecraft().getRenderManager().doRenderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F,
+			Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F,
 					Minecraft.getMinecraft().player.ticksExisted, false);
 		} catch (Throwable e) {
 		}

@@ -20,12 +20,7 @@ public class UCSlotGhost extends Slot {
 	@Override
 	public boolean isItemValid(ItemStack stack) {
 		// copy itemstack held
-		if (stack != null) {
-			this.putStack(ItemStack.EMPTY);
-			this.putStack(stack.copy());
-		} else {
-			this.putStack(ItemStack.EMPTY);
-		}
+		this.putStack(stack.copy());
 		// return false so user keeps itemstack
 		return false;
 	}
