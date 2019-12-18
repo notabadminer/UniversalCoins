@@ -54,12 +54,10 @@ public class BlockPackager extends BlockProtected {
 		return false;
 	}
 
-	@Override
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TilePackager();
 	}
 
-	@Override
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player,
 			ItemStack stack) {
 		world.setBlockState(pos, state.withProperty(FACING, player.getHorizontalFacing().getOpposite()), 2);

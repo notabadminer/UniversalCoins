@@ -528,10 +528,8 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 				newStack.shrink((int) depositAmount);
 				if (!newStack.isEmpty()) {
 					inventory.set(slot, newStack);
-					return;
 				} else {
 					inventory.set(slot, ItemStack.EMPTY);
-					return;
 				}
 			}
 		}

@@ -127,8 +127,7 @@ public class UCItemPricer {
 		// load those files into hashmap(UCPriceMap)
 		for (int i = 0; i < configList.length; i++) {
 			if (configList[i].isFile()) {
-				// FMLLog.log.info("Universal Coins: Loading Pricelist: " +
-				// configList[i]);
+				// FMLLog.log.info("Universal Coins: Loading Pricelist: " + configList[i]);
 				BufferedReader br = new BufferedReader(new FileReader(configList[i]));
 				String tempString = "";
 				while ((tempString = br.readLine()) != null) {
@@ -171,7 +170,7 @@ public class UCItemPricer {
 
 	private void priceListWriter() throws IOException {
 		// FMLLog.log.info("Starting priceListWriter");
-		long startTime = System.currentTimeMillis();
+		// long startTime = System.currentTimeMillis();
 
 		Set<Entry<String, Integer>> set = ucPriceMap.entrySet();
 		List<Entry<String, Integer>> list = new ArrayList<Entry<String, Integer>>(set);
@@ -214,7 +213,7 @@ public class UCItemPricer {
 		}
 		out.flush();
 		out.close();
-		long endTime = System.currentTimeMillis();
+		// long endTime = System.currentTimeMillis();
 		// FMLLog.log.info("File writes took " + (endTime - startTime) + "
 		// milliseconds");
 	}
@@ -429,8 +428,7 @@ public class UCItemPricer {
 					// FMLLog.log.info("recipe output price already set.");
 					continue;
 				}
-				// FMLLog.log.info("Starting pricing for " +
-				// output.getDisplayName());
+				// FMLLog.log.info("Starting pricing for " + output.getDisplayName());
 				NonNullList<Ingredient> recipeItems = irecipe.getIngredients();
 				for (int i = 0; i < recipeItems.size(); i++) {
 					ItemStack stack = null;
@@ -448,27 +446,24 @@ public class UCItemPricer {
 					}
 					if (stack == null)
 						continue;
-					// FMLLog.log.info("recipe ingredient " + i + " " +
-					// stack.getDisplayName());
-					// FMLLog.log.info("price: " +
-					// UCItemPricer.getInstance().getItemPrice(stack));
-					if (UCItemPricer.getInstance().getItemPrice(stack) != -1) {
+					// FMLLog.log.info("recipe ingredient " + i + " " + stack.getDisplayName());
+					// FMLLog.log.info("price: " + UCItemPricer.getInstance().getItemPrice(stack));
+					if (UCItemPricer.getInstance().getItemPrice(stack) > 0) {
 						itemCost += UCItemPricer.getInstance().getItemPrice(stack);
 					} else {
 						validRecipe = false;
-						// FMLLog.log.info("can't price " +
-						// output.getDisplayName());
+						// FMLLog.log.info("can't price " + output.getDisplayName());
 						break;
 					}
 				}
-				if (validRecipe && itemCost > 0) {
+				if (validRecipe && itemCost / output.getCount() > 0) {
 					priceUpdate = true;
 					if (output.getCount() > 1) {
 						itemCost = itemCost / output.getCount();
 					}
 					try {
-						// FMLLog.log.info("Setting price of " +
-						// output.getDisplayName() + " to " + itemCost);
+						// FMLLog.log.info("Setting price of " + output.getDisplayName() + " to " +
+						// itemCost);
 						UCItemPricer.getInstance().setItemPrice(output, itemCost);
 					} catch (Exception e) {
 						FMLLog.log.warn(
@@ -511,8 +506,8 @@ public class UCItemPricer {
 				int inputValue = ucPriceMap.get(inputName + "." + input.getItemDamage());
 				int outputValue = ucPriceMap.get(outputName + "." + output.getItemDamage());
 				if (inputValue != -1 && outputValue == -1) {
-					// FMLLog.log.info("updating: " + outputName + "." +
-					// output.getItemDamage() + "=" + inputValue + 2);
+					FMLLog.log
+							.info("Setting price: " + outputName + "." + output.getItemDamage() + "=" + inputValue + 2);
 					ucPriceMap.put(outputName + "." + output.getItemDamage(), inputValue + 2);
 				}
 			}
@@ -525,6 +520,7 @@ public class UCItemPricer {
 			if (item == null) {
 				continue;
 			}
+			// FMLLog.log.info("Processing: " + item.getUnlocalizedName());
 			if (item.getHasSubtypes()) {
 				// FMLLog.log.info(item.getUnlocalizedName() + " has subtypes");
 				String baseName = new ItemStack(item, 1).getDisplayName();
@@ -533,6 +529,7 @@ public class UCItemPricer {
 						ItemStack previousStack = new ItemStack(item, 1, i - 1);
 						ItemStack stack = new ItemStack(item, 1, i);
 						if (stack != null) {
+							// FMLLog.log.info("Checking " + stack.getUnlocalizedName());
 							String previousName = previousStack.getDisplayName();
 							String currentName = stack.getDisplayName();
 							if (currentName.contentEquals(baseName) || currentName.contentEquals(previousName)
@@ -540,6 +537,7 @@ public class UCItemPricer {
 								break;
 							}
 							addItemToPriceMap(stack);
+							// FMLLog.log.info("Adding subtype: " + stack.getUnlocalizedName());
 						}
 					} catch (Exception e) {
 						break;
@@ -555,24 +553,31 @@ public class UCItemPricer {
 	}
 
 	private void updateOreDictionary() {
+		// parse oredictionary
 		// FMLLog.log.info("in updateOreDictionary");
+
 		for (String ore : OreDictionary.getOreNames()) {
 			// FMLLog.log.info("checking oredictionary:" + ore);
-			// check ore to see if any of the types has a price, use it if
-			// true
-			List<ItemStack> test = OreDictionary.getOres(ore);
-			int itemValue = -1;
-			for (int j = 0; j < test.size(); j++) {
-				// FMLLog.log.info("ore item:" +
-				// test.get(j).getItem().getRegistryName());
-				int subItemValue = getItemPrice(test.get(j));
-				// FMLLog.log.info("sub item price:" + subItemValue);
-				if (subItemValue > 0) {
-					itemValue = subItemValue;
-					break;
+			if (!ucPriceMap.containsKey(ore)) {
+				// check ore to see if any of the types has a price, use it
+				// if true
+				List<ItemStack> test = OreDictionary.getOres(ore);
+				int itemValue = -1;
+				for (int j = 0; j < test.size(); j++) {
+					// FMLLog.log.info("ore item:" + test.get(j).getItem().getRegistryName());
+					ItemStack itemStack = ((ItemStack) test.get(j));
+					if (itemStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+						itemStack.setItemDamage(0);
+					}
+					int subItemValue = getItemPrice(itemStack);
+					// FMLLog.log.info("sub item price:" + subItemValue);
+					if (subItemValue > 0) {
+						itemValue = subItemValue;
+					}
 				}
+				// FMLLog.log.info("Setting price: " + ore + " " + itemValue);
+				ucPriceMap.put("oredictionary:" + ore, itemValue);
 			}
-			ucPriceMap.put("oredictionary:" + ore, itemValue);
 		}
 	}
 
@@ -580,6 +585,7 @@ public class UCItemPricer {
 		for (PotionType potiontype : PotionType.REGISTRY) {
 			String potionName = potiontype.getRegistryName().toString();
 			if (!ucPriceMap.containsKey(potionName)) {
+				// FMLLog.log.info("Setting price: " + potionName + "." + -1);
 				ucPriceMap.put(potionName, -1);
 			}
 		}
@@ -592,6 +598,7 @@ public class UCItemPricer {
 				String fullEnchantName = enchantment.toString() + "." + i;
 
 				if (!ucPriceMap.containsKey(fullEnchantName)) {
+					// FMLLog.log.info("Setting price: " + fullEnchantName + "." + -1);
 					ucPriceMap.put(fullEnchantName, -1);
 				}
 			}
@@ -624,6 +631,8 @@ public class UCItemPricer {
 					itemPrice = ucPriceMap.get("oredictionary:" + oreItemName);
 				}
 			}
+			// FMLLog.log.info("Setting price: " + stack.getItem().getRegistryName() + "." +
+			// stack.getItemDamage() + " " + itemPrice);
 			ucPriceMap.put(stack.getItem().getRegistryName() + "." + stack.getItemDamage(), itemPrice);
 		}
 	}

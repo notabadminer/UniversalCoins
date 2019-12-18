@@ -51,44 +51,30 @@ public class ContainerVendor extends Container {
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int slot) {
-		ItemStack stack = ItemStack.EMPTY;
-		Slot slotObject = (Slot) inventorySlots.get(slot);
-			ItemStack stackInSlot = slotObject.getStack();
-			stack = stackInSlot.copy();
+	public ItemStack transferStackInSlot(EntityPlayer player, int index) {
+		ItemStack itemstack = ItemStack.EMPTY;
+		Slot slot = this.inventorySlots.get(index);
 
-			// merges the item into player inventory since its in the tileEntity
-			if (slot < 13) {
-				if (!this.mergeItemStack(stackInSlot, 13, 49, true)) {
+		if (slot != null && slot.getHasStack()) {
+			ItemStack itemstack1 = slot.getStack();
+			itemstack = itemstack1.copy();
+
+			if (index < 13) {
+				if (!this.mergeItemStack(itemstack1, 13, this.inventorySlots.size(), true)) {
 					return ItemStack.EMPTY;
 				}
-			}
-			// places it into the tileEntity if possible from player inventory
-			else {
-				boolean foundSlot = false;
-				for (int i = 1; i < 13; i++) { // we start at 1 to avoid shift
-												// clicking into trade slot
-					if (((Slot) inventorySlots.get(i)).isItemValid(stackInSlot)
-							&& this.mergeItemStack(stackInSlot, i, i + 1, false)) {
-						foundSlot = true;
-						break;
-					}
-				}
-				if (!foundSlot) {
-					return ItemStack.EMPTY;
-				}
-			}
-			if (stackInSlot.getCount() == 0) {
-				slotObject.putStack(ItemStack.EMPTY);
-			} else {
-				slotObject.onSlotChanged();
-			}
-
-			if (stackInSlot.getCount() == stack.getCount()) {
+			} else if (!this.mergeItemStack(itemstack1, 1, 13, false)) {
 				return ItemStack.EMPTY;
 			}
-			slotObject.onTake(player, stackInSlot);
-		return stack;
+
+			if (itemstack1.isEmpty()) {
+				slot.putStack(ItemStack.EMPTY);
+			} else {
+				slot.onSlotChanged();
+			}
+		}
+
+		return itemstack;
 	}
 
 	/**

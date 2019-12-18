@@ -46,49 +46,29 @@ public class ContainerTradeStation extends Container {
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int slot) {
-		ItemStack stack = ItemStack.EMPTY;
-		Slot slotObject = (Slot) inventorySlots.get(slot);
-		// null checks and checks if the item can be stacked (maxStackSize > 1)
-		if (slotObject != null && slotObject.getHasStack()) {
-			ItemStack stackInSlot = slotObject.getStack();
-			stack = stackInSlot.copy();
+	public ItemStack transferStackInSlot(EntityPlayer player, int index) {
+		ItemStack itemstack = ItemStack.EMPTY;
+		Slot slot = this.inventorySlots.get(index);
 
-			// merges the item into player inventory since its in the tileEntity
-			if (slot < 3) {
-				if (!this.mergeItemStack(stackInSlot, 3, 39, true)) {
+		if (slot != null && slot.getHasStack()) {
+			ItemStack itemstack1 = slot.getStack();
+			itemstack = itemstack1.copy();
+
+			if (index < 3) {
+				if (!this.mergeItemStack(itemstack1, 3, 39, true)) {
 					return ItemStack.EMPTY;
 				}
-			}
-			// places it into the tileEntity is possible since its in the player
-			// inventory
-			else {
-				boolean foundSlot = false;
-				for (int i = 0; i < 3; i++) {
-					if (((Slot) inventorySlots.get(i)).isItemValid(stackInSlot)
-							&& this.mergeItemStack(stackInSlot, i, i + 1, false)) {
-						foundSlot = true;
-						break;
-					}
-				}
-				if (!foundSlot) {
-					return ItemStack.EMPTY;
-				}
-			}
-
-			if (stackInSlot.getCount() == 0) {
-				slotObject.putStack(ItemStack.EMPTY);
-			} else {
-				slotObject.onSlotChanged();
-			}
-
-			if (stackInSlot.getCount() == stack.getCount()) {
+			} else if (!this.mergeItemStack(itemstack1, 0, 2, false)) {
 				return ItemStack.EMPTY;
 			}
-			slotObject.onTake(player, stackInSlot);
+
+			if (itemstack1.isEmpty()) {
+				slot.putStack(ItemStack.EMPTY);
+			} else {
+				slot.onSlotChanged();
+			}
 		}
-		tileEntity.update();
-		return stack;
+		return itemstack;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -120,7 +100,7 @@ public class ContainerTradeStation extends Container {
 			if (this.lastCoinMode != this.tileEntity.getField(3)) {
 				icontainerlistener.sendWindowProperty(this, 3, this.tileEntity.getField(3));
 			}
-			
+
 			if (this.lastPublicAccess != (this.tileEntity.getField(4) == 0 ? false : true)) {
 				icontainerlistener.sendWindowProperty(this, 4, this.tileEntity.getField(4));
 			}
