@@ -170,7 +170,7 @@ public class UCItemPricer {
 
 	private void priceListWriter() throws IOException {
 		// FMLLog.log.info("Starting priceListWriter");
-		// long startTime = System.currentTimeMillis();
+		long startTime = System.currentTimeMillis();
 
 		Set<Entry<String, Integer>> set = ucPriceMap.entrySet();
 		List<Entry<String, Integer>> list = new ArrayList<Entry<String, Integer>>(set);
@@ -213,12 +213,13 @@ public class UCItemPricer {
 		}
 		out.flush();
 		out.close();
-		// long endTime = System.currentTimeMillis();
-		// FMLLog.log.info("File writes took " + (endTime - startTime) + "
-		// milliseconds");
+		long endTime = System.currentTimeMillis();
+		// FMLLog.log.info("File writes took " + (endTime - startTime) +
+		// "milliseconds");
 	}
 
 	public int getItemPrice(ItemStack itemStack) {
+		// FMLLog.log.info("UC: in getItemPrice");
 		if (itemStack.isEmpty()) {
 			return -1;
 		}
@@ -228,16 +229,23 @@ public class UCItemPricer {
 		int itemPrice = -1;
 		String itemName = null;
 		try {
+			int itemStackDamage = itemStack.getItemDamage();
+			if (itemStack.isItemStackDamageable()) {
+				// override for damaged items
+				itemStackDamage = 0;
+			}
 			if (itemStack.isItemStackDamageable()) {
 				itemName = itemStack.getItem().getRegistryName() + ".0";
 			} else {
 				itemName = itemStack.getItem().getRegistryName() + "." + itemStack.getItemDamage();
 			}
 		} catch (Exception e) {
+			FMLLog.log.warn("getItemPrice: Error item name for " + itemStack);
 			return -1;
 		}
 		if (ucPriceMap.get(itemName) != null) {
 			itemPrice = ucPriceMap.get(itemName);
+			// FMLLog.log.info("getItemPrice: " + itemName + " price = " + itemPrice);
 		}
 		// lookup item in oreDictionary if not priced
 		if (itemPrice == -1) {
@@ -257,6 +265,9 @@ public class UCItemPricer {
 		if (itemStack.hasTagCompound()) {
 			NBTTagCompound tagCompound = itemStack.getTagCompound();
 			String potionName = tagCompound.getString("Potion");
+			// FMLLog.log.info("getItemPrice: Item has potion: " + potionName);
+			// FMLLog.log.info("getItemPrice: Custom effects: " +
+			// tagCompound.hasKey("CustomPotionEffects"));
 			if (potionName != "" && !tagCompound.hasKey("CustomPotionEffects")) {
 				if (ucPriceMap.get(potionName) != null) {
 					int potionPrice = ucPriceMap.get(potionName);
@@ -269,9 +280,11 @@ public class UCItemPricer {
 				}
 			}
 			if (hasEnchantment(itemStack)) {
+				// FMLLog.log.info("getItemPrice: Item has enchantment");
 				ArrayList<String> enchantments = getEnchantmentList(itemStack);
 				for (String enchant : enchantments) {
 					ResourceLocation enchantRL = getEnchantmentByName(enchant);
+					// FMLLog.log.info("getItemPrice: Found enchantment: " + enchant);
 					if (enchantRL != null
 							&& ucPriceMap.get(enchantRL + enchant.substring(enchant.length() - 2)) != null) {
 
@@ -291,19 +304,17 @@ public class UCItemPricer {
 	}
 
 	public boolean setItemPrice(ItemStack itemStack, int price) {
-		if (itemStack == null) {
+		if (itemStack == null || price <= 0 || hasEnchantment(itemStack) || hasPotion(itemStack)) {
+			// FMLLog.log.info("UC: Can't price this!");
 			return false;
 		}
-		if (price == 0 || price < -1)
-			return false;
-		int itemStackMeta = itemStack.getMetadata();
+		int itemStackDamage = itemStack.getItemDamage();
 		if (itemStack.isItemStackDamageable()) {
 			// override for damaged items
-			itemStackMeta = 0;
+			itemStackDamage = 0;
 		}
-		if (hasEnchantment(itemStack) || hasPotion(itemStack))
-			return false;
-		String itemName = itemStack.getItem().getRegistryName() + "." + itemStack.getItemDamage();
+		String itemName = itemStack.getItem().getRegistryName() + "." + itemStackDamage;
+		// FMLLog.log.info("UC: setItemPrice: " + itemName + " " + price);
 		ucPriceMap.put(itemName, price);
 		return true;
 	}
@@ -376,7 +387,7 @@ public class UCItemPricer {
 						PotionUtils.addPotionToItemStack(stack, PotionType.getPotionTypeForName(splitKeyName[1]));
 					}
 				}
-				// oredictionary entries do not include metadata value
+				// oredictionary entries do not include damage value
 				// we need to check for this
 				if (!Character.isDigit(keyName.charAt(keyName.length() - 1))) {
 					List<ItemStack> test = OreDictionary.getOres(keyName);
@@ -390,12 +401,12 @@ public class UCItemPricer {
 						}
 					}
 				} else {
-					// split string into item name and meta
+					// split string into item name and damage
 					String itemName = keyName.substring(0, keyName.length() - 2);
-					int itemMeta = Integer.valueOf(keyName.substring(keyName.length() - 1));
+					int itemDamage = Integer.valueOf(keyName.substring(keyName.length() - 1));
 					Item item = (Item) Item.REGISTRY.getObject(new ResourceLocation(itemName));
 					if (item != null) {
-						stack = new ItemStack(item, 1, itemMeta);
+						stack = new ItemStack(item, 1, itemDamage);
 					}
 				}
 			}
@@ -420,15 +431,18 @@ public class UCItemPricer {
 				int itemCost = 0;
 				boolean validRecipe = true;
 				ItemStack output = irecipe.getRecipeOutput();
-				// FMLLog.log.info("Recipe output: " + output.getDisplayName());
-				if (output == null || output.getItem() == Items.AIR) {
+				// FMLLog.log.info("Recipe output: " + output.getDisplayName() + "." +
+				// output.getItemDamage());
+				// FMLLog.log.info("Recipe output price: " + getItemPrice(output));
+				if (output == null || output.getItem() == Items.AIR || hasEnchantment(output) || hasPotion(output)) {
 					continue;
 				}
-				if (UCItemPricer.getInstance().getItemPrice(output) != -1) {
+				if (getItemPrice(output) != -1) {
 					// FMLLog.log.info("recipe output price already set.");
 					continue;
 				}
-				// FMLLog.log.info("Starting pricing for " + output.getDisplayName());
+				// FMLLog.log.info("Starting pricing for " + output.getDisplayName() + "." +
+				// output.getItemDamage() + " " + output);
 				NonNullList<Ingredient> recipeItems = irecipe.getIngredients();
 				for (int i = 0; i < recipeItems.size(); i++) {
 					ItemStack stack = null;
@@ -446,13 +460,15 @@ public class UCItemPricer {
 					}
 					if (stack == null)
 						continue;
-					// FMLLog.log.info("recipe ingredient " + i + " " + stack.getDisplayName());
-					// FMLLog.log.info("price: " + UCItemPricer.getInstance().getItemPrice(stack));
-					if (UCItemPricer.getInstance().getItemPrice(stack) > 0) {
-						itemCost += UCItemPricer.getInstance().getItemPrice(stack);
+					FMLLog.log.info(
+							"recipe ingredient " + i + " " + stack.getDisplayName() + "." + output.getItemDamage());
+					// FMLLog.log.info("price: " + getItemPrice(stack));
+					if (getItemPrice(stack) > 0) {
+						itemCost += getItemPrice(stack);
 					} else {
 						validRecipe = false;
-						// FMLLog.log.info("can't price " + output.getDisplayName());
+						// FMLLog.log.info("can't price " + output.getDisplayName() + "." +
+						// output.getItemDamage());
 						break;
 					}
 				}
@@ -462,9 +478,9 @@ public class UCItemPricer {
 						itemCost = itemCost / output.getCount();
 					}
 					try {
-						// FMLLog.log.info("Setting price of " + output.getDisplayName() + " to " +
-						// itemCost);
-						UCItemPricer.getInstance().setItemPrice(output, itemCost);
+						// FMLLog.log.info("Setting price of " + output.getDisplayName() + "." +
+						// output.getItemDamage() + " " + output + " to " + itemCost);
+						setItemPrice(output, itemCost);
 					} catch (Exception e) {
 						FMLLog.log.warn(
 								"Universal Coins Autopricer: Failed to set item price: " + output.getUnlocalizedName());
@@ -506,8 +522,8 @@ public class UCItemPricer {
 				int inputValue = ucPriceMap.get(inputName + "." + input.getItemDamage());
 				int outputValue = ucPriceMap.get(outputName + "." + output.getItemDamage());
 				if (inputValue != -1 && outputValue == -1) {
-					// FMLLog.log.info("Setting price: " + outputName + "." + output.getItemDamage()
-					// + "=" + inputValue + 2);
+					FMLLog.log
+							.info("Setting price: " + outputName + "." + output.getItemDamage() + "=" + inputValue + 2);
 					ucPriceMap.put(outputName + "." + output.getItemDamage(), inputValue + 2);
 				}
 			}
