@@ -17,7 +17,3 @@
     "item": "universalcoins:atm"
   }
 }
-public static void addBlockSafeRecipe() {
-		GameRegistry.addShapedRecipe(new ItemStack(Meconomy.proxy.safe),
-				new Object[] { "III", "IEI", "III", 'I', Items.IRON_INGOT, 'E', Meconomy.proxy.ender_card });
-	}

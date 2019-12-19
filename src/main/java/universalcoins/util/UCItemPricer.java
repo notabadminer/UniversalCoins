@@ -506,8 +506,8 @@ public class UCItemPricer {
 				int inputValue = ucPriceMap.get(inputName + "." + input.getItemDamage());
 				int outputValue = ucPriceMap.get(outputName + "." + output.getItemDamage());
 				if (inputValue != -1 && outputValue == -1) {
-					FMLLog.log
-							.info("Setting price: " + outputName + "." + output.getItemDamage() + "=" + inputValue + 2);
+					// FMLLog.log.info("Setting price: " + outputName + "." + output.getItemDamage()
+					// + "=" + inputValue + 2);
 					ucPriceMap.put(outputName + "." + output.getItemDamage(), inputValue + 2);
 				}
 			}

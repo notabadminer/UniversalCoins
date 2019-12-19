@@ -11,11 +11,18 @@ import net.minecraft.command.ServerCommandManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.world.storage.loot.LootEntryItem;
+import net.minecraft.world.storage.loot.LootPool;
+import net.minecraft.world.storage.loot.RandomValueRange;
+import net.minecraft.world.storage.loot.conditions.LootCondition;
+import net.minecraft.world.storage.loot.functions.LootFunction;
+import net.minecraft.world.storage.loot.functions.SetCount;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -84,7 +91,6 @@ import universalcoins.tileentity.TileVendor;
 import universalcoins.tileentity.TileVendorBlock;
 import universalcoins.tileentity.TileVendorFrame;
 import universalcoins.util.UCItemPricer;
-import universalcoins.util.UCMobDropEventHandler;
 import universalcoins.util.UCPlayerPickupEventHandler;
 import universalcoins.worldgen.VillageGenBank;
 import universalcoins.worldgen.VillageGenShop;
@@ -111,9 +117,8 @@ public class UniversalCoins {
 	public static CreativeTabs tabUniversalCoins = new UCTab("tabUniversalCoins");
 
 	public static int[] coinValues;
-	public static Boolean blockProtection, autoModeEnabled, tradeStationBuyEnabled, mobsDropCoins, coinsInMineshaft,
-			coinsInDungeon;
-	public static Integer mobDropMax, mobDropChance, enderDragonMultiplier, smallPackagePrice, medPackagePrice,
+	public static Boolean blockProtection, autoModeEnabled, tradeStationBuyEnabled, mobsDropCoins, coinsInDungeon;
+	public static Integer mobDropMax, mobDropWeight, enderDragonMultiplier, smallPackagePrice, medPackagePrice,
 			largePackagePrice, rfWholesaleRate, rfRetailRate, bankGenWeight, shopGenWeight, tradeGenWeight,
 			shopMinPrice, shopMaxPrice;
 	public static Double itemSellRatio;
@@ -258,15 +263,18 @@ public class UniversalCoins {
 		Property mobDrops = config.get("Loot", "Mob Drops", true,
 				"Set to false to disable mobs dropping coins on death.");
 		mobsDropCoins = mobDrops.getBoolean(true);
-		Property dropAmount = config.get("Loot", "Mob Drop Max", 39,
-				"Max mob drop stacksize. Minimum 1. Maximum 64. Default 39.");
-		mobDropMax = Math.max(1, Math.min(dropAmount.getInt(39), 64));
-		Property dropChance = config.get("Loot", "Mob Drop Chance", 3,
-				"Chance of a mob dropping coins. Lower number means higher chance. Minimum 0 (always drop). Default 3 (1 in 4 chance).");
-		mobDropChance = Math.max(0, Math.min(dropChance.getInt(3), 100));
+		Property dropAmount = config.get("Loot", "Mob Drop Max", 20,
+				"Max mob drop stacksize. Minimum 1. Maximum 64. Default 20.");
+		mobDropMax = Math.max(1, Math.min(dropAmount.getInt(20), 64));
+		Property dropWeight = config.get("Loot", "Mob Drop Weight", 1,
+				"Chance of a mob dropping coins. Higher number means higher chance.");
+		mobDropWeight = Math.max(0, Math.min(dropWeight.getInt(1), 100));
 		Property dragonMultiplier = config.get("Loot", "Ender Dragon Multiplier", 1000,
-				"Drop multiplier for ender dragon kills. Minimum 1. Default 1,000. Max 100,000");
-		enderDragonMultiplier = Math.max(1, Math.min(dragonMultiplier.getInt(1000), 100000));
+				"Obsidian coin stacks dropped for ender dragon kills. Minimum 1. Default 10. Max 1000");
+		enderDragonMultiplier = Math.max(1, Math.min(dragonMultiplier.getInt(10), 1000));
+		Property dungeonCoins = config.get("Loot", "Dungeon Coins", true,
+				"Set to false to disable coins spawning in dungeon chests.");
+		coinsInDungeon = dungeonCoins.getBoolean(true);
 
 		// trade station
 		Property autoMode = config.get("Trade Station", "Auto mode enabled", true,
@@ -309,19 +317,20 @@ public class UniversalCoins {
 		tradeGenProperty.setComment("Probability of adding trade station to villages. min 0, max 20, default 6.");
 		tradeGenWeight = Math.max(0, Math.min(tradeGenProperty.getInt(6), 20));
 
-		Property shopMinPriceProperty = config.get("World Generation", "Minimum shop price", 80);
-		shopMinPriceProperty
-				.setComment("Set the minimum price of items for sale in shops as a percent (min=1,max=100,default=80)");
-		shopMinPrice = Math.max(1, Math.min(shopMinPriceProperty.getInt(80), 100));
-		Property shopMaxPriceProperty = config.get("World Generation", "Maximum shop price", 120);
+		Property shopMinPriceProperty = config.get("World Generation", "Minimum shop price", 100);
+		shopMinPriceProperty.setComment(
+				"Set the minimum price of items for sale in shops as a percent (min=1,max=100,default=100)");
+		shopMinPrice = Math.max(1, Math.min(shopMinPriceProperty.getInt(100), 100));
+		Property shopMaxPriceProperty = config.get("World Generation", "Maximum shop price", 140);
 		shopMaxPriceProperty.setComment(
-				"Set the maximum price of items for sale in shops as a percent (min=80,max=300,default=120)");
-		shopMaxPrice = Math.max(80, Math.min(shopMaxPriceProperty.getInt(120), 300));
+				"Set the maximum price of items for sale in shops as a percent (min=100,max=300,default=140)");
+		shopMaxPrice = Math.max(100, Math.min(shopMaxPriceProperty.getInt(140), 300));
 
 		config.save();
 
 		if (mobsDropCoins) {
-			MinecraftForge.EVENT_BUS.register(new UCMobDropEventHandler());
+			// TODO remove once new process is working
+			// MinecraftForge.EVENT_BUS.register(new UCMobDropEventHandler());
 		}
 
 		MinecraftForge.EVENT_BUS.register(new UCPlayerPickupEventHandler());
@@ -369,5 +378,56 @@ public class UniversalCoins {
 		manager.registerCommand(new UCRebalance());
 		manager.registerCommand(new UCGive());
 		manager.registerCommand(new UCSend());
+	}
+
+	@SubscribeEvent
+	public static void onLootTablesLoaded(LootTableLoadEvent event) {
+		if (mobsDropCoins) {
+			String[] stringArray = new String[] { "creeper", "enderman", "skeleton", "snowman", "witch", "spider",
+					"zombie" };
+			int index = 0;
+			while (index < stringArray.length) {
+				if (event.getName().toString().contains((stringArray[index]))) {
+					final LootPool main = event.getTable().getPool("main");
+					if (main != null) {
+						main.addEntry(new LootEntryItem(UniversalCoins.Items.iron_coin, mobDropWeight, 0,
+								new LootFunction[] {
+										new SetCount(new LootCondition[0], new RandomValueRange(1, mobDropMax)) },
+								new LootCondition[0], "universalcoins:mob_loot"));
+					}
+				}
+				index++;
+			}
+			if (event.getName().toString().contains("dragon")) {
+				final LootPool main = event.getTable().getPool("main");
+				if (main != null) {
+					int count = 0;
+					while (count <= enderDragonMultiplier) {
+						main.addEntry(new LootEntryItem(UniversalCoins.Items.obsidian_coin, mobDropWeight, 0,
+								new LootFunction[] {
+										new SetCount(new LootCondition[0], new RandomValueRange(1, mobDropMax)) },
+								new LootCondition[0], "universalcoins:dragon_loot"));
+					}
+				}
+			}
+		}
+
+		if (coinsInDungeon) {
+			String[] stringArray = new String[] { "abandoned_mineshaft", "desert_pyramid", "end_city_treasure",
+					"jungle_temple", "simple_dungeon", "stronghold_corridor", "stronghold_library",
+					"stronghold_crossing" };
+			int index = 0;
+			while (index < stringArray.length) {
+				if (event.getName().toString().contains((stringArray[index]))) {
+					final LootPool main = event.getTable().getPool("main");
+					if (main != null) {
+						main.addEntry(new LootEntryItem(UniversalCoins.Items.diamond_coin, 20, 0,
+								new LootFunction[] { new SetCount(new LootCondition[0], new RandomValueRange(1, 64)) },
+								new LootCondition[0], "universalcoins:chest_loot"));
+					}
+				}
+				index++;
+			}
+		}
 	}
 }
