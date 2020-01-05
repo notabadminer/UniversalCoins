@@ -17,17 +17,15 @@ public class ContainerVendor extends Container {
 
 	public ContainerVendor(InventoryPlayer inventoryPlayer, TileVendor tEntity) {
 		tileEntity = tEntity;
-		// the Slot constructor takes the IInventory and the slot number in that
-		// it binds to and the x-y coordinates it resides on-screen
-		addSlotToContainer(new UCSlotGhost(tileEntity, TileVendor.itemTradeSlot, 9, 17));
-		addSlotToContainer(new UCSlotCoinInput(tileEntity, TileVendor.itemCoinInputSlot, 35, 55));
-		addSlotToContainer(new UCSlotCard(tileEntity, TileVendor.itemCardSlot, 17, 55));
-		addSlotToContainer(new UCSlotOutput(tileEntity, TileVendor.itemCoinOutputSlot, 152, 55));
 
 		// add all the inventory storage slots
 		for (int i = 0; i < 9; i++) {
 			addSlotToContainer(new Slot(tileEntity, TileVendor.itemStorageSlot1 + i, 8 + i * 18, 96));
 		}
+		addSlotToContainer(new Slot(tileEntity, TileVendor.itemTradeSlot, 9, 17));
+		addSlotToContainer(new UCSlotCoinInput(tileEntity, TileVendor.itemCoinInputSlot, 35, 55));
+		addSlotToContainer(new UCSlotCard(tileEntity, TileVendor.itemCardSlot, 17, 55));
+		addSlotToContainer(new UCSlotOutput(tileEntity, TileVendor.itemCoinOutputSlot, 152, 55));
 
 		// commonly used vanilla code that adds the player's inventory
 		bindPlayerInventory(inventoryPlayer);
@@ -60,10 +58,10 @@ public class ContainerVendor extends Container {
 			itemstack = itemstack1.copy();
 
 			if (index < 13) {
-				if (!this.mergeItemStack(itemstack1, 13, this.inventorySlots.size(), true)) {
+				if (!this.mergeItemStack(itemstack1, 13, this.inventorySlots.size(), false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (!this.mergeItemStack(itemstack1, 1, 13, false)) {
+			} else if (!this.mergeItemStack(itemstack1, 0, 9, false)) {
 				return ItemStack.EMPTY;
 			}
 

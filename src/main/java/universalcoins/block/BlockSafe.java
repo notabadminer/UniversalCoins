@@ -1,5 +1,7 @@
 package universalcoins.block;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
@@ -18,6 +20,7 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.tileentity.TileSafe;
 
@@ -60,6 +63,7 @@ public class BlockSafe extends BlockProtected {
 		}
 	}
 
+	@Override
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TileSafe();
 	}

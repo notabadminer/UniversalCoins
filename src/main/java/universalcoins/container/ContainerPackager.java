@@ -5,8 +5,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.tileentity.TilePackager;
 
 public class ContainerPackager extends Container {
@@ -101,13 +99,6 @@ public class ContainerPackager extends Container {
 		this.lastCardAvailable = tEntity.cardAvailable;
 		this.lastInUse = tEntity.inUse;
 
-	}
-
-	@SideOnly(Side.CLIENT)
-	public void updateProgressBar(int par1, int par2) {
-		if (par1 == 0) {
-			// this.tileEntity.autoMode = par2;
-		}
 	}
 
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {

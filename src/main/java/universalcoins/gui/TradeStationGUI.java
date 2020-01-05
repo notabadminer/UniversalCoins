@@ -153,6 +153,6 @@ public class TradeStationGUI extends GuiContainer {
 	}
 
 	protected void actionPerformed(GuiButton par1GuiButton) {
-		tileEntity.sendPacket(par1GuiButton.id, isShiftKeyDown());
+		tileEntity.sendButtonMessage(par1GuiButton.id, isShiftKeyDown());
 	}
 }

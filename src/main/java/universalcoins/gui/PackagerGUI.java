@@ -285,11 +285,11 @@ public class PackagerGUI extends GuiContainer {
 		}
 		if (button.id == idBuyButton && sendMode) {
 			// we send a modified packet so the tileentity function handles
-			tEntity.sendPacket(button.id, true);
+			tEntity.sendButtonMessage(button.id, true);
 			return; // we exit here so
 		}
 
-		tEntity.sendPacket(button.id, isShiftKeyDown());
+		tEntity.sendButtonMessage(button.id, isShiftKeyDown());
 	}
 
 	@Override

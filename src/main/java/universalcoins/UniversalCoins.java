@@ -307,15 +307,15 @@ public class UniversalCoins {
 		rfRetailRate = Math.max(0, rfRetail.getInt(15));
 
 		// world gen
-		Property bankGenProperty = config.get("world generation", "Village bank weight", 6);
-		bankGenProperty.setComment("Probability of adding bank to villages. min 0, max 20, default 6.");
-		bankGenWeight = Math.max(0, Math.min(bankGenProperty.getInt(6), 20));
-		Property shopGenProperty = config.get("world generation", "Village shop weight", 6);
-		shopGenProperty.setComment("Probably of adding shop to villages. min 0, max 20, default 6.");
-		shopGenWeight = Math.max(0, Math.min(shopGenProperty.getInt(6), 20));
-		Property tradeGenProperty = config.get("world generation", "Village trade station weight", 6);
-		tradeGenProperty.setComment("Probability of adding trade station to villages. min 0, max 20, default 6.");
-		tradeGenWeight = Math.max(0, Math.min(tradeGenProperty.getInt(6), 20));
+		Property bankGenProperty = config.get("world generation", "Village bank weight", 8);
+		bankGenProperty.setComment("Probability of adding bank to villages. min 0, max 20, default 8.");
+		bankGenWeight = Math.max(0, Math.min(bankGenProperty.getInt(8), 20));
+		Property shopGenProperty = config.get("world generation", "Village shop weight", 8);
+		shopGenProperty.setComment("Probably of adding shop to villages. min 0, max 20, default 8.");
+		shopGenWeight = Math.max(0, Math.min(shopGenProperty.getInt(8), 20));
+		Property tradeGenProperty = config.get("world generation", "Village trade station weight", 8);
+		tradeGenProperty.setComment("Probability of adding trade station to villages. min 0, max 20, default 8.");
+		tradeGenWeight = Math.max(0, Math.min(tradeGenProperty.getInt(8), 20));
 
 		Property shopMinPriceProperty = config.get("World Generation", "Minimum shop price", 100);
 		shopMinPriceProperty.setComment(
@@ -327,11 +327,6 @@ public class UniversalCoins {
 		shopMaxPrice = Math.max(100, Math.min(shopMaxPriceProperty.getInt(140), 300));
 
 		config.save();
-
-		if (mobsDropCoins) {
-			// TODO remove once new process is working
-			// MinecraftForge.EVENT_BUS.register(new UCMobDropEventHandler());
-		}
 
 		MinecraftForge.EVENT_BUS.register(new UCPlayerPickupEventHandler());
 

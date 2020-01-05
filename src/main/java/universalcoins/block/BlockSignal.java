@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -21,7 +22,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
@@ -188,6 +188,7 @@ public class BlockSignal extends BlockProtected {
 		return 0;
 	}
 
+	@Override
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TileSignal();
 	}
@@ -227,16 +228,14 @@ public class BlockSignal extends BlockProtected {
 	}
 
 	@Override
-	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state,
-			int fortune) {
-		TileEntity te = world.getTileEntity(pos);
-		ItemStack stack = new ItemStack(UniversalCoins.Blocks.signalblock, 1);
+	public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos,
+			IBlockState state, int fortune) {
+		TileSignal te = world.getTileEntity(pos) instanceof TileSignal ? (TileSignal) world.getTileEntity(pos) : null;
+		ItemStack stack = new ItemStack(Item.getItemFromBlock(this));
 		if (te != null) {
 			NBTTagCompound tag = new NBTTagCompound();
-			NBTTagCompound tagCompound = new NBTTagCompound();
 			te.writeToNBT(tag);
-			tagCompound.setTag("BlockEntityTag", tag);
-			stack.setTagCompound(tagCompound);
+			stack.setTagInfo("BlockEntityTag", tag);
 		}
 		drops.add(stack);
 	}

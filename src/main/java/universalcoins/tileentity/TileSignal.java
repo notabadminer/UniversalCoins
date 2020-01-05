@@ -138,31 +138,6 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 		return this.customName != null && this.customName.length() > 0;
 	}
 
-	public void sendPacket(int button, boolean shiftPressed) {
-		UniversalCoins.snw.sendToServer(new UCButtonMessage(pos.getX(), pos.getY(), pos.getZ(), button, shiftPressed));
-	}
-
-	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
-		return new SPacketUpdateTileEntity(this.pos, getBlockMetadata(), getUpdateTag());
-	}
-
-	// required for sync on chunk load
-	public NBTTagCompound getUpdateTag() {
-		NBTTagCompound nbt = new NBTTagCompound();
-		writeToNBT(nbt);
-		return nbt;
-	}
-
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		readFromNBT(pkt.getNbtCompound());
-	}
-
-	public void updateTE() {
-		final IBlockState state = getWorld().getBlockState(getPos());
-		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
-	}
-
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);

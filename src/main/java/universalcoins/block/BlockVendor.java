@@ -2,10 +2,13 @@ package universalcoins.block;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -24,6 +27,7 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.UniversalCoins;
+import universalcoins.tileentity.TilePackager;
 import universalcoins.tileentity.TileVendor;
 import universalcoins.tileentity.TileVendorBlock;
 
@@ -94,21 +98,21 @@ public class BlockVendor extends BlockProtected {
 		return false;
 	}
 
+	@Override
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TileVendorBlock();
 	}
 
 	@Override
-	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state,
-			int fortune) {
-		TileEntity te = world.getTileEntity(pos);
-		ItemStack stack = new ItemStack(UniversalCoins.Blocks.vendor_block, 1);
+	public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos,
+			IBlockState state, int fortune) {
+		TileVendor te = world.getTileEntity(pos) instanceof TileVendor ? (TileVendor) world.getTileEntity(pos)
+				: null;
+		ItemStack stack = new ItemStack(Item.getItemFromBlock(this));
 		if (te != null) {
 			NBTTagCompound tag = new NBTTagCompound();
-			NBTTagCompound tagCompound = new NBTTagCompound();
 			te.writeToNBT(tag);
-			tagCompound.setTag("BlockEntityTag", tag);
-			stack.setTagCompound(tagCompound);
+			stack.setTagInfo("BlockEntityTag", tag);
 		}
 		drops.add(stack);
 	}

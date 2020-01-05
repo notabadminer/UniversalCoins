@@ -7,13 +7,13 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -104,6 +104,7 @@ public class BlockVendorFrame extends BlockProtected {
 		return false;
 	}
 
+	@Override
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TileVendorFrame();
 	}
@@ -133,16 +134,16 @@ public class BlockVendorFrame extends BlockProtected {
 	}
 
 	@Override
-	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state,
-			int fortune) {
-		TileEntity te = world.getTileEntity(pos);
-		ItemStack stack = new ItemStack(UniversalCoins.Blocks.vendor_frame, 1);
+	public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos,
+			IBlockState state, int fortune) {
+		TileVendorFrame te = world.getTileEntity(pos) instanceof TileVendorFrame
+				? (TileVendorFrame) world.getTileEntity(pos)
+				: null;
+		ItemStack stack = new ItemStack(Item.getItemFromBlock(this));
 		if (te != null) {
 			NBTTagCompound tag = new NBTTagCompound();
-			NBTTagCompound tagCompound = new NBTTagCompound();
 			te.writeToNBT(tag);
-			tagCompound.setTag("BlockEntityTag", tag);
-			stack.setTagCompound(tagCompound);
+			stack.setTagInfo("BlockEntityTag", tag);
 		}
 		drops.add(stack);
 	}

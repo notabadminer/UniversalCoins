@@ -178,12 +178,6 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
-		return world.getTileEntity(pos) == this
-				&& player.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
-	}
-
-	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
 		// we only have a coin input slot
 		return true;
@@ -221,30 +215,6 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 		} catch (Throwable ex2) {
 			accountBalance = 0;
 		}
-	}
-
-	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
-		return new SPacketUpdateTileEntity(this.pos, getBlockMetadata(), getUpdateTag());
-	}
-
-	// required for sync on chunk load
-	public NBTTagCompound getUpdateTag() {
-		NBTTagCompound nbt = new NBTTagCompound();
-		writeToNBT(nbt);
-		return nbt;
-	}
-
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		readFromNBT(pkt.getNbtCompound());
-		if (accountBalance == 0)
-			inventory.set(itemOutputSlot, ItemStack.EMPTY);
-	}
-
-	public void updateTE() {
-		fillOutputSlot();
-		final IBlockState state = getWorld().getBlockState(getPos());
-		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
 	}
 
 	public void setSafeAccount(String playerName) {
@@ -299,5 +269,14 @@ public class TileSafe extends TileProtected implements IInventory, ISidedInvento
 	@Override
 	public boolean isEmpty() {
 		return false;
+	}
+	
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		if (this.world.getTileEntity(this.pos) != this || player == null) {
+			return false;
+		} else {
+			return player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D,
+					(double) this.pos.getZ() + 0.5D) <= 64.0D;
+		}
 	}
 }

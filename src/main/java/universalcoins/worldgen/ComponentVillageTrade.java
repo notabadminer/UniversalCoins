@@ -46,17 +46,24 @@ public class ComponentVillageTrade extends StructureVillagePieces.Village {
 
 			this.boundingBox.offset(0, this.averageGroundLevel - this.boundingBox.minY, 0);
 		}
+		
+		IBlockState iblockstate0 = Blocks.STAINED_GLASS.getStateFromMeta(15);
+        IBlockState iblockstate1 = this.getBiomeSpecificBlockState(Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH));
+        IBlockState iblockstate2 = this.getBiomeSpecificBlockState(Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.SOUTH));
+        IBlockState iblockstate3 = this.getBiomeSpecificBlockState(Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.WEST));
+        IBlockState iblockstate4 = this.getBiomeSpecificBlockState(Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.EAST));
+        IBlockState iblockstate5 = this.getBiomeSpecificBlockState(Blocks.OAK_FENCE.getDefaultState());
+        IBlockState iblockstate6 = this.getBiomeSpecificBlockState(Blocks.COBBLESTONE.getDefaultState());
 
 		// Clear area
 		fillWithAir(world, sbb, 0, 0, 0, 4, 4, 4);
 		// floor
-		fillWithBlocks(world, sbb, 0, 0, 0, 4, 0, 4, Blocks.COBBLESTONE.getDefaultState(),
-				Blocks.COBBLESTONE.getDefaultState(), false);
-		// fill
-		fillWithBlocks(world, sbb, 0, 1, 0, 4, 3, 4, Blocks.OAK_FENCE.getDefaultState(),
-				Blocks.OAK_FENCE.getDefaultState(), false);
+		fillWithBlocks(world, sbb, 0, 0, 0, 4, 0, 4, iblockstate6,
+				iblockstate6, false);
+		// fill fence
+		fillWithBlocks(world, sbb, 0, 1, 0, 4, 3, 4, iblockstate5,
+				iblockstate5, false);
 		// top
-		IBlockState iblockstate0 = Blocks.STAINED_GLASS.getStateFromMeta(15);
 		this.setBlockState(world, iblockstate0, 1, 4, 1, sbb);
 		this.setBlockState(world, iblockstate0, 2, 4, 1, sbb);
 		this.setBlockState(world, iblockstate0, 3, 4, 1, sbb);
@@ -67,28 +74,20 @@ public class ComponentVillageTrade extends StructureVillagePieces.Village {
 		this.setBlockState(world, iblockstate0, 2, 4, 3, sbb);
 		this.setBlockState(world, iblockstate0, 3, 4, 3, sbb);
 		// top front
-		IBlockState iblockstate = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
-				EnumFacing.NORTH);
-		this.setBlockState(world, iblockstate, 1, 4, 0, sbb);
-		this.setBlockState(world, iblockstate, 2, 4, 0, sbb);
-		this.setBlockState(world, iblockstate, 3, 4, 0, sbb);
+		this.setBlockState(world, iblockstate1, 1, 4, 0, sbb);
+		this.setBlockState(world, iblockstate1, 2, 4, 0, sbb);
+		this.setBlockState(world, iblockstate1, 3, 4, 0, sbb);
 		// top back
-		IBlockState iblockstate2 = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
-				EnumFacing.SOUTH);
 		this.setBlockState(world, iblockstate2, 1, 4, 4, sbb);
 		this.setBlockState(world, iblockstate2, 2, 4, 4, sbb);
 		this.setBlockState(world, iblockstate2, 3, 4, 4, sbb);
 		// top right
-		IBlockState iblockstate3 = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
-				EnumFacing.WEST);
 		this.setBlockState(world, iblockstate3, 4, 4, 0, sbb);
 		this.setBlockState(world, iblockstate3, 4, 4, 1, sbb);
 		this.setBlockState(world, iblockstate3, 4, 4, 2, sbb);
 		this.setBlockState(world, iblockstate3, 4, 4, 3, sbb);
 		this.setBlockState(world, iblockstate3, 4, 4, 4, sbb);
 		// top left
-		IBlockState iblockstate4 = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
-				EnumFacing.EAST);
 		this.setBlockState(world, iblockstate4, 0, 4, 0, sbb);
 		this.setBlockState(world, iblockstate4, 0, 4, 1, sbb);
 		this.setBlockState(world, iblockstate4, 0, 4, 2, sbb);
@@ -112,16 +111,16 @@ public class ComponentVillageTrade extends StructureVillagePieces.Village {
 		if (this.getBlockStateFromPos(world, 1, 0, -1, sbb).getMaterial() == Material.AIR
 				&& this.getBlockStateFromPos(world, 1, -1, -1, sbb).getMaterial() != Material.AIR) {
 			this.setBlockState(world,
-					Blocks.STONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH), 2, 0, -1,
+					getBiomeSpecificBlockState(Blocks.STONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH)), 2, 0, -1,
 					sbb);
 			this.setBlockState(world,
-					Blocks.STONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.SOUTH), 2, 0, 5,
+					getBiomeSpecificBlockState(Blocks.STONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.SOUTH)), 2, 0, 5,
 					sbb);
 			this.setBlockState(world,
-					Blocks.STONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.EAST), -1, 0, 2,
+					getBiomeSpecificBlockState(Blocks.STONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.EAST)), -1, 0, 2,
 					sbb);
 			this.setBlockState(world,
-					Blocks.STONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.WEST), 5, 0, 2,
+					getBiomeSpecificBlockState(Blocks.STONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.WEST)), 5, 0, 2,
 					sbb);
 		}
 
@@ -129,7 +128,7 @@ public class ComponentVillageTrade extends StructureVillagePieces.Village {
 		for (int k = 0; k < 5; ++k) { // length
 			for (int l = 0; l < 5; ++l) {// width
 				this.clearCurrentPositionBlocksUpwards(world, k, 7, l, sbb);
-				this.replaceAirAndLiquidDownwards(world, Blocks.COBBLESTONE.getDefaultState(), k, -1, l, sbb);
+				this.replaceAirAndLiquidDownwards(world, iblockstate6, k, -1, l, sbb);
 			}
 		}
 

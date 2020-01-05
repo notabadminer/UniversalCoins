@@ -4,13 +4,13 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
@@ -77,26 +77,27 @@ public class BlockTradeStation extends BlockProtected {
 	}
 
 	@Override
-	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state,
-			int fortune) {
-		TileEntity te = world.getTileEntity(pos);
-		ItemStack stack = new ItemStack(UniversalCoins.Blocks.tradestation, 1);
-		if (te != null) {
-			NBTTagCompound tag = new NBTTagCompound();
-			NBTTagCompound tagCompound = new NBTTagCompound();
-			te.writeToNBT(tag);
-			tagCompound.setTag("BlockEntityTag", tag);
-			stack.setTagCompound(tagCompound);
-		}
-		drops.add(stack);
-	}
-
-	@Override
 	public EnumBlockRenderType getRenderType(IBlockState state) {
 		return EnumBlockRenderType.MODEL;
 	}
 
+	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
 		return new TileTradeStation();
+	}
+
+	@Override
+	public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos,
+			IBlockState state, int fortune) {
+		TileTradeStation te = world.getTileEntity(pos) instanceof TileTradeStation
+				? (TileTradeStation) world.getTileEntity(pos)
+				: null;
+		ItemStack stack = new ItemStack(Item.getItemFromBlock(this));
+		if (te != null) {
+			NBTTagCompound tag = new NBTTagCompound();
+			te.writeToNBT(tag);
+			stack.setTagInfo("BlockEntityTag", tag);
+		}
+		drops.add(stack);
 	}
 }

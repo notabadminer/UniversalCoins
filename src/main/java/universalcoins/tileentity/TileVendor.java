@@ -662,43 +662,12 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer entityplayer) {
-		return world.getTileEntity(pos) == this
-				&& entityplayer.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
-	}
-
-	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
 		if (slot == itemTradeSlot) {
 			inventory.set(itemTradeSlot, stack.copy());
 			return false;
 		} else
 			return true;
-	}
-
-	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
-		return new SPacketUpdateTileEntity(this.pos, getBlockMetadata(), getUpdateTag());
-	}
-
-	// required for sync on chunk load
-	public NBTTagCompound getUpdateTag() {
-		NBTTagCompound nbt = new NBTTagCompound();
-		writeToNBT(nbt);
-		return nbt;
-	}
-
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		readFromNBT(pkt.getNbtCompound());
-	}
-
-	public void updateTE() {
-		final IBlockState state = getWorld().getBlockState(getPos());
-		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
-	}
-
-	public void sendButtonMessage(int button, boolean shiftPressed) {
-		UniversalCoins.snw.sendToServer(new UCButtonMessage(pos.getX(), pos.getY(), pos.getZ(), button, shiftPressed));
 	}
 
 	public void sendServerUpdateMessage() {
@@ -1042,5 +1011,14 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
 		return inventory.get(index);
+	}
+	
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		if (this.world.getTileEntity(this.pos) != this || player == null) {
+			return false;
+		} else {
+			return player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D,
+					(double) this.pos.getZ() + 0.5D) <= 64.0D;
+		}
 	}
 }

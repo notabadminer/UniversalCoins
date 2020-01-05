@@ -13,6 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.tileentity.TileProtected;
 
@@ -37,6 +38,7 @@ public class BlockProtected extends BlockContainer {
 
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
+		FMLLog.log.info("creating TileProtected");
 		return new TileProtected();
 	}
 
@@ -62,21 +64,25 @@ public class BlockProtected extends BlockContainer {
 		}
 	}
 
-	/* ===================== needed for data store =================== */
 	@Override
 	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
 			boolean willHarvest) {
-		if (willHarvest)
+		if (willHarvest) {
 			return true; // If it will harvest, delay deletion of the block until after getDrops
+		}
+		world.removeTileEntity(pos);
 		return super.removedByPlayer(state, world, pos, player, willHarvest);
 	}
 
+	/**
+	 * Spawns the block's drops in the world. By the time this is called the Block
+	 * has possibly been set to air via Block.removedByPlayer
+	 */
 	@Override
 	public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te,
 			ItemStack tool) {
 		super.harvestBlock(world, player, pos, state, te, tool);
+		world.removeTileEntity(pos);
 		world.setBlockToAir(pos);
 	}
-	/* ===================== /needed for data store =================== */
-
 }

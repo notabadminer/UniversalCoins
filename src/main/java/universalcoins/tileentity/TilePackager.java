@@ -21,6 +21,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCPackagerServerMessage;
@@ -162,40 +163,9 @@ public class TilePackager extends TileProtected implements IInventory {
 		}
 	}
 
-	@Override
-	public boolean isUsableByPlayer(EntityPlayer entityplayer) {
-		return world.getTileEntity(pos) == this
-				&& entityplayer.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
-	}
-
-	public void sendPacket(int button, boolean shiftPressed) {
-		UniversalCoins.snw.sendToServer(new UCButtonMessage(pos.getX(), pos.getY(), pos.getZ(), button, shiftPressed));
-	}
-
 	public void sendServerUpdateMessage(String packageTarget, boolean shiftPressed) {
 		UniversalCoins.snw.sendToServer(
 				new UCPackagerServerMessage(pos.getX(), pos.getY(), pos.getZ(), packageTarget, shiftPressed));
-	}
-
-	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
-		return new SPacketUpdateTileEntity(this.pos, getBlockMetadata(), getUpdateTag());
-	}
-
-	// required for sync on chunk load
-	public NBTTagCompound getUpdateTag() {
-		NBTTagCompound nbt = new NBTTagCompound();
-		writeToNBT(nbt);
-		return nbt;
-	}
-
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		readFromNBT(pkt.getNbtCompound());
-	}
-
-	public void updateTE() {
-		final IBlockState state = getWorld().getBlockState(getPos());
-		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
 	}
 
 	@Override
@@ -450,5 +420,15 @@ public class TilePackager extends TileProtected implements IInventory {
 	@Override
 	public boolean isEmpty() {
 		return false;
+	}
+
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		FMLLog.log.info("isUsableByPlayer: " + player);
+		if (this.world.getTileEntity(this.pos) != this || player == null) {
+			return false;
+		} else {
+			return player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D,
+					(double) this.pos.getZ() + 0.5D) <= 64.0D;
+		}
 	}
 }

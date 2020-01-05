@@ -39,7 +39,8 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		StructureBoundingBox box = StructureBoundingBox.getComponentToAddBoundingBox(p1, p2, p3, 0, 0, 0, 5, 6, 6,
 				facing);
 		return canVillageGoDeeper(box) && StructureComponent.findIntersecting(pieces, box) == null
-				? new ComponentVillageBank(startPiece, p5, random, box, facing) : null;
+				? new ComponentVillageBank(startPiece, p5, random, box, facing)
+				: null;
 	}
 
 	@Override
@@ -53,32 +54,35 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 			this.boundingBox.offset(0, this.averageGroundLevel - this.boundingBox.minY, 0);
 		}
 
+		IBlockState iblockstate0 = Blocks.STAINED_GLASS.getStateFromMeta(15);
+		IBlockState iblockstate1 = this.getBiomeSpecificBlockState(
+				Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH));
+		IBlockState iblockstate2 = this.getBiomeSpecificBlockState(
+				Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.SOUTH));
+		IBlockState iblockstate3 = this.getBiomeSpecificBlockState(
+				Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.WEST));
+		IBlockState iblockstate4 = this.getBiomeSpecificBlockState(
+				Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.EAST));
+		IBlockState iblockstate5 = this.getBiomeSpecificBlockState(Blocks.COBBLESTONE.getDefaultState());
+		IBlockState iblockstate6 = this.getBiomeSpecificBlockState(Blocks.PLANKS.getDefaultState());
+
 		// Clear area in case of sand
 		fillWithAir(world, sbb, 0, 0, 0, 4, 4, 5);
 		// start with block
-		this.fillWithBlocks(world, sbb, 0, 0, 0, 4, 3, 5, Blocks.COBBLESTONE.getDefaultState(),
-				Blocks.COBBLESTONE.getDefaultState(), false);
+		this.fillWithBlocks(world, sbb, 0, 0, 0, 4, 3, 5, iblockstate5, iblockstate5, false);
 		// windows
-		this.fillWithBlocks(world, sbb, 0, 2, 2, 4, 2, 3, Blocks.GLASS.getDefaultState(),
-				Blocks.GLASS.getDefaultState(), false);
+		this.fillWithBlocks(world, sbb, 0, 2, 2, 4, 2, 3, iblockstate0, iblockstate0, false);
 		// top
-		fillWithBlocks(world, sbb, 0, 4, 1, 4, 4, 5, Blocks.PLANKS.getDefaultState(), Blocks.PLANKS.getDefaultState(),
-				false);
+		fillWithBlocks(world, sbb, 0, 4, 1, 4, 4, 5, iblockstate0, iblockstate0, false);
 		// top front
-		IBlockState iblockstate = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
-				EnumFacing.NORTH);
-		this.setBlockState(world, iblockstate, 1, 4, 1, sbb);
-		this.setBlockState(world, iblockstate, 2, 4, 1, sbb);
-		this.setBlockState(world, iblockstate, 3, 4, 1, sbb);
+		this.setBlockState(world, iblockstate1, 1, 4, 1, sbb);
+		this.setBlockState(world, iblockstate1, 2, 4, 1, sbb);
+		this.setBlockState(world, iblockstate1, 3, 4, 1, sbb);
 		// top back
-		IBlockState iblockstate2 = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
-				EnumFacing.SOUTH);
 		this.setBlockState(world, iblockstate2, 1, 4, 5, sbb);
 		this.setBlockState(world, iblockstate2, 2, 4, 5, sbb);
 		this.setBlockState(world, iblockstate2, 3, 4, 5, sbb);
 		// top right
-		IBlockState iblockstate3 = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
-				EnumFacing.WEST);
 		this.setBlockState(world, iblockstate3, 4, 4, 0, sbb);
 		this.setBlockState(world, iblockstate3, 4, 4, 1, sbb);
 		this.setBlockState(world, iblockstate3, 4, 4, 2, sbb);
@@ -86,8 +90,6 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		this.setBlockState(world, iblockstate3, 4, 4, 4, sbb);
 		this.setBlockState(world, iblockstate3, 4, 4, 5, sbb);
 		// top left
-		IBlockState iblockstate4 = Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING,
-				EnumFacing.EAST);
 		this.setBlockState(world, iblockstate4, 0, 4, 0, sbb);
 		this.setBlockState(world, iblockstate4, 0, 4, 1, sbb);
 		this.setBlockState(world, iblockstate4, 0, 4, 2, sbb);
@@ -121,7 +123,7 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		if (this.getBlockStateFromPos(world, 2, 0, -1, sbb).getMaterial() == Material.AIR
 				&& this.getBlockStateFromPos(world, 2, -1, -1, sbb).getMaterial() != Material.AIR) {
 			this.setBlockState(world,
-					Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH), 2, 0, -1,
+					Blocks.STONE_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.NORTH), 2, 0, -1,
 					sbb);
 		}
 
@@ -129,7 +131,7 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		for (int l = 0; l < 6; ++l) {
 			for (int k = 0; k < 5; ++k) {
 				this.clearCurrentPositionBlocksUpwards(world, k, 7, l, sbb);
-				this.replaceAirAndLiquidDownwards(world, Blocks.COBBLESTONE.getDefaultState(), k, -1, l, sbb);
+				this.replaceAirAndLiquidDownwards(world, iblockstate5, k, -1, l, sbb);
 			}
 		}
 		return true;

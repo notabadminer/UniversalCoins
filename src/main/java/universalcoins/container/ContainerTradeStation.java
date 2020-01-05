@@ -6,6 +6,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.tileentity.TileTradeStation;
@@ -26,11 +27,6 @@ public class ContainerTradeStation extends Container {
 
 		// commonly used vanilla code that adds the player's inventory
 		bindPlayerInventory(inventoryPlayer);
-	}
-
-	@Override
-	public boolean canInteractWith(EntityPlayer entityplayer) {
-		return tileEntity.isUsableByPlayer(entityplayer);
 	}
 
 	void bindPlayerInventory(InventoryPlayer inventoryPlayer) {
@@ -119,5 +115,10 @@ public class ContainerTradeStation extends Container {
 
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {
 		this.tileEntity.inUseCleanup();
+	}
+
+	@Override
+	public boolean canInteractWith(EntityPlayer player) {
+		return tileEntity.isUsableByPlayer(player);
 	}
 }

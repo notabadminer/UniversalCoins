@@ -81,6 +81,6 @@ public class PowerTransmitterGUI extends GuiContainer {
 	}
 
 	protected void actionPerformed(GuiButton button) {
-		tEntity.sendPacket(button.id, isShiftKeyDown());
+		tEntity.sendButtonMessage(button.id, isShiftKeyDown());
 	}
 }

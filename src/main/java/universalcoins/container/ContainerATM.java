@@ -5,8 +5,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.tileentity.TileATM;
 
 public class ContainerATM extends Container {
@@ -102,13 +100,6 @@ public class ContainerATM extends Container {
 		this.lastAccountNumber = tEntity.accountNumber;
 		this.lastAccountBalance = tEntity.accountBalance;
 
-	}
-
-	@SideOnly(Side.CLIENT)
-	public void updateProgressBar(int par1, int par2) {
-		if (par1 == 0) {
-			// this.tileEntity.autoMode = par2;
-		}
 	}
 
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {

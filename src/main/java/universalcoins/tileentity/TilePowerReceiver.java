@@ -1,14 +1,11 @@
 package universalcoins.tileentity;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -18,18 +15,16 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.PowerReceiverGUI;
-import universalcoins.net.UCButtonMessage;
 import universalcoins.util.CoinUtils;
 import universalcoins.util.UniversalAccounts;
 import universalcoins.util.UniversalPower;
 
 public class TilePowerReceiver extends TileProtected implements ITickable, IInventory, IEnergyStorage {
-	private NonNullList<ItemStack> inventory = NonNullList.<ItemStack> withSize(3, ItemStack.EMPTY);
+	private NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(3, ItemStack.EMPTY);
 	public static final int itemCardSlot = 0;
 	public static final int itemCoinSlot = 1;
 	public static final int itemOutputSlot = 2;
@@ -116,12 +111,6 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer entityplayer) {
-		return world.getTileEntity(pos) == this
-				&& entityplayer.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
-	}
-
-	@Override
 	public boolean isItemValidForSlot(int var1, ItemStack var2) {
 		return false;
 	}
@@ -159,31 +148,6 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 		return UniversalAccounts.getInstance().debitAccount(accountNumber, i, false);
 	}
 
-	public void sendPacket(int button, boolean shiftPressed) {
-		UniversalCoins.snw.sendToServer(new UCButtonMessage(pos.getX(), pos.getY(), pos.getZ(), button, shiftPressed));
-	}
-
-	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
-		return new SPacketUpdateTileEntity(this.pos, getBlockMetadata(), getUpdateTag());
-	}
-
-	// required for sync on chunk load
-	public NBTTagCompound getUpdateTag() {
-		NBTTagCompound nbt = new NBTTagCompound();
-		writeToNBT(nbt);
-		return nbt;
-	}
-
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		readFromNBT(pkt.getNbtCompound());
-	}
-
-	public void updateTE() {
-		final IBlockState state = getWorld().getBlockState(getPos());
-		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
-	}
-
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
@@ -205,7 +169,7 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
-		this.inventory = NonNullList.<ItemStack> withSize(this.getSizeInventory(), ItemStack.EMPTY);
+		this.inventory = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
 		ItemStackHelper.loadAllItems(tagCompound, this.inventory);
 		try {
 			coinSum = tagCompound.getLong("coinSum");
@@ -417,5 +381,14 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 			return (T) this;
 		}
 		return super.getCapability(capability, facing);
+	}
+
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		if (this.world.getTileEntity(this.pos) != this || player == null) {
+			return false;
+		} else {
+			return player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D,
+					(double) this.pos.getZ() + 0.5D) <= 64.0D;
+		}
 	}
 }

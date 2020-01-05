@@ -1,9 +1,14 @@
 package universalcoins.tileentity;
 
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fml.common.FMLLog;
+import universalcoins.UniversalCoins;
+import universalcoins.net.UCButtonMessage;
 
 public class TileProtected extends TileEntity {
 
@@ -40,15 +45,41 @@ public class TileProtected extends TileEntity {
 		return tagCompound;
 	}
 
-	//@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
+	// ==== chunk load sync ====//
+	@Override
+	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound nbt = new NBTTagCompound();
-		writeToNBT(nbt);
-		return new SPacketUpdateTileEntity(pos, 1, nbt);
+		this.writeToNBT(nbt);
+		return nbt;
+	}
+
+	@Override
+	public void handleUpdateTag(NBTTagCompound tag) {
+		this.readFromNBT(tag);
+	}
+	// ==== /chunk load sync ====//
+
+	// ===== block update sync =========//
+	@Override
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		return new SPacketUpdateTileEntity(this.pos, getBlockMetadata(), getUpdateTag());
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		readFromNBT(pkt.getNbtCompound());
 	}
+
+	public void updateTE() {
+		final IBlockState state = getWorld().getBlockState(getPos());
+		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
+	}
+	// ===== /block update sync =========//
+
+	// ==== general client to server messages ====/
+	public void sendButtonMessage(int functionID, boolean shiftPressed) {
+		UniversalCoins.snw
+				.sendToServer(new UCButtonMessage(pos.getX(), pos.getY(), pos.getZ(), functionID, shiftPressed));
+	}
+	// ==== /general client to server messages ====/
 }

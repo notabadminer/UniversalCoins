@@ -7,8 +7,6 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -16,15 +14,13 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.net.ATMWithdrawalMessage;
-import universalcoins.net.UCButtonMessage;
 import universalcoins.util.CoinUtils;
 import universalcoins.util.UniversalAccounts;
 
 public class TileATM extends TileProtected implements IInventory, ISidedInventory {
-	private NonNullList<ItemStack> inventory = NonNullList.<ItemStack> withSize(2, ItemStack.EMPTY);
+	private NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(2, ItemStack.EMPTY);
 	public static final int itemCoinSlot = 0;
 	public static final int itemCardSlot = 1;
 	public String blockOwner = "";
@@ -129,34 +125,8 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 		return 64;
 	}
 
-	public void sendButtonMessage(int functionID, boolean shiftPressed) {
-		UniversalCoins.snw
-				.sendToServer(new UCButtonMessage(pos.getX(), pos.getY(), pos.getZ(), functionID, shiftPressed));
-	}
-
-	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
-		return new SPacketUpdateTileEntity(this.pos, getBlockMetadata(), getUpdateTag());
-	}
-
-	// required for sync on chunk load
-	public NBTTagCompound getUpdateTag() {
-		NBTTagCompound nbt = new NBTTagCompound();
-		writeToNBT(nbt);
-		return nbt;
-	}
-
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		readFromNBT(pkt.getNbtCompound());
-	}
-
 	public void sendServerUpdatePacket(int withdrawalAmount) {
 		UniversalCoins.snw.sendToServer(new ATMWithdrawalMessage(pos.getX(), pos.getY(), pos.getZ(), withdrawalAmount));
-	}
-
-	public void updateTE() {
-		final IBlockState state = getWorld().getBlockState(getPos());
-		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
 	}
 
 	@Override
@@ -236,13 +206,8 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 		tagCompound.setString("accountNumber", accountNumber);
 		tagCompound.setLong("accountBalance", accountBalance);
 
+		markDirty();
 		return tagCompound;
-	}
-
-	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
-		return world.getTileEntity(pos) == this
-				&& player.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
 	}
 
 	@Override
@@ -424,5 +389,14 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 	@Override
 	public boolean isEmpty() {
 		return false;
+	}
+
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		if (this.world.getTileEntity(this.pos) != this || player == null) {
+			return false;
+		} else {
+			return player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D,
+					(double) this.pos.getZ() + 0.5D) <= 64.0D;
+		}
 	}
 }

@@ -1,11 +1,10 @@
 package universalcoins.block;
 
-import java.util.List;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -62,31 +61,23 @@ public class BlockPowerTransmitter extends BlockProtected {
 		return false;
 	}
 
+	@Override
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TilePowerTransmitter();
 	}
 
 	@Override
-	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-		java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
+	public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos,
+			IBlockState state, int fortune) {
 		TilePowerTransmitter te = world.getTileEntity(pos) instanceof TilePowerTransmitter
-				? (TilePowerTransmitter) world.getTileEntity(pos) : null;
-		ItemStack stack = new ItemStack(UniversalCoins.Blocks.power_transmitter, 1);
+				? (TilePowerTransmitter) world.getTileEntity(pos)
+				: null;
+		ItemStack stack = new ItemStack(Item.getItemFromBlock(this));
 		if (te != null) {
 			NBTTagCompound tag = new NBTTagCompound();
-			NBTTagCompound tagCompound = new NBTTagCompound();
 			te.writeToNBT(tag);
-			tagCompound.setTag("BlockEntityTag", tag);
-			stack.setTagCompound(tagCompound);
+			stack.setTagInfo("BlockEntityTag", tag);
 		}
-		ret.add(stack);
-		return ret;
-	}
-
-	@Override
-	public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te,
-			ItemStack tool) {
-		super.harvestBlock(world, player, pos, state, te, tool);
-		world.setBlockToAir(pos);
+		drops.add(stack);
 	}
 }
