@@ -68,6 +68,7 @@ public class ContainerVendorBuy extends Container {
 				slot.onSlotChanged();
 			}
 		}
+		tileEntity.update();
 		return itemstack;
 	}
 

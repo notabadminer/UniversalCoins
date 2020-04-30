@@ -55,18 +55,12 @@ public class ContainerSafe extends Container {
 				if (!this.mergeItemStack(stackInSlot, 2, 38, true)) {
 					return ItemStack.EMPTY;
 				} else {
-					// Let TE know coins were taken
 					tEntity.coinsTaken(stackFromSlot);
 				}
 			} else if (!this.mergeItemStack(stackInSlot, 0, 1, false)) {
 				return ItemStack.EMPTY;
 			}
-
-			if (stackInSlot.isEmpty()) {
-				slot.putStack(ItemStack.EMPTY);
-			} else {
-				slot.onSlotChanged();
-			}
+			tEntity.fillOutputSlot();
 		}
 		return ItemStack.EMPTY;
 	}
