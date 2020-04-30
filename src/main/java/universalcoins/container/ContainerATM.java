@@ -58,10 +58,10 @@ public class ContainerATM extends Container {
 			itemstack = itemstack1.copy();
 
 			if (index < 2) {
-				if (!this.mergeItemStack(itemstack1, 2, 38, true)) {
+				if (!this.mergeItemStack(itemstack1, 2, 38, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
+			} else if (!this.mergeItemStack(itemstack1, 0, 2, false)) { // endindex is not inclusive. set +1
 				return ItemStack.EMPTY;
 			}
 
@@ -70,6 +70,7 @@ public class ContainerATM extends Container {
 			} else {
 				slot.onSlotChanged();
 			}
+			tEntity.fillCoinSlot();
 		}
 		return itemstack;
 	}

@@ -13,17 +13,7 @@ public class UCSlotCard extends Slot {
 
 	@Override
 	public boolean isItemValid(ItemStack par1ItemStack) {
-		if (par1ItemStack == null) {
-			return true;
-		}
 		Item itemInStack = par1ItemStack.getItem();
 		return (itemInStack == UniversalCoins.Items.uc_card || itemInStack == UniversalCoins.Items.ender_card);
-	}
-
-	public ItemStack decrStackSize(int par1) {
-		if (getStack() != null && getStack().getCount() != par1) {
-			return new ItemStack(getStack().getItem(), -1);
-		}
-		return inventory.decrStackSize(getSlotIndex(), par1);
 	}
 }
