@@ -27,7 +27,7 @@ public class ComponentVillageTrade extends StructureVillagePieces.Village {
 		MapGenStructureIO.registerStructureComponent(ComponentVillageTrade.class, "ViUT");
 	}
 
-	public static ComponentVillageTrade buildComponent(Start startPiece, List pieces, Random random, int p1, int p2,
+	public static ComponentVillageTrade buildComponent(Start startPiece, List<StructureComponent> pieces, Random random, int p1, int p2,
 			int p3, EnumFacing facing, int p5) {
 		StructureBoundingBox box = StructureBoundingBox.getComponentToAddBoundingBox(p1, p2, p3, 0, 0, 0, 4, 4, 4,
 				facing);

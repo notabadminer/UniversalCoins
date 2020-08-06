@@ -48,10 +48,7 @@ public class TileVendorFrame extends TileVendor {
 				signText[2] = "&" + Integer.toHexString(textColor);
 				NBTTagList tagList = inventory.get(itemTradeSlot).getEnchantmentTagList();
 				for (int i = 0; i < tagList.tagCount(); i++) {
-					NBTTagCompound enchant = ((NBTTagList) tagList).getCompoundTagAt(i);
-					// signText[2] =
-					// signText[2].concat(Enchantment.enchantmentsBookList[enchant.getInteger("id")]
-					// .getTranslatedName(enchant.getInteger("lvl")) + ", ");
+					((NBTTagList) tagList).getCompoundTagAt(i);
 				}
 			} else
 				signText[2] = "";
@@ -62,7 +59,6 @@ public class TileVendorFrame extends TileVendor {
 							Constants.NBT.TAG_COMPOUND);
 					for (int i = 0; i < tagList.tagCount(); i++) {
 						NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
-						byte slot = tag.getByte("Slot");
 						int itemCount = new ItemStack(tag).getCount();
 						String itemName = new ItemStack(tag).getDisplayName();
 						signText[2] += itemCount + ":" + itemName + " ";

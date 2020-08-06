@@ -316,7 +316,7 @@ public class PackagerGUI extends GuiContainer {
 	}
 
 	private boolean canSend() {
-		if (!tEntity.getStackInSlot(tEntity.itemPackageInputSlot).isEmpty()
+		if (!tEntity.getStackInSlot(TilePackager.itemPackageInputSlot).isEmpty()
 				&& tEntity.getWorld().getPlayerEntityByName(tEntity.packageTarget) != null) {
 			return true;
 		}

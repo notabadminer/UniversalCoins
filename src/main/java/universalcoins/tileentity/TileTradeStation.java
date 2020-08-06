@@ -1,6 +1,5 @@
 package universalcoins.tileentity;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -9,16 +8,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.TradeStationGUI;
-import universalcoins.net.UCButtonMessage;
 import universalcoins.util.CoinUtils;
 import universalcoins.util.UCItemPricer;
 import universalcoins.util.UniversalAccounts;
@@ -44,8 +39,6 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 	public int autoMode = 0;
 	private int autoDelayCounter = 0;
 	public int coinMode = 0;
-
-	private ItemStack previousStack = ItemStack.EMPTY;
 
 	public TileTradeStation() {
 		super();
@@ -426,7 +419,7 @@ public class TileTradeStation extends TileProtected implements IInventory, ISide
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
-		NBTTagList itemList = new NBTTagList();
+		new NBTTagList();
 		ItemStackHelper.saveAllItems(tagCompound, this.inventory);
 		tagCompound.setInteger("AutoMode", autoMode);
 		tagCompound.setInteger("CoinMode", coinMode);

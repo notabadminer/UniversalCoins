@@ -11,6 +11,7 @@ import net.minecraft.command.ServerCommandManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.LootEntryItem;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.RandomValueRange;
@@ -183,20 +184,20 @@ public class UniversalCoins {
 						.setUnlocalizedName(MODID + ".wall_ucsign"),
 				new BlockUCStandingSign(TileUCSign.class).setRegistryName(MODID, "standing_ucsign")
 						.setUnlocalizedName(MODID + ".standing_ucsign"));
-
+		
 		// register TileEntitys
-		GameRegistry.registerTileEntity(TileProtected.class, MODID + ".protected");
-		GameRegistry.registerTileEntity(TileTradeStation.class, MODID + ".tradestation");
-		GameRegistry.registerTileEntity(TileSafe.class, MODID + ".safe");
-		GameRegistry.registerTileEntity(TileSignal.class, MODID + ".signalblock");
-		GameRegistry.registerTileEntity(TileVendor.class, MODID + ".vendor");
-		GameRegistry.registerTileEntity(TileVendorBlock.class, MODID + ".vendor_block");
-		GameRegistry.registerTileEntity(TileVendorFrame.class, MODID + ".vendor_frame");
-		GameRegistry.registerTileEntity(TilePackager.class, MODID + ".packager");
-		GameRegistry.registerTileEntity(TileUCSign.class, MODID + ".ucsign");
-		GameRegistry.registerTileEntity(TilePowerTransmitter.class, MODID + ".power_transmitter");
-		GameRegistry.registerTileEntity(TilePowerReceiver.class, MODID + ".power_receiver");
-		GameRegistry.registerTileEntity(TileATM.class, MODID + ".atm");
+				GameRegistry.registerTileEntity(TileProtected.class,  new ResourceLocation(MODID + ".protected"));
+				GameRegistry.registerTileEntity(TileTradeStation.class,  new ResourceLocation(MODID + ".tradestation"));
+				GameRegistry.registerTileEntity(TileSafe.class,  new ResourceLocation(MODID + ".safe"));
+				GameRegistry.registerTileEntity(TileSignal.class,  new ResourceLocation(MODID + ".signalblock"));
+				GameRegistry.registerTileEntity(TileVendor.class,  new ResourceLocation(MODID + ".vendor"));
+				GameRegistry.registerTileEntity(TileVendorBlock.class,  new ResourceLocation(MODID + ".vendor_block"));
+				GameRegistry.registerTileEntity(TileVendorFrame.class,  new ResourceLocation(MODID + ".vendor_frame"));
+				GameRegistry.registerTileEntity(TilePackager.class,  new ResourceLocation(MODID + ".packager"));
+				GameRegistry.registerTileEntity(TileUCSign.class,  new ResourceLocation(MODID + ".ucsign"));
+				GameRegistry.registerTileEntity(TilePowerTransmitter.class,  new ResourceLocation(MODID + ".power_transmitter"));
+				GameRegistry.registerTileEntity(TilePowerReceiver.class,  new ResourceLocation(MODID + ".power_receiver"));
+				GameRegistry.registerTileEntity(TileATM.class,  new ResourceLocation(MODID + ".atm"));
 	}
 
 	@SubscribeEvent
@@ -227,6 +228,7 @@ public class UniversalCoins {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@SubscribeEvent
 	@SideOnly(CLIENT)
 	public static void registerModels(ModelRegistryEvent event) throws Exception {

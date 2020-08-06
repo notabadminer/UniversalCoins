@@ -1,17 +1,11 @@
 package universalcoins.command;
 
-import java.util.Random;
-
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
 
 public class UCRebalance extends UCCommandBase implements ICommand {

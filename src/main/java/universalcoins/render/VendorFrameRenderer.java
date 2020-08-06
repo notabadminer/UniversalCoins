@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import universalcoins.tileentity.TileVendorFrame;
 
-public class VendorFrameRenderer extends TileEntitySpecialRenderer {
+public class VendorFrameRenderer extends TileEntitySpecialRenderer<TileEntity> {
 
 	public VendorFrameRenderer() {
 	}

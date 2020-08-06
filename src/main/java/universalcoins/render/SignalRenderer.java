@@ -6,11 +6,10 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.translation.I18n;
 import universalcoins.tileentity.TileSignal;
 
-public class SignalRenderer extends TileEntitySpecialRenderer {
+public class SignalRenderer extends TileEntitySpecialRenderer<TileEntity> {
 
 	public SignalRenderer() {
 	}
@@ -29,9 +28,6 @@ public class SignalRenderer extends TileEntitySpecialRenderer {
 			}
 		}
 
-		BlockPos tPos = new BlockPos(tileentity.getPos().getX(), tileentity.getPos().getY() + 1,
-				tileentity.getPos().getZ());
-		int brightness = (int) this.getWorld().getCombinedLight(tPos, 0);
 		GL11.glPushMatrix();
 		float correction = 0.0F;
 		if (meta == 2) {

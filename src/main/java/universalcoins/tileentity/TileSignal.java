@@ -6,19 +6,14 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
 import universalcoins.block.BlockSignal;
-import universalcoins.net.UCButtonMessage;
 
 public class TileSignal extends TileProtected implements IInventory, ITickable {
 	private NonNullList<ItemStack> inventory = NonNullList.<ItemStack> withSize(1, ItemStack.EMPTY);
@@ -141,7 +136,6 @@ public class TileSignal extends TileProtected implements IInventory, ITickable {
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
-		NBTTagList itemList = new NBTTagList();
 		ItemStackHelper.saveAllItems(tagCompound, this.inventory);
 		tagCompound.setString("blockOwner", blockOwner);
 		tagCompound.setInteger("coinSum", coinSum);

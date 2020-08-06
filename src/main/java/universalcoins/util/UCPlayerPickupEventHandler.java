@@ -6,7 +6,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.fml.common.FMLLog;
@@ -26,7 +25,7 @@ public class UCPlayerPickupEventHandler {
 				|| event.getItem().getItem().getItem() == UniversalCoins.Items.diamond_coin
 				|| event.getItem().getItem().getItem() == UniversalCoins.Items.obsidian_coin) {
 			// event.getEntityPlayer().addStat(Achievements.achCoin, 1);
-			world = event.getEntityPlayer().world;
+			setWorld(event.getEntityPlayer().world);
 			EntityPlayer player = event.getEntityPlayer();
 			NonNullList<ItemStack> inventory = player.inventory.mainInventory;
 			DecimalFormat formatter = new DecimalFormat("#,###,###,###");
@@ -36,14 +35,13 @@ public class UCPlayerPickupEventHandler {
 						return; // card has not been initialized. Nothing we can
 								// do here
 					accountNumber = inventory.get(i).getTagCompound().getString("Account");
-					FMLLog.info("Account: " + accountNumber);
+					FMLLog.log.info("Account: " + accountNumber);
 					long accountBalance = UniversalAccounts.getInstance().getAccountBalance(accountNumber);
 					if (accountBalance == -1)
 						return; // get out of here if the card is invalid
 					if (event.getItem().getItem().getCount() == 0)
 						return; // no need to notify on zero size stack
 					int coinValue = 0;
-					int depositAmount = 0;
 					int stackSize = event.getItem().getItem().getCount();
 					switch (event.getItem().getItem().getUnlocalizedName()) {
 					case "item.universalcoins.iron_coin":
@@ -65,13 +63,20 @@ public class UCPlayerPickupEventHandler {
 					if (UniversalAccounts.getInstance().creditAccount(accountNumber, coinValue * stackSize, true)) {
 						UniversalAccounts.getInstance().creditAccount(accountNumber, coinValue * stackSize, false);
 						event.getItem().getItem().setCount(0);
-						player.sendMessage(new TextComponentString(I18n.translateToLocal("item.card.deposit") + " "
-								+ formatter.format(stackSize * coinValue) + " "
-								+ I18n.translateToLocal("general.currency.single")));
+						player.sendMessage(new TextComponentString(("item.card.deposit") + " "
+								+ formatter.format(stackSize * coinValue) + " " + ("general.currency.single")));
 						break; // no need to continue. We are done here
 					}
 				}
 			}
 		}
+	}
+
+	public World getWorld() {
+		return world;
+	}
+
+	public void setWorld(World world) {
+		this.world = world;
 	}
 }

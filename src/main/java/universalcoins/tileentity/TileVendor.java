@@ -1,6 +1,5 @@
 package universalcoins.tileentity;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -8,9 +7,6 @@ import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
@@ -19,13 +15,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.common.util.Constants;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.VendorBuyGUI;
 import universalcoins.gui.VendorGUI;
 import universalcoins.gui.VendorSellGUI;
 import universalcoins.item.ItemEnderCard;
-import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCVendorServerMessage;
 import universalcoins.util.CoinUtils;
 import universalcoins.util.UniversalAccounts;
@@ -589,14 +583,15 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 			checkSellingInventory();
 			hasInventorySpace();
 		}
-		update();
 		return stack;
 	}
 
 	// @Override
 	public ItemStack getStackInSlotOnClosing(int i) {
+		ItemStack itemstack = this.inventory.get(i);
+		inventory.remove(i);
 		inUse = false;
-		return getStackInSlot(i);
+		return itemstack;
 	}
 
 	@Override
@@ -804,7 +799,6 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
-		NBTTagList itemList = new NBTTagList();
 		ItemStackHelper.saveAllItems(tagCompound, this.inventory);
 		tagCompound.setInteger("CoinSum", coinSum);
 		tagCompound.setInteger("UserCoinSum", userCoinSum);

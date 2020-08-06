@@ -20,7 +20,7 @@ public class ContainerSignal extends Container {
 		tEntity = tileEntity;
 		// the Slot constructor takes the IInventory and the slot number in that
 		// it binds to and the x-y coordinates it resides on-screen
-		addSlotToContainer(new UCSlotOutput(tEntity, tEntity.itemOutputSlot, 148, 73));
+		addSlotToContainer(new UCSlotOutput(tEntity, TileSignal.itemOutputSlot, 148, 73));
 
 		// commonly used vanilla code that adds the player's inventory
 		bindPlayerInventory(inventoryPlayer);
@@ -44,7 +44,7 @@ public class ContainerSignal extends Container {
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int index) {
+	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.inventorySlots.get(index);
 

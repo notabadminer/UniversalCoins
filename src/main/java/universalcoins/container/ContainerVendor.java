@@ -5,8 +5,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.tileentity.TileVendor;
 
 public class ContainerVendor extends Container {
@@ -49,7 +48,7 @@ public class ContainerVendor extends Container {
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int index) {
+	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.inventorySlots.get(index);
 
@@ -58,20 +57,23 @@ public class ContainerVendor extends Container {
 			itemstack = itemstack1.copy();
 
 			if (index < 13) {
-				if (!this.mergeItemStack(itemstack1, 13, this.inventorySlots.size(), false)) {
+				if (!this.mergeItemStack(itemstack1, 13, this.inventorySlots.size(), true)) {
+					FMLLog.log.info("index < 13. merging");
 					return ItemStack.EMPTY;
 				}
 			} else if (!this.mergeItemStack(itemstack1, 0, 9, false)) {
+				FMLLog.log.info("index >= 13. merging");
 				return ItemStack.EMPTY;
 			}
 
 			if (itemstack1.isEmpty()) {
+				FMLLog.log.info("emptying slot");
 				slot.putStack(ItemStack.EMPTY);
 			} else {
+				FMLLog.log.info("slot changed");
 				slot.onSlotChanged();
 			}
 		}
-		tileEntity.update();
 		return itemstack;
 	}
 
@@ -111,13 +113,6 @@ public class ContainerVendor extends Container {
 			this.lastInUse = this.tileEntity.inUse;
 		}
 
-	}
-
-	@SideOnly(Side.CLIENT)
-	public void updateProgressBar(int par1, int par2) {
-		if (par1 == 0) {
-			// this.tileEntity.autoMode = par2;
-		}
 	}
 
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {

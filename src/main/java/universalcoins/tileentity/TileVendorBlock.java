@@ -58,7 +58,6 @@ public class TileVendorBlock extends TileVendor {
 							Constants.NBT.TAG_COMPOUND);
 					for (int i = 0; i < tagList.tagCount(); i++) {
 						NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
-						byte slot = tag.getByte("Slot");
 						int itemCount = new ItemStack(tag).getCount();
 						String itemName = new ItemStack(tag).getDisplayName();
 						signText[2] += itemCount + ":" + itemName + " ";

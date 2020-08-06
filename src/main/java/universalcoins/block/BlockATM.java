@@ -1,7 +1,5 @@
 package universalcoins.block;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -21,10 +19,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.tileentity.TileATM;
-import universalcoins.tileentity.TileProtected;
 
 public class BlockATM extends BlockProtected {
 

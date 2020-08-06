@@ -17,7 +17,6 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureComponent;
 import net.minecraft.world.gen.structure.StructureVillagePieces;
 import net.minecraft.world.gen.structure.StructureVillagePieces.Start;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.block.BlockATM;
 import universalcoins.block.BlockUCWallSign;
@@ -34,7 +33,7 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		MapGenStructureIO.registerStructureComponent(ComponentVillageBank.class, "ViUB");
 	}
 
-	public static ComponentVillageBank buildComponent(Start startPiece, List pieces, Random random, int p1, int p2,
+	public static ComponentVillageBank buildComponent(Start startPiece, List<StructureComponent> pieces, Random random, int p1, int p2,
 			int p3, EnumFacing facing, int p5) {
 		StructureBoundingBox box = StructureBoundingBox.getComponentToAddBoundingBox(p1, p2, p3, 0, 0, 0, 5, 6, 6,
 				facing);
@@ -64,8 +63,6 @@ public class ComponentVillageBank extends StructureVillagePieces.Village {
 		IBlockState iblockstate4 = this.getBiomeSpecificBlockState(
 				Blocks.OAK_STAIRS.getDefaultState().withProperty(BlockStairs.FACING, EnumFacing.EAST));
 		IBlockState iblockstate5 = this.getBiomeSpecificBlockState(Blocks.COBBLESTONE.getDefaultState());
-		IBlockState iblockstate6 = this.getBiomeSpecificBlockState(Blocks.PLANKS.getDefaultState());
-
 		// Clear area in case of sand
 		fillWithAir(world, sbb, 0, 0, 0, 4, 4, 5);
 		// start with block

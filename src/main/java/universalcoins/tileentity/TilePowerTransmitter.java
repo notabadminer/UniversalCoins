@@ -1,27 +1,20 @@
 package universalcoins.tileentity;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.gui.PowerTransmitterGUI;
-import universalcoins.net.UCButtonMessage;
 import universalcoins.util.UniversalAccounts;
 import universalcoins.util.UniversalPower;
 
@@ -94,6 +87,7 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 		return false;
 	}
 
+	@SuppressWarnings("unused")
 	private long getAccountBalance() {
 		if (world.isRemote || inventory.get(itemCardSlot) == null || !inventory.get(itemCardSlot).hasTagCompound()) {
 			return 0;
@@ -120,7 +114,6 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
-		NBTTagList itemList = new NBTTagList();
 		ItemStackHelper.saveAllItems(tagCompound, this.inventory);
 		tagCompound.setLong("coinSum", coinSum);
 		tagCompound.setInteger("feLevel", feLevel);
@@ -250,7 +243,6 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 			if (feLevel >= 10000) {
 				// calculate how many 10k chunks we can sell
 				rfChunks = (int) Math.floor(feLevel / 10000);
-				boolean playerCredited = false;
 				if (creditAccount(UniversalCoins.rfWholesaleRate * rfChunks)) {
 					kfeSold += Math.min(10 * rfChunks, Integer.MAX_VALUE - kfeSold);
 					UniversalPower.getInstance().receiveEnergy(10 * rfChunks, false);
@@ -300,6 +292,7 @@ public class TilePowerTransmitter extends TileProtected implements IInventory, I
 		return super.hasCapability(capability, facing);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		if (capability == CapabilityEnergy.ENERGY) {

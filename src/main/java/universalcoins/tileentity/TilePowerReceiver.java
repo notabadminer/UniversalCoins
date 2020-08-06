@@ -5,7 +5,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -115,29 +114,6 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 		return false;
 	}
 
-	private long getAccountBalance() {
-		if (world.isRemote || getStackInSlot(itemCardSlot) == null || !getStackInSlot(itemCardSlot).hasTagCompound()) {
-			return 0;
-		}
-		String accountNumber = getStackInSlot(itemCardSlot).getTagCompound().getString("Account");
-		if (accountNumber == "") {
-			return 0;
-		}
-		return UniversalAccounts.getInstance().getAccountBalance(accountNumber);
-	}
-
-	private boolean creditAccount(int i) {
-		if (world.isRemote || getStackInSlot(itemCardSlot) == null
-				|| getStackInSlot(itemCardSlot).getItem() != UniversalCoins.Items.ender_card
-				|| !getStackInSlot(itemCardSlot).hasTagCompound())
-			return false;
-		String accountNumber = getStackInSlot(itemCardSlot).getTagCompound().getString("Account");
-		if (accountNumber == "") {
-			return false;
-		}
-		return UniversalAccounts.getInstance().creditAccount(accountNumber, i, false);
-	}
-
 	private boolean debitAccount(int i) {
 		if (world.isRemote || getStackInSlot(itemCardSlot) == null || !getStackInSlot(itemCardSlot).hasTagCompound())
 			return false;
@@ -151,7 +127,6 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
-		NBTTagList itemList = new NBTTagList();
 		ItemStackHelper.saveAllItems(tagCompound, this.inventory);
 		tagCompound.setLong("coinSum", coinSum);
 		tagCompound.setInteger("feLevel", feLevel);
@@ -197,7 +172,7 @@ public class TilePowerReceiver extends TileProtected implements ITickable, IInve
 			blockOwner = "nobody";
 		}
 		try {
-			orientation = orientation.getFront(tagCompound.getInteger("orientation"));
+			orientation = EnumFacing.getFront(tagCompound.getInteger("orientation"));
 		} catch (Throwable ex2) {
 			orientation = null;
 		}

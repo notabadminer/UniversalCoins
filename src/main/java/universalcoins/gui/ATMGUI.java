@@ -87,7 +87,7 @@ public class ATMGUI extends GuiContainer {
 		int x = (width - xSize) / 2;
 		int y = (height - ySize) / 2;
 		this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
-		if (menuState == 0 && !super.inventorySlots.getSlot(tEntity.itemCardSlot).getStack().isEmpty()) {
+		if (menuState == 0 && !super.inventorySlots.getSlot(TileATM.itemCardSlot).getStack().isEmpty()) {
 			menuState = 2;
 		}
 		if (menuState == 1) {
@@ -130,8 +130,8 @@ public class ATMGUI extends GuiContainer {
 			}
 		}
 
-		if (menuState == 2 && !tEntity.getStackInSlot(tEntity.itemCardSlot).isEmpty()
-				&& (!tEntity.getStackInSlot(tEntity.itemCardSlot).hasTagCompound() || tEntity.accountBalance == -1)) {
+		if (menuState == 2 && !tEntity.getStackInSlot(TileATM.itemCardSlot).isEmpty()
+				&& (!tEntity.getStackInSlot(TileATM.itemCardSlot).hasTagCompound() || tEntity.accountBalance == -1)) {
 			tEntity.sendButtonMessage(6, false); // message to destroy card
 			menuState = 13;
 		}
@@ -326,7 +326,7 @@ public class ATMGUI extends GuiContainer {
 			}
 			if (button.id == idButtonTwo) {
 			}
-			if (button.id == idButtonThree && tEntity.getStackInSlot(tEntity.itemCardSlot) == null) {
+			if (button.id == idButtonThree && tEntity.getStackInSlot(TileATM.itemCardSlot) == null) {
 				if (!tEntity.cardOwner.matches(tEntity.playerUID)) {
 					menuState = 14;
 				} else {

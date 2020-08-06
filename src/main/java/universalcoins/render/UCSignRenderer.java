@@ -7,7 +7,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -18,7 +17,6 @@ import universalcoins.tileentity.TileUCSign;
 @SideOnly(Side.CLIENT)
 public class UCSignRenderer extends TileEntitySpecialRenderer<TileEntitySign> {
 	private int counter = 0;
-	private boolean showStick = false;
 	private final ModelSign model = new ModelSign();
 
 	public void renderTileEntityAt(TileUCSign tileEntity, double posX, double posY, double posZ, float partialTicks,
@@ -31,8 +29,7 @@ public class UCSignRenderer extends TileEntitySpecialRenderer<TileEntitySign> {
 			return;
 		}
 		ResourceLocation blockTexture = new ResourceLocation("universalcoins:textures/entity/uc_sign.png");
-		/** The ModelSign instance for use in this renderer */
-		final ModelSign model = new ModelSign();
+		new ModelSign();
 
 		Block block = te.getBlockType();
 		GlStateManager.pushMatrix();

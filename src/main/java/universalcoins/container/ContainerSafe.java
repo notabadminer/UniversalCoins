@@ -16,8 +16,8 @@ public class ContainerSafe extends Container {
 		tEntity = tileEntity;
 		// the Slot constructor takes the IInventory and the slot number in that
 		// it binds to and the x-y coordinates it resides on-screen
-		addSlotToContainer(new UCSlotCoinInput(tileEntity, tEntity.itemInputSlot, 27, 37));
-		addSlotToContainer(new UCSlotOutput(tileEntity, tEntity.itemOutputSlot, 134, 37));
+		addSlotToContainer(new UCSlotCoinInput(tileEntity, TileSafe.itemInputSlot, 27, 37));
+		addSlotToContainer(new UCSlotOutput(tileEntity, TileSafe.itemOutputSlot, 134, 37));
 
 		// now that the slots are updated, fill the slots
 		tEntity.fillOutputSlot();
@@ -44,25 +44,30 @@ public class ContainerSafe extends Container {
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int index) {
+	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.inventorySlots.get(index);
 
 		if (slot != null && slot.getHasStack()) {
-			ItemStack stackInSlot = slot.getStack();
-			ItemStack stackFromSlot = stackInSlot.copy();
+			ItemStack itemstack1 = slot.getStack();
+			itemstack = itemstack1.copy();
 
 			if (index < 2) {
-				if (!this.mergeItemStack(stackInSlot, 2, 38, true)) {
+				if (!this.mergeItemStack(itemstack1, 2, 38, true)) {
 					return ItemStack.EMPTY;
-				} else {
-					tEntity.coinsTaken(stackFromSlot);
 				}
-			} else if (!this.mergeItemStack(stackInSlot, 0, 1, false)) {
+			} else if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
 				return ItemStack.EMPTY;
+			}
+
+			if (itemstack1.isEmpty()) {
+				slot.putStack(ItemStack.EMPTY);
+			} else {
+				slot.onSlotChanged();
 			}
 			tEntity.fillOutputSlot();
 		}
-		return ItemStack.EMPTY;
+		return itemstack;
 	}
 
 	/**

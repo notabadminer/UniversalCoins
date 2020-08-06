@@ -71,7 +71,6 @@ public class PowerTransmitterGUI extends GuiContainer {
 		// display rf sold
 		String formattedkfe = formatter.format(tEntity.kfeSold);
 		int feLength = fontRenderer.getStringWidth(formattedkfe + " kFE");
-		String overage = (tEntity.kfeSold == Integer.MAX_VALUE ? "+" : "");
 		fontRenderer.drawString(formattedkfe + " kFE", 130 - feLength, 26, 4210752);
 
 		// display coin balance

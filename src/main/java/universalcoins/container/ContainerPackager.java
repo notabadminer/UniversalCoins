@@ -14,7 +14,6 @@ public class ContainerPackager extends Container {
 	private int lastPackageSize;
 	private String lastPackageTarget = "";
 	private boolean lastCardAvailable;
-	private String lastCustomName;
 	private boolean lastInUse = false;
 
 	public ContainerPackager(InventoryPlayer inventoryPlayer, TilePackager tileEntity) {
@@ -25,14 +24,14 @@ public class ContainerPackager extends Container {
 		// this makes the slot hiding easier
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 2; j++) {
-				addSlotToContainer(new Slot(tEntity, tEntity.itemPackageSlot[i * 2 + j], 8 + i * 18, 22 + j * 18));
+				addSlotToContainer(new Slot(tEntity, TilePackager.itemPackageSlot[i * 2 + j], 8 + i * 18, 22 + j * 18));
 			}
 		}
 
-		addSlotToContainer(new UCSlotCard(tEntity, tEntity.itemCardSlot, 8, 73));
-		addSlotToContainer(new UCSlotCoinInput(tEntity, tEntity.itemCoinSlot, 26, 73));
-		addSlotToContainer(new UCSlotOutput(tEntity, tEntity.itemOutputSlot, 152, 73));
-		addSlotToContainer(new UCSlotPackage(tEntity, tEntity.itemPackageInputSlot, Integer.MAX_VALUE, 26));
+		addSlotToContainer(new UCSlotCard(tEntity, TilePackager.itemCardSlot, 8, 73));
+		addSlotToContainer(new UCSlotCoinInput(tEntity, TilePackager.itemCoinSlot, 26, 73));
+		addSlotToContainer(new UCSlotOutput(tEntity, TilePackager.itemOutputSlot, 152, 73));
+		addSlotToContainer(new UCSlotPackage(tEntity, TilePackager.itemPackageInputSlot, Integer.MAX_VALUE, 26));
 
 		// commonly used vanilla code that adds the player's inventory
 		bindPlayerInventory(inventoryPlayer);
@@ -56,7 +55,7 @@ public class ContainerPackager extends Container {
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int index) {
+	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.inventorySlots.get(index);
 
@@ -64,7 +63,7 @@ public class ContainerPackager extends Container {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
 
-			if (index < 11) {
+			if (index < 13) {
 				if (!this.mergeItemStack(itemstack1, 11, 47, true)) {
 					return ItemStack.EMPTY;
 				}

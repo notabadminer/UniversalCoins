@@ -1,8 +1,6 @@
 package universalcoins.util;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.World;
 
 public class UniversalPower {
 

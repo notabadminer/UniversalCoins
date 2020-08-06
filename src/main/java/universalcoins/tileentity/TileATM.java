@@ -70,13 +70,9 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 
 	// @Override
 	public ItemStack getStackInSlotOnClosing(int slot) {
-		if (this.inventory.get(slot) != null) {
-			ItemStack itemstack = this.inventory.get(slot);
-			inventory.remove(slot);
-			return itemstack;
-		} else {
-			return null;
-		}
+		ItemStack itemstack = this.inventory.get(slot);
+		inventory.remove(slot);
+		return itemstack;
 	}
 
 	@Override

@@ -2,13 +2,13 @@ package universalcoins.render;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import universalcoins.tileentity.TileVendor;
 
+@SuppressWarnings("rawtypes")
 public class VendorBlockRenderer extends TileEntitySpecialRenderer {
 
 	public VendorBlockRenderer() {

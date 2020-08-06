@@ -5,8 +5,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import universalcoins.tileentity.TileVendor;
 
 public class ContainerVendorBuy extends Container {
@@ -46,7 +44,7 @@ public class ContainerVendorBuy extends Container {
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int index) {
+	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.inventorySlots.get(index);
 
@@ -55,7 +53,7 @@ public class ContainerVendorBuy extends Container {
 			itemstack = itemstack1.copy();
 
 			if (index < 4) {
-				if (!this.mergeItemStack(itemstack1, 4, 40, true)) {
+				if (!this.mergeItemStack(itemstack1, 4, this.inventorySlots.size(), true)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (!this.mergeItemStack(itemstack1, 0, 3, false)) {
@@ -68,7 +66,6 @@ public class ContainerVendorBuy extends Container {
 				slot.onSlotChanged();
 			}
 		}
-		tileEntity.update();
 		return itemstack;
 	}
 
@@ -106,13 +103,6 @@ public class ContainerVendorBuy extends Container {
 			this.lastInUse = this.tileEntity.inUse;
 		}
 
-	}
-
-	@SideOnly(Side.CLIENT)
-	public void updateProgressBar(int par1, int par2) {
-		if (par1 == 0) {
-			// this.tileEntity.autoMode = par2;
-		}
 	}
 
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {

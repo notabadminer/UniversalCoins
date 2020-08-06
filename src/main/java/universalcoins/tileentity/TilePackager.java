@@ -13,8 +13,6 @@ import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -23,11 +21,11 @@ import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
-import universalcoins.net.UCButtonMessage;
 import universalcoins.net.UCPackagerServerMessage;
 import universalcoins.util.CoinUtils;
 import universalcoins.util.UniversalAccounts;
 
+@SuppressWarnings("deprecation")
 public class TilePackager extends TileProtected implements IInventory {
 	private NonNullList<ItemStack> inventory = NonNullList.<ItemStack> withSize(12, ItemStack.EMPTY);
 	public static final int[] itemPackageSlot = { 0, 1, 2, 3, 4, 5, 6, 7 };
@@ -171,7 +169,6 @@ public class TilePackager extends TileProtected implements IInventory {
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
-		NBTTagList itemList = new NBTTagList();
 		ItemStackHelper.saveAllItems(tagCompound, this.inventory);
 		tagCompound.setLong("coinSum", coinSum);
 		tagCompound.setBoolean("cardAvailable", cardAvailable);
@@ -353,7 +350,7 @@ public class TilePackager extends TileProtected implements IInventory {
 				players.add(p.getDisplayName().getUnformattedText());
 			}
 			String test[] = { playerName };
-			List match = CommandBase.getListOfStringsMatchingLastWord(test, players);
+			List<String> match = CommandBase.getListOfStringsMatchingLastWord(test, players);
 			if (match.size() > 0) {
 				packageTarget = match.get(0).toString();
 			}

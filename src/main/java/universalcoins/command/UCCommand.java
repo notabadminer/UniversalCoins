@@ -30,8 +30,8 @@ public class UCCommand extends CommandBase implements ICommand {
 	}
 
 	@Override
-	public List getAliases() {
-		List aliases = new ArrayList();
+	public List<String> getAliases() {
+		List<String> aliases = new ArrayList<String>();
 		aliases.add("uc");
 		return aliases;
 	}

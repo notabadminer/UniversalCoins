@@ -24,8 +24,8 @@ public class ContainerATM extends Container {
 		tEntity = tileEntity;
 		// the Slot constructor takes the IInventory and the slot number in that
 		// it binds to and the x-y coordinates it resides on-screen
-		addSlotToContainer(new UCSlotCoinInput(tEntity, tEntity.itemCoinSlot, 172, 40));
-		addSlotToContainer(new UCSlotCard(tEntity, tEntity.itemCardSlot, 172, 60));
+		addSlotToContainer(new UCSlotCoinInput(tEntity, TileATM.itemCoinSlot, 172, 40));
+		addSlotToContainer(new UCSlotCard(tEntity, TileATM.itemCardSlot, 172, 60));
 
 		// commonly used vanilla code that adds the player's inventory
 		bindPlayerInventory(inventoryPlayer);
@@ -49,7 +49,7 @@ public class ContainerATM extends Container {
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int index) {
+	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.inventorySlots.get(index);
 
@@ -58,20 +58,22 @@ public class ContainerATM extends Container {
 			itemstack = itemstack1.copy();
 
 			if (index < 2) {
-				if (!this.mergeItemStack(itemstack1, 2, 38, false)) {
+				if (!this.mergeItemStack(itemstack1, 2, this.inventorySlots.size(), true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (!this.mergeItemStack(itemstack1, 0, 2, false)) { // endindex is not inclusive. set +1
+			} else if (!this.mergeItemStack(itemstack1, 0, 2, false)) {
 				return ItemStack.EMPTY;
 			}
 
 			if (itemstack1.isEmpty()) {
 				slot.putStack(ItemStack.EMPTY);
 			} else {
+
 				slot.onSlotChanged();
 			}
 			tEntity.fillCoinSlot();
 		}
+
 		return itemstack;
 	}
 

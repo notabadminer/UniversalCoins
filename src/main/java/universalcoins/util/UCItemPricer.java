@@ -169,8 +169,7 @@ public class UCItemPricer {
 	}
 
 	private void priceListWriter() throws IOException {
-		// FMLLog.log.info("Starting priceListWriter");
-		long startTime = System.currentTimeMillis();
+		System.currentTimeMillis();
 
 		Set<Entry<String, Integer>> set = ucPriceMap.entrySet();
 		List<Entry<String, Integer>> list = new ArrayList<Entry<String, Integer>>(set);
@@ -213,9 +212,7 @@ public class UCItemPricer {
 		}
 		out.flush();
 		out.close();
-		long endTime = System.currentTimeMillis();
-		// FMLLog.log.info("File writes took " + (endTime - startTime) +
-		// "milliseconds");
+		System.currentTimeMillis();
 	}
 
 	public int getItemPrice(ItemStack itemStack) {
@@ -229,10 +226,8 @@ public class UCItemPricer {
 		int itemPrice = -1;
 		String itemName = null;
 		try {
-			int itemStackDamage = itemStack.getItemDamage();
+			itemStack.getItemDamage();
 			if (itemStack.isItemStackDamageable()) {
-				// override for damaged items
-				itemStackDamage = 0;
 			}
 			if (itemStack.isItemStackDamageable()) {
 				itemName = itemStack.getItem().getRegistryName() + ".0";
@@ -368,7 +363,7 @@ public class UCItemPricer {
 	}
 
 	public ItemStack getRandomPricedStack() {
-		List keys = new ArrayList(ucPriceMap.keySet());
+		List<String> keys = new ArrayList<String>(ucPriceMap.keySet());
 		ItemStack stack = null;
 		while (stack == null) {
 			String keyName = keys.get(random.nextInt(keys.size())).toString();
@@ -391,12 +386,10 @@ public class UCItemPricer {
 				// we need to check for this
 				if (!Character.isDigit(keyName.charAt(keyName.length() - 1))) {
 					List<ItemStack> test = OreDictionary.getOres(keyName);
-					int itemValue = -1;
 					for (int j = 0; j < test.size(); j++) {
 						ItemStack oreDictionaryStack = (ItemStack) test.get(j);
 						int subItemValue = getItemPrice(oreDictionaryStack);
 						if (subItemValue > 0) {
-							itemValue = subItemValue;
 							return oreDictionaryStack;
 						}
 					}
@@ -419,11 +412,7 @@ public class UCItemPricer {
 		Set<ResourceLocation> recipeResourceLocations = CraftingManager.REGISTRY.getKeys();
 		boolean priceUpdate = false;
 
-		// we rerun multiple times if needed since recipe components might be
-		// priced in previous runs
-		int loopCount = 0;
 		do {
-			loopCount++;
 			// FMLLog.log.info("priceUpdate loop: " + loopCount);
 			priceUpdate = false;
 			for (ResourceLocation rloc : recipeResourceLocations) {
@@ -563,7 +552,7 @@ public class UCItemPricer {
 
 			ItemStack stack = new ItemStack(item, 1);
 
-			Block testBlock = Block.getBlockFromItem(item);
+			Block.getBlockFromItem(item);
 			addItemToPriceMap(stack);
 		}
 	}

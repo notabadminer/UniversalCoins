@@ -12,12 +12,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
-import universalcoins.UniversalCoins;
 import universalcoins.util.CoinUtils;
 import universalcoins.util.UniversalAccounts;
 
 public class ItemEnderCard extends ItemUCCard {
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
 			EnumFacing facing, float hitX, float hitY, float hitZ) {

@@ -6,13 +6,13 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import universalcoins.UniversalCoins;
 
+@SuppressWarnings("deprecation")
 public class ItemCoin extends Item {
 
 	public ItemCoin() {

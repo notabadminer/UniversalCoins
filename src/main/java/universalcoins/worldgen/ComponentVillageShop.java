@@ -19,7 +19,6 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureComponent;
 import net.minecraft.world.gen.structure.StructureVillagePieces;
 import net.minecraft.world.gen.structure.StructureVillagePieces.Start;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.UniversalCoins;
 import universalcoins.block.BlockUCWallSign;
 import universalcoins.tileentity.TileVendor;
@@ -39,7 +38,7 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 		MapGenStructureIO.registerStructureComponent(ComponentVillageShop.class, "ViUS");
 	}
 
-	public static ComponentVillageShop buildComponent(Start startPiece, List pieces, Random random, int p1, int p2,
+	public static ComponentVillageShop buildComponent(Start startPiece, List<StructureComponent> pieces, Random random, int p1, int p2,
 			int p3, EnumFacing facing, int p5) {
 		StructureBoundingBox box = StructureBoundingBox.getComponentToAddBoundingBox(p1, p2, p3, 0, 0, 0, 5, 6, 6,
 				facing);
@@ -142,7 +141,7 @@ public class ComponentVillageShop extends StructureVillagePieces.Village {
 				UniversalCoins.Blocks.vendor_block.getDefaultState(), false);
 
 		// list of items
-		List<Item> saleItems = new ArrayList();
+		List<Item> saleItems = new ArrayList<Item>();
 
 		// fill left vending blocks
 		for (int i = 0; i < 6; i++) {

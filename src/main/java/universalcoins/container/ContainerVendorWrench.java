@@ -10,7 +10,6 @@ import universalcoins.tileentity.TileVendorFrame;
 
 public class ContainerVendorWrench extends Container {
 	private TileVendor tileEntity;
-	private TileVendorFrame tileEntity2;
 	private String lastBlockOwner;
 	private Boolean lastInfinite;
 
@@ -19,7 +18,6 @@ public class ContainerVendorWrench extends Container {
 	}
 
 	public ContainerVendorWrench(InventoryPlayer inventory, TileVendorFrame tEntity) {
-		tileEntity2 = tEntity;
 	}
 
 	@Override

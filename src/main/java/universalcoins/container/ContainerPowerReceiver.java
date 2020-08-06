@@ -18,9 +18,9 @@ public class ContainerPowerReceiver extends Container {
 		tEntity = tileEntity;
 		// the Slot constructor takes the IInventory and the slot number in that
 		// it binds to and the x-y coordinates it resides on-screen
-		addSlotToContainer(new UCSlotCard(tileEntity, tEntity.itemCardSlot, 14, 70));
-		addSlotToContainer(new UCSlotCoinInput(tileEntity, tEntity.itemCoinSlot, 32, 70));
-		addSlotToContainer(new UCSlotOutput(tileEntity, tEntity.itemOutputSlot, 148, 70));
+		addSlotToContainer(new UCSlotCard(tileEntity, TilePowerReceiver.itemCardSlot, 14, 70));
+		addSlotToContainer(new UCSlotCoinInput(tileEntity, TilePowerReceiver.itemCoinSlot, 32, 70));
+		addSlotToContainer(new UCSlotOutput(tileEntity, TilePowerReceiver.itemOutputSlot, 148, 70));
 
 		// commonly used vanilla code that adds the player's inventory
 		bindPlayerInventory(inventoryPlayer);
@@ -42,9 +42,9 @@ public class ContainerPowerReceiver extends Container {
 			addSlotToContainer(new Slot(inventoryPlayer, i, 8 + i * 18, 161));
 		}
 	}
-	
+
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int index) {
+	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.inventorySlots.get(index);
 
