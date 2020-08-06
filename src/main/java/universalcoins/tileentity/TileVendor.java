@@ -2,14 +2,12 @@ package universalcoins.tileentity;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -24,8 +22,8 @@ import universalcoins.net.UCVendorServerMessage;
 import universalcoins.util.CoinUtils;
 import universalcoins.util.UniversalAccounts;
 
-public class TileVendor extends TileProtected implements IInventory, ISidedInventory {
-	protected NonNullList<ItemStack> inventory = NonNullList.<ItemStack> withSize(17, ItemStack.EMPTY);
+public class TileVendor extends TileProtected implements IInventory {
+	protected NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(17, ItemStack.EMPTY);
 	// owner slots
 	public static final int itemStorageSlot1 = 0;
 	public static final int itemStorageSlot2 = 1;
@@ -596,7 +594,6 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 
 	@Override
 	public void setInventorySlotContents(int slot, ItemStack stack) {
-		if (stack.isEmpty()) return;
 		inventory.set(slot, stack);
 		int coinValue = CoinUtils.getCoinValue(stack);
 
@@ -672,7 +669,7 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
-		this.inventory = NonNullList.<ItemStack> withSize(this.getSizeInventory(), ItemStack.EMPTY);
+		this.inventory = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
 		ItemStackHelper.loadAllItems(tagCompound, this.inventory);
 		try {
 			coinSum = tagCompound.getInteger("CoinSum");
@@ -830,31 +827,6 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	public void updateSigns() {
 	}
 
-	@Override
-	public int[] getSlotsForFace(EnumFacing side) {
-		return new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 11 };
-	}
-
-	@Override
-	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
-		// put everything in the item storage slots
-		if (index >= itemStorageSlot1 && index <= itemStorageSlot9) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
-		// allow pulling items from output slot only
-		if (index == itemCoinOutputSlot) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	public void setRemoteStorage(int[] storageLocation) {
 		remoteX = storageLocation[0];
 		remoteY = storageLocation[1];
@@ -1006,7 +978,7 @@ public class TileVendor extends TileProtected implements IInventory, ISidedInven
 	public ItemStack removeStackFromSlot(int index) {
 		return inventory.get(index);
 	}
-	
+
 	public boolean isUsableByPlayer(EntityPlayer player) {
 		if (this.world.getTileEntity(this.pos) != this || player == null) {
 			return false;

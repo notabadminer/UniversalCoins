@@ -5,7 +5,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.FMLLog;
 import universalcoins.tileentity.TileVendor;
 
 public class ContainerVendor extends Container {
@@ -58,19 +57,15 @@ public class ContainerVendor extends Container {
 
 			if (index < 13) {
 				if (!this.mergeItemStack(itemstack1, 13, this.inventorySlots.size(), true)) {
-					FMLLog.log.info("index < 13. merging");
 					return ItemStack.EMPTY;
 				}
 			} else if (!this.mergeItemStack(itemstack1, 0, 9, false)) {
-				FMLLog.log.info("index >= 13. merging");
 				return ItemStack.EMPTY;
 			}
 
 			if (itemstack1.isEmpty()) {
-				FMLLog.log.info("emptying slot");
 				slot.putStack(ItemStack.EMPTY);
 			} else {
-				FMLLog.log.info("slot changed");
 				slot.onSlotChanged();
 			}
 		}

@@ -3,11 +3,9 @@ package universalcoins.tileentity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -19,7 +17,7 @@ import universalcoins.net.ATMWithdrawalMessage;
 import universalcoins.util.CoinUtils;
 import universalcoins.util.UniversalAccounts;
 
-public class TileATM extends TileProtected implements IInventory, ISidedInventory {
+public class TileATM extends TileProtected implements IInventory {
 	private NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(2, ItemStack.EMPTY);
 	public static final int itemCoinSlot = 0;
 	public static final int itemCardSlot = 1;
@@ -326,21 +324,6 @@ public class TileATM extends TileProtected implements IInventory, ISidedInventor
 	@Override
 	public ITextComponent getDisplayName() {
 		return new TextComponentString(UniversalCoins.Blocks.atm.getLocalizedName());
-	}
-
-	@Override
-	public int[] getSlotsForFace(EnumFacing side) {
-		return null;
-	}
-
-	@Override
-	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
-		return false;
-	}
-
-	@Override
-	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
-		return false;
 	}
 
 	@Override

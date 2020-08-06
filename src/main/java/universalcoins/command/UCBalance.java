@@ -39,6 +39,8 @@ public class UCBalance extends CommandBase implements ICommand {
 			long accountBalance = UniversalAccounts.getInstance().getAccountBalance(playerAcct);
 			DecimalFormat formatter = new DecimalFormat("#,###,###,###,###,###,###");
 			sender.sendMessage(new TextComponentString("Inventory: " + formatter.format(playerCoins)));
+			//TODO change translation strings
+			//player.sendMessage(new TextComponentTranslation("text.message"));
 			if (accountBalance != -1) {
 				sender.sendMessage(new TextComponentString("Account: " + formatter.format(accountBalance)));
 			}
