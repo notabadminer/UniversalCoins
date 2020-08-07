@@ -17,15 +17,11 @@ import universalcoins.util.UniversalAccounts;
 
 public class ItemEnderCard extends ItemUCCard {
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
 			EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (worldIn.isRemote)
-			return EnumActionResult.SUCCESS;
-		if (player.getActiveItemStack().getTagCompound() == null) {
-			createNBT(player.getActiveItemStack(), worldIn, player);
-		}
+		if (!player.getHeldItem(hand).hasTagCompound())
+			createNBT(player.getHeldItem(hand), worldIn, player);
 		DecimalFormat formatter = new DecimalFormat("#,###,###,###");
 		NonNullList<ItemStack> inventory = player.inventory.mainInventory;
 		String accountNumber = player.getActiveItemStack().getTagCompound().getString("Account");

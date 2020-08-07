@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -30,7 +31,7 @@ public class ItemUCCard extends Item {
 
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-		if (stack.getTagCompound() != null) {
+		if (stack.hasTagCompound()) {
 			tooltip.add(stack.getTagCompound().getString("Name"));
 			tooltip.add(stack.getTagCompound().getString("Account"));
 		} else {
@@ -41,9 +42,7 @@ public class ItemUCCard extends Item {
 	@Override
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
 			EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (worldIn.isRemote)
-			return EnumActionResult.SUCCESS;
-		if (player.getActiveItemStack().getTagCompound() == null) {
+		if (!player.getHeldItem(hand).hasTagCompound()) {
 			createNBT(player.getHeldItem(hand), worldIn, player);
 		}
 		long accountCoins = UniversalAccounts.getInstance()
@@ -64,9 +63,9 @@ public class ItemUCCard extends Item {
 		String accountNumber = UniversalAccounts.getInstance()
 				.getOrCreatePlayerAccount(entityPlayer.getPersistentID().toString());
 		NBTTagCompound tag = new NBTTagCompound();
-		tag.setString("Name", entityPlayer.getName());
-		tag.setString("Owner", entityPlayer.getPersistentID().toString());
-		tag.setString("Account", accountNumber);
+		tag.setTag("Name", new NBTTagString(entityPlayer.getName()));
+		tag.setTag("Owner", new NBTTagString(entityPlayer.getPersistentID().toString()));
+		tag.setTag("Account", new NBTTagString(accountNumber));
 		stack.setTagCompound(tag);
 	}
 }

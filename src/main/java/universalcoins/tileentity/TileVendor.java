@@ -598,7 +598,7 @@ public class TileVendor extends TileProtected implements IInventory {
 		int coinValue = CoinUtils.getCoinValue(stack);
 
 		int depositAmount = 0;
-		if (slot == itemCoinInputSlot) {
+		if (slot == itemCoinInputSlot && !stack.isEmpty()) {
 			depositAmount = Math.min(stack.getCount(), (Integer.MAX_VALUE - coinSum) / coinValue);
 			if (!inventory.get(itemCardSlot).isEmpty() && inventory.get(itemCardSlot).hasTagCompound()
 					&& inventory.get(itemCardSlot).getItem() == UniversalCoins.Items.ender_card
@@ -610,7 +610,7 @@ public class TileVendor extends TileProtected implements IInventory {
 			}
 			updateCoinsForPurchase();
 		}
-		if (slot == itemUserCoinInputSlot) {
+		if (slot == itemUserCoinInputSlot && !stack.isEmpty()) {
 			depositAmount = Math.min(stack.getCount(), (Integer.MAX_VALUE - userCoinSum) / coinValue);
 			if (!inventory.get(itemUserCardSlot).isEmpty() && inventory.get(itemUserCardSlot).hasTagCompound()
 					&& inventory.get(itemUserCardSlot).getItem() == UniversalCoins.Items.ender_card
@@ -628,7 +628,7 @@ public class TileVendor extends TileProtected implements IInventory {
 		if (slot == itemCardSlot) {
 			updateCoinsForPurchase();
 		}
-		if (slot == itemUserCardSlot && !inventory.get(itemUserCardSlot).isEmpty()
+		if (slot == itemUserCardSlot && !stack.isEmpty()
 				&& inventory.get(itemUserCardSlot).getItem() instanceof ItemEnderCard && getUserAccountBalance() != -1
 				&& getUserAccountBalance() + userCoinSum < Integer.MAX_VALUE) {
 			creditUserAccount(userCoinSum);
